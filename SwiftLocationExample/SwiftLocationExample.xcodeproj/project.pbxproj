@@ -18,6 +18,7 @@
 		64073D961B6BBDF4001E6B6D /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64073D951B6BBDF4001E6B6D /* CoreLocation.framework */; };
 		64073D981B6BBDF9001E6B6D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64073D971B6BBDF9001E6B6D /* MapKit.framework */; };
 		64073D991B6BBE0D001E6B6D /* SwiftLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64073D911B6BBDBA001E6B6D /* SwiftLocation.swift */; };
+		64073D9E1B6BD136001E6B6D /* stratford.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 64073D9D1B6BD136001E6B6D /* stratford.gpx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		64073D931B6BBDDF001E6B6D /* Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tests.swift; path = ../Tests.swift; sourceTree = "<group>"; };
 		64073D951B6BBDF4001E6B6D /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		64073D971B6BBDF9001E6B6D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		64073D9D1B6BD136001E6B6D /* stratford.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = stratford.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 			children = (
 				64073D911B6BBDBA001E6B6D /* SwiftLocation.swift */,
 				64073D931B6BBDDF001E6B6D /* Tests.swift */,
+				64073D9D1B6BD136001E6B6D /* stratford.gpx */,
 			);
 			name = SwiftLocation;
 			sourceTree = "<group>";
@@ -218,6 +221,7 @@
 				64073D771B6BBD92001E6B6D /* Main.storyboard in Resources */,
 				64073D7C1B6BBD92001E6B6D /* LaunchScreen.xib in Resources */,
 				64073D791B6BBD92001E6B6D /* Images.xcassets in Resources */,
+				64073D9E1B6BD136001E6B6D /* stratford.gpx in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

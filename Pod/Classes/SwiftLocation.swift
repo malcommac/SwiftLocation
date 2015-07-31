@@ -199,6 +199,15 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	//MARK: Public vars
 	public static let shared = SwiftLocation()
 	
+	//MARK: Simulate location and location updates
+	
+	/// Set this to a valid non-nil location to receive it as current location for single location search
+	public var fixedLocation: CLLocation?
+	public var fixedLocationDictionary: [String: AnyObject]?
+	/// Set it to a valid existing gpx file url to receive positions during continous update
+	//public var fixedLocationGPX: NSURL?
+	
+	
 	/// This property report the current state of the CoreLocationManager service based on user authorization
 	class var state: ServiceStatus {
 		get {
@@ -251,6 +260,15 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		return false
 	}
 	
+	/**
+	Mark as cancelled any running request
+	*/
+	public func cancelAllRequests() {
+		for request in requests {
+			request.markAsCancelled()
+		}
+	}
+	
 	//MARK: [Public] Reverse Geocoding
 
 	/**
@@ -299,6 +317,13 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	:returns: return an object to manage the request itself
 	*/
 	public func currentLocation(accuracy: Accuracy, timeout: NSTimeInterval, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
+		if let fixedLocation = fixedLocation as CLLocation! {
+			// If a fixed location is set we want to return it
+			var placemark = MKPlacemark(coordinate: fixedLocation.coordinate, addressDictionary: fixedLocationDictionary)
+			onSuccess(location: placemark as CLPlacemark)
+			return -1 // request cannot be aborted, of course
+		}
+		
 		if accuracy == Accuracy.Country {
 			let newRequest = SwiftLocationRequest(requestType: RequestType.SingleShotIPLocation, accuracy:accuracy, timeout: timeout, success: onSuccess, fail: onFail)
 			locateByIP(newRequest, refresh: false, timeout: timeout, onEnd: { (place, error) -> Void in
@@ -701,6 +726,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private] Location Manager Delegate
 	
 	public func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+		locationsReceived(locations)
+	}
+	
+	private func locationsReceived(locations: [AnyObject]!) {
 		if let location = locations.last as? CLLocation {
 			let acc = location.accuracyOfLocation()
 			for request in requests {
