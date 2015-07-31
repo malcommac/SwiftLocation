@@ -10,14 +10,21 @@
 Pod::Spec.new do |s|
   s.name             = "SwiftLocation"
   s.version          = "0.1.0"
-  s.summary          = "CoreLocation Made Easy, the Swift way"
+  s.summary          = "CoreLocation made easy in pure Swift"
   s.description      = <<-DESC
-                       An optional longer description of SwiftLocation
+                       SwiftLocation is a simple 100% Swift wrapper around CoreLocation. Use Location services has never been easier and you can do it with your favourite language.
+Let me show the best features of the library:
 
-                       * Markdown format.
-                       * Don't worry about the indent, we strip it!
+- **Auto-managed Hardware services** (heading/location/monitor services are turned off when not used)
+- **Reverse geocoding services** (from address/coordinates to location placemark) using both **Apple** own CoreLocation services or external **Google Location APIs**
+- Fast and low-powered **IP based device's location** discovery
+- **Single shot location discovery** method (with desidered accuracy level) to get current user location with a simple closure as respond
+- **Continous location update** methods to get both detailed locations or only significant data only.
+- **Region monitor** with a single line of code
+- **iBeacon proximity monitor** with a single line of code
+- **Fixed user position** simulation
                        DESC
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/SwiftLocation"
+  s.homepage         = "https://github.com/malcommac/SwiftLocation"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "daniele margutti" => "me@danielemargutti.com" }
