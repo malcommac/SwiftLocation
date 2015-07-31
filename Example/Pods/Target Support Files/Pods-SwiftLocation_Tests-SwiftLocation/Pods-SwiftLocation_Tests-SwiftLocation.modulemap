@@ -1,6 +1,0 @@
-framework module SwiftLocation {
-  umbrella header "Pods-SwiftLocation_Tests-SwiftLocation-umbrella.h"
-
-  export *
-  module * { export * }
-}
