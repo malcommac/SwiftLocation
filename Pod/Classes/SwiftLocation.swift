@@ -37,7 +37,7 @@ public typealias RequestIDType = Int
 
 //MARK: Handlers
 // Location related handler
-public typealias onSuccessLocate = ( (location: CLPlacemark?) -> Void)
+public typealias onSuccessLocate = ( (location: CLLocation?) -> Void)
 public typealias onErrorLocate = ( (error: NSError?) -> Void )
 // Generic timeout handler
 public typealias onTimeoutReached = ( Void -> (NSTimeInterval?) )
@@ -319,8 +319,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	public func currentLocation(accuracy: Accuracy, timeout: NSTimeInterval, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
 		if let fixedLocation = fixedLocation as CLLocation! {
 			// If a fixed location is set we want to return it
-			var placemark = MKPlacemark(coordinate: fixedLocation.coordinate, addressDictionary: fixedLocationDictionary)
-			onSuccess(location: placemark as CLPlacemark)
+			onSuccess(location: fixedLocation)
 			return -1 // request cannot be aborted, of course
 		}
 		
@@ -330,7 +329,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 				if error != nil {
 					onFail(error: error)
 				} else {
-					onSuccess(location: place)
+					onSuccess(location: place?.location)
 				}
 			})
 			addRequest(newRequest)
@@ -645,7 +644,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 						if error != nil {
 							cRequest.onError?(error: error)
 						} else {
-							cRequest.onSuccess?(location: object as! CLPlacemark?)
+							cRequest.onSuccess?(location: object as! CLLocation?)
 						}
 					}
 					// If result is not continous location update notifications or, anyway, for any request marked as cancelled

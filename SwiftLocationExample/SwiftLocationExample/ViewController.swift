@@ -18,10 +18,13 @@ class ViewController: UIViewController {
 		
 		SwiftLocation.shared.currentLocation(Accuracy.Neighborhood, timeout: 20, onSuccess: { (location) -> Void in
 			// location is a CLPlacemark
+			println("Location found \(location?.description)")
 		}) { (error) -> Void in
 			// something went wrong
+			println("Something went wrong -> \(error?.localizedDescription)")
 		}
 		
+		return
 		SwiftLocation.shared.reverseAddress(Service.Apple, address: "1 Infinite Loop, Cupertino (USA)", region: nil, onSuccess: { (place) -> Void in
 			// our CLPlacemark is here
 		}) { (error) -> Void in
