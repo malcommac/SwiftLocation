@@ -254,8 +254,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	:returns: true if request is marked as cancelled, no if it was not found
 	*/
 	public func cancelRequest(identifier: Int) -> Bool {
+		let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Operation cancelled"])
 		if let request = request(identifier) as SwiftLocationRequest! {
-			request.markAsCancelled()
+			request.markAsCancelled(err)
 		}
 		return false
 	}
@@ -264,8 +265,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	Mark as cancelled any running request
 	*/
 	public func cancelAllRequests() {
+		let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Operation cancelled"])
 		for request in requests {
-			request.markAsCancelled()
+			request.markAsCancelled(err)
 		}
 	}
 	
@@ -717,8 +719,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	*/
 	private func expireAllRequests(error: NSError?) {
 		for request in requests {
-			request.markAsCancelled()
-			completeRequest(request, object: nil, error: error)
+			request.markAsCancelled(error)
 		}
 	}
 	
@@ -905,10 +906,10 @@ public class SwiftLocationRequest: NSObject {
 	/**
 	Cancel method abort a running request
 	*/
-	private func markAsCancelled() {
+	private func markAsCancelled(error: NSError?) {
 		isCancelled = true
 		stopTimeout()
-		SwiftLocation.shared.completeRequest(self, object: nil, error: nil)
+		SwiftLocation.shared.completeRequest(self, object: nil, error: error)
 	}
 	
 	//MARK: Private Methods

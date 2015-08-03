@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SwiftLocation"
-  s.version          = "0.1.1"
+  s.version          = "0.1.2"
   s.summary          = "CoreLocation made easy in pure Swift"
   s.description      = <<-DESC
                        SwiftLocation is a simple 100% Swift wrapper around CoreLocation. Use Location services has never been easier and you can do it with your favourite language.
