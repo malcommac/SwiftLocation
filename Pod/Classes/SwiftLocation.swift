@@ -753,6 +753,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 			for request in requests {
 				request.startTimeout(nil)
 			}
+			updateLocationManagerStatus()
 		}
 	}
 	
