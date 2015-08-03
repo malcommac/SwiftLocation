@@ -35,6 +35,15 @@ Daniele Margutti
 
 SwiftLocation is exposed as a singleton class. So in order to call all available methods you need to call ```SwiftLocation.shared.<method>```
 
+## Prepare your project
+*(SwiftLocation is compatible with iOS8+. iOS7 is not supported)*
+Before using SwiftLocation you need to enable CoreLocation services to your project. First of all add required frameworks to your project: both MapKit and CoreLocation frameworks should be linked to your project (it will be done automatically if you are using SwiftLocation via CocoaPods).
+Then you need to provide at least one key between:
+- ```NSLocationAlwaysUsageDescription```
+-  ```NSLocationWhenInUseUsageDescription``` 
+in order to provide a description of your request to the end user when the system location alert panel will be presented on screen.
+If you are using SwiftLocation with iOS simulator you can also set a fake location using ```.fixedLocation``` and/or ```.fixedLocationDictionary``` (or by setting the location into project scheme settings).
+
 ### GET "ONE SHOT" USER LOCATION
 
 To get the current user location without getting a continous update of the data each time, you can use ```currentLocation``` method.
