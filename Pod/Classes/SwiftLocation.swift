@@ -254,9 +254,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	:returns: true if request is marked as cancelled, no if it was not found
 	*/
 	public func cancelRequest(identifier: Int) -> Bool {
-		let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Operation cancelled"])
 		if let request = request(identifier) as SwiftLocationRequest! {
-			request.markAsCancelled(err)
+			request.markAsCancelled(nil)
 		}
 		return false
 	}
@@ -265,9 +264,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	Mark as cancelled any running request
 	*/
 	public func cancelAllRequests() {
-		let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Operation cancelled"])
 		for request in requests {
-			request.markAsCancelled(err)
+			request.markAsCancelled(nil)
 		}
 	}
 	
@@ -646,7 +644,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 						if error != nil {
 							cRequest.onError?(error: error)
 						} else {
-							cRequest.onSuccess?(location: object as! CLLocation?)
+							if object != nil {
+								cRequest.onSuccess?(location: object as! CLLocation?)
+							}
 						}
 					}
 					// If result is not continous location update notifications or, anyway, for any request marked as cancelled
