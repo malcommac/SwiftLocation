@@ -663,6 +663,22 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/**
+	This method return the highest accuracy you want to receive into the current bucket of requests
+	
+	:returns: highest accuracy level you want to receive
+	*/
+	private func highestRequiredAccuracy() -> CLLocationAccuracy {
+		var highestAccuracy = CLLocationAccuracy(Double.infinity)
+		for request in requests {
+			let accuracyLevel = CLLocationAccuracy(request.desideredAccuracy.accuracyThreshold())
+			if accuracyLevel < highestAccuracy {
+				highestAccuracy = accuracyLevel
+			}
+		}
+		return highestAccuracy
+	}
+	
+	/**
 	This method simply turn off/on hardware required by the list of active running requests.
 	The same method also ask to the user permissions to user core location.
 	*/
@@ -682,6 +698,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		
 		// Location Update
 		if hasActiveRequests([RequestType.ContinuousLocationUpdate,RequestType.SingleShotLocation]) == true {
+			let requiredAccuracy = self.highestRequiredAccuracy()
+			if requiredAccuracy != manager.desiredAccuracy {
+				manager.stopUpdatingLocation()
+				manager.desiredAccuracy = requiredAccuracy
+			}
 			manager.startUpdatingLocation()
 		} else {
 			manager.stopUpdatingLocation()
@@ -921,7 +942,7 @@ public class SwiftLocationRequest: NSObject {
 			return true
 		}
 		let locAccuracy: Accuracy! = location.accuracyOfLocation()
-		let valid = (locAccuracy.rawValue > desideredAccuracy.rawValue)
+		let valid = (locAccuracy.rawValue >= desideredAccuracy.rawValue)
 		return valid
 	}
 	
