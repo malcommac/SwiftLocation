@@ -43,12 +43,12 @@ class ReverseGeocoderTestClass: XCTestCase {
 	private func sub_testReverseAddress(service: Service!) {
 		var placeFound: CLPlacemark?
 		
-		var exp = expectationWithDescription("reverse_geocoder_address")
+		let exp = expectationWithDescription("reverse_geocoder_address")
 		SwiftLocation.shared.reverseAddress(service, address: "Piazza Del Colosseo 58, Roma", region: nil, onSuccess: { (place) -> Void in
 			placeFound = place
 			XCTAssertNotNil(placeFound, "Found place cannot be nil")
-			XCTAssertEqualWithAccuracy(placeFound!.location.coordinate.latitude, 41.890, 0.02,"Unexpected latitute found")
-			XCTAssertEqualWithAccuracy(placeFound!.location.coordinate.longitude, 12.492, 0.02,"Unexpected longitude found")
+			XCTAssertEqualWithAccuracy(placeFound!.location!.coordinate.latitude, 41.890, accuracy: 0.02,"Unexpected latitute found")
+			XCTAssertEqualWithAccuracy(placeFound!.location!.coordinate.longitude, 12.492, accuracy: 0.02,"Unexpected longitude found")
 			exp.fulfill()
 			}) { (error) -> Void in
 				XCTFail("An error has occurred: \(error?.localizedDescription)")
@@ -57,9 +57,9 @@ class ReverseGeocoderTestClass: XCTestCase {
 		
 		waitForExpectationsWithTimeout(20, handler: { (error) -> Void in
 			if error == nil {
-				println("Test passed: \(placeFound!.description)")
+				print("Test passed: \(placeFound?.description)")
 			} else {
-				println("Test not passed: \(error.localizedDescription)")
+				print("Test not passed: \(error?.localizedDescription)")
 			}
 		})
 	}
@@ -67,14 +67,14 @@ class ReverseGeocoderTestClass: XCTestCase {
 	private func sub_testReverseGeocodingCoordinates(service: Service!) {
 		var placeFound: CLPlacemark?
 		
-		println("Testing with service: \(service)")
+		print("Testing with service: \(service)")
 		
-		var exp = expectationWithDescription("reverse_geocoder_coordinates")
+		let exp = expectationWithDescription("reverse_geocoder_coordinates")
 		SwiftLocation.shared.reverseCoordinates(service, coordinates: initialCoordinates, onSuccess: { (place) -> Void in
 			placeFound = place
 			XCTAssertNotNil(placeFound, "Found place cannot be nil")
-			XCTAssertEqualWithAccuracy(placeFound!.location.coordinate.latitude, 41.890, 0.02,"Unexpected latitute found")
-			XCTAssertEqualWithAccuracy(placeFound!.location.coordinate.longitude, 12.492, 0.02,"Unexpected longitude found")
+			XCTAssertEqualWithAccuracy(placeFound!.location!.coordinate.latitude, 41.890, accuracy: 0.02,"Unexpected latitute found")
+			XCTAssertEqualWithAccuracy(placeFound!.location!.coordinate.longitude, 12.492, accuracy: 0.02,"Unexpected longitude found")
 			exp.fulfill()
 			}) { (error) -> Void in
 				XCTFail("An error has occurred: \(error?.localizedDescription)")
@@ -83,9 +83,9 @@ class ReverseGeocoderTestClass: XCTestCase {
 		
 		waitForExpectationsWithTimeout(20, handler: { (error) -> Void in
 			if error == nil {
-				println("Test passed: \(placeFound!.description)")
+				print("Test passed: \(placeFound?.description)")
 			} else {
-				println("Test not passed: \(error.localizedDescription)")
+				print("Test not passed: \(error?.localizedDescription)")
 			}
 		})
 		

@@ -17,50 +17,49 @@ class ViewController: UIViewController {
 		
 		SwiftLocation.shared.currentLocation(Accuracy.Room, timeout: 20, onSuccess: { (location) -> Void in
 			// location is a CLPlacemark
-			println("Location found \(location?.description)")
+			print("1. Location found \(location?.description)")
 		}) { (error) -> Void in
-			// something went wrong
-			println("Something went wrong -> \(error?.localizedDescription)")
+			print("1. Something went wrong -> \(error?.localizedDescription)")
 		}
-		
-		return
+
 		SwiftLocation.shared.reverseAddress(Service.Apple, address: "1 Infinite Loop, Cupertino (USA)", region: nil, onSuccess: { (place) -> Void in
-			// our CLPlacemark is here
+            print("2. place = \(place)")
 		}) { (error) -> Void in
-			// something went wrong
+            print("2. Something went wrong -> \(error?.localizedDescription)")
 		}
 		
 		let coordinates = CLLocationCoordinate2DMake(41.890198, 12.492204)
 		SwiftLocation.shared.reverseCoordinates(Service.Apple, coordinates: coordinates, onSuccess: { (place) -> Void in
-			// our placemark is here
+            print("3. place = \(place)")
 		}) { (error) -> Void in
-			// something went wrong
+            print("3. Something went wrong -> \(error?.localizedDescription)")
 		}
 		
 		let requestID = SwiftLocation.shared.continuousLocation(Accuracy.Room, onSuccess: { (location) -> Void in
-			// a new location has arrived
+            print("4. Location found \(location?.description)")
 		}) { (error) -> Void in
-			// something went wrong. request will be cancelled automatically
+            print("4. Something went wrong -> \(error?.localizedDescription)")
 		}
 		// Sometime in the future... you may want to interrupt it
 		SwiftLocation.shared.cancelRequest(requestID)
 		
 		
 		SwiftLocation.shared.significantLocation({ (location) -> Void in
-			// a new significant location has arrived
+            print("5. Location found \(location?.description)")
 		}, onFail: { (error) -> Void in
-			// something went wrong. request will be cancelled automatically
+            print("5. Something went wrong -> \(error?.localizedDescription)")
 		})
 		
 		let regionCoordinates = CLLocationCoordinate2DMake(41.890198, 12.492204)
-		var region = CLCircularRegion(center: regionCoordinates, radius: CLLocationDistance(50), identifier: "identifier_region")
+		let region = CLCircularRegion(center: regionCoordinates, radius: CLLocationDistance(50), identifier: "identifier_region")
 		SwiftLocation.shared.monitorRegion(region, onEnter: { (region) -> Void in
-			// events called on enter
-		}) { (region) -> Void in
-			// event called on exit
+            print("region enter = \(region)")
+        }) { (region) -> Void in
+            print("region exit = \(region)")
 		}
 		
-		let bRegion = CLBeaconRegion(proximityUUID: NSUUID(UUIDString: "ciao"), identifier: "myIdentifier")
+        return // Still goes wrong:
+		let bRegion = CLBeaconRegion(proximityUUID: NSUUID(UUIDString: "ciao")!, identifier: "myIdentifier")
 		SwiftLocation.shared.monitorBeaconsInRegion(bRegion, onRanging: { (regions) -> Void in
 			// events called on ranging
 		})
