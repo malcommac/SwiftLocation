@@ -194,6 +194,13 @@ To cancel all running requests you can call ```cancelAllRequests()```:
 SwiftLocation.shared.cancelAllRequests()
 ```
 
+## Apps/Libraries with SwiftLocation
+Are you using SwiftLocation in your next big idea?
+
+Let me know! Send a [pull request](https://github.com/malcommac/SwiftLocation/compare/) or an [issue](https://github.com/malcommac/SwiftLocation/issues/new) with your app/library link.
+
+- [**EVCloudKitDao**](https://github.com/evermeer/EVCloudKitDao/tree/Swift2): Simplified access to Apple's CloudKit
+
 Requirements
 ------------
 This library require iOS 8+ and Swift 1.2
