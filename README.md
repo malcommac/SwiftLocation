@@ -25,6 +25,9 @@ Let me show the best features of the library:
 I'm looking for your suggestions: feel free to leave your pool request or feature request.
 BTW I plan to introduce a GPX simulation engine soon as I can in order to get a realistic simulation of location events.
 
+### Are you using Swift 2.0?
+If you want to use SwiftLocation with Swift 2.0 you can use [swift-2.0 branch](https://github.com/malcommac/SwiftLocation/tree/swift-2.0). It will become the main branch when Swift 2.0 will move to the final release.
+
 ### Author
 Daniele Margutti  
 *web*: [www.danielemargutti.com](http://www.danielemargutti.com)  
