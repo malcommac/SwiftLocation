@@ -409,7 +409,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	private func reverseGoogleCoordinates(coordinates: CLLocationCoordinate2D!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding? ) {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(coordinates.latitude),\(coordinates.longitude)" as NSString
-		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+        APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
 		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
@@ -436,7 +436,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	private func reverseGoogleAddress(address: String!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding?) {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)" as NSString
-		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+		APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
 		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
