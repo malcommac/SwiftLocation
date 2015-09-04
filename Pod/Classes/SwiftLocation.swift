@@ -412,10 +412,13 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
         APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
-			if error != nil {
-				onFail?(error: error)
-			} else {
+		
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
+            if error != nil {
+                onFail?(error: error)
+            } else {
                 if data != nil {
                     let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
                     let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
@@ -430,8 +433,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                         onSuccess?(place: placemark)
                     }
                 }
-			}
-		}
+            }
+        }
+        task.resume()
 	}
 	
 	private func reverseGoogleAddress(address: String!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding?) {
@@ -439,10 +443,13 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
-			if error != nil {
-				onFail?(error: error)
-			} else {
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
+            if error != nil {
+                onFail?(error: error)
+            } else {
                 if data != nil {
                     let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
                     let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
@@ -457,8 +464,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                         onSuccess?(place: placemark)
                     }
                 }
-			}
-		}
+            }
+        }
+        task.resume()
 	}
 	
 	private func validateGoogleJSONResponse(jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool!) {
@@ -539,7 +547,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	private func locateByIP(request: SwiftLocationRequest, refresh: Bool = false, timeout: NSTimeInterval, onEnd: ( (place: CLPlacemark?, error: NSError?) -> Void)? ) {
 		let policy = (refresh == false ? NSURLRequestCachePolicy.ReturnCacheDataElseLoad : NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData)
 		let URLRequest = NSURLRequest(URL: NSURL(string: "https://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
-        NSURLConnection.sendAsynchronousRequest(URLRequest, queue: NSOperationQueue.mainQueue()) { response, data, error in
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) -> Void in
             if request.isCancelled == true {
                 onEnd?(place: nil, error: nil)
                 return
@@ -557,6 +568,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                 }
             }
         }
+        task.resume()
 	}
 	
 	/**
