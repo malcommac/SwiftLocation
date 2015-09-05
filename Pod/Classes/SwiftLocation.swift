@@ -76,7 +76,7 @@ For reverse geocoding service you can choose what service use to make your reque
 - Apple:      Apple built-in CoreLocation services
 - GoogleMaps: Google Geocoding Services (https://developers.google.com/maps/documentation/geocoding/intro)
 */
-public enum Service: Int, Printable {
+public enum Service: Int, CustomStringConvertible {
 	case Apple		= 0
 	case GoogleMaps = 1
 	
@@ -87,8 +87,6 @@ public enum Service: Int, Printable {
 				return "Apple"
 			case .GoogleMaps:
 				return "Google"
-			default:
-				return "Unknown"
 			}
 		}
 	}
@@ -107,7 +105,7 @@ Accuracy is used to set the minimum level of precision required during location 
 - House:        15 meters or better, and received within the last 15 seconds.
 - Room:         5 meters or better, and received within the last 5 seconds. Highest accuracy.
 */
-public enum Accuracy:Int, Printable {
+public enum Accuracy:Int, CustomStringConvertible {
 	case None			= 0
 	case Country		= 1
 	case City			= 2
@@ -133,8 +131,6 @@ public enum Accuracy:Int, Printable {
 				return "House"
 			case .Room:
 				return "Room"
-			default:
-				return "Unknown"
 			}
 		}
 	}
@@ -142,7 +138,7 @@ public enum Accuracy:Int, Printable {
 	/**
 	This is the threshold of accuracy to validate a location
 	
-	:returns: value in meters
+	- returns: value in meters
 	*/
 	func accuracyThreshold() -> Double {
 		switch self {
@@ -166,7 +162,7 @@ public enum Accuracy:Int, Printable {
 	/**
 	Time threshold to validate the accuracy of a location
 	
-	:returns: in seconds
+	- returns: in seconds
 	*/
 	func timeThreshold() -> Double {
 		switch self {
@@ -223,8 +219,6 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 					return .Restricted
 				case .AuthorizedAlways, .AuthorizedWhenInUse:
 					return .Available
-				default:
-					return .Undetermined
 				}
 			}
 		}
@@ -235,7 +229,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Private init. This is called only to allocate the singleton instance
 	
-	:returns: the object itself, what else?
+	- returns: the object itself, what else?
 	*/
 	override private init() {
 		requests = []
@@ -249,9 +243,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Cancel a running request
 	
-	:param: identifier identifier of the request
+	- parameter identifier: identifier of the request
 	
-	:returns: true if request is marked as cancelled, no if it was not found
+	- returns: true if request is marked as cancelled, no if it was not found
 	*/
 	public func cancelRequest(identifier: Int) -> Bool {
 		if let request = request(identifier) as SwiftLocationRequest! {
@@ -274,11 +268,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Submits a forward-geocoding request using the specified string and optional region information.
 	
-	:param: service    service to use
-	:param: address   A string describing the location you want to look up. For example, you could specify the string “1 Infinite Loop, Cupertino, CA” to locate Apple headquarters.
-	:param: region    (Optional) A geographical region to use as a hint when looking up the specified address. Region is used only when service is set to Apple
-	:param: onSuccess on success handler
-	:param: onFail    on error handler
+	- parameter service:    service to use
+	- parameter address:   A string describing the location you want to look up. For example, you could specify the string “1 Infinite Loop, Cupertino, CA” to locate Apple headquarters.
+	- parameter region:    (Optional) A geographical region to use as a hint when looking up the specified address. Region is used only when service is set to Apple
+	- parameter onSuccess: on success handler
+	- parameter onFail:    on error handler
 	*/
 	public func reverseAddress(service: Service!, address: String!, region: CLRegion?, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding? ) {
 		if service == Service.Apple {
@@ -291,10 +285,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	This method submits the specified location data to the geocoding server asynchronously and returns.
 	
-	:param: service     service to use
-	:param: coordinates coordinates to reverse
-	:param: onSuccess	on success handler with CLPlacemarks objects
-	:param: onFail		on error handler with error description
+	- parameter service:     service to use
+	- parameter coordinates: coordinates to reverse
+	- parameter onSuccess:	on success handler with CLPlacemarks objects
+	- parameter onFail:		on error handler with error description
 	*/
 	public func reverseCoordinates(service: Service!, coordinates: CLLocationCoordinate2D!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding? ) {
 		if service == Service.Apple {
@@ -309,12 +303,12 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Get the current location from location manager with given accuracy
 	
-	:param: accuracy  minimum accuracy value to accept (country accuracy uses IP based location, not the CoreLocationManager, and it does not require user authorization)
-	:param: timeout   search timeout. When expired, method return directly onFail
-	:param: onSuccess handler called when location is found
-	:param: onFail    handler called when location manager fails due to an error
+	- parameter accuracy:  minimum accuracy value to accept (country accuracy uses IP based location, not the CoreLocationManager, and it does not require user authorization)
+	- parameter timeout:   search timeout. When expired, method return directly onFail
+	- parameter onSuccess: handler called when location is found
+	- parameter onFail:    handler called when location manager fails due to an error
 	
-	:returns: return an object to manage the request itself
+	- returns: return an object to manage the request itself
 	*/
 	public func currentLocation(accuracy: Accuracy, timeout: NSTimeInterval, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
 		if let fixedLocation = fixedLocation as CLLocation! {
@@ -344,11 +338,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	This method continously report found locations with desidered or better accuracy. You need to stop it manually by calling cancel() method into the request.
 	
-	:param: accuracy  minimum accuracy value to accept (country accuracy is not allowed)
-	:param: onSuccess handler called each time a new position is found
-	:param: onFail    handler called when location manager fail (the request itself is aborted automatically)
+	- parameter accuracy:  minimum accuracy value to accept (country accuracy is not allowed)
+	- parameter onSuccess: handler called each time a new position is found
+	- parameter onFail:    handler called when location manager fail (the request itself is aborted automatically)
 	
-	:returns: return the id of the request. Use cancelRequest() to abort it.
+	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
 	public func continuousLocation(accuracy: Accuracy, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
 		let newRequest = SwiftLocationRequest(requestType: RequestType.ContinuousLocationUpdate, accuracy:accuracy, timeout: 0, success: onSuccess, fail: onFail)
@@ -359,10 +353,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	This method continously return only significant location changes. This capability provides tremendous power savings for apps that want to track a user’s approximate location and do not need highly accurate position information. You need to stop it manually by calling cancel() method into the request.
 	
-	:param: onSuccess handler called each time a new position is found
-	:param: onFail    handler called when location manager fail (the request itself is aborted automatically)
+	- parameter onSuccess: handler called each time a new position is found
+	- parameter onFail:    handler called when location manager fail (the request itself is aborted automatically)
 	
-	:returns: return the id of the request. Use cancelRequest() to abort it.
+	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
 	public func significantLocation(onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
 		let newRequest = SwiftLocationRequest(requestType: RequestType.ContinuousSignificantLocation, accuracy:Accuracy.None, timeout: 0, success: onSuccess, fail: onFail)
@@ -375,11 +369,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Start monitoring specified region by reporting when users move in/out from it. You must call this method once for each region you want to monitor. You need to stop it manually by calling cancel() method into the request.
 	
-	:param: region  region to monitor
-	:param: onEnter handler called when user move into the region
-	:param: onExit  handler called when user move out from the region
+	- parameter region:  region to monitor
+	- parameter onEnter: handler called when user move into the region
+	- parameter onExit:  handler called when user move out from the region
 	
-	:returns: return the id of the request. Use cancelRequest() to abort it.
+	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
 	public func monitorRegion(region: CLRegion!, onEnter: onRegionEvent?, onExit: onRegionEvent?) -> RequestIDType? {
 		let isAvailable = CLLocationManager.isMonitoringAvailableForClass(CLRegion.self) // if beacons region monitoring is not available on this device we can't satisfy the request
@@ -396,10 +390,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Starts the delivery of notifications for beacons in the specified region.
 	
-	:param: region    region to monitor
-	:param: onRanging handler called every time one or more beacon are in range, ordered by distance (closest is the first one)
+	- parameter region:    region to monitor
+	- parameter onRanging: handler called every time one or more beacon are in range, ordered by distance (closest is the first one)
 	
-	:returns: return the id of the request. Use cancelRequest() to abort it.
+	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
 	public func monitorBeaconsInRegion(region: CLBeaconRegion!, onRanging: onRangingBacon? ) -> RequestIDType? {
 		let isAvailable = CLLocationManager.isRangingAvailable() // if beacons monitoring is not available on this device we can't satisfy the request
@@ -414,58 +408,65 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private] Google / Reverse Geocoding
 	
 	private func reverseGoogleCoordinates(coordinates: CLLocationCoordinate2D!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding? ) {
-		var APIURLString = "http://maps.googleapis.com/maps/api/geocode/json?latlng=\(coordinates.latitude),\(coordinates.longitude)" as NSString
-		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(coordinates.latitude),\(coordinates.longitude)" as NSString
+        APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
-			if error != nil {
-				onFail?(error: error)
-			} else {
-				let dataAsString: NSString? = NSString(data: data, encoding: NSUTF8StringEncoding)
-				
-				let jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as! NSDictionary
-				
-				let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
-				if noResults == true { // request is ok but not results are returned
-					onSuccess?(place: nil)
-				} else if (error != nil) { // something went wrong with request
-					onFail?(error: error)
-				} else { // we have some good results to show
-					let address = SwiftLocationParser()
-					address.parseGoogleLocationData(jsonResult)
-					let placemark:CLPlacemark = address.getPlacemark()
-					onSuccess?(place: placemark)
-				}
-			}
-		}
+		
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
+            if error != nil {
+                onFail?(error: error)
+            } else {
+                if data != nil {
+                    let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
+                    let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
+                    if noResults == true { // request is ok but not results are returned
+                        onSuccess?(place: nil)
+                    } else if (error != nil) { // something went wrong with request
+                        onFail?(error: error)
+                    } else { // we have some good results to show
+                        let address = SwiftLocationParser()
+                        address.parseGoogleLocationData(jsonResult)
+                        let placemark:CLPlacemark = address.getPlacemark()
+                        onSuccess?(place: placemark)
+                    }
+                }
+            }
+        }
+        task.resume()
 	}
 	
 	private func reverseGoogleAddress(address: String!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding?) {
-		var APIURLString = "http://maps.googleapis.com/maps/api/geocode/json?address=\(address)" as NSString
-		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)" as NSString
+		APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
-			if error != nil {
-				onFail?(error: error)
-			} else {
-				let dataAsString: NSString? = NSString(data: data, encoding: NSUTF8StringEncoding)
-				let jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as! NSDictionary
-				
-				let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
-				if noResults == true { // request is ok but not results are returned
-					onSuccess?(place: nil)
-				} else if (error != nil) { // something went wrong with request
-					onFail?(error: error)
-				} else { // we have some good results to show
-					let address = SwiftLocationParser()
-					address.parseGoogleLocationData(jsonResult)
-					let placemark:CLPlacemark = address.getPlacemark()
-					onSuccess?(place: placemark)
-				}
-			}
-		}
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
+            if error != nil {
+                onFail?(error: error)
+            } else {
+                if data != nil {
+                    let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
+                    let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
+                    if noResults == true { // request is ok but not results are returned
+                        onSuccess?(place: nil)
+                    } else if (error != nil) { // something went wrong with request
+                        onFail?(error: error)
+                    } else { // we have some good results to show
+                        let address = SwiftLocationParser()
+                        address.parseGoogleLocationData(jsonResult)
+                        let placemark:CLPlacemark = address.getPlacemark()
+                        onSuccess?(place: placemark)
+                    }
+                }
+            }
+        }
+        task.resume()
 	}
 	
 	private func validateGoogleJSONResponse(jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool!) {
@@ -497,8 +498,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 			if error != nil {
 				onFail?(error: error)
 			} else {
-				if let placemark = placemarks?[0] as? CLPlacemark {
-					var address = SwiftLocationParser()
+				if let placemark = placemarks?[0] {
+					let address = SwiftLocationParser()
 					address.parseAppleLocationData(placemark)
 					onSuccess?(place: address.getPlacemark())
 				} else {
@@ -515,8 +516,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 				if error != nil {
 					onFail?(error: error)
 				} else {
-					if let placemark = placemarks?[0] as? CLPlacemark {
-						var address = SwiftLocationParser()
+					if let placemark = placemarks?[0]  {
+						let address = SwiftLocationParser()
 						address.parseAppleLocationData(placemark)
 						onSuccess?(place: address.getPlacemark())
 					} else {
@@ -529,8 +530,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 				if error != nil {
 					onFail?(error: error)
 				} else {
-					if let placemark = placemarks?[0] as? CLPlacemark {
-						var address = SwiftLocationParser()
+					if let placemark = placemarks?[0] {
+						let address = SwiftLocationParser()
 						address.parseAppleLocationData(placemark)
 						onSuccess?(place: address.getPlacemark())
 					} else {
@@ -545,32 +546,35 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	private func locateByIP(request: SwiftLocationRequest, refresh: Bool = false, timeout: NSTimeInterval, onEnd: ( (place: CLPlacemark?, error: NSError?) -> Void)? ) {
 		let policy = (refresh == false ? NSURLRequestCachePolicy.ReturnCacheDataElseLoad : NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData)
-		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
-		NSURLConnection.sendAsynchronousRequest(URLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
-			if request.isCancelled == true {
-				onEnd?(place: nil, error: nil)
-				return
-			}
-			if let data = data as NSData? {
-				var jsonError: NSError?
-				if let resultDict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &jsonError) as? NSDictionary {
-					let address = SwiftLocationParser()
-					address.parseIPLocationData(resultDict)
-					let placemark = address.getPlacemark()
-					onEnd?(place: placemark, error:nil)
-				} else {
-					onEnd?(place: nil, error: jsonError)
-				}
-			} else {
-				onEnd?(place: nil, error: error)
-			}
-		}
+		let URLRequest = NSURLRequest(URL: NSURL(string: "https://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) -> Void in
+            if request.isCancelled == true {
+                onEnd?(place: nil, error: nil)
+                return
+            }
+            if let data = data as NSData? {
+                do {
+                    if let resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? NSDictionary {
+                        let address = SwiftLocationParser()
+                        address.parseIPLocationData(resultDict)
+                        let placemark = address.getPlacemark()
+                        onEnd?(place: placemark, error:nil)
+                    }
+                } catch let error {
+                    onEnd?(place: nil, error: NSError(domain: "\(error)", code: 1, userInfo: nil))
+                }
+            }
+        }
+        task.resume()
 	}
 	
 	/**
 	Request will be added to the pool and related services are enabled automatically
 	
-	:param: request request to add
+	- parameter request: request to add
 	*/
 	private func addRequest(request: SwiftLocationRequest!) {
 		// Add a new request to the array. Please note: add/remove is a sync operation due to avoid problems in a multitrheading env
@@ -583,9 +587,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Search for a request with given identifier into the pool of requests
 	
-	:param: identifier identifier of the request
+	- parameter identifier: identifier of the request
 	
-	:returns: the request object or nil
+	- returns: the request object or nil
 	*/
 	private func request(identifier: Int?) -> SwiftLocationRequest? {
 		if let identifier = identifier as Int! {
@@ -601,9 +605,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Return the requesta associated with a given CLRegion object
 	
-	:param: region region instance
+	- parameter region: region instance
 	
-	:returns: request if found, nil otherwise.
+	- returns: request if found, nil otherwise.
 	*/
 	private func requestForRegion(region: CLRegion!) -> SwiftLocationRequest? {
 		for request in requests {
@@ -618,9 +622,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	This method is called to complete an existing request, send result to the appropriate handler and remove it from the pool
 	(the last action will not occur for subscribe continuosly location notifications, until the request is not marked as cancelled)
 	
-	:param: request request to complete
-	:param: object  optional return object
-	:param: error   optional error to report
+	- parameter request: request to complete
+	- parameter object:  optional return object
+	- parameter error:   optional error to report
 	*/
 	private func completeRequest(request: SwiftLocationRequest!, object: AnyObject?, error: NSError?) {
 		
@@ -665,7 +669,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	This method return the highest accuracy you want to receive into the current bucket of requests
 	
-	:returns: highest accuracy level you want to receive
+	- returns: highest accuracy level you want to receive
 	*/
 	private func highestRequiredAccuracy() -> CLLocationAccuracy {
 		var highestAccuracy = CLLocationAccuracy(Double.infinity)
@@ -719,13 +723,13 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	Return true if a request into the pool is of type described by the list of types passed
 	
-	:param: list allowed types
+	- parameter list: allowed types
 	
-	:returns: true if at least one request with one the specified type is running
+	- returns: true if at least one request with one the specified type is running
 	*/
 	private func hasActiveRequests(list: [RequestType]) -> Bool! {
 		for request in requests {
-			let idx = find(list, request.type)
+			let idx = list.indexOf(request.type)
 			if idx != nil {
 				return true
 			}
@@ -736,7 +740,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	/**
 	In case of an error we want to expire all queued notifications
 	
-	:param: error error to notify
+	- parameter error: error to notify
 	*/
 	private func expireAllRequests(error: NSError?) {
 		for request in requests {
@@ -746,13 +750,12 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private] Location Manager Delegate
 	
-	public func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+	public func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		locationsReceived(locations)
 	}
 	
 	private func locationsReceived(locations: [AnyObject]!) {
 		if let location = locations.last as? CLLocation {
-			let acc = location.accuracyOfLocation()
 			for request in requests {
 				if request.isAcceptable(location) == true {
 					completeRequest(request, object: location, error: nil)
@@ -761,11 +764,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	public func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+	public func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
 		expireAllRequests(error)
 	}
 	
-	public func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+	public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
 		if status == CLAuthorizationStatus.Denied || status == CLAuthorizationStatus.Restricted {
 			// Clear out any pending location requests (which will execute the blocks with a status that reflects
 			// the unavailability of location services) since we now no longer have location services permissions
@@ -779,17 +782,17 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	public func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
+	public func locationManager(manager: CLLocationManager, didEnterRegion region: CLRegion) {
 		let request = requestForRegion(region)
 		request?.onRegionEnter?(region: region)
 	}
 	
-	public func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
+	public func locationManager(manager: CLLocationManager, didExitRegion region: CLRegion) {
 		let request = requestForRegion(region)
 		request?.onRegionExit?(region: region)
 	}
 	
-	public func locationManager(manager: CLLocationManager!, didRangeBeacons beacons: [AnyObject]!, inRegion region: CLBeaconRegion!) {
+	public func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
 		for request in requests {
 			if request.beaconReg == region {
 				request.onRangingBeaconEvent?(regions: beacons)
@@ -959,7 +962,7 @@ public class SwiftLocationRequest: NSObject {
 	}
 	
 	public func timeoutReached() {
-		var additionalTime: NSTimeInterval? = onTimeOut?()
+		let additionalTime: NSTimeInterval? = onTimeOut?()
 		if additionalTime == nil {
 			timeoutTimer?.invalidate()
 			timeoutTimer = nil
@@ -1017,17 +1020,19 @@ private class SwiftLocationParser: NSObject {
 	}
 	
 	private func parseAppleLocationData(placemark:CLPlacemark) {
-		var addressLines = placemark.addressDictionary["FormattedAddressLines"] as! NSArray
+		let addressLines = placemark.addressDictionary?["FormattedAddressLines"] as! NSArray
 		
 		//self.streetNumber = placemark.subThoroughfare ? placemark.subThoroughfare : ""
-		self.streetNumber = placemark.thoroughfare != nil ? placemark.thoroughfare : ""
-		self.locality = placemark.locality != nil ? placemark.locality : ""
-		self.postalCode = placemark.postalCode != nil ? placemark.postalCode : ""
-		self.subLocality = placemark.subLocality != nil ? placemark.subLocality : ""
-		self.administrativeArea = placemark.administrativeArea != nil ? placemark.administrativeArea : ""
-		self.country = placemark.country != nil ?  placemark.country : ""
-		self.longitude = placemark.location.coordinate.longitude.description;
-		self.latitude = placemark.location.coordinate.latitude.description
+		self.streetNumber = placemark.thoroughfare ?? ""
+		self.locality = placemark.locality ?? ""
+		self.postalCode = placemark.postalCode ?? ""
+		self.subLocality = placemark.subLocality ?? ""
+		self.administrativeArea = placemark.administrativeArea ?? ""
+		self.country = placemark.country ?? ""
+        if let location = placemark.location {
+            self.longitude = location.coordinate.longitude.description;
+            self.latitude = location.coordinate.latitude.description
+        }
 		if addressLines.count>0 {
 			self.formattedAddress = addressLines.componentsJoinedByString(", ")
 		} else {
@@ -1064,8 +1069,8 @@ private class SwiftLocationParser: NSObject {
 	}
 	
 	private func getPlacemark() -> CLPlacemark {
-		var addressDict = NSMutableDictionary()
-		var formattedAddressArray = self.formattedAddress.componentsSeparatedByString(", ") as Array
+        var addressDict = [String:AnyObject]()
+		let formattedAddressArray = self.formattedAddress.componentsSeparatedByString(", ") as Array
 		
 		let kSubAdministrativeArea = "SubAdministrativeArea"
 		let kSubLocality           = "SubLocality"
@@ -1080,37 +1085,32 @@ private class SwiftLocationParser: NSObject {
 		let kCountry               = "Country"
 		let kCountryCode           = "CountryCode"
 		
-		addressDict.setObject(self.subAdministrativeArea, forKey: kSubAdministrativeArea)
-		addressDict.setObject(self.subLocality, forKey: kSubLocality)
-		addressDict.setObject(self.administrativeAreaCode, forKey: kState)
+        addressDict[kSubAdministrativeArea] = self.subAdministrativeArea
+        addressDict[kSubLocality] = self.subLocality
+        addressDict[kState] = self.administrativeAreaCode
+        addressDict[kStreet] = formattedAddressArray.first! as NSString
+        addressDict[kThoroughfare] = self.thoroughfare
+        addressDict[kFormattedAddressLines] = formattedAddressArray
+        addressDict[kSubThoroughfare] = self.subThoroughfare
+        addressDict[kPostCodeExtension] = ""
+        addressDict[kCity] = self.locality
+        addressDict[kZIP] = self.postalCode
+		addressDict[kCountry] = self.country
+        addressDict[kCountryCode] = self.ISOcountryCode
 		
-		addressDict.setObject(formattedAddressArray.first as! NSString, forKey: kStreet)
-		addressDict.setObject(self.thoroughfare, forKey: kThoroughfare)
-		addressDict.setObject(formattedAddressArray, forKey: kFormattedAddressLines)
-		addressDict.setObject(self.subThoroughfare, forKey: kSubThoroughfare)
-		addressDict.setObject("", forKey: kPostCodeExtension)
-		addressDict.setObject(self.locality, forKey: kCity)
+		let lat = self.latitude.doubleValue
+		let lng = self.longitude.doubleValue
+		let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
 		
-		
-		addressDict.setObject(self.postalCode, forKey: kZIP)
-		addressDict.setObject(self.country, forKey: kCountry)
-		addressDict.setObject(self.ISOcountryCode, forKey: kCountryCode)
-		
-		
-		var lat = self.latitude.doubleValue
-		var lng = self.longitude.doubleValue
-		var coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
-		
-		var placemark = MKPlacemark(coordinate: coordinate, addressDictionary: addressDict as [NSObject : AnyObject])
-		
+		let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: addressDict)
 		return (placemark as CLPlacemark)
 	}
 	
 	private func component(component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
 		let index:NSInteger = inArray.indexOfObjectPassingTest { (obj, idx, stop) -> Bool in
 			
-			var objDict:NSDictionary = obj as! NSDictionary
-			var types:NSArray = objDict.objectForKey("types") as! NSArray
+			let objDict:NSDictionary = obj as! NSDictionary
+			let types:NSArray = objDict.objectForKey("types") as! NSArray
 			let type = types.firstObject as! NSString
 			return type.isEqualToString(component as String)
 		}
@@ -1123,7 +1123,7 @@ private class SwiftLocationParser: NSObject {
 			return ""
 		}
 		
-		var type = ((inArray.objectAtIndex(index) as! NSDictionary).valueForKey(ofType as String)!) as! NSString
+		let type = ((inArray.objectAtIndex(index) as! NSDictionary).valueForKey(ofType as String)!) as! NSString
 		
 		if type.length > 0 {
 			
