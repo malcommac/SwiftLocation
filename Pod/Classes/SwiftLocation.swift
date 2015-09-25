@@ -32,6 +32,11 @@ import UIKit
 import CoreLocation
 import MapKit
 
+enum SwiftLocationError: ErrorType {
+	case ServiceUnavailable
+	case LocationServicesUnavailable
+}
+
 /// Type of a request ID
 public typealias RequestIDType = Int
 
@@ -43,7 +48,7 @@ public typealias onErrorLocate = ( (error: NSError?) -> Void )
 public typealias onTimeoutReached = ( Void -> (NSTimeInterval?) )
 // Region/Beacon Proximity related handlers
 public typealias onRegionEvent = ( (region: AnyObject?) -> Void)
-public typealias onRangingBacon = ( (regions: [AnyObject]) -> Void)
+public typealias onRangingBacon = ( (beacons: [AnyObject]) -> Void)
 // Geocoding related handlers
 public typealias onSuccessGeocoding = ( (place: CLPlacemark?) -> Void)
 public typealias onErrorGeocoding = ( (error: NSError?) -> Void)
@@ -310,11 +315,15 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	- returns: return an object to manage the request itself
 	*/
-	public func currentLocation(accuracy: Accuracy, timeout: NSTimeInterval, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
+	public func currentLocation(accuracy: Accuracy, timeout: NSTimeInterval, onSuccess: onSuccessLocate, onFail: onErrorLocate) throws -> RequestIDType {
 		if let fixedLocation = fixedLocation as CLLocation! {
 			// If a fixed location is set we want to return it
 			onSuccess(location: fixedLocation)
 			return -1 // request cannot be aborted, of course
+		}
+		
+		if SwiftLocation.state == ServiceStatus.Disabled {
+			throw SwiftLocationError.LocationServicesUnavailable
 		}
 		
 		if accuracy == Accuracy.Country {
@@ -344,7 +353,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
-	public func continuousLocation(accuracy: Accuracy, onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
+	public func continuousLocation(accuracy: Accuracy, onSuccess: onSuccessLocate, onFail: onErrorLocate) throws -> RequestIDType {
+		if SwiftLocation.state == ServiceStatus.Disabled {
+			throw SwiftLocationError.LocationServicesUnavailable
+		}
 		let newRequest = SwiftLocationRequest(requestType: RequestType.ContinuousLocationUpdate, accuracy:accuracy, timeout: 0, success: onSuccess, fail: onFail)
 		addRequest(newRequest)
 		return newRequest.ID
@@ -358,7 +370,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
-	public func significantLocation(onSuccess: onSuccessLocate, onFail: onErrorLocate) -> RequestIDType {
+	public func significantLocation(onSuccess: onSuccessLocate, onFail: onErrorLocate) throws -> RequestIDType {
+		if SwiftLocation.state == ServiceStatus.Disabled {
+			throw SwiftLocationError.LocationServicesUnavailable
+		}
 		let newRequest = SwiftLocationRequest(requestType: RequestType.ContinuousSignificantLocation, accuracy:Accuracy.None, timeout: 0, success: onSuccess, fail: onFail)
 		addRequest(newRequest)
 		return newRequest.ID
@@ -375,14 +390,17 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
-	public func monitorRegion(region: CLRegion!, onEnter: onRegionEvent?, onExit: onRegionEvent?) -> RequestIDType? {
-		let isAvailable = CLLocationManager.isMonitoringAvailableForClass(CLRegion.self) // if beacons region monitoring is not available on this device we can't satisfy the request
+	public func monitorRegion(region: CLRegion!, onEnter: onRegionEvent?, onExit: onRegionEvent?) throws -> RequestIDType? {
+		// if beacons region monitoring is not available on this device we can't satisfy the request
+		let isAvailable = CLLocationManager.isMonitoringAvailableForClass(CLRegion.self)
 		if isAvailable == true {
 			let request = SwiftLocationRequest(region: region, onEnter: onEnter, onExit: onExit)
-			manager.startMonitoringForRegion(region as CLRegion)
+			manager.startMonitoringForRegion(region)
+			self.updateLocationManagerStatus()
 			return request.ID
+		} else {
+			throw SwiftLocationError.ServiceUnavailable
 		}
-		return nil
 	}
 	
 	//MARK: [Public] Monitor Beacons Proximity
@@ -395,30 +413,28 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	- returns: return the id of the request. Use cancelRequest() to abort it.
 	*/
-	public func monitorBeaconsInRegion(region: CLBeaconRegion!, onRanging: onRangingBacon? ) -> RequestIDType? {
+	public func monitorBeaconsInRegion(region: CLBeaconRegion!, onRanging: onRangingBacon? ) throws -> RequestIDType? {
 		let isAvailable = CLLocationManager.isRangingAvailable() // if beacons monitoring is not available on this device we can't satisfy the request
 		if isAvailable == true {
 			let request = SwiftLocationRequest(beaconRegion: region, onRanging: onRanging)
-			manager.startRangingBeaconsInRegion(region)
+			addRequest(request)
 			return request.ID
+		} else {
+			throw SwiftLocationError.ServiceUnavailable
 		}
-		return nil
 	}
 	
 	//MARK: [Private] Google / Reverse Geocoding
 	
 	private func reverseGoogleCoordinates(coordinates: CLLocationCoordinate2D!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding? ) {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(coordinates.latitude),\(coordinates.longitude)" as NSString
-        APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-		
-        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: sessionConfig)
-        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
-            if error != nil {
-                onFail?(error: error)
-            } else {
+		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
+			if error != nil {
+				onFail?(error: error)
+			} else {
                 if data != nil {
                     let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
                     let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
@@ -433,23 +449,19 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                         onSuccess?(place: placemark)
                     }
                 }
-            }
-        }
-        task.resume()
+			}
+		}
 	}
 	
 	private func reverseGoogleAddress(address: String!, onSuccess: onSuccessGeocoding?, onFail: onErrorGeocoding?) {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)" as NSString
-		APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+		APIURLString = APIURLString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
 		let APIURL = NSURL(string: APIURLString as String)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
-        
-        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: sessionConfig)
-        let task = session.dataTaskWithRequest(APIURLRequest) { (data, response, error) -> Void in
-            if error != nil {
-                onFail?(error: error)
-            } else {
+		NSURLConnection.sendAsynchronousRequest(APIURLRequest, queue: NSOperationQueue.mainQueue()) { (response, data, error) in
+			if error != nil {
+				onFail?(error: error)
+			} else {
                 if data != nil {
                     let jsonResult: NSDictionary = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)) as! NSDictionary
                     let (error,noResults) = self.validateGoogleJSONResponse(jsonResult)
@@ -464,9 +476,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                         onSuccess?(place: placemark)
                     }
                 }
-            }
-        }
-        task.resume()
+			}
+		}
 	}
 	
 	private func validateGoogleJSONResponse(jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool!) {
@@ -547,10 +558,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	private func locateByIP(request: SwiftLocationRequest, refresh: Bool = false, timeout: NSTimeInterval, onEnd: ( (place: CLPlacemark?, error: NSError?) -> Void)? ) {
 		let policy = (refresh == false ? NSURLRequestCachePolicy.ReturnCacheDataElseLoad : NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData)
 		let URLRequest = NSURLRequest(URL: NSURL(string: "https://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
-        
-        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: sessionConfig)
-        let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) -> Void in
+        NSURLConnection.sendAsynchronousRequest(URLRequest, queue: NSOperationQueue.mainQueue()) { response, data, error in
             if request.isCancelled == true {
                 onEnd?(place: nil, error: nil)
                 return
@@ -568,7 +576,6 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                 }
             }
         }
-        task.resume()
 	}
 	
 	/**
@@ -643,7 +650,8 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 					if	cRequest.type == RequestType.ContinuousSignificantLocation ||
 						cRequest.type == RequestType.ContinuousLocationUpdate ||
 						cRequest.type == RequestType.SingleShotLocation ||
-						cRequest.type == RequestType.SingleShotIPLocation {
+						cRequest.type == RequestType.SingleShotIPLocation ||
+						cRequest.type == RequestType.BeaconRegionProximity {
 						// for location related event we want to report the last fetched result
 						if error != nil {
 							cRequest.onError?(error: error)
@@ -718,6 +726,10 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 			manager.stopMonitoringSignificantLocationChanges()
 		}
 		// Beacon/Region monitor is turned off automatically on completeRequest()
+		let beaconRegions = self.activeRequests([RequestType.BeaconRegionProximity])
+		for beaconRegion in beaconRegions {
+			manager.startRangingBeaconsInRegion(beaconRegion.beaconReg!)
+		}
 	}
 	
 	/**
@@ -738,13 +750,34 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/**
+	Return the list of all request of a certain type
+	
+	- parameter list: list of types to filter
+	
+	- returns: output list with filtered active requests
+	*/
+	private func activeRequests(list: [RequestType]) -> [SwiftLocationRequest] {
+		var filteredList : [SwiftLocationRequest] = []
+		for request in requests {
+			let idx = list.indexOf(request.type)
+			if idx != nil {
+				filteredList.append(request)
+			}
+		}
+		return filteredList
+	}
+	
+	/**
 	In case of an error we want to expire all queued notifications
 	
 	- parameter error: error to notify
 	*/
-	private func expireAllRequests(error: NSError?) {
+	private func expireAllRequests(error: NSError?, types: [RequestType]?) {
 		for request in requests {
-			request.markAsCancelled(error)
+			let canMark = (types == nil ? true : (types!.indexOf(request.type) != nil))
+			if canMark == true {
+				request.markAsCancelled(error)
+			}
 		}
 	}
 	
@@ -765,7 +798,12 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	}
 	
 	public func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-		expireAllRequests(error)
+		let expiredTypes = [RequestType.ContinuousLocationUpdate,
+							RequestType.ContinuousSignificantLocation,
+							RequestType.SingleShotLocation,
+							RequestType.ContinuousHeadingUpdate,
+							RequestType.RegionMonitor]
+		expireAllRequests(error, types: expiredTypes)
 	}
 	
 	public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -773,12 +811,14 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 			// Clear out any pending location requests (which will execute the blocks with a status that reflects
 			// the unavailability of location services) since we now no longer have location services permissions
 			let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Location services denied/restricted by parental control"])
-			expireAllRequests(err)
+			locationManager(manager, didFailWithError: err)
 		} else if status == CLAuthorizationStatus.AuthorizedAlways || status == CLAuthorizationStatus.AuthorizedWhenInUse {
 			for request in requests {
 				request.startTimeout(nil)
 			}
 			updateLocationManagerStatus()
+		} else if status == CLAuthorizationStatus.NotDetermined {
+			print("not")
 		}
 	}
 	
@@ -795,9 +835,14 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	public func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
 		for request in requests {
 			if request.beaconReg == region {
-				request.onRangingBeaconEvent?(regions: beacons)
+				request.onRangingBeaconEvent?(beacons: beacons)
 			}
 		}
+	}
+	
+	public func locationManager(manager: CLLocationManager, rangingBeaconsDidFailForRegion region: CLBeaconRegion, withError error: NSError) {
+		let expiredTypes = [RequestType.BeaconRegionProximity]
+		expireAllRequests(error, types: expiredTypes)
 	}
 
 }

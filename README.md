@@ -25,9 +25,6 @@ Let me show the best features of the library:
 I'm looking for your suggestions: feel free to leave your pool request or feature request.
 BTW I plan to introduce a GPX simulation engine soon as I can in order to get a realistic simulation of location events.
 
-### Are you using Swift 2.0?
-If you want to use SwiftLocation with Swift 2.0 you can use [swift-2.0 branch](https://github.com/malcommac/SwiftLocation/tree/swift-2.0). It will become the main branch when Swift 2.0 will move to the final release.
-
 ### Author
 Daniele Margutti  
 *web*: [www.danielemargutti.com](http://www.danielemargutti.com)  
@@ -194,16 +191,9 @@ To cancel all running requests you can call ```cancelAllRequests()```:
 SwiftLocation.shared.cancelAllRequests()
 ```
 
-## Apps/Libraries with SwiftLocation
-Are you using SwiftLocation in your next big idea?
-
-Let me know! Send a [pull request](https://github.com/malcommac/SwiftLocation/compare/) or an [issue](https://github.com/malcommac/SwiftLocation/issues/new) with your app/library link.
-
-- [**EVCloudKitDao**](https://github.com/evermeer/EVCloudKitDao/tree/Swift2): Simplified access to Apple's CloudKit
-
 Requirements
 ------------
-This library require iOS 8+ and Swift 1.2
+This library require iOS 8+ and Swift 2.0
 
 
 Installation
