@@ -395,8 +395,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 		let isAvailable = CLLocationManager.isMonitoringAvailableForClass(CLRegion.self)
 		if isAvailable == true {
 			let request = SwiftLocationRequest(region: region, onEnter: onEnter, onExit: onExit)
-			manager.startMonitoringForRegion(region)
-			self.updateLocationManagerStatus()
+			addRequest(request)
 			return request.ID
 		} else {
 			throw SwiftLocationError.ServiceUnavailable
