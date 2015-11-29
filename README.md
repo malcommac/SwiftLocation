@@ -3,10 +3,9 @@
 SwiftLocation
 =============
 
-<https://travis-ci.org/daniele%20margutti/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
+[![Cocoapods](https://cocoapod-badges.herokuapp.com/v/SwiftLocation/badge.svg)](http://www.cocoapods.org/pods/SwiftLocation)
+[![Build Status](https://travis-ci.org/daniele%20margutti/SwiftLocation.svg)](https://travis-ci.org/daniele%20margutti/SwiftLocation)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 ## What's SwiftLocation?
 SwiftLocation is a simple 100% Swift wrapper around CoreLocation. Use Location services has never been easier and you can do it with your favourite language.
