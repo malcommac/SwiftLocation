@@ -32,7 +32,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-enum SwiftLocationError: ErrorType {
+public enum SwiftLocationError: ErrorType {
 	case ServiceUnavailable
 	case LocationServicesUnavailable
 }
