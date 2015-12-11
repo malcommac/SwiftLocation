@@ -556,10 +556,15 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 	
 	private func locateByIP(request: SwiftLocationRequest, refresh: Bool = false, timeout: NSTimeInterval, onEnd: ( (place: CLPlacemark?, error: NSError?) -> Void)? ) {
 		let policy = (refresh == false ? NSURLRequestCachePolicy.ReturnCacheDataElseLoad : NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData)
-		let URLRequest = NSURLRequest(URL: NSURL(string: "https://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
+		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: policy, timeoutInterval: timeout)
         NSURLConnection.sendAsynchronousRequest(URLRequest, queue: NSOperationQueue.mainQueue()) { response, data, error in
             if request.isCancelled == true {
                 onEnd?(place: nil, error: nil)
+                return
+            }
+            guard error == nil else {
+                //error
+                onEnd?(place: nil, error: error!)
                 return
             }
             if let data = data as NSData? {
@@ -573,6 +578,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                 } catch let error {
                     onEnd?(place: nil, error: NSError(domain: "\(error)", code: 1, userInfo: nil))
                 }
+            } else {
+                //empty data
+                onEnd?(place: nil, error: nil)
             }
         }
 	}
