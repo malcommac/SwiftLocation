@@ -562,6 +562,11 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                 onEnd?(place: nil, error: nil)
                 return
             }
+            guard error == nil else {
+                //error
+                onEnd?(place: nil, error: error!)
+                return
+            }
             if let data = data as NSData? {
                 do {
                     if let resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? NSDictionary {
@@ -573,6 +578,9 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
                 } catch let error {
                     onEnd?(place: nil, error: NSError(domain: "\(error)", code: 1, userInfo: nil))
                 }
+            } else {
+                //empty data
+                onEnd?(place: nil, error: nil)
             }
         }
 	}
