@@ -64,7 +64,7 @@ An example:
 
 ```swift
 SwiftLocation.shared.currentLocation(Accuracy.Neighborhood, timeout: 20, onSuccess: { (location) -> Void in
-	// location is a CLPlacemark
+	// location is a CLLocation Object
 }) { (error) -> Void in
 	// something went wrong
 }
@@ -79,7 +79,7 @@ Example:
 
 ```swift
 let requestID = SwiftLocation.shared.significantLocation({ (location) -> Void in
-	// a new significant location has arrived
+	// a new significant location as a CLLocation Object has arrived
 }, onFail: { (error) -> Void in
 	// something went wrong. request will be cancelled automatically
 })
@@ -98,7 +98,7 @@ Parameters:
 Example:
 ```swift
 let requestID = SwiftLocation.shared.continuousLocation(Accuracy.Room, onSuccess: { (location) -> Void in
-	// a new location has arrived
+	// Arrival of a new location as a CLLocation Object
 }) { (error) -> Void in
 	// something went wrong. request will be cancelled automatically
 }
@@ -123,7 +123,7 @@ Example:
 
 ```swift
 SwiftLocation.shared.reverseAddress(Service.Apple, address: "1 Infinite Loop, Cupertino (USA)", region: nil, onSuccess: { (place) -> Void in
-	// our CLPlacemark is here
+	// place is a CLPlacemark Object
 }) { (error) -> Void in
 	// something went wrong
 }
@@ -131,7 +131,7 @@ SwiftLocation.shared.reverseAddress(Service.Apple, address: "1 Infinite Loop, Cu
 ```swift
 let coordinates = CLLocationCoordinate2DMake(41.890198, 12.492204)
 SwiftLocation.shared.reverseCoordinates(Service.Apple, coordinates: coordinates, onSuccess: { (place) -> Void in
-	// our placemark is here
+	// place is a CLPlacemark Object
 }) { (error) -> Void in
 	// something went wrong
 }
