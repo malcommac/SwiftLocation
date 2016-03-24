@@ -666,7 +666,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 						self.requests.removeAtIndex(idx)
 					}
 				}
-				idx++
+				idx += 1
 			}
 			// Turn off any non-used hardware based upon the new list of running requests
 			self.updateLocationManagerStatus()
@@ -929,7 +929,7 @@ public class SwiftLocationRequest: NSObject {
 	//MARK: Init - Private Methods
 	private init(requestType: RequestType, accuracy: Accuracy,timeout: NSTimeInterval, success: onSuccessLocate, fail: onErrorLocate?) {
 		type = requestType
-		requestNextID++
+		requestNextID += 1
 		ID = requestNextID
 		isCancelled = false
 		onSuccess = success
@@ -945,7 +945,7 @@ public class SwiftLocationRequest: NSObject {
 	
 	private init(region: CLRegion!, onEnter: onRegionEvent?, onExit: onRegionEvent?) {
 		type = RequestType.RegionMonitor
-		requestNextID++
+		requestNextID += 1
 		ID = requestNextID
 		isCancelled = false
 		onRegionEnter = onEnter
@@ -958,7 +958,7 @@ public class SwiftLocationRequest: NSObject {
 	
 	private init(beaconRegion: CLBeaconRegion!, onRanging: onRangingBacon?) {
 		type = RequestType.BeaconRegionProximity
-		requestNextID++
+		requestNextID += 1
 		ID = requestNextID
 		isCancelled = false
 		onRangingBeaconEvent = onRanging
@@ -996,7 +996,7 @@ public class SwiftLocationRequest: NSObject {
 	private func startTimeout(forceValue: NSTimeInterval?) {
 		if hasTimeout == false && timeoutInterval > 0 {
 			let value = (forceValue != nil ? forceValue! : timeoutInterval)
-			timeoutTimer = NSTimer.scheduledTimerWithTimeInterval(value, target: self, selector: "timeoutReached", userInfo: nil, repeats: false)
+			timeoutTimer = NSTimer.scheduledTimerWithTimeInterval(value, target: self, selector: #selector(SwiftLocationRequest.timeoutReached), userInfo: nil, repeats: false)
 		}
 	}
 	
