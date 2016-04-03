@@ -662,7 +662,7 @@ public class SwiftLocation: NSObject, CLLocationManagerDelegate {
 					}
 					// If result is not continous location update notifications or, anyway, for any request marked as cancelled
 					// we want to remove it from the pool
-					if cRequest.isCancelled == true || cRequest.type != RequestType.ContinuousLocationUpdate {
+                    if cRequest.isCancelled == true || (cRequest.type != RequestType.ContinuousLocationUpdate && cRequest.type != RequestType.ContinuousSignificantLocation) {
 						self.requests.removeAtIndex(idx)
 					}
 				}
