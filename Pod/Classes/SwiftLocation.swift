@@ -28,6 +28,15 @@
 // THE SOFTWARE.
 
 
+
+/***
+   Add : 
+  - distance between coordinates 
+  - address formatting 
+  - GUI 
+
+*/
+
 import UIKit
 import CoreLocation
 import MapKit
