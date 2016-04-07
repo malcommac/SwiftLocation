@@ -24,6 +24,9 @@
 		A37D281A1CB6E20F00C1519D /* MenuCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D28181CB6E20F00C1519D /* MenuCell.xib */; };
 		A37D281F1CB6F58900C1519D /* FindMyLocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D281D1CB6F58900C1519D /* FindMyLocationVC.swift */; };
 		A37D28201CB6F58900C1519D /* FindMyLocationVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */; };
+		A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */; };
+		A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */; };
+		A37D28271CB7036B00C1519D /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +60,9 @@
 		A37D28181CB6E20F00C1519D /* MenuCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MenuCell.xib; sourceTree = "<group>"; };
 		A37D281D1CB6F58900C1519D /* FindMyLocationVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindMyLocationVC.swift; sourceTree = "<group>"; };
 		A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FindMyLocationVC.xib; sourceTree = "<group>"; };
+		A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseGeocodeVC.swift; sourceTree = "<group>"; };
+		A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReverseGeocodeVC.xib; sourceTree = "<group>"; };
+		A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +169,7 @@
 		A37D281B1CB6F56900C1519D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				A37D28211CB7009800C1519D /* ReverseGeocode */,
 				A37D281C1CB6F57000C1519D /* FindMyLocationVC */,
 			);
 			name = ViewControllers;
@@ -175,6 +182,16 @@
 				A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */,
 			);
 			name = FindMyLocationVC;
+			sourceTree = "<group>";
+		};
+		A37D28211CB7009800C1519D /* ReverseGeocode */ = {
+			isa = PBXGroup;
+			children = (
+				A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */,
+				A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */,
+				A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */,
+			);
+			name = ReverseGeocode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +276,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */,
 				A37D28201CB6F58900C1519D /* FindMyLocationVC.xib in Resources */,
 				64073D771B6BBD92001E6B6D /* Main.storyboard in Resources */,
 				64073D7C1B6BBD92001E6B6D /* LaunchScreen.xib in Resources */,
@@ -283,11 +301,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				64073D921B6BBDBA001E6B6D /* SwiftLocation.swift in Sources */,
+				A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */,
 				A37D28191CB6E20F00C1519D /* MenuCell.swift in Sources */,
 				64073D741B6BBD92001E6B6D /* ViewController.swift in Sources */,
 				A37D28151CB6E0A000C1519D /* SamplesViewController.swift in Sources */,
 				A37D281F1CB6F58900C1519D /* FindMyLocationVC.swift in Sources */,
 				64073D721B6BBD92001E6B6D /* AppDelegate.swift in Sources */,
+				A37D28271CB7036B00C1519D /* NSLayoutConstraint+ext.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

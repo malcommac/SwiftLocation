@@ -20,6 +20,7 @@ class FindMyLocationVC: UIViewController {
 
         // Do any additional setup after loading the view.
         
+         self.navigationController?.hidesBarsOnTap = true
         findMyLocation()
     }
     
