@@ -1073,6 +1073,7 @@ private class SwiftLocationParser: NSObject {
 		self.subLocality = placemark.subLocality ?? ""
 		self.administrativeArea = placemark.administrativeArea ?? ""
 		self.country = placemark.country ?? ""
+		self.ISOcountryCode = placemark.ISOcountryCode ?? ""
         if let location = placemark.location {
             self.longitude = location.coordinate.longitude.description;
             self.latitude = location.coordinate.latitude.description
