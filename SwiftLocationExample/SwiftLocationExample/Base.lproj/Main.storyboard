@@ -40,10 +40,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="C5Z-zQ-5LD" firstAttribute="top" secondItem="pP0-L8-M2L" secondAttribute="bottom" id="5uy-3h-cDR"/>
                             <constraint firstAttribute="trailing" secondItem="pP0-L8-M2L" secondAttribute="trailing" id="SWv-iC-mPG"/>
                             <constraint firstItem="C5Z-zQ-5LD" firstAttribute="top" secondItem="pP0-L8-M2L" secondAttribute="bottom" id="U8j-JX-FOr"/>
                             <constraint firstItem="pP0-L8-M2L" firstAttribute="top" secondItem="Y25-XH-25W" secondAttribute="top" id="XEQ-J7-ueH"/>
+                            <constraint firstAttribute="trailing" secondItem="pP0-L8-M2L" secondAttribute="trailing" id="YBu-ea-zcH"/>
                             <constraint firstItem="pP0-L8-M2L" firstAttribute="leading" secondItem="Y25-XH-25W" secondAttribute="leading" id="ehb-r0-Ube"/>
+                            <constraint firstItem="pP0-L8-M2L" firstAttribute="top" secondItem="Y25-XH-25W" secondAttribute="top" id="vaw-ME-PQz"/>
+                            <constraint firstItem="pP0-L8-M2L" firstAttribute="leading" secondItem="Y25-XH-25W" secondAttribute="leading" id="xQX-MF-7C2"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="AKW-bv-knw"/>

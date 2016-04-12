@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class ReverseGeocodeVC: UIViewController {
+class ReverseGeocodeVC: UIViewController , MKMapViewDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
     
@@ -19,7 +19,8 @@ class ReverseGeocodeVC: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+       
+        guiInit()
        
     }
 
@@ -42,26 +43,77 @@ class ReverseGeocodeVC: UIViewController {
 }
 
 
+// MARK: - GUI
 extension ReverseGeocodeVC
 {
     func guiInit()
     {
+        self.mapView.delegate = self
+        
         // pin 
         let imPin:UIImage = UIImage(named: "green_pin")!
         let imViewMarker:UIImageView = UIImageView()
-        imViewMarker.frame = CGRectMake(0, 0, 51, 41)
+        imViewMarker.frame = CGRectMake(0, 0, 41, 51)
         imViewMarker.image = imPin
         
         let bounds = UIScreen.mainScreen().bounds
         imViewMarker.center = CGPointMake(bounds.size.width/2, bounds.size.height/2 - imViewMarker.frame.size.height/2)
         
+        self.view.addSubview(imViewMarker)
         
         
+        self.twAddress.text = ""
         
+    }
+
+    
+}
+
+
+// MARK: - MapViewDelegate
+extension ReverseGeocodeVC
+{
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
+        let centerCoordinate:CLLocationCoordinate2D = mapView.convertPoint(mapView.center, toCoordinateFromView: mapView)
+       setAddressFromCoordinate(centerCoordinate)
         
+    }
+}
+
+
+// MARK: - Location
+extension ReverseGeocodeVC
+{
+    func zoomToLocation(coordinate:CLLocationCoordinate2D , zoomDegree:CGFloat)
+    {
+        let region:MKCoordinateRegion = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpanMake(CLLocationDegrees(zoomDegree) , CLLocationDegrees(zoomDegree)))
         
+        self.mapView.setRegion(region, animated: true)
         
     }
     
+    /**
+        puts marker for given location
+     */
+    func setAddressFromCoordinate(coordinates:CLLocationCoordinate2D)
+    {
+        
+        SwiftLocation.shared.reverseCoordinates(Service.Apple, coordinates: coordinates, onSuccess: { (place) -> Void in
+            
+                 self.twAddress.text = place?.country
+            
+            }) { (error) -> Void in
+               
+                print("Error : \(error)")
+                
+        }
+        
+      
+    }
+    
+    
 }
+
+
+

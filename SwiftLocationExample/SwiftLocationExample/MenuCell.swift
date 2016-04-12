@@ -16,10 +16,11 @@ class MenuCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
+        let bounds = UIScreen.mainScreen().bounds
         let seperatorView:UIView = UIView()
         seperatorView.backgroundColor = UIColor.blackColor()
         seperatorView.alpha = 0.1
-        seperatorView.frame = CGRectMake(0, self.frame.size.height-1 , self.frame.size.width, 1)
+        seperatorView.frame = CGRectMake(0, self.frame.size.height-1 , bounds.size.width, 1)
         self.addSubview(seperatorView)
         
     }

@@ -21,7 +21,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                 </mapView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xtN-tn-1ML">
-                    <rect key="frame" x="0.0" y="0.0" width="600" height="57"/>
+                    <rect key="frame" x="0.0" y="63" width="600" height="57"/>
                     <subviews>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Yv7-kT-OXh">
                             <rect key="frame" x="0.0" y="0.0" width="600" height="57"/>
@@ -38,19 +38,28 @@
                         <constraint firstItem="Yv7-kT-OXh" firstAttribute="leading" secondItem="xtN-tn-1ML" secondAttribute="leading" id="U0K-Ke-V0P"/>
                         <constraint firstItem="Yv7-kT-OXh" firstAttribute="top" secondItem="xtN-tn-1ML" secondAttribute="top" id="UY7-D3-jee"/>
                         <constraint firstAttribute="bottom" secondItem="Yv7-kT-OXh" secondAttribute="bottom" id="Vh5-lr-H05"/>
+                        <constraint firstAttribute="trailing" secondItem="Yv7-kT-OXh" secondAttribute="trailing" id="WdZ-IA-gIL"/>
+                        <constraint firstItem="Yv7-kT-OXh" firstAttribute="top" secondItem="xtN-tn-1ML" secondAttribute="top" id="jWr-Xl-TmF"/>
+                        <constraint firstItem="Yv7-kT-OXh" firstAttribute="leading" secondItem="xtN-tn-1ML" secondAttribute="leading" id="uFr-0n-sD5"/>
+                        <constraint firstAttribute="bottom" secondItem="Yv7-kT-OXh" secondAttribute="bottom" id="xrt-Mn-aqR"/>
                     </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="lcV-Zd-se7" secondAttribute="trailing" id="15X-f0-ITS"/>
                 <constraint firstAttribute="trailing" secondItem="xtN-tn-1ML" secondAttribute="trailing" id="2hB-BQ-EQ4"/>
                 <constraint firstAttribute="bottom" secondItem="lcV-Zd-se7" secondAttribute="bottom" id="5zM-vb-oDz"/>
+                <constraint firstItem="lcV-Zd-se7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="6Ij-5v-STm"/>
+                <constraint firstItem="lcV-Zd-se7" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Gpd-c7-XJz"/>
                 <constraint firstItem="xtN-tn-1ML" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="MmJ-9y-eA4"/>
+                <constraint firstAttribute="bottom" secondItem="lcV-Zd-se7" secondAttribute="bottom" id="OAi-Bw-8Zx"/>
                 <constraint firstAttribute="trailing" secondItem="lcV-Zd-se7" secondAttribute="trailing" id="TKy-N7-9FH"/>
                 <constraint firstItem="lcV-Zd-se7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="eSI-GK-M27"/>
-                <constraint firstItem="xtN-tn-1ML" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="r5b-X6-PL0"/>
+                <constraint firstItem="xtN-tn-1ML" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="63" id="r5b-X6-PL0"/>
                 <constraint firstItem="lcV-Zd-se7" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="sgW-2E-Rap"/>
             </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
         </view>
     </objects>
 </document>

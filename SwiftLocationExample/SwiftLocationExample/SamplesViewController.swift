@@ -86,6 +86,8 @@ extension SamplesViewController
         else if(indexPath.row == 1)
         {
             // reverse geocode
+            let vc:ReverseGeocodeVC = ReverseGeocodeVC(nibName:"ReverseGeocodeVC" , bundle: nil)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         else if(indexPath.row == 2)
         {

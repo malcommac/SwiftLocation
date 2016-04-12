@@ -27,6 +27,8 @@
 		A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */; };
 		A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */; };
 		A37D28271CB7036B00C1519D /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */; };
+		A3BE3EAB1CB7985900D007CD /* ReverseAddressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */; };
+		A3BE3EAC1CB7985900D007CD /* ReverseAddressVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +65,8 @@
 		A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseGeocodeVC.swift; sourceTree = "<group>"; };
 		A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReverseGeocodeVC.xib; sourceTree = "<group>"; };
 		A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
+		A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseAddressVC.swift; sourceTree = "<group>"; };
+		A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReverseAddressVC.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +173,7 @@
 		A37D281B1CB6F56900C1519D /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				A3BE3EA81CB7983C00D007CD /* ReverseAddress */,
 				A37D28211CB7009800C1519D /* ReverseGeocode */,
 				A37D281C1CB6F57000C1519D /* FindMyLocationVC */,
 			);
@@ -192,6 +197,15 @@
 				A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */,
 			);
 			name = ReverseGeocode;
+			sourceTree = "<group>";
+		};
+		A3BE3EA81CB7983C00D007CD /* ReverseAddress */ = {
+			isa = PBXGroup;
+			children = (
+				A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */,
+				A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */,
+			);
+			name = ReverseAddress;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -276,6 +290,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3BE3EAC1CB7985900D007CD /* ReverseAddressVC.xib in Resources */,
 				A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */,
 				A37D28201CB6F58900C1519D /* FindMyLocationVC.xib in Resources */,
 				64073D771B6BBD92001E6B6D /* Main.storyboard in Resources */,
@@ -302,6 +317,7 @@
 			files = (
 				64073D921B6BBDBA001E6B6D /* SwiftLocation.swift in Sources */,
 				A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */,
+				A3BE3EAB1CB7985900D007CD /* ReverseAddressVC.swift in Sources */,
 				A37D28191CB6E20F00C1519D /* MenuCell.swift in Sources */,
 				64073D741B6BBD92001E6B6D /* ViewController.swift in Sources */,
 				A37D28151CB6E0A000C1519D /* SamplesViewController.swift in Sources */,
