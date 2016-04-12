@@ -19,6 +19,16 @@
 		64073D981B6BBDF9001E6B6D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64073D971B6BBDF9001E6B6D /* MapKit.framework */; };
 		64073D991B6BBE0D001E6B6D /* SwiftLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64073D911B6BBDBA001E6B6D /* SwiftLocation.swift */; };
 		64073D9E1B6BD136001E6B6D /* stratford.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 64073D9D1B6BD136001E6B6D /* stratford.gpx */; };
+		A37D28151CB6E0A000C1519D /* SamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28141CB6E0A000C1519D /* SamplesViewController.swift */; };
+		A37D28191CB6E20F00C1519D /* MenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28171CB6E20F00C1519D /* MenuCell.swift */; };
+		A37D281A1CB6E20F00C1519D /* MenuCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D28181CB6E20F00C1519D /* MenuCell.xib */; };
+		A37D281F1CB6F58900C1519D /* FindMyLocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D281D1CB6F58900C1519D /* FindMyLocationVC.swift */; };
+		A37D28201CB6F58900C1519D /* FindMyLocationVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */; };
+		A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */; };
+		A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */; };
+		A37D28271CB7036B00C1519D /* NSLayoutConstraint+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */; };
+		A3BE3EAB1CB7985900D007CD /* ReverseAddressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */; };
+		A3BE3EAC1CB7985900D007CD /* ReverseAddressVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +57,16 @@
 		64073D951B6BBDF4001E6B6D /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		64073D971B6BBDF9001E6B6D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		64073D9D1B6BD136001E6B6D /* stratford.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = stratford.gpx; sourceTree = "<group>"; };
+		A37D28141CB6E0A000C1519D /* SamplesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplesViewController.swift; sourceTree = "<group>"; };
+		A37D28171CB6E20F00C1519D /* MenuCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuCell.swift; sourceTree = "<group>"; };
+		A37D28181CB6E20F00C1519D /* MenuCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MenuCell.xib; sourceTree = "<group>"; };
+		A37D281D1CB6F58900C1519D /* FindMyLocationVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindMyLocationVC.swift; sourceTree = "<group>"; };
+		A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FindMyLocationVC.xib; sourceTree = "<group>"; };
+		A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseGeocodeVC.swift; sourceTree = "<group>"; };
+		A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReverseGeocodeVC.xib; sourceTree = "<group>"; };
+		A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+ext.swift"; sourceTree = "<group>"; };
+		A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseAddressVC.swift; sourceTree = "<group>"; };
+		A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReverseAddressVC.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,8 +110,11 @@
 		64073D6E1B6BBD92001E6B6D /* SwiftLocationExample */ = {
 			isa = PBXGroup;
 			children = (
+				A37D281B1CB6F56900C1519D /* ViewControllers */,
+				A37D28161CB6E1F600C1519D /* View */,
 				64073D711B6BBD92001E6B6D /* AppDelegate.swift */,
 				64073D731B6BBD92001E6B6D /* ViewController.swift */,
+				A37D28141CB6E0A000C1519D /* SamplesViewController.swift */,
 				64073D9A1B6BBE9D001E6B6D /* SwiftLocation */,
 				64073D751B6BBD92001E6B6D /* Main.storyboard */,
 				64073D781B6BBD92001E6B6D /* Images.xcassets */,
@@ -136,6 +159,53 @@
 				64073D9D1B6BD136001E6B6D /* stratford.gpx */,
 			);
 			name = SwiftLocation;
+			sourceTree = "<group>";
+		};
+		A37D28161CB6E1F600C1519D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A37D28171CB6E20F00C1519D /* MenuCell.swift */,
+				A37D28181CB6E20F00C1519D /* MenuCell.xib */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		A37D281B1CB6F56900C1519D /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A3BE3EA81CB7983C00D007CD /* ReverseAddress */,
+				A37D28211CB7009800C1519D /* ReverseGeocode */,
+				A37D281C1CB6F57000C1519D /* FindMyLocationVC */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		A37D281C1CB6F57000C1519D /* FindMyLocationVC */ = {
+			isa = PBXGroup;
+			children = (
+				A37D281D1CB6F58900C1519D /* FindMyLocationVC.swift */,
+				A37D281E1CB6F58900C1519D /* FindMyLocationVC.xib */,
+			);
+			name = FindMyLocationVC;
+			sourceTree = "<group>";
+		};
+		A37D28211CB7009800C1519D /* ReverseGeocode */ = {
+			isa = PBXGroup;
+			children = (
+				A37D28261CB7036B00C1519D /* NSLayoutConstraint+ext.swift */,
+				A37D28221CB700B600C1519D /* ReverseGeocodeVC.swift */,
+				A37D28231CB700B600C1519D /* ReverseGeocodeVC.xib */,
+			);
+			name = ReverseGeocode;
+			sourceTree = "<group>";
+		};
+		A3BE3EA81CB7983C00D007CD /* ReverseAddress */ = {
+			isa = PBXGroup;
+			children = (
+				A3BE3EA91CB7985900D007CD /* ReverseAddressVC.swift */,
+				A3BE3EAA1CB7985900D007CD /* ReverseAddressVC.xib */,
+			);
+			name = ReverseAddress;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -220,8 +290,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3BE3EAC1CB7985900D007CD /* ReverseAddressVC.xib in Resources */,
+				A37D28251CB700B600C1519D /* ReverseGeocodeVC.xib in Resources */,
+				A37D28201CB6F58900C1519D /* FindMyLocationVC.xib in Resources */,
 				64073D771B6BBD92001E6B6D /* Main.storyboard in Resources */,
 				64073D7C1B6BBD92001E6B6D /* LaunchScreen.xib in Resources */,
+				A37D281A1CB6E20F00C1519D /* MenuCell.xib in Resources */,
 				64073D791B6BBD92001E6B6D /* Images.xcassets in Resources */,
 				64073D9E1B6BD136001E6B6D /* stratford.gpx in Resources */,
 			);
@@ -242,8 +316,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				64073D921B6BBDBA001E6B6D /* SwiftLocation.swift in Sources */,
+				A37D28241CB700B600C1519D /* ReverseGeocodeVC.swift in Sources */,
+				A3BE3EAB1CB7985900D007CD /* ReverseAddressVC.swift in Sources */,
+				A37D28191CB6E20F00C1519D /* MenuCell.swift in Sources */,
 				64073D741B6BBD92001E6B6D /* ViewController.swift in Sources */,
+				A37D28151CB6E0A000C1519D /* SamplesViewController.swift in Sources */,
+				A37D281F1CB6F58900C1519D /* FindMyLocationVC.swift in Sources */,
 				64073D721B6BBD92001E6B6D /* AppDelegate.swift in Sources */,
+				A37D28271CB7036B00C1519D /* NSLayoutConstraint+ext.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
