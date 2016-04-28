@@ -13,6 +13,14 @@
 		085148161CCB6B9A000C23BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 085148151CCB6B9A000C23BD /* Assets.xcassets */; };
 		085148191CCB6B9A000C23BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 085148171CCB6B9A000C23BD /* LaunchScreen.storyboard */; };
 		085148241CCB6B9A000C23BD /* SwiftLocationExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085148231CCB6B9A000C23BD /* SwiftLocationExampleTests.swift */; };
+		089093131CD2A73700B4C8B4 /* BeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0890930B1CD2A73700B4C8B4 /* BeaconManager.swift */; };
+		089093141CD2A73700B4C8B4 /* BeaconRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0890930C1CD2A73700B4C8B4 /* BeaconRequest.swift */; };
+		089093151CD2A73700B4C8B4 /* DataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0890930D1CD2A73700B4C8B4 /* DataTypes.swift */; };
+		089093161CD2A73700B4C8B4 /* HeadingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0890930E1CD2A73700B4C8B4 /* HeadingRequest.swift */; };
+		089093171CD2A73700B4C8B4 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0890930F1CD2A73700B4C8B4 /* LocationManager.swift */; };
+		089093181CD2A73700B4C8B4 /* LocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089093101CD2A73700B4C8B4 /* LocationRequest.swift */; };
+		089093191CD2A73700B4C8B4 /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089093111CD2A73700B4C8B4 /* RegionRequest.swift */; };
+		0890931A1CD2A73700B4C8B4 /* VisitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089093121CD2A73700B4C8B4 /* VisitRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +44,14 @@
 		0851481F1CCB6B9A000C23BD /* SwiftLocationExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftLocationExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		085148231CCB6B9A000C23BD /* SwiftLocationExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLocationExampleTests.swift; sourceTree = "<group>"; };
 		085148251CCB6B9A000C23BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0890930B1CD2A73700B4C8B4 /* BeaconManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconManager.swift; path = ../../../src/BeaconManager.swift; sourceTree = "<group>"; };
+		0890930C1CD2A73700B4C8B4 /* BeaconRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconRequest.swift; path = ../../../src/BeaconRequest.swift; sourceTree = "<group>"; };
+		0890930D1CD2A73700B4C8B4 /* DataTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataTypes.swift; path = ../../../src/DataTypes.swift; sourceTree = "<group>"; };
+		0890930E1CD2A73700B4C8B4 /* HeadingRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HeadingRequest.swift; path = ../../../src/HeadingRequest.swift; sourceTree = "<group>"; };
+		0890930F1CD2A73700B4C8B4 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationManager.swift; path = ../../../src/LocationManager.swift; sourceTree = "<group>"; };
+		089093101CD2A73700B4C8B4 /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationRequest.swift; path = ../../../src/LocationRequest.swift; sourceTree = "<group>"; };
+		089093111CD2A73700B4C8B4 /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RegionRequest.swift; path = ../../../src/RegionRequest.swift; sourceTree = "<group>"; };
+		089093121CD2A73700B4C8B4 /* VisitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisitRequest.swift; path = ../../../src/VisitRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +99,7 @@
 				085148151CCB6B9A000C23BD /* Assets.xcassets */,
 				085148171CCB6B9A000C23BD /* LaunchScreen.storyboard */,
 				0851481A1CCB6B9A000C23BD /* Info.plist */,
+				BAE99D558D6CBFC4291CE722 /* SwiftLocation */,
 			);
 			path = SwiftLocationExample;
 			sourceTree = "<group>";
@@ -94,6 +111,21 @@
 				085148251CCB6B9A000C23BD /* Info.plist */,
 			);
 			path = SwiftLocationExampleTests;
+			sourceTree = "<group>";
+		};
+		BAE99D558D6CBFC4291CE722 /* SwiftLocation */ = {
+			isa = PBXGroup;
+			children = (
+				0890930B1CD2A73700B4C8B4 /* BeaconManager.swift */,
+				0890930C1CD2A73700B4C8B4 /* BeaconRequest.swift */,
+				0890930D1CD2A73700B4C8B4 /* DataTypes.swift */,
+				0890930E1CD2A73700B4C8B4 /* HeadingRequest.swift */,
+				0890930F1CD2A73700B4C8B4 /* LocationManager.swift */,
+				089093101CD2A73700B4C8B4 /* LocationRequest.swift */,
+				089093111CD2A73700B4C8B4 /* RegionRequest.swift */,
+				089093121CD2A73700B4C8B4 /* VisitRequest.swift */,
+			);
+			path = SwiftLocation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,8 +229,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				089093131CD2A73700B4C8B4 /* BeaconManager.swift in Sources */,
 				085148111CCB6B9A000C23BD /* ViewController.swift in Sources */,
+				089093191CD2A73700B4C8B4 /* RegionRequest.swift in Sources */,
+				089093181CD2A73700B4C8B4 /* LocationRequest.swift in Sources */,
+				089093161CD2A73700B4C8B4 /* HeadingRequest.swift in Sources */,
+				089093171CD2A73700B4C8B4 /* LocationManager.swift in Sources */,
+				089093151CD2A73700B4C8B4 /* DataTypes.swift in Sources */,
+				0890931A1CD2A73700B4C8B4 /* VisitRequest.swift in Sources */,
 				0851480F1CCB6B9A000C23BD /* AppDelegate.swift in Sources */,
+				089093141CD2A73700B4C8B4 /* BeaconRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +428,7 @@
 				0851482A1CCB6B9A000C23BD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0851482B1CCB6B9A000C23BD /* Build configuration list for PBXNativeTarget "SwiftLocationExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -396,6 +437,7 @@
 				0851482D1CCB6B9A000C23BD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

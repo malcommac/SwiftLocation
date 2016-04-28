@@ -10,13 +10,20 @@ import Foundation
 import CoreLocation
 import CoreBluetooth
 
+/// BeaconManager is the class you can use to monitor beacons and geographic regions both in background and in foreground
 public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralManagerDelegate {
-	public static let main = BeaconManager()
+		/// Shared instance
+	public static let shared = BeaconManager()
+		/// Location manager used to talk with the hardware
 	internal var manager: CLLocationManager
+		/// Bluetooth manager used to act as a beacon
 	internal var peripheralManager: CBPeripheralManager?
 	
+		/// Monitored geographic regions
 	private(set) var monitoredGeoRegions: [RegionRequest] = []
+		/// Monitored beacons
 	private(set) var monitoredBeacons: [BeaconRequest] = []
+		/// Broadcasted beacons
 	private(set) var broadcastedBeacons: [BeaconRequest] = []
 	
 	private override init() {
@@ -27,6 +34,17 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	//MARK: Monitor for Beacons
 	
+	/**
+	Start monitoring a new beacon
+	
+	- parameter uuid:  This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
+	- parameter major: The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
+	- parameter minor: The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
+	
+	- throws: throws an exception if hardware does not provide beacon monitoring feature
+	
+	- returns: a new beacon request you can add to the main beacon manager's queue
+	*/
 	public func monitorForBeacon(proximityUUID uuid: String, major: CLBeaconMajorValue, minor: CLBeaconMinorValue) throws -> BeaconRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion.self) == false {
 			throw LocationError.NotSupported
@@ -36,6 +54,15 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		return request
 	}
 	
+	/**
+	Monitor a new beacon family
+	
+	- parameter uuid: This property contains the identifier that you use to identify your company’s beacons. All beacons of this family will be monitored by the system.
+	
+	- throws: throws an exception if hardware does not provide beacon monitoring feature
+	
+	- returns: a new beacon request you can add to the main beacon manager's queue
+	*/
 	public func monitorForBeaconFamily(proximityUUID uuid: String) throws -> BeaconRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion.self) == false {
 			throw LocationError.NotSupported
@@ -44,6 +71,17 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		try self.addMonitorForBeaconRegion(request)
 		return request
 	}
+	
+	/**
+	Stop a currently running monitor
+	
+	- parameter request: request to stop
+	*/
+	public func stopMonitorForBeaconRegion(request: BeaconRequest) {
+		request.state = .Unknown
+	}
+	
+	//MARK: - Private Beacon Monitor
 	
 	internal func addMonitorForBeaconRegion(region: BeaconRequest) throws {
 		do {
@@ -60,10 +98,6 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		}
 	}
 	
-	internal func stopMonitorForBeaconRegion(request: BeaconRequest) {
-		request.state = .Unknown
-	}
-	
 	private func startAllPendingBeaconRegionMonitors() {
 		self.monitoredBeacons.filter({ $0.state == BeaconState.Unknown}  ).forEach({ region in
 			self.manager.startMonitoringForRegion(region.beaconRegion!)
@@ -73,6 +107,17 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	//MARK: Monitor Geographic Region
 	
+	/**
+	Monitor a new geographic region
+	
+	- parameter identifier: identifier you can assign to the region. If not specified an automatic identifier is generated for you.
+	- parameter coordinate: the center point of the ragion
+	- parameter radius:     the radius of the region in meters
+	
+	- throws: throws an exception if hardware does not provide beacon monitoring feature
+	
+	- returns: a new geographic request you can add to the main beacon manager's queue
+	*/
 	public func monitorGeographicRegion(identifier: String? = nil, centeredAt coordinate: CLLocationCoordinate2D, radius :CLLocationDistance) throws -> RegionRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLCircularRegion.self) == false {
 			throw LocationError.NotSupported
@@ -82,7 +127,12 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		return geoRegion
 	}
 	
-	public func stopMonitorGeographicRegion(region: RegionRequest) {
+	/**
+	Stop monitoring a region request
+	
+	- parameter region: request to stop
+	*/
+	public func stopMonitorGeographicRegion(request region: RegionRequest) {
 		if let idx = self.monitoredGeoRegions.indexOf(region) {
 			self.manager.stopMonitoringForRegion(region.region)
 			region.isMonitored = false
@@ -93,6 +143,11 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	//MARK: Act as a beacon transmitter
 	
+	/**
+	Use your device to act like a beacon by advertising it's data. Advertising works only in foreground.
+	
+	- parameter beacon: beacon data to use
+	*/
 	public func advertise(beacon: BeaconRequest) {
 		if self.broadcastedBeacons.indexOf(beacon) == nil {
 			self.broadcastedBeacons.append(beacon)
@@ -100,6 +155,11 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		}
 	}
 	
+	/**
+	Stop advertising a beacon
+	
+	- parameter beacon: beacon
+	*/
 	public func stopAdvertise(beacon: BeaconRequest) {
 		if let idx = self.broadcastedBeacons.indexOf(beacon) {
 			self.broadcastedBeacons.removeAtIndex(idx)
@@ -107,7 +167,10 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 		}
 	}
 	
-	internal func cleanUpAllAdvertisers() {
+	/**
+	Stop advertising all currently advertised beacons
+	*/
+	public func cleanUpAllAdvertisers() {
 		self.broadcastedBeacons.removeAll()
 		self.updateAdvertiserService()
 	}
