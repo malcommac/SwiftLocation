@@ -431,6 +431,7 @@
 				08819F291CD51F9B00EFD938 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		08819F2A1CD51F9B00EFD938 /* Build configuration list for PBXNativeTarget "SwiftLocationTests" */ = {
 			isa = XCConfigurationList;
@@ -439,6 +440,7 @@
 				08819F2C1CD51F9B00EFD938 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
