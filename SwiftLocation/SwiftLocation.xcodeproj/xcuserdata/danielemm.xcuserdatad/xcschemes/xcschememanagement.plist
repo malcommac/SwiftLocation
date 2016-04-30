@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>SwiftLocationExample.xcscheme</key>
+		<key>SwiftLocation.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,12 +12,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0851480A1CCB6B9A000C23BD</key>
+		<key>08819F121CD51F9B00EFD938</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>0851481E1CCB6B9A000C23BD</key>
+		<key>08819F1C1CD51F9B00EFD938</key>
 		<dict>
 			<key>primary</key>
 			<true/>

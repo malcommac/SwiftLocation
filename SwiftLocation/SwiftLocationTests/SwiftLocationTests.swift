@@ -1,15 +1,15 @@
 //
-//  SwiftLocationExampleTests.swift
-//  SwiftLocationExampleTests
+//  SwiftLocationTests.swift
+//  SwiftLocationTests
 //
-//  Created by Daniele Margutti on 23/04/16.
+//  Created by Daniele Margutti on 30/04/16.
 //  Copyright © 2016 danielemargutti. All rights reserved.
 //
 
 import XCTest
-@testable import SwiftLocationExample
+@testable import SwiftLocation
 
-class SwiftLocationExampleTests: XCTestCase {
+class SwiftLocationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

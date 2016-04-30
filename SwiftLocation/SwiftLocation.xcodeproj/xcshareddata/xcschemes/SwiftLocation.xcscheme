@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0851480A1CCB6B9A000C23BD"
-               BuildableName = "SwiftLocationExample.app"
-               BlueprintName = "SwiftLocationExample"
-               ReferencedContainer = "container:SwiftLocationExample.xcodeproj">
+               BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+               BuildableName = "SwiftLocation.framework"
+               BlueprintName = "SwiftLocation"
+               ReferencedContainer = "container:SwiftLocation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,20 +32,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0851481E1CCB6B9A000C23BD"
-               BuildableName = "SwiftLocationExampleTests.xctest"
-               BlueprintName = "SwiftLocationExampleTests"
-               ReferencedContainer = "container:SwiftLocationExample.xcodeproj">
+               BlueprintIdentifier = "08819F1C1CD51F9B00EFD938"
+               BuildableName = "SwiftLocationTests.xctest"
+               BlueprintName = "SwiftLocationTests"
+               ReferencedContainer = "container:SwiftLocation.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0851480A1CCB6B9A000C23BD"
-            BuildableName = "SwiftLocationExample.app"
-            BlueprintName = "SwiftLocationExample"
-            ReferencedContainer = "container:SwiftLocationExample.xcodeproj">
+            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BuildableName = "SwiftLocation.framework"
+            BlueprintName = "SwiftLocation"
+            ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -61,16 +61,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0851480A1CCB6B9A000C23BD"
-            BuildableName = "SwiftLocationExample.app"
-            BlueprintName = "SwiftLocationExample"
-            ReferencedContainer = "container:SwiftLocationExample.xcodeproj">
+            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BuildableName = "SwiftLocation.framework"
+            BlueprintName = "SwiftLocation"
+            ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -80,16 +79,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0851480A1CCB6B9A000C23BD"
-            BuildableName = "SwiftLocationExample.app"
-            BlueprintName = "SwiftLocationExample"
-            ReferencedContainer = "container:SwiftLocationExample.xcodeproj">
+            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BuildableName = "SwiftLocation.framework"
+            BlueprintName = "SwiftLocation"
+            ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
