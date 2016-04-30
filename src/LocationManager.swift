@@ -22,7 +22,13 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	public var allowsBackgroundEvents: Bool = false {
 		didSet {
 			if #available(iOS 9.0, *) {
-				self.manager.allowsBackgroundLocationUpdates = allowsBackgroundEvents
+				if let backgroundModes = NSBundle.mainBundle().objectForInfoDictionaryKey("UIBackgroundModes") as? NSArray {
+					if backgroundModes.containsObject("location") {
+						self.manager.allowsBackgroundLocationUpdates = allowsBackgroundEvents
+					} else {
+						print("You must provide location in UIBackgroundModes of Info.plist in order to use .allowsBackgroundEvents")
+					}
+				}
 			}
 		}
 	}

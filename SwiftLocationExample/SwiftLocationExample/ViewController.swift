@@ -14,11 +14,6 @@ class ViewController: UIViewController {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
 		
-		LocationManager.shared.observeLocations(.Block, frequency: .Continuous, onSuccess: { location in
-			print("Location \(location)")
-		}) { error in
-			print("error: \(error.description)")
-		}
 	}
 
 	override func didReceiveMemoryWarning() {

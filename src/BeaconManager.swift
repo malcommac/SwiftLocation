@@ -45,7 +45,7 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	- returns: a new beacon request you can add to the main beacon manager's queue
 	*/
-	public func monitorForBeacon(proximityUUID uuid: String, major: CLBeaconMajorValue, minor: CLBeaconMinorValue) throws -> BeaconRequest {
+	public func monitorForBeacon(proximityUUID uuid: String, major: CLBeaconMajorValue, minor: CLBeaconMinorValue, onFound: DidRangeBeaconsHandler?, onError: RangeBeaconsDidFailHandler?) throws -> BeaconRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion.self) == false {
 			throw LocationError.NotSupported
 		}
@@ -63,11 +63,13 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	- returns: a new beacon request you can add to the main beacon manager's queue
 	*/
-	public func monitorForBeaconFamily(proximityUUID uuid: String) throws -> BeaconRequest {
+	public func monitorForBeaconFamily(proximityUUID uuid: String, onRangingBeacons: DidRangeBeaconsHandler?, onError: RangeBeaconsDidFailHandler?) throws -> BeaconRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion.self) == false {
 			throw LocationError.NotSupported
 		}
 		let request = BeaconRequest(beaconFamilyWithUUID: uuid)
+		request.onRangeDidFoundBeacons = onRangingBeacons
+		request.onRangeDidFail = onError
 		try self.addMonitorForBeaconRegion(request)
 		return request
 	}
@@ -118,11 +120,13 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	- returns: a new geographic request you can add to the main beacon manager's queue
 	*/
-	public func monitorGeographicRegion(identifier: String? = nil, centeredAt coordinate: CLLocationCoordinate2D, radius :CLLocationDistance) throws -> RegionRequest {
+	public func monitorGeographicRegion(identifier: String? = nil, centeredAt coordinate: CLLocationCoordinate2D, radius :CLLocationDistance, onEnter enHandler: RegionHandlerStateDidChange?, onExit exHandler: RegionHandlerStateDidChange?) throws -> RegionRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLCircularRegion.self) == false {
 			throw LocationError.NotSupported
 		}
 		let geoRegion = RegionRequest(identifier: identifier, location: coordinate, radius: radius)
+		geoRegion.onRegionEntered = enHandler
+		geoRegion.onRegionExited = exHandler
 		try self.addMonitorForGeographicRegion(geoRegion)
 		return geoRegion
 	}
