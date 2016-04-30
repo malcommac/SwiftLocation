@@ -25,7 +25,16 @@ If you need background monitoring you should specify NSLocationAlwaysUsageDescri
 
 ### Documentation
 
-#### Monitor Current User Location (one shot, continous...)
+* **Monitor Current User Location (one shout, continous delivery etc.)**
+* **Obtain Current Location without GPS**
+* **Monitor Device Heading**
+* **Reverse Address/Coordinates to CLPlacemark**
+* **Monitor Interesting Visits**
+* **Monitor Geographic Regions**
+* **Monitor Beacons & Beacon Families**
+* **Act like a Beacon**
+
+#### Monitor Current User Location (one shot, continous delivery etc.)
 
 Getting current user's location is pretty easy; all location related services are provided by the ```LocationManager``` singleton class.
 
