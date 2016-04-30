@@ -19,7 +19,8 @@ Main features includes:
 - **Reverse geocoding** (from address string/coordinates to placemark) using both Apple and Google services
 - **GPS-less location fetching** using network IP address
 - **Geographic region** monitoring (enter/exit from regions)
-- **Beacon family and Beacon** monitoring
+- **Beacon Family and Beacon** monitoring
+- **Set a device to act like a Beacon** (only in foreground)
 
 Pre-requisites
 
