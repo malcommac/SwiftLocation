@@ -1,4 +1,4 @@
-![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/master/logo.png)
+![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/develop/logo.png)
 
 SwiftLocation
 =============
@@ -50,12 +50,12 @@ If you are using SwiftLocation with iOS simulator you can also set a fake locati
 To get the current user location without getting a continous update of the data each time, you can use ```currentLocation``` method.
 Parameters are:
 - ```accuracy```: identify the accuracy of location you want to receive. A more accurate result may require a longer processing time. Accuracy can be: - 
-	- ```Country``` (it does not use CoreLocation but only IP based discovery. Results are not accurated but it's faster than any other accuracy level and it does not require user authorizations).
-	- ```City```: 5000 meters or better, and received within the last 10 minutes. Lowest accuracy.
-	- ```Neighborhood```: 1000 meters or better, and received within the last 5 minutes.
-	- ```Block```: 100 meters or better, and received within the last 1 minute.
-	- ```House```: 15 meters or better, and received within the last 15 seconds.
-	- ```Room```: 5 meters or better, and received within the last 5 seconds. Highest accuracy.
+  - ```Country``` (it does not use CoreLocation but only IP based discovery. Results are not accurated but it's faster than any other accuracy level and it does not require user authorizations).
+  - ```City```: 5000 meters or better, and received within the last 10 minutes. Lowest accuracy.
+  - ```Neighborhood```: 1000 meters or better, and received within the last 5 minutes.
+  - ```Block```: 100 meters or better, and received within the last 1 minute.
+  - ```House```: 15 meters or better, and received within the last 15 seconds.
+  - ```Room```: 5 meters or better, and received within the last 5 seconds. Highest accuracy.
 - ```timeout```: the max processing time. When expired error callback is called automatically.
 - ```onSuccess```: callback called when a valid result is found
 - ```onFail```: callback called when an error or timeout event is occurred
