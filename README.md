@@ -55,7 +55,7 @@ request.stop() // Stop receiving updates
 
 ```observeLocation()``` lets you to specify two parameters: the ```accuracy``` you need to get and the ```frequency``` intervals you want to use to get updated locations.
 
-```accuracy```:
+**ACCURACY**:
 
 * ```Any```: First available location is accepted, no matter the accuracy
 * ```Country```: Only locations accurate to the nearest 100 kilometers are dispatched
@@ -66,12 +66,16 @@ request.stop() // Stop receiving updates
 * ```Room```: Use the highest-level of accuracy, may use high energy
 * ```Navigation```: Use the highest possible accuracy and combine it with additional sensor data
 
-```frequency```:
+
+
+**FREQUENCY:**
 
 * ```Continuous```: receive each new valid location, never stop (you must stop it manually)
 * ```OneShot```: the first valid location data is received, then the request will be invalidated
 * ```ByDistanceintervals(meters)```: receive a new update each time a new distance interval is travelled. Useful to keep battery usage low
 * ```Significant```: receive only valid significant location updates. This capability provides tremendous power savings for apps that want to track a user’s approximate location and do not need highly accurate position information
+
+
 
 #### Obtain Current Location without GPS
 
