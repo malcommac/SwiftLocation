@@ -9,8 +9,8 @@
 
 Pod::Spec.new do |s|
   s.name             = "SwiftLocation"
-  s.version          = "0.2.0"
-  s.summary          = "CoreLocation made easy in pure Swift"
+  s.version          = "0.9.0"
+  s.summary          = "Location & Beacon Monitor Tool for Swift 2+"
   s.description      = <<-DESC
                        SwiftLocation is a simple 100% Swift 2.0+ wrapper around CoreLocation. Use Location services has never been easier and you can do it with your favourite language.
 Let me show the best features of the library:
@@ -33,11 +33,7 @@ Let me show the best features of the library:
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
+  s.source_files = 'src/**'
 
-  s.source_files = 'Pod/Classes/**/*'
-  s.resource_bundles = {
-    'SwiftLocation' => ['Pod/Assets/*.png']
-  }
-
-  s.frameworks = 'UIKit', 'CoreLocation'
+  s.frameworks = 'UIKit', 'CoreLocation', 'CoreBluetooth'
 end

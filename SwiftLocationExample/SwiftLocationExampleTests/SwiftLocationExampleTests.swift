@@ -2,12 +2,12 @@
 //  SwiftLocationExampleTests.swift
 //  SwiftLocationExampleTests
 //
-//  Created by daniele on 31/07/15.
-//  Copyright (c) 2015 danielemargutti. All rights reserved.
+//  Created by Daniele Margutti on 23/04/16.
+//  Copyright © 2016 danielemargutti. All rights reserved.
 //
 
-import UIKit
 import XCTest
+@testable import SwiftLocationExample
 
 class SwiftLocationExampleTests: XCTestCase {
     
@@ -23,12 +23,12 @@ class SwiftLocationExampleTests: XCTestCase {
     
     func testExample() {
         // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
-        self.measureBlock() {
+        self.measureBlock {
             // Put the code you want to measure the time of here.
         }
     }

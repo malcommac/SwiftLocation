@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  SwiftLocationExample
 //
-//  Created by daniele on 31/07/15.
-//  Copyright (c) 2015 danielemargutti. All rights reserved.
+//  Created by Daniele Margutti on 23/04/16.
+//  Copyright © 2016 danielemargutti. All rights reserved.
 //
 
 import UIKit
