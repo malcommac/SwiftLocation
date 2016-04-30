@@ -3,11 +3,6 @@
 SwiftLocation
 =============
 
-<https://travis-ci.org/daniele%20margutti/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
-<http://cocoapods.org/pods/SwiftLocation>
-
 ### What's SwiftLocation?
 SwiftLocation is a lightweight library you can use to monitor locations, beacons, make reverse geocoding and do beacon advertising. It's really easy to use and made in pure Swift 2.2.
 
