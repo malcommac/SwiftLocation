@@ -23,6 +23,10 @@ Before using SwiftLocation you must configure your project to use location servi
 
 If you need background monitoring you should specify NSLocationAlwaysUsageDescription and specify the correct value in UIBackgroundModes key (you can learn more [here](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html))
 
+#### Are you using SwiftLocation? Tell it to me!
+
+I'm collecting all the apps which uses SwiftLocation to manage beacon or location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com. 
+
 ### Documentation
 
 * **Monitor Current User Location (one shout, continous delivery etc.)**
