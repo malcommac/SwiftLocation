@@ -46,7 +46,7 @@
 		08819F321CD51FA700EFD938 /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationRequest.swift; path = ../../src/LocationRequest.swift; sourceTree = "<group>"; };
 		08819F331CD51FA700EFD938 /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RegionRequest.swift; path = ../../src/RegionRequest.swift; sourceTree = "<group>"; };
 		08819F341CD51FA700EFD938 /* VisitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisitRequest.swift; path = ../../src/VisitRequest.swift; sourceTree = "<group>"; };
-		77E400EB1CE7EA1D0079BA93 /* Cancelable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cancelable.swift; sourceTree = "<group>"; };
+		77E400EB1CE7EA1D0079BA93 /* Cancelable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Cancelable.swift; path = ../../src/Cancelable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
