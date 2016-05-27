@@ -1,5 +1,6 @@
 ![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/develop/swiftlocation.png)
 
+
 SwiftLocation
 =============
 
@@ -60,7 +61,7 @@ let request = LocationManager.shared.observeLocations(.Block, frequency: .OneSho
 request.stop() // Stop receiving updates
 ```
 
-```LocationRequest``` also specify a ```timeoutTimer``` property you can set to abort the request itself if no valid data is received in a certain amount of time. By default it's disabled.
+```LocationRequest``` also specify a ```timeout``` property you can set to abort the request itself if no valid data is received in a certain amount of time. By default it's disabled.
 
 ```observeLocation()``` lets you to specify two parameters: the ```accuracy``` you need to get and the ```frequency``` intervals you want to use to get updated locations.
 
