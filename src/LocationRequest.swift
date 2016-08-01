@@ -159,13 +159,12 @@ public class LocationRequest: LocationManagerRequest {
 	
 	//MARK: - Private Methods
 	
-	internal func setTimeoutTimer(start: Bool) {
-		if let _ = self.timeoutTimer {
-			self.timeoutTimer!.invalidate()
-			self.timeoutTimer = nil
-		}
-		guard start == true, let interval = self.timeout else { return }
-		self.timeoutTimer = NSTimer(timeInterval: interval, target: self, selector: #selector(timeoutTimerFired), userInfo: nil, repeats: false)
+	internal func setTimeoutTimer(shouldStart: Bool) {
+        self.timeoutTimer?.invalidate()
+        self.timeoutTimer = nil
+        
+		guard let interval = self.timeout where shouldStart else { return }
+		self.timeoutTimer = NSTimer.scheduledTimerWithTimeInterval(interval, target: self, selector: #selector(timeoutTimerFired), userInfo: nil, repeats: false)
 	}
 	
 	@objc func timeoutTimerFired() {
