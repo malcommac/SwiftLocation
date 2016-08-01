@@ -66,6 +66,9 @@ public class LocationRequest: LocationManagerRequest {
 	
 		/// This is the last location matching the requested accuracy received for this request. Maybe nil if any valid request is received yet.
 	private(set) var lastValidLocation: CLLocation?
+    
+        /// This is the last location received for this request which might not match requested accuracy. Maybe nil if any valid request is received yet.
+    private(set) var lastLocation: CLLocation?
 	
 		/// This is the frequency internval you want to receive updates about this monitor session
 	public var frequency: UpdateFrequency = .Continuous {
@@ -168,15 +171,14 @@ public class LocationRequest: LocationManagerRequest {
 	}
 	
 	@objc func timeoutTimerFired() {
-		if self.onErrorHandler != nil {
-			self.onErrorHandler!(LocationError.RequestTimeout)
-		}
-		self.stop()
+        self.onErrorHandler?(self.lastLocation, LocationError.RequestTimeout)
+		
+        self.stop()
 	}
 	
 	internal func didReceiveEventFromLocationManager(error error: LocationError?, location: CLLocation?) -> Bool {
 		if let error = error {
-			self.onErrorHandler?(error)
+			self.onErrorHandler?(location, error)
 			self.stop()
 			return true
 		}
@@ -198,6 +200,8 @@ public class LocationRequest: LocationManagerRequest {
 	}
 	
 	internal func isValidLocation(loc: CLLocation) -> Bool {
+        self.lastLocation = loc
+        
 		if self.accuracy.isLocationValidForAccuracy(loc) == false {
 			return false
 		}
