@@ -390,7 +390,9 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	private func pauseAllLocationRequest() {
 		self.locationObservers.forEach { handler in
-			handler.pause()
+            if handler.isEnabled {
+                handler.pause()
+            }
 		}
 	}
 	
