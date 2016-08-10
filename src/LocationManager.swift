@@ -32,7 +32,7 @@ import MapKit
 
 public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
-	private(set) var lastLocation: CLLocation?
+	public private(set) var lastLocation: CLLocation?
 
 		/// Shared instance of the location manager
 	public static let shared = LocationManager()
