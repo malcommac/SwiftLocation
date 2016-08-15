@@ -18,6 +18,7 @@
 		08819F3A1CD51FA700EFD938 /* LocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F321CD51FA700EFD938 /* LocationRequest.swift */; };
 		08819F3B1CD51FA700EFD938 /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F331CD51FA700EFD938 /* RegionRequest.swift */; };
 		08819F3C1CD51FA700EFD938 /* VisitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F341CD51FA700EFD938 /* VisitRequest.swift */; };
+		77E400EC1CE7EA1D0079BA93 /* Cancelable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E400EB1CE7EA1D0079BA93 /* Cancelable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		08819F321CD51FA700EFD938 /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationRequest.swift; path = ../../src/LocationRequest.swift; sourceTree = "<group>"; };
 		08819F331CD51FA700EFD938 /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RegionRequest.swift; path = ../../src/RegionRequest.swift; sourceTree = "<group>"; };
 		08819F341CD51FA700EFD938 /* VisitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisitRequest.swift; path = ../../src/VisitRequest.swift; sourceTree = "<group>"; };
+		77E400EB1CE7EA1D0079BA93 /* Cancelable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Cancelable.swift; path = ../../src/Cancelable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				08819F301CD51FA700EFD938 /* HeadingRequest.swift */,
 				08819F321CD51FA700EFD938 /* LocationRequest.swift */,
 				08819F341CD51FA700EFD938 /* VisitRequest.swift */,
+				77E400EB1CE7EA1D0079BA93 /* Cancelable.swift */,
 			);
 			name = "Location Services";
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				08819F391CD51FA700EFD938 /* LocationManager.swift in Sources */,
 				08819F3C1CD51FA700EFD938 /* VisitRequest.swift in Sources */,
 				08819F351CD51FA700EFD938 /* BeaconManager.swift in Sources */,
+				77E400EC1CE7EA1D0079BA93 /* Cancelable.swift in Sources */,
 				08819F361CD51FA700EFD938 /* BeaconRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

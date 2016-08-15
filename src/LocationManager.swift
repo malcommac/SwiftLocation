@@ -234,12 +234,12 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler: handler called when location reverse operation was completed successfully. It contains a valid CLPlacemark instance.
 	- parameter fHandler: handler called when the operation fails due to an error.
 	*/
-	public func reverseAddress(service service :ReverseService = .Apple, address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	public func reverseAddress(service service :ReverseService = .Apple, address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
 		switch service {
 		case .Apple:
-			self.reverseAddressUsingApple(address, onSuccess: sHandler, onError: fHandler)
+			return self.reverseAddressUsingApple(address, onSuccess: sHandler, onError: fHandler)
 		case .Google:
-			self.reverseAddressUsingGoogle(address, onSuccess: sHandler, onError: fHandler)
+			return self.reverseAddressUsingGoogle(address, onSuccess: sHandler, onError: fHandler)
 		}
 	}
 	
@@ -464,7 +464,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Reverse Address/Location
 	
-	private func reverseAddressUsingApple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	private func reverseAddressUsingApple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
 		let geocoder = CLGeocoder()
 		geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
 			if error != nil {
@@ -477,9 +477,10 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 				}
 			}
 		})
+		return geocoder
 	}
 	
-	private func reverseAddressUsingGoogle(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	private func reverseAddressUsingGoogle(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
 		let APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)"
 			.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString)
@@ -505,6 +506,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			}
 		}
 		task.resume()
+		return task
 	}
 	
 	private func reverseLocationUsingApple(location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
