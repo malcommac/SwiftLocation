@@ -32,6 +32,8 @@ Let me show the best features of the library:
   s.social_media_url = 'https://twitter.com/danielemargutti'
 
   s.platform     = :ios, '8.0'
+  s.platform     = :osx, '10.9'
+  s.platform     = :tvos, '9.0'
   s.requires_arc = true
   s.source_files = 'src/**'
 
