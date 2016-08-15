@@ -247,8 +247,8 @@ This library require iOS 8+ and Swift 2.2.
 $ gem install cocoapods
 ```
 
-CocoaPods 0.39.0+ is required to build Alamofire 3.0.0+.
-To integrate Alamofire into your Xcode project using CocoaPods, specify it in your Podfile:
+CocoaPods 0.39.0+ is required to build SwiftLocation 1.0.0+.
+To integrate SwiftLocation into your Xcode project using CocoaPods, specify it in your Podfile:
 
 ```
 source 'https://github.com/CocoaPods/Specs.git'
