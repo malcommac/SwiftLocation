@@ -1,8 +1,9 @@
-![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/master/logo.png)
+![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/master/logoswiftlocation.png)
 
 
 SwiftLocation
 =============
+####Easy Location Services and Beacon Monitoring for Swift
 
 SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) monitor beacons and do beacon advertising.
 It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
