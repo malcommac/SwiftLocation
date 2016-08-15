@@ -31,9 +31,9 @@ import CoreLocation
 import CoreBluetooth
 
 public enum BeaconState {
-	case Unknown
-	case Advertising
-	case Monitoring
+	case unknown
+	case advertising
+	case monitoring
 }
 
 public class BeaconRequest: Equatable {
@@ -43,21 +43,21 @@ public class BeaconRequest: Equatable {
 		/// This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed
 	public var UUID: String {
 		get {
-			return beaconRegion!.proximityUUID.UUIDString
+			return beaconRegion!.proximityUUID.uuidString
 		}
 	}
 	
 	/// The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
 	public var majorID: CLBeaconMajorValue? {
 		get {
-			return (beaconRegion!.major != nil ? CLBeaconMajorValue(beaconRegion!.major!.intValue) : nil)
+			return (beaconRegion!.major != nil ? CLBeaconMajorValue(beaconRegion!.major!.int32Value) : nil)
 		}
 	}
 	
 	/// The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
 	public var minorID: CLBeaconMajorValue? {
 		get {
-			return (beaconRegion!.major != nil ? CLBeaconMajorValue(beaconRegion!.major!.intValue) : nil)
+			return (beaconRegion!.major != nil ? CLBeaconMajorValue(beaconRegion!.major!.int32Value) : nil)
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class BeaconRequest: Equatable {
 	private(set) var beaconRegion: CLBeaconRegion?
 	
 		/// State of the monitor
-	internal(set) var state: BeaconState = .Unknown
+	internal(set) var state: BeaconState = .unknown
 	
 		/// Handler called when beacon were found into the region
 	public var onRangeDidFoundBeacons: DidRangeBeaconsHandler?
@@ -81,8 +81,8 @@ public class BeaconRequest: Equatable {
 	- returns: request you can add into the main queue
 	*/
 	public init(beaconFamilyWithUUID uuid: String, identifier: String? = nil) {
-		self.identifier = (identifier ?? NSUUID().UUIDString)
-		self.beaconRegion = CLBeaconRegion(proximityUUID: NSUUID(UUIDString: self.UUID)!, identifier: self.identifier)
+		self.identifier = (identifier ?? Foundation.UUID().uuidString)
+		self.beaconRegion = CLBeaconRegion(proximityUUID: Foundation.UUID(uuidString: self.UUID)!, identifier: self.identifier)
 	}
 	
 	/**
@@ -96,16 +96,16 @@ public class BeaconRequest: Equatable {
 	- returns: request you can add into the main queue
 	*/
 	public init(beaconWithUUID uuid: String, major: CLBeaconMajorValue, minor: CLBeaconMajorValue, identifier: String? = nil) {
-		self.identifier = (identifier ?? NSUUID().UUIDString)
-		self.beaconRegion = CLBeaconRegion(proximityUUID: NSUUID(UUIDString: self.UUID)!, major: self.majorID!, minor: self.minorID!, identifier: self.identifier)
+		self.identifier = (identifier ?? Foundation.UUID().uuidString)
+		self.beaconRegion = CLBeaconRegion(proximityUUID: Foundation.UUID(uuidString: self.UUID)!, major: self.majorID!, minor: self.minorID!, identifier: self.identifier)
 	}
 
 	//MARK: Private
 	
-	internal func dataToAdvertise() -> [String:AnyObject!] {
-		let data: [String:AnyObject!] = [
+	internal func dataToAdvertise() -> [String:AnyObject]? {
+		let data: [String:AnyObject]? = [
 			CBAdvertisementDataLocalNameKey : self.identifier,
-			CBAdvertisementDataManufacturerDataKey : self.beaconRegion!.peripheralDataWithMeasuredPower(nil),
+			CBAdvertisementDataManufacturerDataKey : self.beaconRegion!.peripheralData(withMeasuredPower: nil),
 			CBAdvertisementDataServiceUUIDsKey : [self.UUID]]
 		return data
 	}

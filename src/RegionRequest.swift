@@ -67,7 +67,7 @@ public class RegionRequest : Equatable {
 	- returns: the request itself you can add to the main queue
 	*/
 	public init(identifier: String?, location: CLLocationCoordinate2D, radius: CLLocationDistance) {
-		let regionID = (identifier ?? NSUUID().UUIDString)
+		let regionID = (identifier ?? UUID().uuidString)
 		self.region = CLCircularRegion(center: location, radius: radius, identifier: regionID)
 	}
 	
@@ -78,7 +78,7 @@ public class RegionRequest : Equatable {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onRegionEntered(handler: RegionHandlerStateDidChange?) -> RegionRequest {
+	public func onRegionEntered(_ handler: RegionHandlerStateDidChange?) -> RegionRequest {
 		self.onRegionEntered = handler
 		return self
 	}
@@ -90,7 +90,7 @@ public class RegionRequest : Equatable {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onRegionExited(handler: RegionHandlerStateDidChange?) -> RegionRequest {
+	public func onRegionExited(_ handler: RegionHandlerStateDidChange?) -> RegionRequest {
 		self.onRegionExited = handler
 		return self
 	}
@@ -103,7 +103,7 @@ public class RegionRequest : Equatable {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onRegionDidFailToMonitor(handler: RegionHandlerError?) -> RegionRequest {
+	public func onRegionDidFailToMonitor(_ handler: RegionHandlerError?) -> RegionRequest {
 		self.onRegionDidFailToMonitor = handler
 		BeaconManager.shared.stopMonitorGeographicRegion(request: self)
 		return self

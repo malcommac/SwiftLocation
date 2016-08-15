@@ -38,7 +38,7 @@ public class VisitRequest: Request {
 
 		/// Private vars
 	internal(set) var isEnabled: Bool = false
-	public var UUID: String = NSUUID().UUIDString
+	public var UUID: String = Foundation.UUID().uuidString
 	
 	
 	/**
@@ -59,7 +59,7 @@ public class VisitRequest: Request {
 	
 	- returns: self instance, used to make the function chainable
 	*/
-	public func onDidVisit(handler: VisitHandler?) -> VisitRequest {
+	public func onDidVisit(_ handler: VisitHandler?) -> VisitRequest {
 		self.onDidVisitPlace = handler
 		return self
 	}
@@ -68,14 +68,14 @@ public class VisitRequest: Request {
 	Start a new visit request
 	*/
 	public func start() {
-		Location.addVisitRequest(self)
+		let _ = Location.addVisitRequest(self)
 	}
 	
 	/**
 	Stop a visit request and remove it from the queue
 	*/
 	public func cancel() {
-		Location.stopInterestingPlacesRequest(self)
+		let _ = Location.stopInterestingPlacesRequest(self)
 	}
 	
 	public func pause() {

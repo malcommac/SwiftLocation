@@ -31,7 +31,7 @@ import CoreLocation
 
 public class HeadingRequest: Request {
 		/// Unique identifier of the heading request
-	public var UUID: String = NSUUID().UUIDString
+	public var UUID: String = Foundation.UUID().uuidString
 		/// Handler to call when a new heading value is received
 	internal var onReceiveUpdates: HeadingHandlerSuccess?
 		/// Handler to call when an error has occurred
@@ -88,7 +88,7 @@ public class HeadingRequest: Request {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onReceiveUpdates(handler :HeadingHandlerSuccess) -> HeadingRequest {
+	public func onReceiveUpdates(_ handler :HeadingHandlerSuccess) -> HeadingRequest {
 		self.onReceiveUpdates = handler
 		return self
 	}
@@ -100,7 +100,7 @@ public class HeadingRequest: Request {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onError(handler :HeadingHandlerError) -> HeadingRequest {
+	public func onError(_ handler :HeadingHandlerError) -> HeadingRequest {
 		self.onError = handler
 		return self
 	}
@@ -112,7 +112,7 @@ public class HeadingRequest: Request {
 	public func start() {
 		if self.isEnabled == true { return }
 		self.isEnabled = true
-		Location.addHeadingRequest(self)
+		let _ = Location.addHeadingRequest(self)
 	}
 	
 	/**
@@ -127,14 +127,14 @@ public class HeadingRequest: Request {
 	*/
 	public func cancel() {
 		self.isEnabled = false
-		Location.stopHeadingRequest(self)
+		let _ = Location.stopHeadingRequest(self)
 	}
 	
 	//MARK: - Private
 	
-	internal func didReceiveEventFromManager(error: NSError?, heading: CLHeading?) {
+	internal func didReceiveEventFromManager(_ error: NSError?, heading: CLHeading?) {
 		if error != nil {
-			self.onError?(LocationError.LocationManager(error: error!))
+			self.onError?(LocationError.locationManager(error: error!))
 			self.cancel()
 			return
 		}
@@ -147,19 +147,19 @@ public class HeadingRequest: Request {
 		}
 	}
 	
-	private func validateHeading(heading: CLHeading) -> Bool {
+	private func validateHeading(_ heading: CLHeading) -> Bool {
 		guard let lastHeading = self.lastHeading else {
 			return true
 		}
 		
 		switch self.frequency {
-		case .Continuous(let interval):
+		case .continuous(let interval):
 			let elapsedTime = (heading.timestamp.timeIntervalSince1970 - lastHeading.timestamp.timeIntervalSince1970)
 			return (elapsedTime > interval)
-		case .MagneticNorth(let minChange):
+		case .magneticNorth(let minChange):
 			let degreeDiff = fabs(heading.magneticHeading - lastHeading.magneticHeading)
 			return (degreeDiff > minChange)
-		case .TrueNorth(let minChange):
+		case .trueNorth(let minChange):
 			let degreeDiff = fabs(heading.trueHeading - lastHeading.trueHeading)
 			return (degreeDiff > minChange)
 		}
