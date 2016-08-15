@@ -30,6 +30,8 @@ import Foundation
 import CoreLocation
 import CoreBluetooth
 
+public let Beacon:BeaconManager = BeaconManager.shared
+
 /// BeaconManager is the class you can use to monitor beacons and geographic regions both in background and in foreground
 public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralManagerDelegate {
 		/// Shared instance

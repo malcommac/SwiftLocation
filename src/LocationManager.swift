@@ -212,7 +212,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 
 	
-	//MARK: [Private Methods] Heading/Location
+	//MARK: [Private Methods] Manage Requests
 	
 	private func getLocationViaIPScan(timeout: NSTimeInterval = DefaultTimeout, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
 		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
