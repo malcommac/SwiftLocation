@@ -1,4 +1,4 @@
-![SwiftDate](https://raw.githubusercontent.com/malcommac/SwiftLocation/master/logoswiftlocation.png)
+![SwiftLocation](https://raw.githubusercontent.com/malcommac/SwiftLocation/master/swiftlocation_logo.png)
 
 
 SwiftLocation
