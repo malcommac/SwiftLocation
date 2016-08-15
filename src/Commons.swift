@@ -30,6 +30,48 @@ import Foundation
 import CoreLocation
 import MapKit
 
+extension CLGeocoder: Request {
+	
+	public func cancel() {
+		cancelGeocode()
+	}
+	
+	public func pause() {
+		// not available
+	}
+	
+	public func start() {
+		// not available
+	}
+	
+	public var UUID: String {
+		return "\(self.hash)"
+	}
+}
+
+extension NSURLSessionDataTask: Request {
+
+	public func pause() {
+		self.suspend()
+	}
+	
+	public func start() {
+		self.resume()
+	}
+	
+	public var UUID: String {
+		return "\(self.hash)"
+	}
+}
+
+public protocol Request {
+	func cancel()
+	func pause()
+	func start()
+	
+	var UUID: String { get }
+}
+
 /// Handlers
 
 public typealias LocationHandlerError = ((CLLocation?, LocationError) -> Void)
@@ -75,10 +117,6 @@ internal struct CLPlacemarkDictionaryKey {
 	static let kZIP                   = "ZIP"
 	static let kCountry               = "Country"
 	static let kCountryCode           = "CountryCode"
-}
-
-protocol LocationManagerRequest	{
-	var UUID: String { get }
 }
 
 // MARK: - Location Errors
@@ -212,25 +250,32 @@ extension CLLocationManager {
 
 //MARK: Accuracy
 
-/// Accuracy of the location you want to achieve
+/**
+Allows you to specify the accuracy you want to achieve with a request.
+
+- IPScan:                                                Current location is discovered via IP Scan. This require a valid internet connection
+														 and don't use device's GPS sensor. It's good to preserve device's battery but does not
+														 return a precise position.
+- Any:                                                   First available location is accepted, no matter the accuracy
+- Country:                                               Only locations accurate to the nearest 100 kilometers are dispatched
+- City:                                                  Only locations accurate to the nearest three kilometers are dispatched
+- Neighborhood:                                          Only locations accurate to the nearest kilometer are dispatched
+- Block:                                                 Only locations accurate to the nearest one hundred meters are dispatched
+- House:                                                 Only locations accurate to the nearest ten meters are dispatched
+- Room:                                                  Use the highest-level of accuracy, may use high energy
+- Navigation:                                            Use the highest possible accuracy and combine it with additional sensor data.
+														 Use it only for applications that require precise position information ar all times
+														 (you should use it only when device is plugged in due to high battery usage level)
+*/
 public enum Accuracy: Int {
-	/// First available location is accepted, no matter the accuracy
+	case IPScan = -1
 	case Any = 0
-	/// Only locations accurate to the nearest 100 kilometers are dispatched
 	case Country = 1
-	/// Only locations accurate to the nearest three kilometers are dispatched
 	case City = 2
-	/// Only locations accurate to the nearest kilometer are dispatched
 	case Neighborhood = 3
-	/// Only locations accurate to the nearest one hundred meters are dispatched
 	case Block = 4
-	/// Only locations accurate to the nearest ten meters are dispatched
 	case House = 5
-	/// Use the highest-level of accuracy, may use high energy
 	case Room = 6
-	// Use the highest possible accuracy and combine it with additional sensor data. Use it only for
-	// applications that require precise position information ar all times (you should use it only when device is plugged in
-	// due to high battery usage level)
 	case Navigation = 7
 	
 	public var meters: Double {
@@ -243,6 +288,7 @@ public enum Accuracy: Int {
 		case House:			return kCLLocationAccuracyNearestTenMeters
 		case Room:			return kCLLocationAccuracyBest
 		case Navigation:	return kCLLocationAccuracyBestForNavigation
+		case IPScan:		return Double.infinity // Not used
 		}
 	}
 	
@@ -327,4 +373,17 @@ private func u_graterThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: Updat
 	default:
 		return false
 	}
+}
+
+/**
+Specify an interval to receive new heading events
+
+- Continuous:    Receive events continuously; if you specify a non-nil interval events are dispatched when a minimum interval is reached
+- MagneticNorth: Receive events only when magnetic north degree is changed at least of specified interval
+- TrueNorth:     Receive events only when true north degree is changed at least of specified interval
+*/
+public enum HeadingFrequency {
+	case Continuous(interval: NSTimeInterval?)
+	case MagneticNorth(minChange: CLLocationDirection)
+	case TrueNorth(minChange: CLLocationDirection)
 }

@@ -30,15 +30,15 @@
 import Foundation
 import CoreLocation
 
-public class VisitRequest {
+public class VisitRequest: Request {
 		/// Last place received
 	private(set) var lastPlace: CLVisit?
 		/// Handler called when a new place is currently visited
 	public var onDidVisitPlace: VisitHandler?
 
 		/// Private vars
-	internal(set) var isEnabled: Bool = true
-	internal var UUID: String = NSUUID().UUIDString
+	internal(set) var isEnabled: Bool = false
+	public var UUID: String = NSUUID().UUIDString
 	
 	
 	/**
@@ -68,13 +68,17 @@ public class VisitRequest {
 	Start a new visit request
 	*/
 	public func start() {
-		LocationManager.shared.addVisitRequest(self)
+		Location.addVisitRequest(self)
 	}
 	
 	/**
 	Stop a visit request and remove it from the queue
 	*/
-	public func stop() {
-		LocationManager.shared.stopObservingInterestingPlaces(self)
+	public func cancel() {
+		Location.stopInterestingPlacesRequest(self)
+	}
+	
+	public func pause() {
+		self.isEnabled = false
 	}
 }

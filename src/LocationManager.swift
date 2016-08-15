@@ -30,12 +30,19 @@ import Foundation
 import CoreLocation
 import MapKit
 
+let DefaultTimeout: NSTimeInterval = 30.0
+
+public let Location:LocationManager = LocationManager.shared
+
 public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
 	public private(set) var lastLocation: CLLocation?
 
 		/// Shared instance of the location manager
-	public static let shared = LocationManager()
+	internal static let shared = LocationManager()
+	
+	/// You can specify a valid Google API Key if you want to use Google geocoding services without a strict quota
+	public var googleAPIKey: String?
 	
 		/// A Boolean value indicating whether the app wants to receive location updates when suspended. By default it's false.
 		/// See .allowsBackgroundLocationUpdates of CLLocationManager for a detailed description of this var.
@@ -88,9 +95,55 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		super.init()
 		self.manager.delegate = self
 	}
+
+	//MARK: PUBLIC METHODS
 	
-	//MARK: [Public Methods] Interesting Visits
+	/**
+	Retrive current device location
 	
+	- parameter accuracy:  accuracy you want to achieve. This value is mandatory; depending on your position you may not achieve desidered accuracy. If not achieved function will catch error by sending best achieved location.
+	- parameter frequency: frequency of update. By default is OneShot (once found request is fullfilled and stopped automatically). You can receive updates countinously or at specified time interval. See UpdateFrequency for more detailed info. Frequency is .OneShot when accuracy is set to .IPScan.
+	- parameter timeout:   timeout timer; if desidered location was not found at the end of timeout request fail and last valid location is reported to the user
+	- parameter onSuccess: handler called when desidered location was achieved successfully
+	- parameter onError:   handler called when desidered location cannot be achieved. Best location found will be reported.
+	
+	- returns: request instance. Use it to pause, resume or stop request
+	*/
+	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .OneShot, timeout: NSTimeInterval = DefaultTimeout, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+		
+		if accuracy == .IPScan {
+			return self.getLocationViaIPScan(timeout, onSuccess: onSuccess, onError: onError)
+		} else {
+			let request = LocationRequest(withAccuracy: accuracy, andFrequency: frequency)
+			request.timeout = timeout
+			request.onSuccess(onSuccess)
+			request.onError(onError)
+			request.start()
+			return request
+		}
+	}
+	
+	
+	/**
+	Receive events from device's heading changes.
+	
+	- parameter frequency:         Specify frequency of the update
+	- parameter accuracy:          Specify accuracy (in degree) of the updates
+	- parameter allowsCalibration: true if standard iOS calibration screen can show if required
+	- parameter update:            handler called when a new heading is generated
+	- parameter error:             handler called when an error has occurred. Request is rejected and stopped.
+	
+	- returns: request istance
+	*/
+	public func getHeading(frequency: HeadingFrequency = .Continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: HeadingHandlerSuccess, onError error: HeadingHandlerError) -> Request {
+		let request = HeadingRequest(withFrequency: frequency, accuracy: accuracy, allowsCalibration: allowsCalibration)
+		request.onReceiveUpdates = update
+		request.onError = error
+		request.start()
+		return request
+	}
+	
+
 	/**
 	Calling this method begins the delivery of visit-related events to your app.
 	Enabling visit events for one location manager enables visit events for all other location manager objects in your app.
@@ -100,127 +153,10 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: the request object which represent the current observer. You can use it to pause/resume or stop the observer itself.
 	*/
-	public func observeInterestingPlaces(onDidVisit handler: VisitHandler?) -> VisitRequest {
+	public func getInterestingPlaces(onDidVisit handler: VisitHandler?) -> Request {
 		let request = VisitRequest(onDidVisit: handler)
 		self.addVisitRequest(request)
 		return request
-	}
-	
-	/**
-	Stop a running visit's observer by passing it's request object
-	
-	- parameter request: request to stop
-	
-	- returns: true if request is part of the queue and it was stopped, no otherwise
-	*/
-	public func stopObservingInterestingPlaces(request: VisitRequest) -> Bool {
-		if let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) {
-			self.visitsObservers[idx].isEnabled = false
-			self.visitsObservers.removeAtIndex(idx)
-			self.updateVisitingService()
-			return true
-		}
-		return false
-	}
-	
-	//MARK: [Public Methods] Locations
-	
-	/**
-	Start observing current location changes.
-	
-	- parameter accuracy:  location's accuracy you want to receive
-	- parameter frequency: frequency of updates
-	- parameter onSuccess: handler to call when a valid location is received
-	- parameter onError:   handler to call when an erorr is ocurred. When an error is generated request fails and you stop to receive updates.
-	
-	- returns: request added to location manager. You can use this reference to pause, resume, stop or change handlers to call
-	*/
-	public func observeLocations(accuracy: Accuracy, frequency: UpdateFrequency, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> LocationRequest {
-		
-		let request = LocationRequest(withAccuracy: accuracy, andFrequency: frequency)
-		request.onSuccess(onSuccess)
-		request.onError(onError)
-		request.start()
-		return request
-	}
-	
-	/**
-	Stop observing a running request for location changes
-	
-	- parameter request: request to stop
-	
-	- returns: true if location is running and it was stopped, false otherwise
-	*/
-	public func stopObservingLocation(request: LocationRequest) -> Bool {
-		if let idx = self.locationObservers.indexOf({$0.UUID == request.UUID}) {
-			self.locationObservers.removeAtIndex(idx)
-			self.updateLocationUpdateService()
-			return true
-		}
-		return false
-	}
-	
-	/**
-	When you don't need to get an accurate location and you don't want to use the device's hardware you can use this function
-	to get an approximate location of the device by it's IP address. This function does not consume battery power but require
-	a valid internet connection.
-	
-	- parameter sHandler: handler to call when location was determined successfully
-	- parameter fHandler: handler to call when location was failed to be determined
-	*/
-	public func locateByIPAddress(onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
-		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
-		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-		let session = NSURLSession(configuration: sessionConfig)
-		let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) in
-			if let data = data as NSData? {
-				do {
-					if let resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? NSDictionary {
-						let placemark = try self.parseIPLocationData(resultDict)
-						sHandler(placemark)
-					}
-				} catch let error as LocationError {
-					fHandler(error)
-				} catch let error as NSError {
-					fHandler(LocationError.LocationManager(error: error))
-				}
-			}
-		}
-		task.resume()
-	}
-	
-	//MARK: [Public Methods] Heading
-	
-	/**
-	Starts the generation of updates that report the user’s current heading.
-	
-	- parameter withInterval: The minimum angular change (measured in degrees) required to generate new heading events. By default this value is 1, but you can set it to nil in order to get all movements.
-	- parameter sHandler:     handler to call when a new heading value is generated
-	- parameter eHandler:     handler to call when an error has occurred. observing is aborted automatically.
-	
-	- returns: a new request observer you can use to manage the activity of the observer itself
-	*/
-	public func observeHeading(withInterval i: CLLocationDegrees? = 1, onSuccess sHandler: HeadingHandlerSuccess, onError eHandler: HeadingHandlerError) -> HeadingRequest {
-		let request = HeadingRequest(onSuccess: sHandler, onError: eHandler)
-		request.degreesInterval = i
-		request.start()
-		return request
-	}
-	
-	/**
-	Stop a running observer for heading changes
-	
-	- parameter request: request to stop
-	
-	- returns: true if request is part of the queue and it was stopped, false otherwise
-	*/
-	public func stopObservingHeading(request: HeadingRequest) -> Bool {
-		if let idx = self.headingObservers.indexOf({$0.UUID == request.UUID}) {
-			self.headingObservers.removeAtIndex(idx)
-			self.updateHeadingService()
-			return true
-		}
-		return false
 	}
 	
 	//MARK: [Public Methods] Reverse Address/Location
@@ -234,12 +170,12 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler: handler called when location reverse operation was completed successfully. It contains a valid CLPlacemark instance.
 	- parameter fHandler: handler called when the operation fails due to an error.
 	*/
-	public func reverseAddress(service service :ReverseService = .Apple, address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
+	public func reverse(address address: String, using service: ReverseService = .Apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		switch service {
 		case .Apple:
-			return self.reverseAddressUsingApple(address, onSuccess: sHandler, onError: fHandler)
+			return self.reverse_apple(address: address, onSuccess: onSuccess, onError: onError)
 		case .Google:
-			return self.reverseAddressUsingGoogle(address, onSuccess: sHandler, onError: fHandler)
+			return self.reverse_google(address: address, onSuccess: onSuccess, onError: onError)
 		}
 	}
 	
@@ -252,9 +188,10 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
-	public func reverseLocation(service service :ReverseService = .Apple, coordinates: CLLocationCoordinate2D, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	
+	public func reverse(coordinates coordinates: CLLocationCoordinate2D, using service:ReverseService = .Apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-		self.reverseLocation(service: service, location: location, onSuccess: sHandler, onError: fHandler)
+		return self.reverse(location: location, using: service, onSuccess: onSuccess, onError: onError)
 	}
 	
 	/**
@@ -265,17 +202,58 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
-	public func reverseLocation(service service :ReverseService = .Apple, location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	public func reverse(location location: CLLocation, using service :ReverseService = .Apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		switch service {
 		case .Apple:
-			self.reverseLocationUsingApple(location, onSuccess: sHandler, onError: fHandler)
+			return self.reverse_location_apple(location, onSuccess: onSuccess, onError: onError)
 		case .Google:
-			self.reverseLocationUsingGoogle(location, onSuccess: sHandler, onError: fHandler)
+			return self.reverse_location_google(location, onSuccess: onSuccess, onError: onError)
 		}
 	}
 
 	
 	//MARK: [Private Methods] Heading/Location
+	
+	private func getLocationViaIPScan(timeout: NSTimeInterval = DefaultTimeout, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+		let session = NSURLSession(configuration: sessionConfig)
+		let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) in
+			if let data = data as NSData? {
+				do {
+					if let resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? NSDictionary {
+						let placemark = try self.parseIPLocationData(resultDict)
+						onSuccess(placemark.location!)
+					}
+				} catch let error as LocationError {
+					onError(nil,error)
+				} catch let error as NSError {
+					onError(nil,LocationError.LocationManager(error: error))
+				}
+			}
+		}
+		task.resume()
+		return task
+	}
+	
+	internal func stopLocationRequest(request: LocationRequest) -> Bool {
+		if let idx = self.locationObservers.indexOf({$0.UUID == request.UUID}) {
+			self.locationObservers.removeAtIndex(idx)
+			self.updateLocationUpdateService()
+			return true
+		}
+		return false
+	}
+	
+	internal func stopInterestingPlacesRequest(request: VisitRequest) -> Bool {
+		if let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) {
+			self.visitsObservers[idx].isEnabled = false
+			self.visitsObservers.removeAtIndex(idx)
+			self.updateVisitingService()
+			return true
+		}
+		return false
+	}
 	
 	internal func addVisitRequest(handler: VisitRequest) -> VisitRequest {
 		if self.visitsObservers.indexOf({$0.UUID == handler.UUID}) == nil {
@@ -284,6 +262,15 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 		self.updateVisitingService()
 		return handler
+	}
+	
+	internal func stopHeadingRequest(request: HeadingRequest) -> Bool {
+		if let idx = self.headingObservers.indexOf({$0.UUID == request.UUID}) {
+			self.headingObservers.removeAtIndex(idx)
+			self.updateHeadingService()
+			return true
+		}
+		return false
 	}
 	
 	internal func addHeadingRequest(handler: HeadingRequest) -> HeadingRequest {
@@ -309,8 +296,8 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			return
 		}
 		
-		let minAngle = enabledObservers.minElement({return ($0.degreesInterval == nil || $0.degreesInterval < $1.degreesInterval) })!.degreesInterval
-		self.manager.headingFilter = (minAngle == nil ? kCLDistanceFilterNone : minAngle!)
+		let minAngle = enabledObservers.minElement({return ($0.accuracy == nil || $0.accuracy < $1.accuracy) })!.accuracy
+		self.manager.headingFilter = minAngle
 		self.manager.headingOrientation = self.headingOrientation
 		self.manager.startUpdatingHeading()
 	}
@@ -411,7 +398,11 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private Methods] Location Manager Delegate
 	
 	@objc public func locationManager(manager: CLLocationManager, didVisit visit: CLVisit) {
-		self.visitsObservers.forEach { handler in handler.onDidVisitPlace?(visit) }
+		self.visitsObservers.forEach { handler in
+			if (handler.isEnabled == true) {
+				handler.onDidVisitPlace?(visit)
+			}
+		}
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -454,9 +445,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	public func locationManagerShouldDisplayHeadingCalibration(manager: CLLocationManager) -> Bool {
 		for (_,request) in self.headingObservers.enumerate() {
-			if let calibrationHandler = request.onCalibrationRequired {
-				if calibrationHandler() == true { return true }
-			}
+			if request.allowsCalibration == true { return true }
 			return false
 		}
 		return false
@@ -464,7 +453,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Reverse Address/Location
 	
-	private func reverseAddressUsingApple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
+	private func reverse_apple(address address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
 			if error != nil {
@@ -480,9 +469,11 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return geocoder
 	}
 	
-	private func reverseAddressUsingGoogle(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Cancelable {
-		let APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)"
-			.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+	private func reverse_google(address address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)"
+		if self.googleAPIKey != nil {
+			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
+		}
 		let APIURL = NSURL(string: APIURLString)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
 		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -509,7 +500,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return task
 	}
 	
-	private func reverseLocationUsingApple(location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
+	private func reverse_location_apple(location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
 			if (placemarks?.count > 0) {
@@ -521,11 +512,15 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 				fHandler(LocationError.LocationManager(error: error))
 			}
 		}
+		return geocoder
 	}
 	
-	private func reverseLocationUsingGoogle(location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) {
-		let APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(location.coordinate.latitude),\(location.coordinate.longitude)"
-			.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+	private func reverse_location_google(location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(location.coordinate.latitude),\(location.coordinate.longitude)"
+		if self.googleAPIKey != nil {
+			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
+		}
+		APIURLString = APIURLString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
 		let APIURL = NSURL(string: APIURLString)
 		let APIURLRequest = NSURLRequest(URL: APIURL!)
 		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -549,6 +544,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			}
 		}
 		task.resume()
+		return task
 	}
 	
 	//MARK: [Private Methods] Parsing

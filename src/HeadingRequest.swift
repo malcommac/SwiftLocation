@@ -29,34 +29,41 @@
 import Foundation
 import CoreLocation
 
-public class HeadingRequest: LocationManagerRequest {
+public class HeadingRequest: Request {
 		/// Unique identifier of the heading request
-	internal var UUID: String = NSUUID().UUIDString
+	public var UUID: String = NSUUID().UUIDString
 		/// Handler to call when a new heading value is received
-	internal var onSuccess: HeadingHandlerSuccess?
+	internal var onReceiveUpdates: HeadingHandlerSuccess?
 		/// Handler to call when an error has occurred
 	internal var onError: HeadingHandlerError?
-		/// Handler to call when a new device's calibration is required
-	internal var onCalibrationRequired: HeadingHandlerCalibration?
 	
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
 	
 	// Private variables
 	
-	internal var isEnabled: Bool = true {
+	internal var isEnabled: Bool = false {
 		didSet {
-			LocationManager.shared.updateHeadingService()
+			Location.updateHeadingService()
 		}
 	}
 	
-		/// The minimum angular change (measured in degrees) required to generate new heading events. If nil is specified you
-		/// will receive any new value
-	public var degreesInterval: CLLocationDegrees? = 1 {
+	/// Frequency value to receive new events
+	public var frequency: HeadingFrequency {
 		didSet {
-			LocationManager.shared.updateHeadingService()
+			Location.updateHeadingService()
 		}
 	}
+	
+	/// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
+	public var accuracy: CLLocationDirection {
+		didSet {
+			Location.updateHeadingService()
+		}
+	}
+	
+	/// True if system calibration tool can be opened if necessary.
+	public var allowsCalibration: Bool = true
 	
 	/**
 	Create a new request to receive heading values from device's motion sensors about the orientation of the device
@@ -67,9 +74,11 @@ public class HeadingRequest: LocationManagerRequest {
 	
 	- returns: the request instance you can add to the queue
 	*/
-	public init(withInterval: CLLocationDegrees = 1, onSuccess sHandler: HeadingHandlerSuccess?, onError eHandler: HeadingHandlerError?) {
-		self.onSuccess = sHandler
-		self.onError = eHandler
+	
+	internal init(withFrequency frequency: HeadingFrequency, accuracy: CLLocationDirection, allowsCalibration: Bool = true) {
+		self.frequency = frequency
+		self.accuracy = accuracy
+		self.allowsCalibration = allowsCalibration
 	}
 	
 	/**
@@ -79,8 +88,8 @@ public class HeadingRequest: LocationManagerRequest {
 	
 	- returns: self, used to make the function chainable
 	*/
-	public func onSuccess(handler :HeadingHandlerSuccess) -> HeadingRequest {
-		self.onSuccess = handler
+	public func onReceiveUpdates(handler :HeadingHandlerSuccess) -> HeadingRequest {
+		self.onReceiveUpdates = handler
 		return self
 	}
 	
@@ -96,34 +105,14 @@ public class HeadingRequest: LocationManagerRequest {
 		return self
 	}
 	
-	/**
-	Use this function to change the handler to call when device calibration is required. You must return true or false
-	at the end of this handler. If at least one request return true to this handler the calibration window will be opened
-	automatically.
-	
-	- parameter handler: handler to call
-	
-	- returns: self, used to make the function chainable
-	*/
-	public func onCalibrationRequired(handler :HeadingHandlerCalibration?) -> HeadingRequest {
-		self.onCalibrationRequired = handler
-		return self
-	}
 	
 	/**
 	Put the request in queue and starts it
 	*/
 	public func start() {
+		if self.isEnabled == true { return }
 		self.isEnabled = true
-		LocationManager.shared.addHeadingRequest(self)
-	}
-	
-	/**
-	Stop this request if running
-	*/
-	public func stop() {
-		self.isEnabled = false
-		LocationManager.shared.stopObservingHeading(self)
+		Location.addHeadingRequest(self)
 	}
 	
 	/**
@@ -133,29 +122,46 @@ public class HeadingRequest: LocationManagerRequest {
 		self.isEnabled = false
 	}
 	
+	/**
+	Terminate request
+	*/
+	public func cancel() {
+		self.isEnabled = false
+		Location.stopHeadingRequest(self)
+	}
+	
 	//MARK: - Private
 	
 	internal func didReceiveEventFromManager(error: NSError?, heading: CLHeading?) {
 		if error != nil {
 			self.onError?(LocationError.LocationManager(error: error!))
-			self.stop()
+			self.cancel()
 			return
 		}
 		
 		if self.validateHeading(heading!) == true {
 			self.lastHeading = heading
-			self.onSuccess?(self.lastHeading!)
+			if self.isEnabled == true {
+				self.onReceiveUpdates?(self.lastHeading!)
+			}
 		}
 	}
 	
 	private func validateHeading(heading: CLHeading) -> Bool {
-		guard let lastHeading = self.lastHeading else { return true }
-		
-		if heading.timestamp.timeIntervalSince1970 <= lastHeading.timestamp.timeIntervalSince1970 {
-			return false
+		guard let lastHeading = self.lastHeading else {
+			return true
 		}
 		
-		guard let degreesInterval = self.degreesInterval else { return true }
-		return (fabs( Double(heading.headingAccuracy-lastHeading.headingAccuracy) ) > degreesInterval)
+		switch self.frequency {
+		case .Continuous(let interval):
+			let elapsedTime = (heading.timestamp.timeIntervalSince1970 - lastHeading.timestamp.timeIntervalSince1970)
+			return (elapsedTime > interval)
+		case .MagneticNorth(let minChange):
+			let degreeDiff = fabs(heading.magneticHeading - lastHeading.magneticHeading)
+			return (degreeDiff > minChange)
+		case .TrueNorth(let minChange):
+			let degreeDiff = fabs(heading.trueHeading - lastHeading.trueHeading)
+			return (degreeDiff > minChange)
+		}
 	}
 }

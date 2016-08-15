@@ -30,7 +30,7 @@ import Foundation
 import CoreLocation
 import MapKit
 
-public class LocationRequest: LocationManagerRequest {
+public class LocationRequest: Request  {
 		/// Handler called on error
 	internal var onErrorHandler: LocationHandlerError?
 		/// Handler called on success
@@ -40,9 +40,9 @@ public class LocationRequest: LocationManagerRequest {
 		/// Timeout timer
 	private var timeoutTimer: NSTimer?
 		/// Unique identifier of the request
-	internal var UUID: String = NSUUID().UUIDString
+	public var UUID: String = NSUUID().UUIDString
 		/// Enable/disable ability of the request object to receive updates when into the queue
-	internal var isEnabled: Bool = true {
+	internal var isEnabled: Bool = false {
 		didSet {
 			let shouldEnable = isEnabled
 			self.setTimeoutTimer(shouldEnable)
@@ -53,7 +53,7 @@ public class LocationRequest: LocationManagerRequest {
 	/// The location manager uses the information in this property as a cue to determine when location updates may be automatically paused
 	public var activityType: CLActivityType = .Other {
 		didSet {
-			LocationManager.shared.updateLocationUpdateService()
+			Location.updateLocationUpdateService()
 		}
 	}
 	
@@ -73,14 +73,14 @@ public class LocationRequest: LocationManagerRequest {
 		/// This is the frequency internval you want to receive updates about this monitor session
 	public var frequency: UpdateFrequency = .Continuous {
 		didSet {
-			LocationManager.shared.updateLocationUpdateService()
+			Location.updateLocationUpdateService()
 		}
 	}
 	
 		/// This is the accuracy of location you consider valid for this monitor session
 	public var accuracy: Accuracy = .City {
 		didSet {
-			LocationManager.shared.updateLocationUpdateService()
+			Location.updateLocationUpdateService()
 		}
 	}
 	
@@ -134,14 +134,14 @@ public class LocationRequest: LocationManagerRequest {
 		self.onPausesHandler = handler
 		return self
 	}
-	
+
 	/**
-	Stop receiving updates for this request and remove it from queue
+	Terminate request
 	*/
-	public func stop() {
+	public func cancel() {
 		self.isEnabled = false
 		self.setTimeoutTimer(false)
-		LocationManager.shared.stopObservingLocation(self)
+		Location.stopLocationRequest(self)
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class LocationRequest: LocationManagerRequest {
 	*/
 	public func pause() {
 		self.isEnabled = false
-		LocationManager.shared.updateLocationUpdateService()
+		Location.updateLocationUpdateService()
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public class LocationRequest: LocationManagerRequest {
 	*/
 	public func start() {
 		self.isEnabled = true
-		LocationManager.shared.addLocationRequest(self)
+		Location.addLocationRequest(self)
 	}
 	
 	//MARK: - Private Methods
@@ -173,13 +173,13 @@ public class LocationRequest: LocationManagerRequest {
 	@objc func timeoutTimerFired() {
         self.onErrorHandler?(self.lastLocation, LocationError.RequestTimeout)
 		
-        self.stop()
+        self.cancel()
 	}
 	
 	internal func didReceiveEventFromLocationManager(error error: LocationError?, location: CLLocation?) -> Bool {
 		if let error = error {
 			self.onErrorHandler?(location, error)
-			self.stop()
+			self.cancel()
 			return true
 		}
 		
@@ -190,7 +190,7 @@ public class LocationRequest: LocationManagerRequest {
 			self.lastValidLocation = location
 			self.onSuccessHandler?(self.lastValidLocation!)
 			if self.frequency == .OneShot {
-				self.stop()
+				self.cancel()
 			}
 			self.setTimeoutTimer(true)
 			return true
@@ -221,13 +221,6 @@ public class LocationRequest: LocationManagerRequest {
 		}
 		
 		return true
-	}
-	
-	public func reverseLocation(onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) throws  {
-		guard let loc = self.lastValidLocation else {
-			throw LocationError.LocationNotAvailable
-		}
-		LocationManager.shared.reverseLocation(location: loc, onSuccess: sHandler, onError: fHandler)
 	}
 	
 }
