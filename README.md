@@ -10,7 +10,7 @@ SwiftLocation is a lightweight library you can use to monitor locations, beacons
 Main features includes:
 
 - **Auto Management of hardware resources**: SwiftLocation turns off hardware if not used by our observers.
-- **Complete location monitoring:** you can easily monitor for you desidered accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations).
+- **Complete location monitoring:** you can easily monitor for your desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations).
 - **Device's heading observer**: you can observe or get current device's heading easily
 - **Reverse geocoding** (from address string/coordinates to placemark) using both Apple and Google services
 - **GPS-less location fetching** using network IP address
