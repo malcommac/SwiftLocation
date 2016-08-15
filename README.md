@@ -4,16 +4,15 @@
 SwiftLocation
 =============
 
-### What's SwiftLocation?
 SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) monitor beacons and do beacon advertising.
 It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 
 Main features includes:
 
-- **Auto Management of hardware resources**: SwiftLocation turns off hardware if not used by our observers.
+- **Auto Management of hardware resources**: SwiftLocation turns off hardware if not used by our observers. Don't worry, we take care of your user's battery usage!
 - **Complete location monitoring:** you can easily monitor for your desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations).
 - **Device's heading observer**: you can observe or get current device's heading easily
-- **Reverse geocoding** (from address string/coordinates to placemark) using both Apple and Google services
+- **Reverse geocoding** (from address string/coordinates to placemark) using both Apple and Google services (with support for API key)
 - **GPS-less location fetching** using network IP address
 - **Geographic region** monitoring (enter/exit from regions)
 - **Beacon Family and Beacon** monitoring
@@ -21,9 +20,9 @@ Main features includes:
 
 ###Pre-requisites
 
-Before using SwiftLocation you must configure your project to use location services. First of all you need to specify a value for NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription into your application's Info.plist file. The string value you add will be shown along with the authorization request the first time your app will try to use location services hardware.
+Before using SwiftLocation you must configure your project to use location services. First of all you need to specify a value for ```NSLocationAlwaysUsageDescription``` or ```NSLocationWhenInUseUsageDescription``` into your application's Info.plist file. The string value you add will be shown along with the authorization request the first time your app will try to use location services hardware.
 
-If you need background monitoring you should specify NSLocationAlwaysUsageDescription and specify the correct value in UIBackgroundModes key (you can learn more [here](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html))
+If you need background monitoring you should specify ```NSLocationAlwaysUsageDescription``` and specify the correct value in ```UIBackgroundModes``` key (you can learn more [here](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html))
 
 ###SwiftLocation in your next big project? Tell it to me!
 
