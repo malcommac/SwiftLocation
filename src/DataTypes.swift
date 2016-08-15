@@ -32,7 +32,7 @@ import MapKit
 
 /// Handlers
 
-public typealias LocationHandlerError = (LocationError -> Void)
+public typealias LocationHandlerError = ((CLLocation?, LocationError) -> Void)
 public typealias LocationHandlerSuccess = (CLLocation -> Void)
 public typealias LocationHandlerPaused = (CLLocation? -> Void)
 

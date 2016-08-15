@@ -32,7 +32,7 @@ import MapKit
 
 public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
-	private(set) var lastLocation: CLLocation?
+	public private(set) var lastLocation: CLLocation?
 
 		/// Shared instance of the location manager
 	public static let shared = LocationManager()
@@ -390,7 +390,9 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	private func pauseAllLocationRequest() {
 		self.locationObservers.forEach { handler in
-			handler.pause()
+            if handler.isEnabled {
+                handler.pause()
+            }
 		}
 	}
 	

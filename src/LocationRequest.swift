@@ -64,8 +64,11 @@ public class LocationRequest: LocationManagerRequest {
 		/// A nil value means "do not use timeout".
 	public var timeout: NSTimeInterval? = nil
 	
-		/// This is the last location received for this request. Maybe nil if any valid request is received yet.
-	private(set) var lastLocation: CLLocation?
+		/// This is the last location matching the requested accuracy received for this request. Maybe nil if any valid request is received yet.
+	private(set) var lastValidLocation: CLLocation?
+    
+        /// This is the last location received for this request which might not match requested accuracy. Maybe nil if any valid request is received yet.
+    private(set) var lastLocation: CLLocation?
 	
 		/// This is the frequency internval you want to receive updates about this monitor session
 	public var frequency: UpdateFrequency = .Continuous {
@@ -159,25 +162,23 @@ public class LocationRequest: LocationManagerRequest {
 	
 	//MARK: - Private Methods
 	
-	internal func setTimeoutTimer(start: Bool) {
-		if let _ = self.timeoutTimer {
-			self.timeoutTimer!.invalidate()
-			self.timeoutTimer = nil
-		}
-		guard start == true, let interval = self.timeout else { return }
-		self.timeoutTimer = NSTimer(timeInterval: interval, target: self, selector: #selector(timeoutTimerFired), userInfo: nil, repeats: false)
+	internal func setTimeoutTimer(shouldStart: Bool) {
+        self.timeoutTimer?.invalidate()
+        self.timeoutTimer = nil
+        
+		guard let interval = self.timeout where shouldStart else { return }
+		self.timeoutTimer = NSTimer.scheduledTimerWithTimeInterval(interval, target: self, selector: #selector(timeoutTimerFired), userInfo: nil, repeats: false)
 	}
 	
 	@objc func timeoutTimerFired() {
-		if self.onErrorHandler != nil {
-			self.onErrorHandler!(LocationError.RequestTimeout)
-		}
-		self.stop()
+        self.onErrorHandler?(self.lastLocation, LocationError.RequestTimeout)
+		
+        self.stop()
 	}
 	
 	internal func didReceiveEventFromLocationManager(error error: LocationError?, location: CLLocation?) -> Bool {
 		if let error = error {
-			self.onErrorHandler?(error)
+			self.onErrorHandler?(location, error)
 			self.stop()
 			return true
 		}
@@ -186,8 +187,8 @@ public class LocationRequest: LocationManagerRequest {
 			if self.isValidLocation(location) == false {
 				return false
 			}
-			self.lastLocation = location
-			self.onSuccessHandler?(self.lastLocation!)
+			self.lastValidLocation = location
+			self.onSuccessHandler?(self.lastValidLocation!)
 			if self.frequency == .OneShot {
 				self.stop()
 			}
@@ -199,21 +200,23 @@ public class LocationRequest: LocationManagerRequest {
 	}
 	
 	internal func isValidLocation(loc: CLLocation) -> Bool {
+        self.lastLocation = loc
+        
 		if self.accuracy.isLocationValidForAccuracy(loc) == false {
 			return false
 		}
 		
-		if let lastLocation = self.lastLocation {
+		if let lastValidLocation = self.lastValidLocation {
 			if case .ByDistanceIntervals(let meters) = self.frequency {
-				let distanceSinceLastReport = lastLocation.distanceFromLocation(loc)
+				let distanceSinceLastReport = lastValidLocation.distanceFromLocation(loc)
 				if distanceSinceLastReport < meters {
 					return false
 				}
 			}
 		}
 		
-		let afterLastLocation = (self.lastLocation == nil ? true : loc.timestamp.timeIntervalSince1970 >= self.lastLocation!.timestamp.timeIntervalSince1970)
-		if afterLastLocation == false {
+		let afterLastValidLocation = (self.lastValidLocation == nil ? true : loc.timestamp.timeIntervalSince1970 >= self.lastValidLocation!.timestamp.timeIntervalSince1970)
+		if afterLastValidLocation == false {
 			return false
 		}
 		
@@ -221,7 +224,7 @@ public class LocationRequest: LocationManagerRequest {
 	}
 	
 	public func reverseLocation(onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) throws  {
-		guard let loc = self.lastLocation else {
+		guard let loc = self.lastValidLocation else {
 			throw LocationError.LocationNotAvailable
 		}
 		LocationManager.shared.reverseLocation(location: loc, onSuccess: sHandler, onError: fHandler)
