@@ -496,6 +496,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos appletvos appletvossimulator macosx";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -515,6 +516,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos appletvos appletvossimulator macosx";
 			};
 			name = Release;
 		};
@@ -599,6 +601,7 @@
 				213F85191D61C7FC00835DCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
