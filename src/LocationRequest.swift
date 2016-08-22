@@ -191,8 +191,19 @@ public class LocationRequest: Request  {
 			self.onSuccessHandler?(self.lastValidLocation!)
 			if self.frequency == .OneShot {
 				self.cancel()
-			}
-			self.setTimeoutTimer(true)
+            }else if self.frequency == .Continuous{
+                // if location is valid and is required in continuous frequency
+                self.setTimeoutTimer(true)
+            }else{
+                // if location is required to be updated by distance interval or by significant distance,
+                // don't use timeout as no one can predict when the distance will change and thus canceling the request would
+                // prevent any future move to trigger the update.
+                // It's on client app's responsibility to cancel request if it decided that too much time elapsed between two updates.
+                // Also "pause" should be used instead of "cancel" in these cases as cancel makes the request impossible to restart.
+                // So timeout timer is only used until the first update. Then it's canceled.
+                self.setTimeoutTimer(false)
+            }
+            
 			return true
 		}
 		
