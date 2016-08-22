@@ -119,6 +119,24 @@ internal struct CLPlacemarkDictionaryKey {
 	static let kCountryCode           = "CountryCode"
 }
 
+// MARK: - CLAuthorizationStatus description implementation
+extension CLAuthorizationStatus: CustomStringConvertible {
+	public var description: String {
+		switch self {
+		case .Denied:
+			return "User Denied"
+		case .AuthorizedAlways:
+			return "Always Authorized"
+		case .NotDetermined:
+			return "Not Determined"
+		case .Restricted:
+			return "Restricted"
+		case .AuthorizedWhenInUse:
+			return "Authorized In Use"
+		}
+	}
+}
+
 // MARK: - Location Errors
 
 /**
@@ -147,8 +165,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "Missing Authorization in .plist file"
 		case .RequestTimeout:
 			return "Timeout for request"
-		case .AuthorizationDidChange:
-			return "Authorization did change"
+		case .AuthorizationDidChange(let status):
+			return "Failed due to user auth status: '\(status)'"
 		case .LocationManager(let err):
 			if let error = err {
 				return "Location manager error: \(error.localizedDescription)"
