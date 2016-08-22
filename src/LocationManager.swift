@@ -334,7 +334,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			if (globalAccuracy == nil || observer.accuracy.rawValue > globalAccuracy!.rawValue) {
 				globalAccuracy = observer.accuracy
 			}
-			if (globalFrequency == nil || observer.frequency < globalFrequency) {
+			if (globalFrequency == nil || (globalFrequency != nil && observer.frequency < globalFrequency!)) {
 				globalFrequency = observer.frequency
 			}
 			activityType = (observer.activityType.rawValue > activityType.rawValue ? observer.activityType : activityType)
@@ -383,7 +383,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	private func cleanUpAllLocationRequests(_ error: LocationError) {
 		self.locationObservers.forEach { handler in
-			handler.didReceiveEventFromLocationManager(error: error, location: nil)
+			let _ = handler.didReceiveEventFromLocationManager(error: error, location: nil)
 		}
 	}
 	
@@ -416,7 +416,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	@objc public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
 		self.locationObservers.forEach { handler in
-			handler.didReceiveEventFromLocationManager(error: LocationError.locationManager(error: error), location: nil)
+			let _ = handler.didReceiveEventFromLocationManager(error: LocationError.locationManager(error: error as NSError?), location: nil)
 		}
 	}
 	
@@ -425,7 +425,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
 		)
 		self.locationObservers.forEach { handler in
-			handler.didReceiveEventFromLocationManager(error: nil, location: self.lastLocation)
+			let _ = handler.didReceiveEventFromLocationManager(error: nil, location: self.lastLocation)
 		}
 	}
 	
@@ -455,7 +455,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let geocoder = CLGeocoder()
 		geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error))
+				fHandler(LocationError.locationManager(error: error as NSError?))
 			} else {
 				if let placemark = placemarks?[0] {
 					sHandler(placemark)
@@ -478,7 +478,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error))
+				fHandler(LocationError.locationManager(error: error as NSError?))
 			} else {
 				if data != nil {
 					let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
@@ -501,13 +501,13 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	private func reverse_location_apple(_ location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-			if (placemarks?.count > 0) {
+			if (placemarks!.count > 0) {
 				let placemark: CLPlacemark! = placemarks![0]
 				if (placemark.locality != nil && placemark.administrativeArea != nil) {
 					sHandler(placemark)
 				}
 			} else {
-				fHandler(LocationError.locationManager(error: error))
+				fHandler(LocationError.locationManager(error: error as NSError?))
 			}
 		}
 		return geocoder
@@ -525,7 +525,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error))
+				fHandler(LocationError.locationManager(error: error as NSError?))
 			} else {
 				if data != nil {
 					let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
@@ -578,16 +578,16 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let coordinate = CLLocationCoordinate2D(latitude: location.object(forKey: "lat") as! Double, longitude: location.object(forKey: "lng") as! Double)
 		
 		let addressComponents = locationDict.object(forKey: "address_components") as! NSArray
-		let formattedAddressArray = (locationDict.object(forKey: "formatted_address") as! NSString).components(separatedBy: ", ") as Array
+		let formattedAddressArray = (locationDict.object(forKey: "formatted_address") as! NSString).components(separatedBy: ", ")
 		
 		addressDict[CLPlacemarkDictionaryKey.kSubAdministrativeArea] = JSONComponent("administrative_area_level_2", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kSubLocality] = JSONComponent("subLocality", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kState] = JSONComponent("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
 		addressDict[CLPlacemarkDictionaryKey.kStreet] = formattedAddressArray.first! as NSString
 		addressDict[CLPlacemarkDictionaryKey.kThoroughfare] = JSONComponent("route", inArray: addressComponents, ofType: "long_name")
-		addressDict[CLPlacemarkDictionaryKey.kFormattedAddressLines] = formattedAddressArray
+		addressDict[CLPlacemarkDictionaryKey.kFormattedAddressLines] = formattedAddressArray as AnyObject
 		addressDict[CLPlacemarkDictionaryKey.kSubThoroughfare] = JSONComponent("street_number", inArray: addressComponents, ofType: "long_name")
-		addressDict[CLPlacemarkDictionaryKey.kPostCodeExtension] = ""
+		addressDict[CLPlacemarkDictionaryKey.kPostCodeExtension] = "" as AnyObject
 		addressDict[CLPlacemarkDictionaryKey.kCity] = JSONComponent("locality", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kZIP] = JSONComponent("postal_code", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kCountry] = JSONComponent("country", inArray: addressComponents, ofType: "long_name")
@@ -613,23 +613,24 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	private func validateGoogleJSONResponse(_ jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool?) {
-		var status = jsonResult.value(forKey: "status") as! NSString
-		status = status.lowercased
-		if status.isEqual(to: "ok") == true { // everything is fine, the sun is shining and we have results!
-			return (nil,false)
-		} else if status.isEqual(to: "zero_results") == true { // No results error
-			return (nil,true)
-		} else if status.isEqual(to: "over_query_limit") == true { // Quota limit was excedeed
-			let message	= "Query quota limit was exceeded"
-			return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
-		} else if status.isEqual(to: "request_denied") == true { // Request was denied
-			let message	= "Request denied"
-			return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
-		} else if status.isEqual(to: "invalid_request") == true { // Invalid parameters
-			let message	= "Invalid input sent"
-			return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
+		let status = (jsonResult.value(forKey: "status") as! String).lowercased()
+		switch status {
+			case "ok": // everything is fine, the sun is shining and we have results!
+				return (nil,false)
+			case "zero_results": // No results error
+				return (nil,true)
+			case "over_query_limit":
+				let message	= "Query quota limit was exceeded" // Quota limit was excedeed
+				return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
+			case "request_denied": // Request was denied
+				let message	= "Request denied"
+				return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
+			case "invalid_request": // Invalid parameters
+				let message	= "Invalid input sent"
+				return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
+			default: // okay!
+				return (nil,false)
 		}
-		return (nil,false) // okay!
 	}
 	
 }

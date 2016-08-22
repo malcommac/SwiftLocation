@@ -154,6 +154,9 @@ public class HeadingRequest: Request {
 		
 		switch self.frequency {
 		case .continuous(let interval):
+			guard let interval = interval else {
+				return true
+			}
 			let elapsedTime = (heading.timestamp.timeIntervalSince1970 - lastHeading.timestamp.timeIntervalSince1970)
 			return (elapsedTime > interval)
 		case .magneticNorth(let minChange):

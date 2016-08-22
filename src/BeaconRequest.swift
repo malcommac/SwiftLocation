@@ -104,9 +104,9 @@ public class BeaconRequest: Equatable {
 	
 	internal func dataToAdvertise() -> [String:AnyObject]? {
 		let data: [String:AnyObject]? = [
-			CBAdvertisementDataLocalNameKey : self.identifier,
+			CBAdvertisementDataLocalNameKey : self.identifier as AnyObject,
 			CBAdvertisementDataManufacturerDataKey : self.beaconRegion!.peripheralData(withMeasuredPower: nil),
-			CBAdvertisementDataServiceUUIDsKey : [self.UUID]]
+			CBAdvertisementDataServiceUUIDsKey : [self.UUID] as AnyObject]
 		return data
 	}
 	

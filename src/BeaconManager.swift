@@ -314,7 +314,7 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
 		if let request = self.monitoredBeacons.filter({request in return request.beaconRegion == region}).first {
-			request.onRangeDidFail?(LocationError.locationManager(error: error))
+			request.onRangeDidFail?(LocationError.locationManager(error: error as NSError?))
 			self.stopMonitorForBeaconRegion(request)
 		}
 	}
@@ -327,7 +327,7 @@ public class BeaconManager: NSObject, CLLocationManagerDelegate, CBPeripheralMan
 	
 	public func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
 		if let request = self.monitoredBeacons.filter({request in return request.beaconRegion == region}).first {
-			request.onRangeDidFail?(LocationError.locationManager(error: error))
+			request.onRangeDidFail?(LocationError.locationManager(error: error as NSError?))
 			self.stopMonitorForBeaconRegion(request)
 		}
 	}

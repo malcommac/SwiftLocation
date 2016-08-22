@@ -176,29 +176,43 @@ public class LocationRequest: Request  {
         self.cancel()
 	}
 	
-	internal func didReceiveEventFromLocationManager(error: LocationError?, location: CLLocation?) {
+	internal func didReceiveEventFromLocationManager(error: LocationError?, location: CLLocation?) -> Bool {
 		if let error = error {
 			self.onErrorHandler?(location, error)
 			self.cancel()
-			return
+			return true
 		}
 		
 		if let location = location {
 			if self.isValidLocation(location) == false {
-				return
+				return false
 			}
 			self.lastValidLocation = location
 			self.onSuccessHandler?(self.lastValidLocation!)
 			if self.frequency == .oneShot {
 				self.cancel()
+			}else if self.frequency == .continuous{
+				// if location is valid and is required in continuous frequency
+				self.setTimeoutTimer(true)
+			}else{
+				// if location is required to be updated by distance interval or by significant distance,
+				// don't use timeout as no one can predict when the distance will change and thus canceling the request would
+				// prevent any future move to trigger the update.
+				// It's on client app's responsibility to cancel request if it decided that too much time elapsed between two updates.
+				// Also "pause" should be used instead of "cancel" in these cases as cancel makes the request impossible to restart.
+				// So timeout timer is only used until the first update. Then it's canceled.
+				self.setTimeoutTimer(false)
 			}
-			self.setTimeoutTimer(true)
+			
+			return true
 		}
+		
+		return false
 	}
 	
 	internal func isValidLocation(_ loc: CLLocation) -> Bool {
         self.lastLocation = loc
-        
+		
 		if self.accuracy.isLocationValidForAccuracy(loc) == false {
 			return false
 		}
