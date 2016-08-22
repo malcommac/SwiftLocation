@@ -299,9 +299,13 @@ public enum Accuracy: Int {
 	
 	- returns: true if location has an accuracy equal or grater than the one set by the struct itself
 	*/
-	internal func isLocationValidForAccuracy(_ obj: CLLocation) -> Bool {
-		let hAccuracy = obj.horizontalAccuracy
-		return (hAccuracy <= self.meters)
+	internal func isLocationValidForAccuracy(obj: CLLocation) -> Bool {
+		switch self {
+		case Room, .Navigation:
+			return (obj.horizontalAccuracy < kCLLocationAccuracyNearestTenMeters)
+		default:
+			return (obj.horizontalAccuracy <= self.meters)
+		}
 	}
 }
 
