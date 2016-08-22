@@ -422,10 +422,11 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	@objc public func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+	@objc public func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {		
 		self.lastLocation = locations.maxElement({ (l1, l2) -> Bool in
 			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
 		)
+		
 		self.locationObservers.forEach { handler in
 			handler.didReceiveEventFromLocationManager(error: nil, location: self.lastLocation)
 		}

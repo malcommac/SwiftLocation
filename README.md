@@ -13,7 +13,6 @@ SwiftLocation
 SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) monitor beacons and do beacon advertising.
 It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 
-
 Pick the right version:
 
 - Official **Swift 2.2** is in master (and develop)
@@ -247,6 +246,19 @@ You can set your device to act like a beacon (this feature works only in foregro
 ```swift
 let beacon = BeaconRequest(beaconWithUUID: uuid, major: major, minor: minor)	Beacon.advertise(beacon)
 ```
+
+Changes
+-------
+
+
+### Version 1.0.1 (2016/08/22):
+- [FIX #48](https://github.com/malcommac/SwiftLocation/issues/48) Fixed an issue which blocks the library to report correct values for ```.Room``` and ```.Navigation``` accuracy levels
+- [FIX #55](https://github.com/malcommac/SwiftLocation/issues/55) Fixed an issue with timeout timer of location manager which is called even when the location was found correctly.
+- [NEW] ```CLLocationAuthorizationStatus``` is now conform to CustomStringConvertible protocol.
+
+### Version 1.0.0 (2016/08/15):
+- First stable version
+
 
 Installation
 -------

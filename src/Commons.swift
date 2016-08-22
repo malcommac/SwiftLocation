@@ -119,6 +119,24 @@ internal struct CLPlacemarkDictionaryKey {
 	static let kCountryCode           = "CountryCode"
 }
 
+// MARK: - CLAuthorizationStatus description implementation
+extension CLAuthorizationStatus: CustomStringConvertible {
+	public var description: String {
+		switch self {
+		case .Denied:
+			return "User Denied"
+		case .AuthorizedAlways:
+			return "Always Authorized"
+		case .NotDetermined:
+			return "Not Determined"
+		case .Restricted:
+			return "Restricted"
+		case .AuthorizedWhenInUse:
+			return "Authorized In Use"
+		}
+	}
+}
+
 // MARK: - Location Errors
 
 /**
@@ -147,8 +165,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "Missing Authorization in .plist file"
 		case .RequestTimeout:
 			return "Timeout for request"
-		case .AuthorizationDidChange:
-			return "Authorization did change"
+		case .AuthorizationDidChange(let status):
+			return "Failed due to user auth status: '\(status)'"
 		case .LocationManager(let err):
 			if let error = err {
 				return "Location manager error: \(error.localizedDescription)"
@@ -300,8 +318,12 @@ public enum Accuracy: Int {
 	- returns: true if location has an accuracy equal or grater than the one set by the struct itself
 	*/
 	internal func isLocationValidForAccuracy(obj: CLLocation) -> Bool {
-		let hAccuracy = obj.horizontalAccuracy
-		return (hAccuracy <= self.meters)
+		switch self {
+		case Room, .Navigation:
+			return (obj.horizontalAccuracy < kCLLocationAccuracyNearestTenMeters)
+		default:
+			return (obj.horizontalAccuracy <= self.meters)
+		}
 	}
 }
 
