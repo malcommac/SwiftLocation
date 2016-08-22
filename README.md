@@ -247,6 +247,19 @@ You can set your device to act like a beacon (this feature works only in foregro
 let beacon = BeaconRequest(beaconWithUUID: uuid, major: major, minor: minor)	Beacon.advertise(beacon)
 ```
 
+Changes
+-------
+
+
+### Version 1.0.1 (2016/08/22):
+- [FIX #48](https://github.com/malcommac/SwiftLocation/issues/48) Fixed an issue which blocks the library to report correct values for ```.Room``` and ```.Navigation``` accuracy levels
+- [FIX #55](https://github.com/malcommac/SwiftLocation/issues/55) Fixed an issue with timeout timer of location manager which is called even when the location was found correctly.
+- [NEW] ```CLLocationAuthorizationStatus``` is now conform to CustomStringConvertible protocol.
+
+### Version 1.0.0 (2016/08/15):
+- First stable version
+
+
 Installation
 -------
 
