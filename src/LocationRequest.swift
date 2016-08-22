@@ -213,7 +213,7 @@ public class LocationRequest: Request  {
 	internal func isValidLocation(_ loc: CLLocation) -> Bool {
         self.lastLocation = loc
 		
-		if self.accuracy.isLocationValidForAccuracy(loc) == false {
+		if self.accuracy.isLocationValidForAccuracy(obj: loc) == false {
 			return false
 		}
 		

@@ -301,7 +301,7 @@ public enum Accuracy: Int {
 	*/
 	internal func isLocationValidForAccuracy(obj: CLLocation) -> Bool {
 		switch self {
-		case Room, .Navigation:
+		case .room, .navigation:
 			return (obj.horizontalAccuracy < kCLLocationAccuracyNearestTenMeters)
 		default:
 			return (obj.horizontalAccuracy <= self.meters)
