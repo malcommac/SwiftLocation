@@ -53,7 +53,21 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		super.init()
 		self.manager.delegate = self
 	}
+
+	//MARK: Public Methods
+
+	/**
+	You can use the region-monitoring service to be notified when the user crosses a region-based boundary.
 	
+	- parameter coordinates:      the center point of the region
+	- parameter radius:           the radius of the region in meters
+	- parameter onStateDidChange: event fired when region in/out events are catched
+	- parameter onError:          event fired in case of error. request is aborted automatically
+	
+	- throws: throws an exception if monitor is not supported or invalid region was specified
+	
+	- returns: request
+	*/
 	public func monitor(geographicRegion coordinates: CLLocationCoordinate2D, radius: CLLocationDistance, onStateDidChange: RegionStateDidChange, onError: RegionMonitorError) throws -> GeoRegionRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLCircularRegion.self) == false {
 			throw LocationError.NotSupported
@@ -65,6 +79,19 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return request
 	}
 	
+	/**
+	Monitor for beacon region in/out events
+	
+	- parameter proximityUUID:    This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
+	- parameter major:            The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
+	- parameter minor:            The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
+	- parameter onStateDidChange: event fired when region in/out events are catched
+	- parameter onError:          event fired in case of error. request is aborted automatically
+	
+	- throws: throws an exception if monitor is not supported or invalid region was specified
+	
+	- returns: request
+	*/
 	public func monitor(beaconRegion proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onStateDidChange: RegionStateDidChange, onError: RegionMonitorError) throws -> BeaconRegionRequest {
 		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
 		request.onStateDidChange = onStateDidChange
@@ -73,6 +100,19 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return request
 	}
 	
+	/**
+	Monitor for beacons proximity events
+	
+	- parameter proximityUUID:    This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
+	- parameter major:            The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
+	- parameter minor:            The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
+	- parameter onRangingBeacons: Event fired when one or more beacon are ranged
+	- parameter onError:          Event fired in case of error. request is aborted automatically
+	
+	- throws: throws an exception if monitor is not supported or invalid region was specified
+	
+	- returns: request
+	*/
 	public func monitor(beaconsRanging proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onRangingBeacons: RegionBeaconsRanging, onError: RegionMonitorError) throws -> BeaconRegionRequest {
 		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
 		request.onRangingBeacons = onRangingBeacons
@@ -90,6 +130,8 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		self.advertisedDevices.append(request)
 		return true
 	}
+	
+	//MARK: Private Methods
 	
 	internal func stopAdvertise(beaconName: String, error: LocationError?) -> Bool {
 		guard let idx = self.advertisedDevices.indexOf({ $0.name == beaconName }) else {
