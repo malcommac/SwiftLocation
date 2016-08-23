@@ -30,6 +30,41 @@ import Foundation
 import CoreLocation
 import MapKit
 
+public enum RequestState {
+	case Pending
+	case Paused
+	case Cancelled(error: LocationError?)
+	case Running
+	case WaitingUserAuth
+	
+	public var isRunning: Bool {
+		switch self {
+		case .Running:
+			return true
+		default:
+			return false
+		}
+	}
+	
+	public var canStart: Bool {
+		switch self {
+		case .Paused, .Pending:
+			return true
+		default:
+			return false
+		}
+	}
+	
+	public var isPending: Bool {
+		switch self {
+		case .Pending, .WaitingUserAuth:
+			return true
+		default:
+			return false
+		}
+	}
+}
+
 extension CLGeocoder: Request {
 	
 	public func cancel() {
@@ -70,6 +105,7 @@ public protocol Request {
 	func start()
 	
 	var UUID: String { get }
+	var state: RequestState { get }
 }
 
 /// Handlers
@@ -158,6 +194,7 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 	case LocationNotAvailable
 	case NoDataReturned
 	case NotSupported
+	case InvalidBeaconData
 	
 	public var description: String {
 		switch self {
@@ -179,6 +216,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "No Data Returned"
 		case .NotSupported:
 			return "Feature Not Supported"
+		case .InvalidBeaconData:
+			return "Cannot create monitor for beacon. Invalid data"
 		}
 	}
 }
