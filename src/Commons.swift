@@ -68,7 +68,7 @@ public enum RequestState {
 
 extension CLGeocoder: Request {
 	
-	public func cancel() {
+	public func cancel(error: LocationError?) {
 		cancelGeocode()
 	}
 	
@@ -103,13 +103,17 @@ extension NSURLSessionDataTask: Request {
 		return "\(self.hash)"
 	}
 	
+	public func cancel(error: LocationError?) {
+		self.cancel()
+	}
+	
 	public var rState: RequestState {
 		return .Undetermined
 	}
 }
 
 public protocol Request {
-	func cancel()
+	func cancel(error: LocationError?)
 	func pause()
 	func start()
 	

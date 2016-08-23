@@ -247,7 +247,6 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	internal func stopInterestingPlacesRequest(request: VisitRequest) -> Bool {
 		if let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) {
-			self.visitsObservers[idx].isEnabled = false
 			self.visitsObservers.removeAtIndex(idx)
 			self.updateVisitingService()
 			return true
@@ -255,13 +254,14 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return false
 	}
 	
-	internal func addVisitRequest(handler: VisitRequest) -> VisitRequest {
+	internal func addVisitRequest(handler: VisitRequest) -> Bool {
 		if self.visitsObservers.indexOf({$0.UUID == handler.UUID}) == nil {
 			self.visitsObservers.append(handler)
-			handler.isEnabled = true
+		} else {
+			return false
 		}
 		self.updateVisitingService()
-		return handler
+		return true
 	}
 	
 	internal func stopHeadingRequest(request: HeadingRequest) -> Bool {
@@ -290,7 +290,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func updateHeadingService() {
-		let enabledObservers = headingObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = headingObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingHeading()
 			return
@@ -303,7 +303,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func updateVisitingService() {
-		let enabledObservers = visitsObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = visitsObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopMonitoringVisits()
 		} else {
@@ -312,7 +312,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func updateLocationUpdateService() {
-		let enabledObservers = locationObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = locationObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingLocation()
 			self.manager.stopMonitoringSignificantLocationChanges()
@@ -377,7 +377,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	private func pauseAllLocationRequest() {
 		self.locationObservers.forEach { handler in
-            if handler.isEnabled {
+            if handler.rState.isRunning {
                 handler.pause()
             }
 		}
@@ -398,11 +398,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private Methods] Location Manager Delegate
 	
 	@objc public func locationManager(manager: CLLocationManager, didVisit visit: CLVisit) {
-		self.visitsObservers.forEach { handler in
-			if (handler.isEnabled == true) {
-				handler.onDidVisitPlace?(visit)
-			}
-		}
+		self.visitsObservers.filter { $0.rState.isRunning }.forEach { $0.onDidVisitPlace?(visit) }
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {

@@ -16,17 +16,17 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
-		let major = CLBeaconMajorValue(13017)
-		let minor = CLBeaconMinorValue(22994)
-		do {
-			try Beacon.monitorForBeacon(proximityUUID: "B9407F30-F5F8-466E-AFF9-25556B57FE6D", major: major, minor: minor, onFound: { (beacons) in
-				print("found \(beacons.count)")
-			}) { (error) in
-				print(error)
-			}
-		} catch let err {
-			print(err)
-		}
+//		let major = CLBeaconMajorValue(13017)
+//		let minor = CLBeaconMinorValue(22994)
+//		do {
+//			try Beacon.monitorForBeacon(proximityUUID: "B9407F30-F5F8-466E-AFF9-25556B57FE6D", major: major, minor: minor, onFound: { (beacons) in
+//				print("found \(beacons.count)")
+//			}) { (error) in
+//				print(error)
+//			}
+//		} catch let err {
+//			print(err)
+//		}
 	}
 
 	override func didReceiveMemoryWarning() {

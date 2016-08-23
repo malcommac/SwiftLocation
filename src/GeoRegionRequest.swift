@@ -52,8 +52,8 @@ public class GeoRegionRequest: Request {
 		self.region = CLCircularRegion(center: coordinates, radius: radius, identifier: self.UUID)
 	}
 	
-	public func cancel() {
-		Beacons.remove(request: self)
+	public func cancel(error: LocationError?) {
+		Beacons.remove(request: self, error: error)
 	}
 	
 	public func pause() {

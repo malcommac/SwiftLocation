@@ -37,8 +37,9 @@ public class VisitRequest: Request {
 	public var onDidVisitPlace: VisitHandler?
 
 		/// Private vars
-	internal(set) var isEnabled: Bool = false
 	public var UUID: String = NSUUID().UUIDString
+	
+	public var rState: RequestState = .Pending
 	
 	
 	/**
@@ -68,17 +69,25 @@ public class VisitRequest: Request {
 	Start a new visit request
 	*/
 	public func start() {
-		Location.addVisitRequest(self)
+		if Location.addVisitRequest(self) {
+			self.rState = .Running
+		}
 	}
 	
 	/**
 	Stop a visit request and remove it from the queue
 	*/
-	public func cancel() {
-		Location.stopInterestingPlacesRequest(self)
+	public func cancel(error: LocationError?) {
+		if self.rState.isRunning {
+			if Location.stopInterestingPlacesRequest(self) {
+				self.rState = .Cancelled(error: error)
+			}
+		}
 	}
 	
 	public func pause() {
-		self.isEnabled = false
+		if self.rState.isRunning {
+			self.rState = .Paused
+		}
 	}
 }

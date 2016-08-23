@@ -40,9 +40,7 @@ public class HeadingRequest: Request {
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
 	
-	// Private variables
-	
-	internal var isEnabled: Bool = false {
+	public var rState: RequestState = .Pending {
 		didSet {
 			Location.updateHeadingService()
 		}
@@ -110,38 +108,45 @@ public class HeadingRequest: Request {
 	Put the request in queue and starts it
 	*/
 	public func start() {
-		if self.isEnabled == true { return }
-		self.isEnabled = true
-		Location.addHeadingRequest(self)
+		if self.rState.canStart {
+			Location.addHeadingRequest(self)
+		}
 	}
 	
 	/**
 	Temporary pause request (not removed)
 	*/
 	public func pause() {
-		self.isEnabled = false
+		if self.rState.isRunning {
+			self.rState = .Paused
+			Location.updateHeadingService()
+		}
 	}
 	
 	/**
 	Terminate request
 	*/
-	public func cancel() {
-		self.isEnabled = false
-		Location.stopHeadingRequest(self)
+	public func cancel(error: LocationError?) {
+		if self.rState.isRunning {
+			if Location.stopHeadingRequest(self) {
+				self.rState = .Cancelled(error: error)
+			}
+		}
 	}
 	
 	//MARK: - Private
 	
 	internal func didReceiveEventFromManager(error: NSError?, heading: CLHeading?) {
 		if error != nil {
-			self.onError?(LocationError.LocationManager(error: error!))
-			self.cancel()
+			let err = LocationError.LocationManager(error: error!)
+			self.onError?(err)
+			self.cancel(err)
 			return
 		}
 		
 		if self.validateHeading(heading!) == true {
 			self.lastHeading = heading
-			if self.isEnabled == true {
+			if self.rState.isRunning == true {
 				self.onReceiveUpdates?(self.lastHeading!)
 			}
 		}

@@ -54,9 +54,9 @@ public class BeaconAdvertiseRequest: Request {
 		}
 	}
 	
-	public func cancel() {
+	public func cancel(error: LocationError?) {
 		if self.rState.isRunning == true {
-			Beacons.stopAdvertise(self.name, error: nil)
+			Beacons.stopAdvertise(self.name, error: error)
 		}
 	}
 	
