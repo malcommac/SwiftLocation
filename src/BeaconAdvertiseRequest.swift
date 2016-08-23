@@ -34,7 +34,7 @@ public class BeaconAdvertiseRequest: Request {
 	
 	
 	public var UUID: String
-	public var state: RequestState = .Pending
+	public var rState: RequestState = .Pending
 	private(set) var region: CLBeaconRegion
 	private(set) var RSSIPower: NSNumber?
 	private(set) var name: String
@@ -55,21 +55,21 @@ public class BeaconAdvertiseRequest: Request {
 	}
 	
 	public func cancel() {
-		if self.state.isRunning == true {
+		if self.rState.isRunning == true {
 			Beacons.stopAdvertise(self.name, error: nil)
 		}
 	}
 	
 	public func pause() {
-		if self.state.isRunning == true {
+		if self.rState.isRunning == true {
 			Beacons.stopAdvertise(self.name, error: nil)
-			self.state = .Paused
+			self.rState = .Paused
 		}
 	}
 	
 	public func start() {
-		if self.state.canStart == true {
-			self.state = .Running
+		if self.rState.canStart == true {
+			self.rState = .Running
 			Beacons.updateBeaconAdvertise()
 		}
 	}

@@ -33,12 +33,12 @@ import CoreLocation
 public class BeaconRegionRequest: Request {
 	
 	public var UUID: String
-	public var state: RequestState = .Pending
+	public var rState: RequestState = .Pending
 	private(set) var region: CLBeaconRegion
 	
-	public var onStateDidChange: GeoRegionStatusDidChange?
-	public var onRangingBeacons: BeaconsRangingEvent?
-	public var onError: GeoRegionError?
+	public var onStateDidChange: RegionStateDidChange?
+	public var onRangingBeacons: RegionBeaconsRanging?
+	public var onError: RegionMonitorError?
 	
 	init?(beaconProximityUUID UUID: String, major: CLBeaconMajorValue? = nil, minor: CLBeaconMinorValue? = nil) {
 		self.UUID = NSUUID().UUIDString
@@ -60,7 +60,7 @@ public class BeaconRegionRequest: Request {
 	
 	public func pause() {
 		if Beacons.remove(request: self) == true {
-			self.state = .Paused
+			self.rState = .Paused
 		}
 	}
 	

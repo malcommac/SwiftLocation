@@ -36,6 +36,7 @@ public enum RequestState {
 	case Cancelled(error: LocationError?)
 	case Running
 	case WaitingUserAuth
+	case Undetermined
 	
 	public var isRunning: Bool {
 		switch self {
@@ -82,6 +83,10 @@ extension CLGeocoder: Request {
 	public var UUID: String {
 		return "\(self.hash)"
 	}
+	
+	public var rState: RequestState {
+		return .Undetermined
+	}
 }
 
 extension NSURLSessionDataTask: Request {
@@ -97,6 +102,10 @@ extension NSURLSessionDataTask: Request {
 	public var UUID: String {
 		return "\(self.hash)"
 	}
+	
+	public var rState: RequestState {
+		return .Undetermined
+	}
 }
 
 public protocol Request {
@@ -105,7 +114,7 @@ public protocol Request {
 	func start()
 	
 	var UUID: String { get }
-	var state: RequestState { get }
+	var rState: RequestState { get }
 }
 
 /// Handlers
@@ -121,12 +130,11 @@ public typealias HeadingHandlerError = (LocationError -> Void)
 public typealias HeadingHandlerSuccess = (CLHeading -> Void)
 public typealias HeadingHandlerCalibration = (Void -> Bool)
 
-public typealias RegionHandlerStateDidChange = (Void -> Void)
-public typealias RegionHandlerError = (LocationError -> Void)
-
 public typealias VisitHandler = (CLVisit -> Void)
-public typealias DidRangeBeaconsHandler = ([CLBeacon] -> Void)
-public typealias RangeBeaconsDidFailHandler = (LocationError -> Void)
+
+public typealias RegionStateDidChange = (RegionState -> Void)
+public typealias RegionBeaconsRanging = ([CLBeacon] -> Void)
+public typealias RegionMonitorError = (LocationError -> Void)
 
 /**
 Type of service to used to perform the request

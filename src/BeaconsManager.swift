@@ -30,16 +30,12 @@ import Foundation
 import CoreLocation
 import CoreBluetooth
 
-public enum GeoRegionState {
+public enum RegionState {
 	case Entered
 	case Exited
 }
 
 public let Beacons :BeaconsManager = BeaconsManager.shared
-
-public typealias GeoRegionStatusDidChange = (GeoRegionState -> Void)
-public typealias BeaconsRangingEvent = ([CLBeacon] -> Void)
-public typealias GeoRegionError = (LocationError -> Void)
 
 public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralManagerDelegate {
 	public static let shared = BeaconsManager()
@@ -58,7 +54,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		self.manager.delegate = self
 	}
 	
-	public func monitor(geographicRegion coordinates: CLLocationCoordinate2D, radius: CLLocationDistance, onStateDidChange: GeoRegionStatusDidChange, onError: GeoRegionError) throws -> GeoRegionRequest {
+	public func monitor(geographicRegion coordinates: CLLocationCoordinate2D, radius: CLLocationDistance, onStateDidChange: RegionStateDidChange, onError: RegionMonitorError) throws -> GeoRegionRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLCircularRegion.self) == false {
 			throw LocationError.NotSupported
 		}
@@ -69,7 +65,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return request
 	}
 	
-	public func monitor(beaconRegion proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onStateDidChange: GeoRegionStatusDidChange, onError: GeoRegionError) throws -> BeaconRegionRequest {
+	public func monitor(beaconRegion proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onStateDidChange: RegionStateDidChange, onError: RegionMonitorError) throws -> BeaconRegionRequest {
 		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
 		request.onStateDidChange = onStateDidChange
 		request.onError = onError
@@ -77,7 +73,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return request
 	}
 	
-	public func monitor(beaconsRanging proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onRangingBeacons: BeaconsRangingEvent, onError: GeoRegionError) throws -> BeaconRegionRequest {
+	public func monitor(beaconsRanging proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onRangingBeacons: RegionBeaconsRanging, onError: RegionMonitorError) throws -> BeaconRegionRequest {
 		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
 		request.onRangingBeacons = onRangingBeacons
 		request.onError = onError
@@ -100,7 +96,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 			return false
 		}
 		let request = self.advertisedDevices[idx]
-		request.state = .Cancelled(error: error)
+		request.rState = .Cancelled(error: error)
 		self.advertisedDevices.removeAtIndex(idx)
 		self.updateBeaconAdvertise()
 		return false
@@ -117,7 +113,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	}
 	
 	internal func updateBeaconAdvertise() {
-		let active = self.advertisedDevices.filter { $0.state.isRunning }
+		let active = self.advertisedDevices.filter { $0.rState.isRunning }
 		if active.count == 0 {
 			self.peripheralManager?.stopAdvertising()
 			self.peripheralManager = nil
@@ -126,7 +122,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 				self.peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
 			}
 			active.forEach({
-				if $0.state.isPending == true {
+				if $0.rState.isPending == true {
 					self.peripheralManager?.startAdvertising($0.dataToAdvertise())
 				}
 			})
@@ -134,7 +130,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	}
 	
 	internal func add(request request: Request) -> Bool {
-		if request.state.canStart == false {
+		if request.rState.canStart == false {
 			return false
 		}
 		if self.monitoredGeoRegions.filter({ $0.UUID == request.UUID }).first != nil {
@@ -167,7 +163,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 			guard let idx = self.monitoredGeoRegions.indexOf({ $0.UUID == request.UUID }) else {
 				return false
 			}
-			request.state = .Cancelled(error: error)
+			request.rState = .Cancelled(error: error)
 			self.manager.stopMonitoringForRegion(request.region)
 			self.monitoredGeoRegions.removeAtIndex(idx)
 			return true
@@ -175,7 +171,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 			guard let idx = self.monitoredGeoRegions.indexOf({ $0.UUID == request.UUID }) else {
 				return false
 			}
-			request.state = .Cancelled(error: error)
+			request.rState = .Cancelled(error: error)
 			self.manager.stopMonitoringForRegion(request.region)
 			self.monitoredBeaconRegions.removeAtIndex(idx)
 			return true
@@ -202,12 +198,12 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	
 	internal func cancelAllMonitorsForRegion(error: LocationError) {
 		let list: [[Request]] = [self.monitoredBeaconRanging,self.monitoredBeaconRegions,self.monitoredGeoRegions]
-		list.forEach { $0.filter({ $0.state.isPending }).forEach({ self.remove(request: $0, error: error) }) }
+		list.forEach { $0.filter({ $0.rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
 	}
 	
 	internal func startPendingMonitors() {
 		let list: [[Request]] = [self.monitoredBeaconRanging,self.monitoredBeaconRegions,self.monitoredGeoRegions]
-		list.forEach { $0.filter({ $0.state.isPending }).forEach({ $0.start() }) }
+		list.forEach { $0.filter({ $0.rState.isPending }).forEach({ $0.start() }) }
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -229,7 +225,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 			self.advertisedDevices.forEach({ $0.start() })
 		} else {
 			let err = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : "Peripheral state changed to \(peripheral.state)"])
-			self.advertisedDevices.forEach({ $0.state = .Cancelled(error: LocationError.LocationManager(error: err)) })
+			self.advertisedDevices.forEach({ $0.rState = .Cancelled(error: LocationError.LocationManager(error: err)) })
 			self.advertisedDevices.removeAll()
 		}
 	}

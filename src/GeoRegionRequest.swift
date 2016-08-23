@@ -42,10 +42,10 @@ public class GeoRegionRequest: Request {
 	}
 	private(set) var region: CLCircularRegion
 	
-	public var onStateDidChange: GeoRegionStatusDidChange?
-	public var onError: GeoRegionError?
+	public var onStateDidChange: RegionStateDidChange?
+	public var onError: RegionMonitorError?
 	
-	public var state: RequestState = .Pending
+	public var rState: RequestState = .Pending
 	
 	public init(coordinates: CLLocationCoordinate2D, radius: CLLocationDistance) {
 		self.UUID = NSUUID().UUIDString
@@ -58,7 +58,7 @@ public class GeoRegionRequest: Request {
 	
 	public func pause() {
 		if Beacons.remove(request: self) == true {
-			self.state = .Paused
+			self.rState = .Paused
 		}
 	}
 	
