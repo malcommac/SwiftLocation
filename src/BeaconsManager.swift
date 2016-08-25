@@ -239,9 +239,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	
 	internal func cancelAllMonitorsForRegion(error: LocationError) {
 		let list: [[AnyObject]] = [self.monitoredBeaconRegions,self.monitoredGeoRegions]
-		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
-		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
-
+		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ self.remove(request: ($0 as! Request) , error: error) }) }
 	}
 	
 	internal func startPendingMonitors() {
