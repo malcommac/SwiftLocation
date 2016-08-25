@@ -16,9 +16,9 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
-		let major = CLBeaconMajorValue(13783)
-		let minor = CLBeaconMinorValue(51131)
-		let proximity = "B9407F30-F5F8-466E-AFF9-25556B57FE6D"
+	//	let major = CLBeaconMajorValue(13783)
+	//	let minor = CLBeaconMinorValue(51131)
+	//	let proximity = "B9407F30-F5F8-466E-AFF9-25556B57FE6D"
 		
 //		do {
 //			let beacon = Beacon(proximity: proximity, major: major, minor: minor)

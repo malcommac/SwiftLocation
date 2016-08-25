@@ -30,6 +30,12 @@ import Foundation
 import CoreLocation
 import MapKit
 
+/**
+State of the beacon region monitoring
+
+- Entered: entered into the region
+- Exited:  exited from the region
+*/
 public enum RegionState {
 	case Entered
 	case Exited

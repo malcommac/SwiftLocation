@@ -40,23 +40,25 @@ public class HeadingRequest: Request {
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
 	
+	internal weak var locator: LocatorManager?
+	
 	public var rState: RequestState = .Pending {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
 	/// Frequency value to receive new events
 	public var frequency: HeadingFrequency {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
 	/// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
 	public var accuracy: CLLocationDirection {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
@@ -108,8 +110,9 @@ public class HeadingRequest: Request {
 	Put the request in queue and starts it
 	*/
 	public func start() {
-		if self.rState.canStart {
-			Location.addHeadingRequest(self)
+		guard let locator = self.locator else { return }
+		if locator.add(self) {
+			self.rState = .Running
 		}
 	}
 	
@@ -118,8 +121,9 @@ public class HeadingRequest: Request {
 	*/
 	public func pause() {
 		if self.rState.isRunning {
+			guard let locator = self.locator else { return }
 			self.rState = .Paused
-			Location.updateHeadingService()
+			locator.updateHeadingService()
 		}
 	}
 	
@@ -127,10 +131,9 @@ public class HeadingRequest: Request {
 	Terminate request
 	*/
 	public func cancel(error: LocationError?) {
-		if self.rState.isRunning {
-			if Location.stopHeadingRequest(self) {
-				self.rState = .Cancelled(error: error)
-			}
+		guard let locator = self.locator else { return }
+		if locator.remove(self) {
+			self.rState = .Cancelled(error: error)
 		}
 	}
 	

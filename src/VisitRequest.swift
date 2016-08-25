@@ -40,7 +40,8 @@ public class VisitRequest: Request {
 	public var UUID: String = NSUUID().UUIDString
 	
 	public var rState: RequestState = .Pending
-	
+
+	internal weak var locator: LocatorManager?
 	
 	/**
 	Create a new request with an associated handler to call
@@ -69,7 +70,8 @@ public class VisitRequest: Request {
 	Start a new visit request
 	*/
 	public func start() {
-		if Location.addVisitRequest(self) {
+		guard let locator = self.locator else { return }
+		if locator.add(self) {
 			self.rState = .Running
 		}
 	}
@@ -78,8 +80,9 @@ public class VisitRequest: Request {
 	Stop a visit request and remove it from the queue
 	*/
 	public func cancel(error: LocationError?) {
+		guard let locator = self.locator else { return }
 		if self.rState.isRunning {
-			if Location.stopInterestingPlacesRequest(self) {
+			if locator.remove(self) {
 				self.rState = .Cancelled(error: error)
 			}
 		}

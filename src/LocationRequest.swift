@@ -42,6 +42,8 @@ public class LocationRequest: Request  {
 		/// Unique identifier of the request
 	public var UUID: String = NSUUID().UUIDString
 	
+	public weak var locator: LocatorManager?
+	
 	public var rState: RequestState = .Pending {
 		didSet {
 			switch rState {
@@ -57,7 +59,7 @@ public class LocationRequest: Request  {
 	/// The location manager uses the information in this property as a cue to determine when location updates may be automatically paused
 	public var activityType: CLActivityType = .Other {
 		didSet {
-			Location.updateLocationUpdateService()
+			locator?.updateLocationUpdateService()
 		}
 	}
 	
@@ -83,14 +85,14 @@ public class LocationRequest: Request  {
 		/// This is the frequency internval you want to receive updates about this monitor session
 	public var frequency: UpdateFrequency = .Continuous {
 		didSet {
-			Location.updateLocationUpdateService()
+			locator?.updateLocationUpdateService()
 		}
 	}
 	
 		/// This is the accuracy of location you consider valid for this monitor session
 	public var accuracy: Accuracy = .City {
 		didSet {
-			Location.updateLocationUpdateService()
+			locator?.updateLocationUpdateService()
 		}
 	}
 	
@@ -149,7 +151,8 @@ public class LocationRequest: Request  {
 	Terminate request
 	*/
 	public func cancel(error: LocationError?) {
-		if Location.stopLocationRequest(self) == true {
+		guard let locator = self.locator else { return }
+		if locator.remove(self) == true {
 			self.rState = .Cancelled(error:error)
 		}
 	}
@@ -158,16 +161,20 @@ public class LocationRequest: Request  {
 	Temporary pauses receiving updates for this request. Request is not removed from the queue and you can resume it using start()
 	*/
 	public func pause() {
-		self.rState = .Paused
-		Location.updateLocationUpdateService()
+		if self.rState.isRunning {
+			self.rState = .Paused
+			locator?.updateLocationUpdateService()
+		}
 	}
 	
 	/**
 	Start (or restart) a request
 	*/
 	public func start() {
-		self.rState = .Running
-		Location.addLocationRequest(self)
+		guard let locator = self.locator else { return }
+		if locator.add(self) {
+			self.rState = .Running
+		}
 	}
 	
 	//MARK: - Private Methods
