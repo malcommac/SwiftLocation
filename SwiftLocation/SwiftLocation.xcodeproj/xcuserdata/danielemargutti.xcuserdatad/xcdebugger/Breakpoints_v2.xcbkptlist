@@ -42,7 +42,7 @@
                   moduleName = "SwiftLocation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/LocationManager.swift"
-                  timestampString = "493659551.852466"
+                  timestampString = "493747447.97533"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "277"
@@ -57,7 +57,7 @@
                   moduleName = "SwiftLocation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/LocationManager.swift"
-                  timestampString = "493659551.852663"
+                  timestampString = "493747447.975432"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "277"
@@ -81,38 +81,6 @@
             endingLineNumber = "319"
             landmarkName = "locationManager(_:didEnterRegion:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.locationManager (__ObjC.CLLocationManager, didEnterRegion : __ObjC.CLRegion) -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.853637"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "319"
-                  endingLineNumber = "319"
-                  offsetFromSymbolStart = "44">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.(locationManager (__ObjC.CLLocationManager, didEnterRegion : __ObjC.CLRegion) -&gt; ()).(closure #1)"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.853775"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "319"
-                  endingLineNumber = "319"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -129,38 +97,6 @@
             endingLineNumber = "326"
             landmarkName = "locationManager(_:didExitRegion:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.locationManager (__ObjC.CLLocationManager, didExitRegion : __ObjC.CLRegion) -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.85463"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "326"
-                  endingLineNumber = "326"
-                  offsetFromSymbolStart = "44">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.(locationManager (__ObjC.CLLocationManager, didExitRegion : __ObjC.CLRegion) -&gt; ()).(closure #1)"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.85478"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "326"
-                  endingLineNumber = "326"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -177,38 +113,6 @@
             endingLineNumber = "339"
             landmarkName = "locationManager(_:didRangeBeacons:inRegion:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.locationManager (__ObjC.CLLocationManager, didRangeBeacons : Swift.Array&lt;__ObjC.CLBeacon&gt;, inRegion : __ObjC.CLBeaconRegion) -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.855584"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "339"
-                  endingLineNumber = "339"
-                  offsetFromSymbolStart = "48">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.(locationManager (__ObjC.CLLocationManager, didRangeBeacons : Swift.Array&lt;__ObjC.CLBeacon&gt;, inRegion : __ObjC.CLBeaconRegion) -&gt; ()).(closure #1)"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.855722"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "339"
-                  endingLineNumber = "339"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -241,38 +145,6 @@
             endingLineNumber = "127"
             landmarkName = "addMonitorForBeaconRegion(_:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.addMonitorForBeaconRegion (SwiftLocation.BeaconRequest) throws -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.857071"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "127"
-                  endingLineNumber = "127"
-                  offsetFromSymbolStart = "728">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.addMonitorForBeaconRegion (SwiftLocation.BeaconRequest) throws -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.857205"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "127"
-                  endingLineNumber = "127"
-                  offsetFromSymbolStart = "736">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -353,38 +225,6 @@
             endingLineNumber = "345"
             landmarkName = "locationManager(_:rangingBeaconsDidFailForRegion:withError:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.locationManager (__ObjC.CLLocationManager, rangingBeaconsDidFailForRegion : __ObjC.CLBeaconRegion, withError : __ObjC.NSError) -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.860163"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
-                  offsetFromSymbolStart = "48">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.(locationManager (__ObjC.CLLocationManager, rangingBeaconsDidFailForRegion : __ObjC.CLBeaconRegion, withError : __ObjC.NSError) -&gt; ()).(closure #1)"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.860283"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "345"
-                  endingLineNumber = "345"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -401,38 +241,6 @@
             endingLineNumber = "306"
             landmarkName = "locationManager(_:didDetermineState:forRegion:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.locationManager (__ObjC.CLLocationManager, didDetermineState : __C.CLRegionState, forRegion : __ObjC.CLRegion) -&gt; ()"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.860942"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "306"
-                  endingLineNumber = "306"
-                  offsetFromSymbolStart = "48">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftLocation.BeaconManager.(locationManager (__ObjC.CLLocationManager, didDetermineState : __C.CLRegionState, forRegion : __ObjC.CLRegion) -&gt; ()).(closure #1)"
-                  moduleName = "SwiftLocation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconManager.swift"
-                  timestampString = "493659551.861046"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "306"
-                  endingLineNumber = "306"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -448,6 +256,406 @@
             startingLineNumber = "307"
             endingLineNumber = "307"
             landmarkName = "locationManager(_:didDetermineState:forRegion:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconRegionRequest.swift"
+            timestampString = "493747028.777738"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "72"
+            endingLineNumber = "72"
+            landmarkName = "start()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
+            landmarkName = "add(request:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "299"
+            endingLineNumber = "299"
+            landmarkName = "locationManager(_:monitoringDidFailForRegion:withError:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "peripheralManagerDidUpdateState(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "294"
+            endingLineNumber = "294"
+            landmarkName = "locationManager(_:didExitRegion:)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.locationManager (__ObjC.CLLocationManager, didExitRegion : __ObjC.CLRegion) -&gt; ()"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.9804"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "294"
+                  endingLineNumber = "294"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.(locationManager (__ObjC.CLLocationManager, didExitRegion : __ObjC.CLRegion) -&gt; ()).(closure #1)"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.980502"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "294"
+                  endingLineNumber = "294"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "289"
+            endingLineNumber = "289"
+            landmarkName = "locationManager(_:didEnterRegion:)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.locationManager (__ObjC.CLLocationManager, didEnterRegion : __ObjC.CLRegion) -&gt; ()"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.98114"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "289"
+                  endingLineNumber = "289"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.(locationManager (__ObjC.CLLocationManager, didEnterRegion : __ObjC.CLRegion) -&gt; ()).(closure #1)"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.981248"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "289"
+                  endingLineNumber = "289"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
+            landmarkName = "locationManager(_:rangingBeaconsDidFailFor:withError:)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.locationManager (__ObjC.CLLocationManager, rangingBeaconsDidFailFor : __ObjC.CLBeaconRegion, withError : __ObjC.NSError) -&gt; ()"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.98403"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "305"
+                  endingLineNumber = "305"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.(locationManager (__ObjC.CLLocationManager, rangingBeaconsDidFailFor : __ObjC.CLBeaconRegion, withError : __ObjC.NSError) -&gt; ()).(closure #1)"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.984169"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "305"
+                  endingLineNumber = "305"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "197"
+            endingLineNumber = "197"
+            landmarkName = "add(request:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
+            landmarkName = "add(request:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
+            landmarkName = "remove(request:error:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747447.832999"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "230"
+            endingLineNumber = "230"
+            landmarkName = "remove(request:error:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftLocationDemo/ViewController.swift"
+            timestampString = "493746838.424927"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftLocationDemo/ViewController.swift"
+            timestampString = "493746838.80762"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftLocationDemo/ViewController.swift"
+            timestampString = "493746839.336259"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftLocationDemo/ViewController.swift"
+            timestampString = "493746840.528936"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747423.849444"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "309"
+            endingLineNumber = "309"
+            landmarkName = "locationManager(_:didRangeBeacons:inRegion:)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.locationManager (__ObjC.CLLocationManager, didRangeBeacons : Swift.Array&lt;__ObjC.CLBeacon&gt;, inRegion : __ObjC.CLBeaconRegion) -&gt; ()"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.989353"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "309"
+                  endingLineNumber = "309"
+                  offsetFromSymbolStart = "48">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SwiftLocation.BeaconsManager.(locationManager (__ObjC.CLLocationManager, didRangeBeacons : Swift.Array&lt;__ObjC.CLBeacon&gt;, inRegion : __ObjC.CLBeaconRegion) -&gt; ()).(closure #1)"
+                  moduleName = "SwiftLocation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielemargutti/Documents/Code/Github/SwiftLocation/src/BeaconsManager.swift"
+                  timestampString = "493747447.989459"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "309"
+                  endingLineNumber = "309"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../src/BeaconsManager.swift"
+            timestampString = "493747462.346981"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
+            landmarkName = "cancelAllMonitorsForRegion(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

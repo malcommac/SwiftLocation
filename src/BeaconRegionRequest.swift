@@ -30,25 +30,27 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconRegionRequest: Request {
+public class BeaconRegionRequest: NSObject, Request {
 	
 	public var UUID: String
 	public var rState: RequestState = .Pending
 	private(set) var region: CLBeaconRegion
+	private(set) var type: Event
 	
 	public var onStateDidChange: RegionStateDidChange?
 	public var onRangingBeacons: RegionBeaconsRanging?
 	public var onError: RegionMonitorError?
 	
-	init?(beaconProximityUUID UUID: String, major: CLBeaconMajorValue? = nil, minor: CLBeaconMinorValue? = nil) {
+	init?(beacon: Beacon, monitor: Event) {
 		self.UUID = NSUUID().UUIDString
+		self.type = monitor
 		guard let proximityUUID = NSUUID(UUIDString: UUID) else { // invalid Proximity UUID
 			return nil
 		}
-		if major == nil && minor == nil {
+		if beacon.major == nil && beacon.minor == nil {
 			self.region = CLBeaconRegion(proximityUUID: proximityUUID, identifier: self.UUID)
-		} else if major != nil && minor != nil {
-			self.region = CLBeaconRegion(proximityUUID: proximityUUID, major: major!, minor: minor!, identifier: self.UUID)
+		} else if beacon.major != nil && beacon.minor != nil {
+			self.region = CLBeaconRegion(proximityUUID: proximityUUID, major: beacon.major!, minor: beacon.minor!, identifier: self.UUID)
 		} else {
 			return nil
 		}
@@ -65,7 +67,11 @@ public class BeaconRegionRequest: Request {
 	}
 	
 	public func start() {
-		Beacons.add(request: self)
+		if self.rState.isRunning == false {
+			if Beacons.add(request: self) == true {
+				self.rState = .Running
+			}
+		}
 	}
 	
 }

@@ -29,7 +29,7 @@
 import Foundation
 import CoreLocation
 
-public class GeoRegionRequest: Request {
+public class GeoRegionRequest: NSObject, Request {
 	
 	public var UUID: String
 	

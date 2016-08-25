@@ -30,7 +30,7 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconAdvertiseRequest: Request {
+public class BeaconAdvertiseRequest: NSObject, Request {
 	
 	
 	public var UUID: String

@@ -30,24 +30,34 @@ import Foundation
 import CoreLocation
 import CoreBluetooth
 
-public enum RegionState {
-	case Entered
-	case Exited
-}
-
 public let Beacons :BeaconsManager = BeaconsManager.shared
 
 public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralManagerDelegate {
 	public static let shared = BeaconsManager()
 	
+	//MARK Private Variables
 	internal var manager: CLLocationManager
 	internal var peripheralManager: CBPeripheralManager?
 
 	internal var monitoredGeoRegions: [GeoRegionRequest] = []
 	internal var monitoredBeaconRegions: [BeaconRegionRequest] = []
-	internal var monitoredBeaconRanging: [BeaconRegionRequest] = []
 	internal var advertisedDevices: [BeaconAdvertiseRequest] = []
 
+	/// This identify the largest boundary distance allowed from a region’s center point.
+	/// Attempting to monitor a region with a distance larger than this value causes the location manager
+	/// to send a regionMonitoringFailure error when you monitor a region.
+	public var maximumRegionMonitoringDistance: CLLocationDistance {
+		get {
+			return self.manager.maximumRegionMonitoringDistance
+		}
+	}
+	
+	// List of region requests currently being tracked using ranging.
+	public var rangedRegions: [BeaconRegionRequest] {
+		let trackedRegions = self.manager.rangedRegions
+		return self.monitoredBeaconRegions.filter({ trackedRegions.contains($0.region) })
+	}
+	
 	private override init() {
 		self.manager = CLLocationManager()
 		super.init()
@@ -80,43 +90,24 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	}
 	
 	/**
-	Monitor for beacon region in/out events
+	Monitor for beacon region in/out events or/and ranging events
 	
-	- parameter proximityUUID:    This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
-	- parameter major:            The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
-	- parameter minor:            The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
-	- parameter onStateDidChange: event fired when region in/out events are catched
+	- parameter beacon:           beacon to observe
+	- parameter events:           events you want to observe; you can monitor region boundary events (.RegionBoundary), beacon ranging (.Ranging) or both (.All).
+	- parameter onStateDidChange: event fired when region in/out events are catched (only if event is set)
+	- parameter onRangingBeacons: event fired when beacon is ranging (only if event is set)
 	- parameter onError:          event fired in case of error. request is aborted automatically
 	
 	- throws: throws an exception if monitor is not supported or invalid region was specified
 	
 	- returns: request
 	*/
-	public func monitor(beaconRegion proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onStateDidChange: RegionStateDidChange, onError: RegionMonitorError) throws -> BeaconRegionRequest {
-		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
+	public func monitor(beacon beacon: Beacon, events: Event, onStateDidChange: RegionStateDidChange?, onRangingBeacons: RegionBeaconsRanging?, onError: RegionMonitorError) throws -> BeaconRegionRequest {
+		let request = try self.createRegion(withBeacon: beacon, monitor: events)
 		request.onStateDidChange = onStateDidChange
-		request.onError = onError
-		self.add(request: request)
-		return request
-	}
-	
-	/**
-	Monitor for beacons proximity events
-	
-	- parameter proximityUUID:    This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
-	- parameter major:            The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
-	- parameter minor:            The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
-	- parameter onRangingBeacons: Event fired when one or more beacon are ranged
-	- parameter onError:          Event fired in case of error. request is aborted automatically
-	
-	- throws: throws an exception if monitor is not supported or invalid region was specified
-	
-	- returns: request
-	*/
-	public func monitor(beaconsRanging proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, onRangingBeacons: RegionBeaconsRanging, onError: RegionMonitorError) throws -> BeaconRegionRequest {
-		let request = try self.createBeaconRegion(proximityUUID: proximityUUID, major: major, minor: minor)
 		request.onRangingBeacons = onRangingBeacons
 		request.onError = onError
+		request.start()
 		return request
 	}
 	
@@ -127,7 +118,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		guard let request = BeaconAdvertiseRequest(name: name, proximityUUID: UUID, major: major, minor: minor) else {
 			return false
 		}
-		self.advertisedDevices.append(request)
+		request.start()
 		return true
 	}
 	
@@ -144,11 +135,11 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return false
 	}
 	
-	private func createBeaconRegion(proximityUUID proximityUUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?) throws -> BeaconRegionRequest {
+	private func createRegion(withBeacon beacon: Beacon, monitor: Event) throws -> BeaconRegionRequest {
 		if CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion.self) == false {
 			throw LocationError.NotSupported
 		}
-		guard let request = BeaconRegionRequest(beaconProximityUUID: proximityUUID, major: major, minor: minor) else {
+		guard let request = BeaconRegionRequest(beacon: beacon, monitor: monitor) else {
 			throw LocationError.InvalidBeaconData
 		}
 		return request
@@ -188,15 +179,19 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 			} else if let request = request as? BeaconRegionRequest {
 				self.monitoredBeaconRegions.append(request)
 				if try self.requestLocationServiceAuthorizationIfNeeded() == false {
-					self.manager.startMonitoringForRegion(request.region)
+					if request.type.contains(Event.RegionBoundary) {
+						self.manager.startMonitoringForRegion(request.region)
+					}
+					if request.type.contains(Event.Ranging) {
+						self.manager.startRangingBeaconsInRegion(request.region)
+					}
 				}
 			}
+			return true
 		} catch let err {
 			self.remove(request: request, error: (err as? LocationError) )
 			return false
 		}
-		
-		return false
 	}
 	
 	internal func remove(request request: Request?, error: LocationError? = nil) -> Bool {
@@ -214,8 +209,12 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 				return false
 			}
 			request.rState = .Cancelled(error: error)
-			self.manager.stopMonitoringForRegion(request.region)
-			self.monitoredBeaconRegions.removeAtIndex(idx)
+			if request.type.contains(Event.RegionBoundary) {
+				self.manager.stopMonitoringForRegion(request.region)
+			}
+			if request.type.contains(Event.Ranging) {
+				self.monitoredBeaconRegions.removeAtIndex(idx)
+			}
 			return true
 		}
 		return false
@@ -239,13 +238,15 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 	}
 	
 	internal func cancelAllMonitorsForRegion(error: LocationError) {
-		let list: [[Request]] = [self.monitoredBeaconRanging,self.monitoredBeaconRegions,self.monitoredGeoRegions]
-		list.forEach { $0.filter({ $0.rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
+		let list: [[AnyObject]] = [self.monitoredBeaconRegions,self.monitoredGeoRegions]
+		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
+		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ self.remove(request: $0, error: error) }) }
+
 	}
 	
 	internal func startPendingMonitors() {
-		let list: [[Request]] = [self.monitoredBeaconRanging,self.monitoredBeaconRegions,self.monitoredGeoRegions]
-		list.forEach { $0.filter({ $0.rState.isPending }).forEach({ $0.start() }) }
+		let list: [[AnyObject]] = [self.monitoredBeaconRegions,self.monitoredGeoRegions]
+		list.forEach { $0.filter({ ($0 as! Request).rState.isPending }).forEach({ $0.start() }) }
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -286,10 +287,13 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		let error = LocationError.LocationManager(error: error)
 		self.remove(request: self.monitoredGeoRegions.filter { $0.region == region }.first, error: error)
 		self.remove(request: self.monitoredBeaconRegions.filter { $0.region == region }.first, error: error)
-		self.remove(request: self.monitoredBeaconRanging.filter { $0.region == region }.first, error: error)
+	}
+	
+	@objc public func locationManager(manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: NSError) {
+		self.monitoredBeaconRegions.forEach { $0.cancel(LocationError.LocationManager(error: error)) }
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
-		self.monitoredBeaconRanging.filter { $0.region == region }.first?.onRangingBeacons?(beacons)
+		self.monitoredBeaconRegions.filter { $0.region == region }.first?.onRangingBeacons?(beacons)
 	}
 }
