@@ -40,25 +40,25 @@ public class HeadingRequest: Request {
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
 	
-	// Private variables
+	internal weak var locator: LocationManager?
 	
-	internal var isEnabled: Bool = false {
+	public var rState: RequestState = .Pending {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
 	/// Frequency value to receive new events
 	public var frequency: HeadingFrequency {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
 	/// The maximum deviation (measured in degrees) between the reported heading and the true geomagnetic heading.
 	public var accuracy: CLLocationDirection {
 		didSet {
-			Location.updateHeadingService()
+			self.locator?.updateHeadingService()
 		}
 	}
 	
@@ -110,38 +110,46 @@ public class HeadingRequest: Request {
 	Put the request in queue and starts it
 	*/
 	public func start() {
-		if self.isEnabled == true { return }
-		self.isEnabled = true
-		Location.addHeadingRequest(self)
+		guard let locator = self.locator else { return }
+		if locator.add(self) {
+			self.rState = .Running
+		}
 	}
 	
 	/**
 	Temporary pause request (not removed)
 	*/
 	public func pause() {
-		self.isEnabled = false
+		if self.rState.isRunning {
+			guard let locator = self.locator else { return }
+			self.rState = .Paused
+			locator.updateHeadingService()
+		}
 	}
 	
 	/**
 	Terminate request
 	*/
-	public func cancel() {
-		self.isEnabled = false
-		Location.stopHeadingRequest(self)
+	public func cancel(error: LocationError?) {
+		guard let locator = self.locator else { return }
+		if locator.remove(self) {
+			self.rState = .Cancelled(error: error)
+		}
 	}
 	
 	//MARK: - Private
 	
 	internal func didReceiveEventFromManager(error: NSError?, heading: CLHeading?) {
 		if error != nil {
-			self.onError?(LocationError.LocationManager(error: error!))
-			self.cancel()
+			let err = LocationError.LocationManager(error: error!)
+			self.onError?(err)
+			self.cancel(err)
 			return
 		}
 		
 		if self.validateHeading(heading!) == true {
 			self.lastHeading = heading
-			if self.isEnabled == true {
+			if self.rState.isRunning == true {
 				self.onReceiveUpdates?(self.lastHeading!)
 			}
 		}

@@ -26,71 +26,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 import Foundation
 import CoreLocation
 
-public class VisitRequest: Request {
-		/// Last place received
-	private(set) var lastPlace: CLVisit?
-		/// Handler called when a new place is currently visited
-	public var onDidVisitPlace: VisitHandler?
-
-		/// Private vars
-	public var UUID: String = NSUUID().UUIDString
+public class GeoRegionRequest: NSObject, Request {
+	
+	public var UUID: String
+	
+	public var coordinates: CLLocationCoordinate2D {
+		return region.center
+	}
+	
+	public var radius: CLLocationDistance {
+		return region.radius
+	}
+	private(set) var region: CLCircularRegion
+	
+	public var onStateDidChange: RegionStateDidChange?
+	public var onError: RegionMonitorError?
 	
 	public var rState: RequestState = .Pending
-
-	internal weak var locator: LocationManager?
 	
-	/**
-	Create a new request with an associated handler to call
-	
-	- parameter onDidVisit: handler to call when a new interesting place is visited
-	
-	- returns: the request instance you can add to the queue
-	*/
-	public init(onDidVisit: VisitHandler?) {
-		self.onDidVisitPlace = onDidVisit
+	public init(coordinates: CLLocationCoordinate2D, radius: CLLocationDistance) {
+		self.UUID = NSUUID().UUIDString
+		self.region = CLCircularRegion(center: coordinates, radius: radius, identifier: self.UUID)
 	}
 	
-	/**
-	This method allows you set the the handler you want to be called when a new place is visited
-	
-	- parameter handler: handler to call
-	
-	- returns: self instance, used to make the function chainable
-	*/
-	public func onDidVisit(handler: VisitHandler?) -> VisitRequest {
-		self.onDidVisitPlace = handler
-		return self
-	}
-	
-	/**
-	Start a new visit request
-	*/
-	public func start() {
-		guard let locator = self.locator else { return }
-		if locator.add(self) {
-			self.rState = .Running
-		}
-	}
-	
-	/**
-	Stop a visit request and remove it from the queue
-	*/
 	public func cancel(error: LocationError?) {
-		guard let locator = self.locator else { return }
-		if self.rState.isRunning {
-			if locator.remove(self) {
-				self.rState = .Cancelled(error: error)
-			}
-		}
+		Beacons.remove(request: self, error: error)
 	}
 	
 	public func pause() {
-		if self.rState.isRunning {
+		if Beacons.remove(request: self) == true {
 			self.rState = .Paused
 		}
 	}
+	
+	public func start() {
+		Beacons.add(request: self)
+	}
+	
+
+	
 }

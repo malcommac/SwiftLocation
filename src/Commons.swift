@@ -30,9 +30,111 @@ import Foundation
 import CoreLocation
 import MapKit
 
+/**
+State of the beacon region monitoring
+
+- Entered: entered into the region
+- Exited:  exited from the region
+*/
+public enum RegionState {
+	case Entered
+	case Exited
+}
+
+/**
+*  This option set define the type of events you can monitor via BeaconManager class's monitor() func
+*/
+public struct Event : OptionSetType {
+	public let rawValue: UInt8
+	public init(rawValue: UInt8) { self.rawValue = rawValue }
+	
+	/// Monitor a region cross boundary event (enter and exit from the region)
+	public static let RegionBoundary = Event(rawValue: 1 << 0)
+	/// Monitor beacon ranging
+	public static let Ranging = Event(rawValue: 1 << 1)
+	/// Monitor both region cross boundary and beacon ranging events
+	public static let All : Event = [RegionBoundary, Ranging]
+}
+
+
+/**
+*  This structure define a beacon object
+*/
+public struct Beacon {
+	public var proximityUUID: String
+	public var major: CLBeaconMajorValue?
+	public var minor: CLBeaconMinorValue?
+	
+	/**
+	Initializa a new beacon to monitor
+	
+	- parameter proximity: This property contains the identifier that you use to identify your company’s beacons. You typically generate only one UUID for your company’s beacons but can generate more as needed. You generate this value using the uuidgen command-line tool
+	- parameter major:     The major property contains a value that can be used to group related sets of beacons. For example, a department store might assign the same major value for all of the beacons on the same floor.
+	- parameter minor:     The minor property specifies the individual beacon within a group. For example, for a group of beacons on the same floor of a department store, this value might be assigned to a beacon in a particular section.
+	
+	- returns: a new beacon structure
+	*/
+	public init(proximity: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?) {
+		self.proximityUUID = proximity
+		self.major = major
+		self.minor = minor
+	}
+}
+
+/**
+This define the state of a request. Usually you don't need to acces to this info
+
+- Pending:         A request is pending when it's never started
+- Paused:          A request is paused when it's on queue but it will not receive any events
+- Cancelled:       A cancelled request cannot be queued again
+- Running:         A request is running when it's on queue and will receive events
+- WaitingUserAuth: In this state the request is paused and the system is waiting for user authorization
+- Undetermined:    Undetermined state is usually used when the object cannot support request protocol
+*/
+public enum RequestState {
+	case Pending
+	case Paused
+	case Cancelled(error: LocationError?)
+	case Running
+	case WaitingUserAuth
+	case Undetermined
+	
+	/// Request is running
+	public var isRunning: Bool {
+		switch self {
+		case .Running:
+			return true
+		default:
+			return false
+		}
+	}
+	
+	/// Request is not running but can be started anytime
+	public var canStart: Bool {
+		switch self {
+		case .Paused, .Pending:
+			return true
+		default:
+			return false
+		}
+	}
+	
+	/// Request is on queue but it's in pause state
+	public var isPending: Bool {
+		switch self {
+		case .Pending, .WaitingUserAuth:
+			return true
+		default:
+			return false
+		}
+	}
+}
+
+// MARK: - Support for Request protocol in CLGeocoder object
+
 extension CLGeocoder: Request {
 	
-	public func cancel() {
+	public func cancel(error: LocationError?) {
 		cancelGeocode()
 	}
 	
@@ -47,7 +149,13 @@ extension CLGeocoder: Request {
 	public var UUID: String {
 		return "\(self.hash)"
 	}
+	
+	public var rState: RequestState {
+		return .Undetermined
+	}
 }
+
+// MARK: - Support for Request protocol in NSURLSessionDataTast object
 
 extension NSURLSessionDataTask: Request {
 
@@ -62,14 +170,42 @@ extension NSURLSessionDataTask: Request {
 	public var UUID: String {
 		return "\(self.hash)"
 	}
+	
+	public func cancel(error: LocationError?) {
+		self.cancel()
+	}
+	
+	public var rState: RequestState {
+		return .Undetermined
+	}
 }
 
+/**
+*  Each request in SwiftLocation support this protocol
+*/
 public protocol Request {
-	func cancel()
+	/**
+	Cancel a running active request. Remove it from queue and mark it as cancelled.
+	
+	- parameter error: optional error to cancel the request
+	*/
+	func cancel(error: LocationError?)
+	
+	/**
+	Pause a running request
+	*/
 	func pause()
+	
+	/**
+	Start a request by adding it to the relative queue
+	*/
 	func start()
 	
+	/// Unique identifier of the request
 	var UUID: String { get }
+	
+	/// State of the request
+	var rState: RequestState { get }
 }
 
 /// Handlers
@@ -85,12 +221,11 @@ public typealias HeadingHandlerError = (LocationError -> Void)
 public typealias HeadingHandlerSuccess = (CLHeading -> Void)
 public typealias HeadingHandlerCalibration = (Void -> Bool)
 
-public typealias RegionHandlerStateDidChange = (Void -> Void)
-public typealias RegionHandlerError = (LocationError -> Void)
-
 public typealias VisitHandler = (CLVisit -> Void)
-public typealias DidRangeBeaconsHandler = ([CLBeacon] -> Void)
-public typealias RangeBeaconsDidFailHandler = (LocationError -> Void)
+
+public typealias RegionStateDidChange = (RegionState -> Void)
+public typealias RegionBeaconsRanging = ([CLBeacon] -> Void)
+public typealias RegionMonitorError = (LocationError -> Void)
 
 /**
 Type of service to used to perform the request
@@ -158,6 +293,7 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 	case LocationNotAvailable
 	case NoDataReturned
 	case NotSupported
+	case InvalidBeaconData
 	
 	public var description: String {
 		switch self {
@@ -179,6 +315,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "No Data Returned"
 		case .NotSupported:
 			return "Feature Not Supported"
+		case .InvalidBeaconData:
+			return "Cannot create monitor for beacon. Invalid data"
 		}
 	}
 }
@@ -371,7 +509,6 @@ public func > (lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 public func >= (lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	return u_graterThan(includeEqual: true, lhs: lhs, rhs: rhs)
 }
-
 
 private func u_lowerThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	switch (lhs, rhs) {

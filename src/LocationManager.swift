@@ -32,14 +32,11 @@ import MapKit
 
 let DefaultTimeout: NSTimeInterval = 30.0
 
-public let Location:LocationManager = LocationManager.shared
+public let Location:LocationManager = LocationManager()
 
 public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
 	public private(set) var lastLocation: CLLocation?
-
-		/// Shared instance of the location manager
-	internal static let shared = LocationManager()
 	
 	/// You can specify a valid Google API Key if you want to use Google geocoding services without a strict quota
 	public var googleAPIKey: String?
@@ -90,7 +87,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	private(set) var visitsObservers: [VisitRequest] = []
 
 	//MARK: Init
-	private override init() {
+	public override init() {
 		self.manager = CLLocationManager()
 		super.init()
 		self.manager.delegate = self
@@ -109,15 +106,24 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
-	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .OneShot, timeout: NSTimeInterval = DefaultTimeout, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .OneShot, timeout: NSTimeInterval? = nil, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
 		
 		if accuracy == .IPScan {
+			// Location via IP scan works in a different way
 			return self.getLocationViaIPScan(timeout, onSuccess: onSuccess, onError: onError)
 		} else {
 			let request = LocationRequest(withAccuracy: accuracy, andFrequency: frequency)
+			request.locator = self
 			request.timeout = timeout
 			request.onSuccess(onSuccess)
 			request.onError(onError)
+			
+			if frequency == .Significant && CLLocationManager.significantLocationChangeMonitoringAvailable() == false {
+				// Significant location is not supported by this device, cannot start request
+				request.onErrorHandler?(nil,LocationError.NotSupported)
+				return request
+			}
+			// Start request
 			request.start()
 			return request
 		}
@@ -137,6 +143,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	*/
 	public func getHeading(frequency: HeadingFrequency = .Continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: HeadingHandlerSuccess, onError error: HeadingHandlerError) -> Request {
 		let request = HeadingRequest(withFrequency: frequency, accuracy: accuracy, allowsCalibration: allowsCalibration)
+		request.locator = self
 		request.onReceiveUpdates = update
 		request.onError = error
 		request.start()
@@ -155,7 +162,8 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	*/
 	public func getInterestingPlaces(onDidVisit handler: VisitHandler?) -> Request {
 		let request = VisitRequest(onDidVisit: handler)
-		self.addVisitRequest(request)
+		request.locator = self
+		request.start()
 		return request
 	}
 	
@@ -211,11 +219,89 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 
+	/**
+	Call this method in situations where you want location data with GPS accuracy but do not need to process that data right away. Keep in mind: this settings is global and affect all requests.
+	To cancel deferred updates pass nil to both parameters or call stopDeferredLocationUpdates() function.
+	If your app is in the background and the system is able to optimize its power usage, the location manager tells the GPS hardware to store new locations internally until the specified distance or timeout conditions are met.
+	If you want to change the deferral criteria for any reason, and therefore call this method again, be prepared to receive a deferredCanceled error in your request callbacks.
+	
+	- parameter distance: The distance (in meters) from the current location that must be travelled before event delivery resumes. Pass nil to ignore this condition.
+	- parameter timeout:  The amount of time (in seconds) from the current time that must pass before event delivery resumes. Pass nil to ignore this condition.
+	
+	- returns: true if deferred update are supported, false otherwise
+	*/
+	public func deferLocationUpdates(untilTravelled distance: CLLocationDistance?, timeout: NSTimeInterval?) -> Bool {
+		if CLLocationManager.deferredLocationUpdatesAvailable() == false {
+			return false
+		}
+		if distance != nil || timeout != nil {
+			// In order to work properly when you set a deferred location distanceFilter property
+			// of the location manager must be set to kCLDistanceFilterNone.
+			self.minimumDistance = nil
+		}
+		if distance == nil && timeout == nil { // Reset deferred locations
+			self.manager.disallowDeferredLocationUpdates()
+		} else { // Start deferring location updates
+			self.manager.allowDeferredLocationUpdatesUntilTraveled(distance ??  CLLocationDistanceMax, timeout: timeout ??  CLTimeIntervalMax)
+		}
+		return true
+	}
+	
+	/**
+	Start any pending request. Usually you don't need to use this function.
+	*/
+	public func startAllLocationRequests() {
+		self.locationObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+	}
+	
+	/**
+	Stop or pause any location request
+	
+	- parameter error: optional error to pass
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	public func stopAllLocationRequests(withError error: LocationError?, pause: Bool = false) {
+		if pause == true {
+			self.locationObservers.forEach { $0.pause() }
+		} else {
+			self.locationObservers.forEach { $0.didReceiveEventFromLocationManager(error: error, location: nil) }
+		}
+	}
+	
+	/**
+	Stop or pause any running significant location request
+	
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	public func stopSignificantLocationRequests(pause: Bool = false) {
+		self.locationObservers.filter { $0.rState.isRunning && $0.frequency == .Significant }.forEach {
+			if pause == true {
+				$0.pause()
+			} else {
+				$0.cancel(nil)
+			}
+		}
+	}
+	
+	/**
+	Stop receiving deferred location updates
+	*/
+	public func stopDeferredLocationUpdates() {
+		self.deferLocationUpdates(untilTravelled: nil, timeout: nil)
+	}
+	
+	/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+	/// By default is nil, each event is reported without any filter.
+	public var minimumDistance: CLLocationDistance? {
+		didSet {
+			self.manager.distanceFilter = (minimumDistance == nil ? kCLDistanceFilterNone : minimumDistance!)
+		}
+	}
 	
 	//MARK: [Private Methods] Manage Requests
 	
-	private func getLocationViaIPScan(timeout: NSTimeInterval = DefaultTimeout, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
-		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+	private func getLocationViaIPScan(timeout: NSTimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
 		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
 		let session = NSURLSession(configuration: sessionConfig)
 		let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) in
@@ -236,8 +322,49 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return task
 	}
 	
-	internal func stopLocationRequest(request: LocationRequest) -> Bool {
-		if let idx = self.locationObservers.indexOf({$0.UUID == request.UUID}) {
+	internal func add(request: Request?) -> Bool {
+		guard let request = request where request.rState.canStart == true else { return false }
+		if let request = request as? VisitRequest {
+			if self.visitsObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
+			self.visitsObservers.append(request)
+			self.updateVisitingService()
+			return true
+		}
+		else if let request = request as? HeadingRequest {
+			if self.headingObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
+			self.headingObservers.append(request)
+			self.updateHeadingService()
+		}
+		else if let request = request as? LocationRequest {
+			if self.locationObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
+			self.locationObservers.append(request)
+			self.updateLocationUpdateService()
+			return true
+		}
+		return false
+	}
+	
+	internal func remove(request: Request?) -> Bool {
+		guard let request = request where request.rState.isRunning == true else { return false }
+		if let request = request as? VisitRequest {
+			guard let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) else {
+				return false
+			}
+			self.visitsObservers.removeAtIndex(idx)
+			self.updateVisitingService()
+			return true
+		}
+		else if let request = request as? HeadingRequest {
+			guard let idx = self.headingObservers.indexOf({$0.UUID == request.UUID}) else {
+				return false
+			}
+			self.headingObservers.removeAtIndex(idx)
+			self.updateHeadingService()
+		}
+		else if let request = request as? LocationRequest {
+			guard let idx = self.locationObservers.indexOf({$0.UUID == request.UUID}) else {
+				return false
+			}
 			self.locationObservers.removeAtIndex(idx)
 			self.updateLocationUpdateService()
 			return true
@@ -245,52 +372,9 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return false
 	}
 	
-	internal func stopInterestingPlacesRequest(request: VisitRequest) -> Bool {
-		if let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) {
-			self.visitsObservers[idx].isEnabled = false
-			self.visitsObservers.removeAtIndex(idx)
-			self.updateVisitingService()
-			return true
-		}
-		return false
-	}
-	
-	internal func addVisitRequest(handler: VisitRequest) -> VisitRequest {
-		if self.visitsObservers.indexOf({$0.UUID == handler.UUID}) == nil {
-			self.visitsObservers.append(handler)
-			handler.isEnabled = true
-		}
-		self.updateVisitingService()
-		return handler
-	}
-	
-	internal func stopHeadingRequest(request: HeadingRequest) -> Bool {
-		if let idx = self.headingObservers.indexOf({$0.UUID == request.UUID}) {
-			self.headingObservers.removeAtIndex(idx)
-			self.updateHeadingService()
-			return true
-		}
-		return false
-	}
-	
-	internal func addHeadingRequest(handler: HeadingRequest) -> HeadingRequest {
-		if self.headingObservers.indexOf({$0.UUID == handler.UUID}) == nil {
-			headingObservers.append(handler)
-		}
-		self.updateHeadingService()
-		return handler
-	}
-	
-	internal func addLocationRequest(handler: LocationRequest) -> LocationRequest {
-		if self.locationObservers.indexOf({$0.UUID == handler.UUID}) == nil {
-			locationObservers.append(handler)
-		}
-		self.updateLocationUpdateService()
-		return handler
-	}
 	
 	internal func updateHeadingService() {
-		let enabledObservers = headingObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = headingObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingHeading()
 			return
@@ -303,7 +387,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func updateVisitingService() {
-		let enabledObservers = visitsObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = visitsObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopMonitoringVisits()
 		} else {
@@ -312,7 +396,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func updateLocationUpdateService() {
-		let enabledObservers = locationObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = locationObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingLocation()
 			self.manager.stopMonitoringSignificantLocationChanges()
@@ -325,7 +409,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 				return
 			}
 		} catch let err {
-			self.cleanUpAllLocationRequests( (err as! LocationError) )
+			self.stopAllLocationRequests(withError: (err as! LocationError), pause: false)
 		}
 		
 		var globalAccuracy: Accuracy?
@@ -371,44 +455,16 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			self.manager.requestWhenInUseAuthorization()
 		}
 		
-		self.pauseAllLocationRequest()
+		self.stopAllLocationRequests(withError: nil, pause: true)
 		return true
-	}
-	
-	private func pauseAllLocationRequest() {
-		self.locationObservers.forEach { handler in
-            if handler.isEnabled {
-                handler.pause()
-            }
-		}
-	}
-	
-	private func cleanUpAllLocationRequests(error: LocationError) {
-		self.locationObservers.forEach { handler in
-			handler.didReceiveEventFromLocationManager(error: error, location: nil)
-		}
-	}
-	
-	private func startAllLocationRequests() {
-		self.locationObservers.forEach { handler in
-			handler.start()
-		}
 	}
 	
 	//MARK: [Private Methods] Location Manager Delegate
 	
-	@objc public func locationManager(manager: CLLocationManager, didVisit visit: CLVisit) {
-		self.visitsObservers.forEach { handler in
-			if (handler.isEnabled == true) {
-				handler.onDidVisitPlace?(visit)
-			}
-		}
-	}
-	
 	@objc public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
 		switch status {
 		case .Denied, .Restricted:
-			self.cleanUpAllLocationRequests(LocationError.AuthorizationDidChange(newStatus: status))
+			self.stopAllLocationRequests(withError: LocationError.AuthorizationDidChange(newStatus: status), pause: false)
 		case .AuthorizedAlways, .AuthorizedWhenInUse:
 			self.startAllLocationRequests()
 		default:
@@ -416,8 +472,19 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	@objc public func locationManager(manager: CLLocationManager, didVisit visit: CLVisit) {
+		self.visitsObservers.filter { $0.rState.isRunning}.filter { $0.rState.isRunning }.forEach { $0.onDidVisitPlace?(visit) }
+	}
+	
 	@objc public func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-		self.locationObservers.forEach { handler in
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
+			handler.didReceiveEventFromLocationManager(error: LocationError.LocationManager(error: error), location: nil)
+		}
+	}
+	
+	@objc public func locationManager(manager: CLLocationManager, didFinishDeferredUpdatesWithError error: NSError?) {
+		guard let error = error else { return }
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
 			handler.didReceiveEventFromLocationManager(error: LocationError.LocationManager(error: error), location: nil)
 		}
 	}
@@ -427,13 +494,13 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
 		)
 		
-		self.locationObservers.forEach { handler in
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
 			handler.didReceiveEventFromLocationManager(error: nil, location: self.lastLocation)
 		}
 	}
 	
 	public func locationManagerDidPauseLocationUpdates(manager: CLLocationManager) {
-		self.locationObservers.forEach { handler in
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
 			handler.onPausesHandler?(handler.lastLocation)
 		}
 	}
@@ -441,7 +508,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private Methods] Heading
 	
 	public func locationManager(manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-		self.headingObservers.forEach { headingRequest in headingRequest.didReceiveEventFromManager(nil, heading: newHeading) }
+		self.headingObservers.filter { $0.rState.isRunning}.forEach { headingRequest in headingRequest.didReceiveEventFromManager(nil, heading: newHeading) }
 	}
 	
 	public func locationManagerShouldDisplayHeadingCalibration(manager: CLLocationManager) -> Bool {
