@@ -248,6 +248,42 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/**
+	Start any pending request. Usually you don't need to use this function.
+	*/
+	public func startAllLocationRequests() {
+		self.locationObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+	}
+	
+	/**
+	Stop or pause any location request
+	
+	- parameter error: optional error to pass
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	public func stopAllLocationRequests(withError error: LocationError?, pause: Bool = false) {
+		if pause == true {
+			self.locationObservers.forEach { $0.pause() }
+		} else {
+			self.locationObservers.forEach { $0.didReceiveEventFromLocationManager(error: error, location: nil) }
+		}
+	}
+	
+	/**
+	Stop or pause any running significant location request
+	
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	public func stopSignificantLocationRequests(pause: Bool = false) {
+		self.locationObservers.filter { $0.rState.isRunning && $0.frequency == .Significant }.forEach {
+			if pause == true {
+				$0.pause()
+			} else {
+				$0.cancel(nil)
+			}
+		}
+	}
+	
+	/**
 	Stop receiving deferred location updates
 	*/
 	public func stopDeferredLocationUpdates() {
@@ -421,28 +457,6 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		
 		self.stopAllLocationRequests(withError: nil, pause: true)
 		return true
-	}
-	
-	public func startAllLocationRequests() {
-		self.locationObservers.filter { $0.rState.isPending }.forEach { $0.start() }
-	}
-	
-	public func stopAllLocationRequests(withError error: LocationError?, pause: Bool = false) {
-		if pause == true {
-			self.locationObservers.forEach { $0.pause() }
-		} else {
-			self.locationObservers.forEach { $0.didReceiveEventFromLocationManager(error: error, location: nil) }
-		}
-	}
-	
-	public func stopSignificantLocationRequests(pause: Bool = false) {
-		self.locationObservers.filter { $0.rState.isRunning && $0.frequency == .Significant }.forEach {
-			if pause == true {
-				$0.pause()
-			} else {
-				$0.cancel(nil)
-			}
-		}
 	}
 	
 	//MARK: [Private Methods] Location Manager Delegate
