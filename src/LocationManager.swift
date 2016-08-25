@@ -118,6 +118,13 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			request.timeout = timeout
 			request.onSuccess(onSuccess)
 			request.onError(onError)
+			
+			if frequency == .Significant && CLLocationManager.significantLocationChangeMonitoringAvailable() == false {
+				// Significant location is not supported by this device, cannot start request
+				request.onErrorHandler?(nil,LocationError.NotSupported)
+				return request
+			}
+			// Start request
 			request.start()
 			return request
 		}
@@ -211,6 +218,37 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 
+	/**
+	Call this method in situations where you want location data with GPS accuracy but do not need to process that data right away. Keep in mind: this settings is global and affect all requests.
+	If your app is in the background and the system is able to optimize its power usage, the location manager tells the GPS hardware to store new locations internally until the specified distance or timeout conditions are met.
+	If you want to change the deferral criteria for any reason, and therefore call this method again, be prepared to receive a deferredCanceled error in your request callbacks.
+	
+	- parameter distance: The distance (in meters) from the current location that must be travelled before event delivery resumes. Pass nil to ignore this condition.
+	- parameter timeout:  The amount of time (in seconds) from the current time that must pass before event delivery resumes. Pass nil to ignore this condition.
+	
+	- returns: true if deferred update are supported, false otherwise
+	*/
+	public func deferLocationUpdates(untilTravelled distance: CLLocationDistance?, timeout: NSTimeInterval?) -> Bool {
+		if CLLocationManager.deferredLocationUpdatesAvailable() == false {
+			return false
+		}
+		if distance != nil || timeout != nil {
+			// In order to work properly when you set a deferred location distanceFilter property
+			// of the location manager must be set to kCLDistanceFilterNone.
+			self.minimumDistance = nil
+		}
+		// Start deferring location updates
+		self.manager.allowDeferredLocationUpdatesUntilTraveled(distance ??  CLLocationDistanceMax, timeout: timeout ??  CLTimeIntervalMax)
+		return true
+	}
+	
+	/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+	/// By default is nil, each event is reported without any filter.
+	public var minimumDistance: CLLocationDistance? {
+		didSet {
+			self.manager.distanceFilter = (minimumDistance == nil ? kCLDistanceFilterNone : minimumDistance!)
+		}
+	}
 	
 	//MARK: [Private Methods] Manage Requests
 	
@@ -413,6 +451,13 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+		self.locationObservers.forEach { handler in
+			handler.didReceiveEventFromLocationManager(error: LocationError.LocationManager(error: error), location: nil)
+		}
+	}
+	
+	@objc public func locationManager(manager: CLLocationManager, didFinishDeferredUpdatesWithError error: NSError?) {
+		guard let error = error else { return }
 		self.locationObservers.forEach { handler in
 			handler.didReceiveEventFromLocationManager(error: LocationError.LocationManager(error: error), location: nil)
 		}
