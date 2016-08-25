@@ -65,8 +65,14 @@ public class LocationRequest: Request  {
 		/// Timeout timer starts when a location manager authorization appears on screen
 		/// and when a request receive a new update. If no new updates are received inside this interval
 		/// request will be aborted.
+		/// If you change this value while request is running timer will be invalidated and eventually restarted.
 		/// A nil value means "do not use timeout".
-	public var timeout: NSTimeInterval? = nil
+	public var timeout: NSTimeInterval? = nil {
+		didSet {
+			// Reset timer when property is changed
+			self.setTimeoutTimer(active: (timeout != nil))
+		}
+	}
 	
 		/// This is the last location matching the requested accuracy received for this request. Maybe nil if any valid request is received yet.
 	private(set) var lastValidLocation: CLLocation?
@@ -170,7 +176,9 @@ public class LocationRequest: Request  {
         self.timeoutTimer?.invalidate()
         self.timeoutTimer = nil
         
-		guard let interval = self.timeout where shouldStart else { return }
+		guard let interval = self.timeout where shouldStart else {
+			return
+		}
 		self.timeoutTimer = NSTimer.scheduledTimerWithTimeInterval(interval, target: self, selector: #selector(timeoutTimerFired), userInfo: nil, repeats: false)
 	}
 	
@@ -195,7 +203,7 @@ public class LocationRequest: Request  {
 			self.onSuccessHandler?(self.lastValidLocation!)
 			if self.frequency == .OneShot {
 				self.cancel(nil)
-            }else if self.frequency == .Continuous{
+            }else if self.frequency == .Continuous {
                 // if location is valid and is required in continuous frequency
 				self.setTimeoutTimer(active: true)
             }else{

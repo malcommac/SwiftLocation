@@ -109,7 +109,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
-	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .OneShot, timeout: NSTimeInterval = DefaultTimeout, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .OneShot, timeout: NSTimeInterval? = nil, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
 		
 		if accuracy == .IPScan {
 			return self.getLocationViaIPScan(timeout, onSuccess: onSuccess, onError: onError)
@@ -214,8 +214,8 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Manage Requests
 	
-	private func getLocationViaIPScan(timeout: NSTimeInterval = DefaultTimeout, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
-		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+	private func getLocationViaIPScan(timeout: NSTimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+		let URLRequest = NSURLRequest(URL: NSURL(string: "http://ip-api.com/json")!, cachePolicy: .ReloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
 		let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
 		let session = NSURLSession(configuration: sessionConfig)
 		let task = session.dataTaskWithRequest(URLRequest) { (data, response, error) in

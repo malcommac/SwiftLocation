@@ -41,10 +41,10 @@ public class BeaconAdvertiseRequest: NSObject, Request {
 	
 	init?(name: String, proximityUUID: String, major: CLBeaconMajorValue? = nil, minor: CLBeaconMinorValue? = nil) {
 		self.name = name
-		self.UUID = NSUUID().UUIDString
 		guard let proximityUUID = NSUUID(UUIDString: proximityUUID) else { // invalid Proximity UUID
 			return nil
 		}
+		self.UUID = proximityUUID.UUIDString
 		if major == nil && minor == nil {
 			self.region = CLBeaconRegion(proximityUUID: proximityUUID, identifier: self.UUID)
 		} else if major != nil && minor != nil {

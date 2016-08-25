@@ -42,11 +42,11 @@ public class BeaconRegionRequest: NSObject, Request {
 	public var onError: RegionMonitorError?
 	
 	init?(beacon: Beacon, monitor: Event) {
-		self.UUID = NSUUID().UUIDString
 		self.type = monitor
-		guard let proximityUUID = NSUUID(UUIDString: UUID) else { // invalid Proximity UUID
+		guard let proximityUUID = NSUUID(UUIDString: beacon.proximityUUID) else { // invalid Proximity UUID
 			return nil
 		}
+		self.UUID = proximityUUID.UUIDString
 		if beacon.major == nil && beacon.minor == nil {
 			self.region = CLBeaconRegion(proximityUUID: proximityUUID, identifier: self.UUID)
 		} else if beacon.major != nil && beacon.minor != nil {

@@ -504,7 +504,6 @@ public func >= (lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	return u_graterThan(includeEqual: true, lhs: lhs, rhs: rhs)
 }
 
-
 private func u_lowerThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	switch (lhs, rhs) {
 	case (.Continuous, _), (.OneShot, _):
