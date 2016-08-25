@@ -41,7 +41,7 @@ public class VisitRequest: Request {
 	
 	public var rState: RequestState = .Pending
 
-	internal weak var locator: LocatorManager?
+	internal weak var locator: LocationManager?
 	
 	/**
 	Create a new request with an associated handler to call

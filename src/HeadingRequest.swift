@@ -40,7 +40,7 @@ public class HeadingRequest: Request {
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
 	
-	internal weak var locator: LocatorManager?
+	internal weak var locator: LocationManager?
 	
 	public var rState: RequestState = .Pending {
 		didSet {

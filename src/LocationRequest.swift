@@ -42,7 +42,7 @@ public class LocationRequest: Request  {
 		/// Unique identifier of the request
 	public var UUID: String = NSUUID().UUIDString
 	
-	public weak var locator: LocatorManager?
+	public weak var locator: LocationManager?
 	
 	public var rState: RequestState = .Pending {
 		didSet {
