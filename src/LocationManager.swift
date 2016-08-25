@@ -220,6 +220,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 
 	/**
 	Call this method in situations where you want location data with GPS accuracy but do not need to process that data right away. Keep in mind: this settings is global and affect all requests.
+	To cancel deferred updates pass nil to both parameters or call stopDeferredLocationUpdates() function.
 	If your app is in the background and the system is able to optimize its power usage, the location manager tells the GPS hardware to store new locations internally until the specified distance or timeout conditions are met.
 	If you want to change the deferral criteria for any reason, and therefore call this method again, be prepared to receive a deferredCanceled error in your request callbacks.
 	
@@ -237,9 +238,19 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			// of the location manager must be set to kCLDistanceFilterNone.
 			self.minimumDistance = nil
 		}
-		// Start deferring location updates
-		self.manager.allowDeferredLocationUpdatesUntilTraveled(distance ??  CLLocationDistanceMax, timeout: timeout ??  CLTimeIntervalMax)
+		if distance == nil && timeout == nil { // Reset deferred locations
+			self.manager.disallowDeferredLocationUpdates()
+		} else { // Start deferring location updates
+			self.manager.allowDeferredLocationUpdatesUntilTraveled(distance ??  CLLocationDistanceMax, timeout: timeout ??  CLTimeIntervalMax)
+		}
 		return true
+	}
+	
+	/**
+	Stop receiving deferred location updates
+	*/
+	public func stopDeferredLocationUpdates() {
+		self.deferLocationUpdates(untilTravelled: nil, timeout: nil)
 	}
 	
 	/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
