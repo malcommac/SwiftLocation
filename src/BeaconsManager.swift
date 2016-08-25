@@ -120,7 +120,7 @@ public class BeaconsManager : NSObject, CLLocationManagerDelegate, CBPeripheralM
 		return request
 	}
 	
-	public func advertise(beaconName name: String, UUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMajorValue?, powerRSSI: NSNumber, serviceUUIDs: [String]) -> Bool {
+	public func advertise(beaconName name: String, UUID: String, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, powerRSSI: NSNumber, serviceUUIDs: [String]) -> Bool {
 		let idx = self.advertisedDevices.indexOf { $0.name == name }
 		if idx != nil { return false }
 		

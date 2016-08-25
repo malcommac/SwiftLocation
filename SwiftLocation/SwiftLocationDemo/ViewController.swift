@@ -34,7 +34,26 @@ class ViewController: UIViewController {
 		} catch let err {
 			print("Error \(err)")
 		}
+		
+		
+		Beacons.advertise(beaconName: "name", UUID: proximity, major: major, minor: minor, powerRSSI: 4, serviceUUIDs: [])
 
+		
+		let centerPoint = CLLocationCoordinate2DMake(0, 0)
+		let radius = CLLocationDistance(100)
+		do {
+			
+			
+			
+			try Beacons.monitor(geographicRegion: centerPoint, radius: radius, onStateDidChange: { newState in
+				// newState is .Entered if user entered into the region defined by the center point and the radius or .Exited if it move away from the region.
+			}) { error in
+				// something bad has happened
+			}
+		} catch let err {
+			// Failed to initialize region (bad region, monitor is not supported by the hardware etc.)
+			print("Cannot monitor region due to an error: \(err)")
+		}
 
 	}
 
