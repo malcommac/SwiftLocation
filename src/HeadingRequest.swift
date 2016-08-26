@@ -111,8 +111,10 @@ public class HeadingRequest: Request {
 	*/
 	public func start() {
 		guard let locator = self.locator else { return }
-		if locator.add(self) {
-			self.rState = .Running
+		let previousState = self.rState
+		self.rState = .Running
+		if locator.add(self) == false {
+			self.rState = previousState
 		}
 	}
 	

@@ -248,10 +248,18 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/**
-	Start any pending request. Usually you don't need to use this function.
+	Start any pending location request. Usually you don't need to use this function.
 	*/
 	public func startAllLocationRequests() {
 		self.locationObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+		self.visitsObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+	}
+	
+	/**
+	Start any pending heading request. Usually you don't need to use this function.
+	*/
+	public func startAllHeadingRequests() {
+		self.headingObservers.filter { $0.rState.isPending }.forEach { $0.start() }
 	}
 	
 	/**
@@ -323,21 +331,26 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func add(request: Request?) -> Bool {
-		guard let request = request where request.rState.canStart == true else { return false }
+		guard let request = request else { return false }
+		if request.rState.isCancelled == true { return false }
+		
 		if let request = request as? VisitRequest {
-			if self.visitsObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
-			self.visitsObservers.append(request)
+			if self.visitsObservers.indexOf({$0.UUID == request.UUID}) == nil {
+				self.visitsObservers.append(request)
+			}
 			self.updateVisitingService()
 			return true
 		}
 		else if let request = request as? HeadingRequest {
-			if self.headingObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
-			self.headingObservers.append(request)
+			if self.headingObservers.indexOf({$0.UUID == request.UUID}) == nil {
+				self.headingObservers.append(request)
+			}
 			self.updateHeadingService()
 		}
 		else if let request = request as? LocationRequest {
-			if self.locationObservers.indexOf({$0.UUID == request.UUID}) != nil { return false }
-			self.locationObservers.append(request)
+			if self.locationObservers.indexOf({$0.UUID == request.UUID}) == nil {
+				self.locationObservers.append(request)
+			}
 			self.updateLocationUpdateService()
 			return true
 		}
@@ -345,7 +358,9 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	internal func remove(request: Request?) -> Bool {
-		guard let request = request where request.rState.isRunning == true else { return false }
+		guard let request = request else { return false }
+		if request.rState.isRunning == false { return false }
+
 		if let request = request as? VisitRequest {
 			guard let idx = self.visitsObservers.indexOf({$0.UUID == request.UUID}) else {
 				return false
@@ -395,6 +410,12 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	private func setAllStates(to state: RequestState) {
+		self.visitsObservers.forEach({ $0.rState = state})
+		self.locationObservers.forEach({ $0.rState = state})
+		self.headingObservers.forEach({ $0.rState = state})
+	}
+	
 	internal func updateLocationUpdateService() {
 		let enabledObservers = locationObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
@@ -406,6 +427,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		do {
 			let requestShouldBeMade = try self.requestLocationServiceAuthorizationIfNeeded()
 			if requestShouldBeMade == true {
+				setAllStates(to: .WaitingUserAuth)
 				return
 			}
 		} catch let err {
@@ -467,6 +489,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			self.stopAllLocationRequests(withError: LocationError.AuthorizationDidChange(newStatus: status), pause: false)
 		case .AuthorizedAlways, .AuthorizedWhenInUse:
 			self.startAllLocationRequests()
+			self.startAllHeadingRequests()
 		default:
 			break
 		}

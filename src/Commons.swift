@@ -128,6 +128,16 @@ public enum RequestState {
 			return false
 		}
 	}
+	
+	/// Request is on queue but it's in pause state
+	public var isCancelled: Bool {
+		switch self {
+		case .Cancelled(_):
+			return true
+		default:
+			return false
+		}
+	}
 }
 
 // MARK: - Support for Request protocol in CLGeocoder object

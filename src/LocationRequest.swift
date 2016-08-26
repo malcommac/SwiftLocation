@@ -161,9 +161,10 @@ public class LocationRequest: Request  {
 	Temporary pauses receiving updates for this request. Request is not removed from the queue and you can resume it using start()
 	*/
 	public func pause() {
+		guard let locator = self.locator else { return }
 		if self.rState.isRunning {
 			self.rState = .Paused
-			locator?.updateLocationUpdateService()
+			locator.updateLocationUpdateService()
 		}
 	}
 	
@@ -172,8 +173,10 @@ public class LocationRequest: Request  {
 	*/
 	public func start() {
 		guard let locator = self.locator else { return }
-		if locator.add(self) {
-			self.rState = .Running
+		let previousState = self.rState
+		self.rState = .Running
+		if locator.add(self) == false {
+			self.rState = previousState
 		}
 	}
 	
