@@ -273,6 +273,9 @@ Use ```stop()``` on ```request``` to stop beacon advertise.
 Changes
 -------
 
+### Version 1.0.3 (2016/08/26):
+- [FIX #61](https://github.com/malcommac/SwiftLocation/issues/61) Fixed several issues with location services ```start()``` func.
+
 ### Version 1.0.2 (2016/08/26):
 - [FIX #60](https://github.com/malcommac/SwiftLocation/issues/60) A new rewritten Beacon Monitoring service class
 - Added support for deferred location updates
