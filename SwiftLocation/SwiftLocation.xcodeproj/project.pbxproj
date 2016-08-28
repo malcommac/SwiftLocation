@@ -8,14 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		08819F171CD51F9B00EFD938 /* SwiftLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 08819F161CD51F9B00EFD938 /* SwiftLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		08819F351CD51FA700EFD938 /* BeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F2D1CD51FA700EFD938 /* BeaconManager.swift */; };
-		08819F361CD51FA700EFD938 /* BeaconRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F2E1CD51FA700EFD938 /* BeaconRequest.swift */; };
+		08819F1E1CD51F9B00EFD938 /* SwiftLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08819F131CD51F9B00EFD938 /* SwiftLocation.framework */; };
+		08819F231CD51F9B00EFD938 /* SwiftLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F221CD51F9B00EFD938 /* SwiftLocationTests.swift */; };
 		08819F371CD51FA700EFD938 /* Commons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F2F1CD51FA700EFD938 /* Commons.swift */; };
 		08819F381CD51FA700EFD938 /* HeadingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F301CD51FA700EFD938 /* HeadingRequest.swift */; };
 		08819F391CD51FA700EFD938 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F311CD51FA700EFD938 /* LocationManager.swift */; };
 		08819F3A1CD51FA700EFD938 /* LocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F321CD51FA700EFD938 /* LocationRequest.swift */; };
-		08819F3B1CD51FA700EFD938 /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F331CD51FA700EFD938 /* RegionRequest.swift */; };
 		08819F3C1CD51FA700EFD938 /* VisitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08819F341CD51FA700EFD938 /* VisitRequest.swift */; };
+		210301211D6CA7BE00A0A38C /* BeaconsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210301201D6CA7BE00A0A38C /* BeaconsManager.swift */; };
+		210301231D6CBEF100A0A38C /* GeoRegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210301221D6CBEF100A0A38C /* GeoRegionRequest.swift */; };
+		210301251D6CD22F00A0A38C /* BeaconRegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210301241D6CD22F00A0A38C /* BeaconRegionRequest.swift */; };
+		210301271D6CDD2B00A0A38C /* BeaconAdvertiseRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210301261D6CDD2B00A0A38C /* BeaconAdvertiseRequest.swift */; };
 		213F850B1D61C7FC00835DCA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213F850A1D61C7FC00835DCA /* AppDelegate.swift */; };
 		213F850D1D61C7FC00835DCA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213F850C1D61C7FC00835DCA /* ViewController.swift */; };
 		213F85101D61C7FC00835DCA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 213F850E1D61C7FC00835DCA /* Main.storyboard */; };
@@ -26,6 +29,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		08819F1F1CD51F9B00EFD938 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08819F0A1CD51F9B00EFD938 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08819F121CD51F9B00EFD938;
+			remoteInfo = SwiftLocation;
+		};
 		213F851A1D61C80500835DCA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08819F0A1CD51F9B00EFD938 /* Project object */;
@@ -53,16 +63,18 @@
 		08819F131CD51F9B00EFD938 /* SwiftLocation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftLocation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		08819F161CD51F9B00EFD938 /* SwiftLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftLocation.h; sourceTree = "<group>"; };
 		08819F181CD51F9B00EFD938 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		08819F1D1CD51F9B00EFD938 /* SwiftLocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftLocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		08819F221CD51F9B00EFD938 /* SwiftLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLocationTests.swift; sourceTree = "<group>"; };
 		08819F241CD51F9B00EFD938 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		08819F2D1CD51FA700EFD938 /* BeaconManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconManager.swift; path = ../../src/BeaconManager.swift; sourceTree = "<group>"; };
-		08819F2E1CD51FA700EFD938 /* BeaconRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconRequest.swift; path = ../../src/BeaconRequest.swift; sourceTree = "<group>"; };
 		08819F2F1CD51FA700EFD938 /* Commons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Commons.swift; path = ../../src/Commons.swift; sourceTree = "<group>"; };
 		08819F301CD51FA700EFD938 /* HeadingRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HeadingRequest.swift; path = ../../src/HeadingRequest.swift; sourceTree = "<group>"; };
 		08819F311CD51FA700EFD938 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationManager.swift; path = ../../src/LocationManager.swift; sourceTree = "<group>"; };
 		08819F321CD51FA700EFD938 /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationRequest.swift; path = ../../src/LocationRequest.swift; sourceTree = "<group>"; };
-		08819F331CD51FA700EFD938 /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RegionRequest.swift; path = ../../src/RegionRequest.swift; sourceTree = "<group>"; };
 		08819F341CD51FA700EFD938 /* VisitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisitRequest.swift; path = ../../src/VisitRequest.swift; sourceTree = "<group>"; };
+		210301201D6CA7BE00A0A38C /* BeaconsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconsManager.swift; path = ../../src/BeaconsManager.swift; sourceTree = "<group>"; };
+		210301221D6CBEF100A0A38C /* GeoRegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GeoRegionRequest.swift; path = ../../src/GeoRegionRequest.swift; sourceTree = "<group>"; };
+		210301241D6CD22F00A0A38C /* BeaconRegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconRegionRequest.swift; path = ../../src/BeaconRegionRequest.swift; sourceTree = "<group>"; };
+		210301261D6CDD2B00A0A38C /* BeaconAdvertiseRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconAdvertiseRequest.swift; path = ../../src/BeaconAdvertiseRequest.swift; sourceTree = "<group>"; };
 		213F85081D61C7FC00835DCA /* SwiftLocationDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocationDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		213F850A1D61C7FC00835DCA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		213F850C1D61C7FC00835DCA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -77,6 +89,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08819F1A1CD51F9B00EFD938 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08819F1E1CD51F9B00EFD938 /* SwiftLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				08819F131CD51F9B00EFD938 /* SwiftLocation.framework */,
+				08819F1D1CD51F9B00EFD938 /* SwiftLocationTests.xctest */,
 				213F85081D61C7FC00835DCA /* SwiftLocationDemo.app */,
 			);
 			name = Products;
@@ -134,9 +155,10 @@
 		08819F3D1CD51FAD00EFD938 /* Beacon Services */ = {
 			isa = PBXGroup;
 			children = (
-				08819F2D1CD51FA700EFD938 /* BeaconManager.swift */,
-				08819F2E1CD51FA700EFD938 /* BeaconRequest.swift */,
-				08819F331CD51FA700EFD938 /* RegionRequest.swift */,
+				210301201D6CA7BE00A0A38C /* BeaconsManager.swift */,
+				210301221D6CBEF100A0A38C /* GeoRegionRequest.swift */,
+				210301241D6CD22F00A0A38C /* BeaconRegionRequest.swift */,
+				210301261D6CDD2B00A0A38C /* BeaconAdvertiseRequest.swift */,
 			);
 			name = "Beacon Services";
 			sourceTree = "<group>";
@@ -197,6 +219,24 @@
 			productReference = 08819F131CD51F9B00EFD938 /* SwiftLocation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		08819F1C1CD51F9B00EFD938 /* SwiftLocationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08819F2A1CD51F9B00EFD938 /* Build configuration list for PBXNativeTarget "SwiftLocationTests" */;
+			buildPhases = (
+				08819F191CD51F9B00EFD938 /* Sources */,
+				08819F1A1CD51F9B00EFD938 /* Frameworks */,
+				08819F1B1CD51F9B00EFD938 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				08819F201CD51F9B00EFD938 /* PBXTargetDependency */,
+			);
+			name = SwiftLocationTests;
+			productName = SwiftLocationTests;
+			productReference = 08819F1D1CD51F9B00EFD938 /* SwiftLocationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		213F85071D61C7FC00835DCA /* SwiftLocationDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 213F85171D61C7FC00835DCA /* Build configuration list for PBXNativeTarget "SwiftLocationDemo" */;
@@ -223,17 +263,20 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = danielemargutti;
 				TargetAttributes = {
 					08819F121CD51F9B00EFD938 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = E5DU3FA699;
 						LastSwiftMigration = 0800;
+					};
+					08819F1C1CD51F9B00EFD938 = {
+						CreatedOnToolsVersion = 7.3;
 					};
 					213F85071D61C7FC00835DCA = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = E5DU3FA699;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -251,6 +294,7 @@
 			projectRoot = "";
 			targets = (
 				08819F121CD51F9B00EFD938 /* SwiftLocation */,
+				08819F1C1CD51F9B00EFD938 /* SwiftLocationTests */,
 				213F85071D61C7FC00835DCA /* SwiftLocationDemo */,
 			);
 		};
@@ -258,6 +302,13 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		08819F111CD51F9B00EFD938 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08819F1B1CD51F9B00EFD938 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -284,11 +335,20 @@
 				08819F3A1CD51FA700EFD938 /* LocationRequest.swift in Sources */,
 				08819F381CD51FA700EFD938 /* HeadingRequest.swift in Sources */,
 				08819F371CD51FA700EFD938 /* Commons.swift in Sources */,
-				08819F3B1CD51FA700EFD938 /* RegionRequest.swift in Sources */,
+				210301251D6CD22F00A0A38C /* BeaconRegionRequest.swift in Sources */,
 				08819F391CD51FA700EFD938 /* LocationManager.swift in Sources */,
+				210301231D6CBEF100A0A38C /* GeoRegionRequest.swift in Sources */,
+				210301271D6CDD2B00A0A38C /* BeaconAdvertiseRequest.swift in Sources */,
 				08819F3C1CD51FA700EFD938 /* VisitRequest.swift in Sources */,
-				08819F351CD51FA700EFD938 /* BeaconManager.swift in Sources */,
-				08819F361CD51FA700EFD938 /* BeaconRequest.swift in Sources */,
+				210301211D6CA7BE00A0A38C /* BeaconsManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08819F191CD51F9B00EFD938 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08819F231CD51F9B00EFD938 /* SwiftLocationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +364,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		08819F201CD51F9B00EFD938 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08819F121CD51F9B00EFD938 /* SwiftLocation */;
+			targetProxy = 08819F1F1CD51F9B00EFD938 /* PBXContainerItemProxy */;
+		};
 		213F851B1D61C80500835DCA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 08819F121CD51F9B00EFD938 /* SwiftLocation */;
@@ -345,10 +410,8 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -396,10 +459,8 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -430,9 +491,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = E5DU3FA699;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -456,7 +515,6 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = E5DU3FA699;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -469,9 +527,28 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
+		08819F2B1CD51F9B00EFD938 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = SwiftLocationTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		08819F2C1CD51F9B00EFD938 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = SwiftLocationTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -484,6 +561,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocationDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -496,7 +574,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielemargutti.SwiftLocationDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -517,6 +595,15 @@
 			buildConfigurations = (
 				08819F281CD51F9B00EFD938 /* Debug */,
 				08819F291CD51F9B00EFD938 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08819F2A1CD51F9B00EFD938 /* Build configuration list for PBXNativeTarget "SwiftLocationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08819F2B1CD51F9B00EFD938 /* Debug */,
+				08819F2C1CD51F9B00EFD938 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -29,24 +29,41 @@
 import Foundation
 import CoreLocation
 import MapKit
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 let DefaultTimeout: TimeInterval = 30.0
 
-public let Location:LocationManager = LocationManager.shared
+public let Location:LocationManager = LocationManager()
 
-public class LocationManager: NSObject, CLLocationManagerDelegate {
+open class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
-	public private(set) var lastLocation: CLLocation?
-
-		/// Shared instance of the location manager
-	internal static let shared = LocationManager()
+	open fileprivate(set) var lastLocation: CLLocation?
 	
 	/// You can specify a valid Google API Key if you want to use Google geocoding services without a strict quota
-	public var googleAPIKey: String?
+	open var googleAPIKey: String?
 	
 		/// A Boolean value indicating whether the app wants to receive location updates when suspended. By default it's false.
 		/// See .allowsBackgroundLocationUpdates of CLLocationManager for a detailed description of this var.
-	public var allowsBackgroundEvents: Bool = false {
+	open var allowsBackgroundEvents: Bool = false {
 		didSet {
 			if #available(iOS 9.0, *) {
 				if let backgroundModes = Bundle.main.object(forInfoDictionaryKey: "UIBackgroundModes") as? NSArray {
@@ -64,7 +81,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		/// When this property is set to YES, the location manager pauses updates (and powers down the appropriate hardware)
 		/// at times when the location data is unlikely to change.
 		/// You can observe this event by setting the appropriate handler on .onPause() method of the request.
-	public var pausesLocationUpdatesWhenPossible: Bool = true {
+	open var pausesLocationUpdatesWhenPossible: Bool = true {
 		didSet {
 			self.manager.pausesLocationUpdatesAutomatically = pausesLocationUpdatesWhenPossible
 		}
@@ -74,23 +91,23 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		/// represents due north (0 degrees) by default. By default this value is set to .FaceUp.
 		/// The original reference point is retained, changing this value has no effect on orientation reference point.
 		/// Changing the value in this property affects only those heading values reported after the change is made.
-	public var headingOrientation: CLDeviceOrientation = .faceUp {
+	open var headingOrientation: CLDeviceOrientation = .faceUp {
 		didSet {
 			self.updateHeadingService()
 		}
 	}
 	
 	//MARK: Private Variables
-	private let manager: CLLocationManager
+	fileprivate let manager: CLLocationManager
 		/// The list of all requests to observe current location changes
-	private(set) var locationObservers: [LocationRequest] = []
+	fileprivate(set) var locationObservers: [LocationRequest] = []
 		/// The list of all requests to observe device's heading changes
-	private(set) var headingObservers: [HeadingRequest] = []
+	fileprivate(set) var headingObservers: [HeadingRequest] = []
 		/// THe list of all requests to oberver significant places visits
-	private(set) var visitsObservers: [VisitRequest] = []
+	fileprivate(set) var visitsObservers: [VisitRequest] = []
 
 	//MARK: Init
-	private override init() {
+	public override init() {
 		self.manager = CLLocationManager()
 		super.init()
 		self.manager.delegate = self
@@ -109,15 +126,24 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
-	public func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval = DefaultTimeout, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+	open func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval? = nil, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
 		
 		if accuracy == .ipScan {
+			// Location via IP scan works in a different way
 			return self.getLocationViaIPScan(timeout, onSuccess: onSuccess, onError: onError)
 		} else {
 			let request = LocationRequest(withAccuracy: accuracy, andFrequency: frequency)
+			request.locator = self
 			request.timeout = timeout
 			let _ = request.onSuccess(onSuccess)
 			let _ = request.onError(onError)
+			
+			if frequency == .significant && CLLocationManager.significantLocationChangeMonitoringAvailable() == false {
+				// Significant location is not supported by this device, cannot start request
+				request.onErrorHandler?(nil,LocationError.notSupported)
+				return request
+			}
+			// Start request
 			request.start()
 			return request
 		}
@@ -135,8 +161,9 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request istance
 	*/
-	public func getHeading(_ frequency: HeadingFrequency = .continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: HeadingHandlerSuccess, onError error: HeadingHandlerError) -> Request {
+	open func getHeading(_ frequency: HeadingFrequency = .continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: HeadingHandlerSuccess, onError error: HeadingHandlerError) -> Request {
 		let request = HeadingRequest(withFrequency: frequency, accuracy: accuracy, allowsCalibration: allowsCalibration)
+		request.locator = self
 		request.onReceiveUpdates = update
 		request.onError = error
 		request.start()
@@ -153,9 +180,10 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: the request object which represent the current observer. You can use it to pause/resume or stop the observer itself.
 	*/
-	public func getInterestingPlaces(onDidVisit handler: VisitHandler?) -> Request {
+	open func getInterestingPlaces(onDidVisit handler: VisitHandler?) -> Request {
 		let request = VisitRequest(onDidVisit: handler)
-		let _ = self.addVisitRequest(request)
+		request.locator = self
+		request.start()
 		return request
 	}
 	
@@ -170,7 +198,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler: handler called when location reverse operation was completed successfully. It contains a valid CLPlacemark instance.
 	- parameter fHandler: handler called when the operation fails due to an error.
 	*/
-	public func reverse(address: String, using service: ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(address: String, using service: ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
 			return self.reverse_apple(address: address, onSuccess: onSuccess, onError: onError)
@@ -189,7 +217,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
 	
-	public func reverse(coordinates: CLLocationCoordinate2D, using service:ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(coordinates: CLLocationCoordinate2D, using service:ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
 		return self.reverse(location: location, using: service, onSuccess: onSuccess, onError: onError)
 	}
@@ -202,7 +230,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
-	public func reverse(location: CLLocation, using service :ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(location: CLLocation, using service :ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
 			return self.reverse_location_apple(location, onSuccess: onSuccess, onError: onError)
@@ -211,11 +239,97 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 
+	/**
+	Call this method in situations where you want location data with GPS accuracy but do not need to process that data right away. Keep in mind: this settings is global and affect all requests.
+	To cancel deferred updates pass nil to both parameters or call stopDeferredLocationUpdates() function.
+	If your app is in the background and the system is able to optimize its power usage, the location manager tells the GPS hardware to store new locations internally until the specified distance or timeout conditions are met.
+	If you want to change the deferral criteria for any reason, and therefore call this method again, be prepared to receive a deferredCanceled error in your request callbacks.
+	
+	- parameter distance: The distance (in meters) from the current location that must be travelled before event delivery resumes. Pass nil to ignore this condition.
+	- parameter timeout:  The amount of time (in seconds) from the current time that must pass before event delivery resumes. Pass nil to ignore this condition.
+	
+	- returns: true if deferred update are supported, false otherwise
+	*/
+	open func deferLocationUpdates(untilTravelled distance: CLLocationDistance?, timeout: TimeInterval?) -> Bool {
+		if CLLocationManager.deferredLocationUpdatesAvailable() == false {
+			return false
+		}
+		if distance != nil || timeout != nil {
+			// In order to work properly when you set a deferred location distanceFilter property
+			// of the location manager must be set to kCLDistanceFilterNone.
+			self.minimumDistance = nil
+		}
+		if distance == nil && timeout == nil { // Reset deferred locations
+			self.manager.disallowDeferredLocationUpdates()
+		} else { // Start deferring location updates
+			self.manager.allowDeferredLocationUpdates(untilTraveled: distance ??  CLLocationDistanceMax, timeout: timeout ??  CLTimeIntervalMax)
+		}
+		return true
+	}
+	
+	/**
+	Start any pending location request. Usually you don't need to use this function.
+	*/
+	open func startAllLocationRequests() {
+		self.locationObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+		self.visitsObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+	}
+	
+	/**
+	Start any pending heading request. Usually you don't need to use this function.
+	*/
+	open func startAllHeadingRequests() {
+		self.headingObservers.filter { $0.rState.isPending }.forEach { $0.start() }
+	}
+	
+	/**
+	Stop or pause any location request
+	
+	- parameter error: optional error to pass
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	open func stopAllLocationRequests(withError error: LocationError?, pause: Bool = false) {
+		if pause == true {
+			self.locationObservers.forEach { $0.pause() }
+		} else {
+			self.locationObservers.forEach { let _ = $0.didReceiveEventFromLocationManager(error: error, location: nil) }
+		}
+	}
+	
+	/**
+	Stop or pause any running significant location request
+	
+	- parameter pause: true if you want to pause requests instead of cancel them
+	*/
+	open func stopSignificantLocationRequests(_ pause: Bool = false) {
+		self.locationObservers.filter { $0.rState.isRunning && $0.frequency == .significant }.forEach {
+			if pause == true {
+				$0.pause()
+			} else {
+				$0.cancel(nil)
+			}
+		}
+	}
+	
+	/**
+	Stop receiving deferred location updates
+	*/
+	open func stopDeferredLocationUpdates() {
+		let _ = self.deferLocationUpdates(untilTravelled: nil, timeout: nil)
+	}
+	
+	/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+	/// By default is nil, each event is reported without any filter.
+	open var minimumDistance: CLLocationDistance? {
+		didSet {
+			self.manager.distanceFilter = (minimumDistance == nil ? kCLDistanceFilterNone : minimumDistance!)
+		}
+	}
 	
 	//MARK: [Private Methods] Manage Requests
 	
-	private func getLocationViaIPScan(_ timeout: TimeInterval = DefaultTimeout, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
-		let URLRequest = Foundation.URLRequest(url: URL(string: "http://ip-api.com/json")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 5)
+	fileprivate func getLocationViaIPScan(_ timeout: TimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+		let URLRequest = Foundation.URLRequest(url: URL(string: "http://ip-api.com/json")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
 		let sessionConfig = URLSessionConfiguration.default
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: URLRequest) { (data, response, error) in
@@ -236,72 +350,79 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return task
 	}
 	
-	internal func stopLocationRequest(_ request: LocationRequest) {
-		if let idx = self.locationObservers.index(where: {$0.UUID == request.UUID}) {
-			self.locationObservers.remove(at: idx)
-			self.updateLocationUpdateService()
+	internal func add(_ request: Request?) -> Bool {
+		guard let request = request else { return false }
+		if request.rState.isCancelled == true { return false }
+		
+		if let request = request as? VisitRequest {
+			if self.visitsObservers.index(where: {$0.UUID == request.UUID}) == nil {
+				self.visitsObservers.append(request)
+			}
+			self.updateVisitingService()
+			return true
 		}
+		else if let request = request as? HeadingRequest {
+			if self.headingObservers.index(where: {$0.UUID == request.UUID}) == nil {
+				self.headingObservers.append(request)
+			}
+			self.updateHeadingService()
+		}
+		else if let request = request as? LocationRequest {
+			if self.locationObservers.index(where: {$0.UUID == request.UUID}) == nil {
+				self.locationObservers.append(request)
+			}
+			self.updateLocationUpdateService()
+			return true
+		}
+		return false
 	}
 	
-	internal func stopInterestingPlacesRequest(_ request: VisitRequest) -> Bool {
-		if let idx = self.visitsObservers.index(where: {$0.UUID == request.UUID}) {
-			self.visitsObservers[idx].isEnabled = false
+	internal func remove(_ request: Request?) -> Bool {
+		guard let request = request else { return false }
+		if request.rState.isRunning == false { return false }
+
+		if let request = request as? VisitRequest {
+			guard let idx = self.visitsObservers.index(where: {$0.UUID == request.UUID}) else {
+				return false
+			}
 			self.visitsObservers.remove(at: idx)
 			self.updateVisitingService()
 			return true
 		}
-		return false
-	}
-	
-	internal func addVisitRequest(_ handler: VisitRequest) -> VisitRequest {
-		if self.visitsObservers.index(where: {$0.UUID == handler.UUID}) == nil {
-			self.visitsObservers.append(handler)
-			handler.isEnabled = true
-		}
-		self.updateVisitingService()
-		return handler
-	}
-	
-	internal func stopHeadingRequest(_ request: HeadingRequest) -> Bool {
-		if let idx = self.headingObservers.index(where: {$0.UUID == request.UUID}) {
+		else if let request = request as? HeadingRequest {
+			guard let idx = self.headingObservers.index(where: {$0.UUID == request.UUID}) else {
+				return false
+			}
 			self.headingObservers.remove(at: idx)
 			self.updateHeadingService()
+		}
+		else if let request = request as? LocationRequest {
+			guard let idx = self.locationObservers.index(where: {$0.UUID == request.UUID}) else {
+				return false
+			}
+			self.locationObservers.remove(at: idx)
+			self.updateLocationUpdateService()
 			return true
 		}
 		return false
 	}
 	
-	internal func addHeadingRequest(_ handler: HeadingRequest) -> HeadingRequest {
-		if self.headingObservers.index(where: {$0.UUID == handler.UUID}) == nil {
-			headingObservers.append(handler)
-		}
-		self.updateHeadingService()
-		return handler
-	}
-	
-	internal func addLocationRequest(_ handler: LocationRequest) -> LocationRequest {
-		if self.locationObservers.index(where: {$0.UUID == handler.UUID}) == nil {
-			locationObservers.append(handler)
-		}
-		self.updateLocationUpdateService()
-		return handler
-	}
 	
 	internal func updateHeadingService() {
-		let enabledObservers = headingObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = headingObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingHeading()
 			return
 		}
 		
-		let minAngle = enabledObservers.min(by: {return ($0.accuracy < $1.accuracy) })!.accuracy
+		let minAngle = enabledObservers.min(by: {return $0.accuracy < $1.accuracy })!.accuracy
 		self.manager.headingFilter = minAngle
 		self.manager.headingOrientation = self.headingOrientation
 		self.manager.startUpdatingHeading()
 	}
 	
 	internal func updateVisitingService() {
-		let enabledObservers = visitsObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = visitsObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopMonitoringVisits()
 		} else {
@@ -309,8 +430,14 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	fileprivate func setAllStates(to state: RequestState) {
+		self.visitsObservers.forEach({ $0.rState = state})
+		self.locationObservers.forEach({ $0.rState = state})
+		self.headingObservers.forEach({ $0.rState = state})
+	}
+	
 	internal func updateLocationUpdateService() {
-		let enabledObservers = locationObservers.filter({ $0.isEnabled == true })
+		let enabledObservers = locationObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
 			self.manager.stopUpdatingLocation()
 			self.manager.stopMonitoringSignificantLocationChanges()
@@ -320,10 +447,11 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		do {
 			let requestShouldBeMade = try self.requestLocationServiceAuthorizationIfNeeded()
 			if requestShouldBeMade == true {
+				setAllStates(to: .waitingUserAuth)
 				return
 			}
 		} catch let err {
-			self.cleanUpAllLocationRequests( (err as! LocationError) )
+			self.stopAllLocationRequests(withError: (err as! LocationError), pause: false)
 		}
 		
 		var globalAccuracy: Accuracy?
@@ -334,7 +462,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			if (globalAccuracy == nil || observer.accuracy.rawValue > globalAccuracy!.rawValue) {
 				globalAccuracy = observer.accuracy
 			}
-			if (globalFrequency == nil || (globalFrequency != nil && observer.frequency < globalFrequency!)) {
+			if (globalFrequency == nil || observer.frequency < globalFrequency) {
 				globalFrequency = observer.frequency
 			}
 			activityType = (observer.activityType.rawValue > activityType.rawValue ? observer.activityType : activityType)
@@ -351,7 +479,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	private func requestLocationServiceAuthorizationIfNeeded() throws -> Bool {
+	fileprivate func requestLocationServiceAuthorizationIfNeeded() throws -> Bool {
 		if CLLocationManager.locationAuthStatus == .authorized(always: true) || CLLocationManager.locationAuthStatus == .authorized(always: false) {
 			return false
 		}
@@ -369,79 +497,64 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			self.manager.requestWhenInUseAuthorization()
 		}
 		
-		self.pauseAllLocationRequest()
+		self.stopAllLocationRequests(withError: nil, pause: true)
 		return true
-	}
-	
-	private func pauseAllLocationRequest() {
-		self.locationObservers.forEach { handler in
-            if handler.isEnabled {
-                handler.pause()
-            }
-		}
-	}
-	
-	private func cleanUpAllLocationRequests(_ error: LocationError) {
-		self.locationObservers.forEach { handler in
-			let _ = handler.didReceiveEventFromLocationManager(error: error, location: nil)
-		}
-	}
-	
-	private func startAllLocationRequests() {
-		self.locationObservers.forEach { handler in
-			handler.start()
-		}
 	}
 	
 	//MARK: [Private Methods] Location Manager Delegate
 	
-	@objc public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
-		self.visitsObservers.forEach { handler in
-			if (handler.isEnabled == true) {
-				handler.onDidVisitPlace?(visit)
-			}
-		}
-	}
-	
-	@objc public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+	@objc open func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 		switch status {
 		case .denied, .restricted:
-			self.cleanUpAllLocationRequests(LocationError.authorizationDidChange(newStatus: status))
+			self.stopAllLocationRequests(withError: LocationError.authorizationDidChange(newStatus: status), pause: false)
 		case .authorizedAlways, .authorizedWhenInUse:
 			self.startAllLocationRequests()
+			self.startAllHeadingRequests()
 		default:
 			break
 		}
 	}
 	
-	@objc public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		self.locationObservers.forEach { handler in
-			let _ = handler.didReceiveEventFromLocationManager(error: LocationError.locationManager(error: error as NSError?), location: nil)
+	@objc open func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+		self.visitsObservers.filter { $0.rState.isRunning}.filter { $0.rState.isRunning }.forEach { $0.onDidVisitPlace?(visit) }
+	}
+	
+	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
+			let _ = handler.didReceiveEventFromLocationManager(error: LocationError.locationManager(error: error), location: nil)
 		}
 	}
 	
-	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+	@objc open func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+		guard let error = error else { return }
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
+			let _ = handler.didReceiveEventFromLocationManager(error: LocationError.locationManager(error: error), location: nil)
+		}
+	}
+	
+	@objc open func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {		
 		self.lastLocation = locations.max(by: { (l1, l2) -> Bool in
 			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
 		)
-		self.locationObservers.forEach { handler in
+		
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
 			let _ = handler.didReceiveEventFromLocationManager(error: nil, location: self.lastLocation)
 		}
 	}
 	
-	public func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
-		self.locationObservers.forEach { handler in
+	open func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+		self.locationObservers.filter { $0.rState.isRunning}.forEach { handler in
 			handler.onPausesHandler?(handler.lastLocation)
 		}
 	}
 	
 	//MARK: [Private Methods] Heading
 	
-	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-		self.headingObservers.forEach { headingRequest in headingRequest.didReceiveEventFromManager(nil, heading: newHeading) }
+	open func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+		self.headingObservers.filter { $0.rState.isRunning}.forEach { headingRequest in headingRequest.didReceiveEventFromManager(nil, heading: newHeading) }
 	}
 	
-	public func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
+	open func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
 		for (_,request) in self.headingObservers.enumerated() {
 			if request.allowsCalibration == true { return true }
 			return false
@@ -451,11 +564,11 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Reverse Address/Location
 	
-	private func reverse_apple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_apple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error as NSError?))
+				fHandler(LocationError.locationManager(error: error))
 			} else {
 				if let placemark = placemarks?[0] {
 					sHandler(placemark)
@@ -467,7 +580,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return geocoder
 	}
 	
-	private func reverse_google(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_google(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)"
 		if self.googleAPIKey != nil {
 			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
@@ -478,7 +591,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error as NSError?))
+				fHandler(LocationError.locationManager(error: error))
 			} else {
 				if data != nil {
 					let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
@@ -498,22 +611,22 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return task
 	}
 	
-	private func reverse_location_apple(_ location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_location_apple(_ location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-			if (placemarks!.count > 0) {
+			if (placemarks?.count > 0) {
 				let placemark: CLPlacemark! = placemarks![0]
 				if (placemark.locality != nil && placemark.administrativeArea != nil) {
 					sHandler(placemark)
 				}
 			} else {
-				fHandler(LocationError.locationManager(error: error as NSError?))
+				fHandler(LocationError.locationManager(error: error))
 			}
 		}
 		return geocoder
 	}
 	
-	private func reverse_location_google(_ location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_location_google(_ location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(location.coordinate.latitude),\(location.coordinate.longitude)"
 		if self.googleAPIKey != nil {
 			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
@@ -525,7 +638,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
 			if error != nil {
-				fHandler(LocationError.locationManager(error: error as NSError?))
+				fHandler(LocationError.locationManager(error: error))
 			} else {
 				if data != nil {
 					let jsonResult: NSDictionary = (try! JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as! NSDictionary
@@ -547,7 +660,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Parsing
 	
-	private func parseIPLocationData(_ resultDict: NSDictionary) throws -> CLPlacemark {
+	fileprivate func parseIPLocationData(_ resultDict: NSDictionary) throws -> CLPlacemark {
 		let status = resultDict["status"] as? String
 		if status != "success" {
 			throw LocationError.noDataReturned
@@ -567,7 +680,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return (placemark as CLPlacemark)
 	}
 	
-	private func parseGoogleLocationData(_ resultDict: NSDictionary) -> CLPlacemark {
+	fileprivate func parseGoogleLocationData(_ resultDict: NSDictionary) -> CLPlacemark {
 		let locationDict = (resultDict.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
 		
 		var addressDict = [String:AnyObject]()
@@ -578,12 +691,12 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		let coordinate = CLLocationCoordinate2D(latitude: location.object(forKey: "lat") as! Double, longitude: location.object(forKey: "lng") as! Double)
 		
 		let addressComponents = locationDict.object(forKey: "address_components") as! NSArray
-		let formattedAddressArray = (locationDict.object(forKey: "formatted_address") as! NSString).components(separatedBy: ", ")
+		let formattedAddressArray = (locationDict.object(forKey: "formatted_address") as! NSString).components(separatedBy: ", ") as [AnyObject?]
 		
 		addressDict[CLPlacemarkDictionaryKey.kSubAdministrativeArea] = JSONComponent("administrative_area_level_2", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kSubLocality] = JSONComponent("subLocality", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kState] = JSONComponent("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
-		addressDict[CLPlacemarkDictionaryKey.kStreet] = formattedAddressArray.first! as NSString
+		addressDict[CLPlacemarkDictionaryKey.kStreet] = formattedAddressArray.first!
 		addressDict[CLPlacemarkDictionaryKey.kThoroughfare] = JSONComponent("route", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kFormattedAddressLines] = formattedAddressArray as AnyObject
 		addressDict[CLPlacemarkDictionaryKey.kSubThoroughfare] = JSONComponent("street_number", inArray: addressComponents, ofType: "long_name")
@@ -597,7 +710,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return (placemark as CLPlacemark)
 	}
 	
-	private func JSONComponent(_ component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
+	fileprivate func JSONComponent(_ component:NSString,inArray:NSArray,ofType:NSString) -> NSString {
 		let index: Int = inArray.indexOfObject(options: .concurrent, passingTest: { (obj,idx,stop) -> Bool in
 			let objDict:NSDictionary = obj as! NSDictionary
 			let types:NSArray = objDict.object(forKey: "types") as! NSArray
@@ -612,15 +725,15 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		return ""
 	}
 	
-	private func validateGoogleJSONResponse(_ jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool?) {
+	fileprivate func validateGoogleJSONResponse(_ jsonResult: NSDictionary!) -> (error: NSError?, noResults: Bool?) {
 		let status = (jsonResult.value(forKey: "status") as! String).lowercased()
 		switch status {
 			case "ok": // everything is fine, the sun is shining and we have results!
 				return (nil,false)
 			case "zero_results": // No results error
 				return (nil,true)
-			case "over_query_limit":
-				let message	= "Query quota limit was exceeded" // Quota limit was excedeed
+			case "over_query_limit": // Quota limit was excedeed
+				let message	= "Query quota limit was exceeded"
 				return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
 			case "request_denied": // Request was denied
 				let message	= "Request denied"
@@ -628,8 +741,8 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 			case "invalid_request": // Invalid parameters
 				let message	= "Invalid input sent"
 				return (NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: [NSLocalizedDescriptionKey : message]),false)
-			default: // okay!
-				return (nil,false)
+			default:
+				return (nil,false) // okay!
 		}
 	}
 	

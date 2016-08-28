@@ -13,6 +13,13 @@ SwiftLocation
 SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) monitor beacons and do beacon advertising.
 It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 
+Pick the right version:
+
+- Official **Swift 2.2** is in master (and develop)
+- **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
+- **Swift 3.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift3).
+- Old unsupported **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
+
 Main features includes:
 
 - **Auto Management of hardware resources**: SwiftLocation turns off hardware if not used by our observers. Don't worry, we take care of your user's battery usage!
@@ -68,7 +75,7 @@ Documentation
 * **Monitor Beacons & Beacon Families**
 * **Act like a Beacon**
 
-#### Monitor Current User Location (one shot, continous delivery etc.)
+## Monitor Current User Location (one shot, continous delivery etc.)
 
 Getting current user's location is pretty easy; all location related services are provided by the ```LocationManager``` singleton class.
 
@@ -124,7 +131,7 @@ request.start() // Restart a paused request
 
 
 
-#### Obtain Current Location without GPS
+## Obtain Current Location without GPS
 
 Sometimes you could need to get the current approximate location and you may not need to turn on GPS hardware and waste user's battery. When accuracy is not required you can locate the user by it's public network IP address (obviously this require an internet connection).
 
@@ -136,7 +143,7 @@ Location.getLocation(withAccuracy: .IPScan, onSuccess: { (location) in
 }
 ```
 
-#### Monitor Device Heading
+## Monitor Device Heading
 
 You can get data about current device's heading using observeHeading() function.
 
@@ -148,7 +155,16 @@ Location.getHeading(HeadingFrequency.Continuous(interval: 5), accuracy: 1.5, all
 }
 ```
 
-#### Reverse Address/Coordinates to CLPlacemark
+## All the other features related to location manager
+
+- SwiftLocation works even in background; just use ```Location.allowsBackgroundEvents = true``` (don't forget to define UIBackgroundModes array).
+- SwiftLocation can optimize power usage by reducing location updates via ```Location.pausesLocationUpdatesWhenPossible = true```
+- SwiftLocation can defer location updates: use it to optimize power usage when you want location data with GPS accuracy but do not need to process that data right away; you can get the complete location points after certain time or distance (use ```Location..stopDeferredLocationUpdates()``` to stop deferred updates)
+- Shortcuts to pause or resume requests: ```Location.startAllLocationRequests() ``` (start pending requests), ```Location.stopAllLocationRequests``` (pause or stop all requests), ```Location.stopSignificantLocationRequests()``` (pause or stop only significant requests)
+- Use ```Location.minimumDistance = ...``` to define the minimum distance (measured in meters) a device must move horizontally before an update event is generated (by default is ignored, all events are generated)
+
+
+## Reverse Address Strings or Coordinates
 
 You can do a reverse geocoding from a given pair of coordinates or a readable address string. You can use both Google or Apple's services to perform these request.
 
@@ -177,7 +193,7 @@ Location.reverse(coordinates: coordinates, onSuccess: { foundPlacemark in
 }
 ```
 
-#### Monitor Interesting Visits
+## Monitor Interesting Places
 
 ```CoreLocation``` allows you to get notified when user visits an interesting place by returning a ```CLVisit``` object: it encapsulates information about interesting places that the user has been. Visit objects are created by the system. The visit includes the location where the visit occurred and information about the arrival and departure times as relevant. You do not create visit objects directly, nor should you subclass ```CLVisit```.
 
@@ -189,56 +205,92 @@ Location.getInterestingPlaces { newVisit in
 }
 ```
 
-#### Monitor Geographic Regions
+## Monitor Geographic Regions
+You can easily to be notified when the user crosses a region based boundary.
+You use region monitoring to detect boundary crossings of the specified region and you use those boundary crossings to perform related tasks. For example, upon approaching a dry cleaners, an app could notify the user to pick up any clothes that had been dropped off and are now ready.
 
-You can monitor a specific geographic region identified by a center point and a radius (expressed in meters) and get notified about enter and exit events.
-When you are working with geographic region or beacon, methods are provided by ```BeaconManager``` singleton class.
-
-```swift
-let coordinates = CLLocationCoordinate2DMake(41.890198, 12.492204)
-let request = Beacon.monitorGeographicRegion(centeredAt: coordinates, radius: 1400, onEnter: { in
-	// on enter in region
-}) { in
-	// on exit from region
-}
-// Sometimes in the future you may decide to stop observing region
-request.stop()
-```
-
-#### Monitor Beacons & Beacon Families
-You can monitor for a beacon or a beacon family.
-
-To get notifications about beacons of a particular family:
+SwiftLocation offers to you a simple method called ```monitor()``` to get notified about these kind of events: 
 
 ```swift
-let request = Beacon.monitorForBeaconFamily(proximityUUID: familyUUID, onRangingBeacons: { beaconsFound in
-	// beaconsFound is an array of found beacons ([CLBeacon])
-}) { error in
-	// something bad happened
+// Define a geographic circle region
+let centerPoint = CLLocationCoordinate2DMake(0, 0)
+let radius = CLLocationDistance(100)
+do {
+   // Attempt to monitor the region
+	let request = try Beacons.monitor(geographicRegion: centerPoint, radius: radius, onStateDidChange: { newState in
+		// newState is .Entered if user entered into the region defined by the center point and the radius or .Exited if it move away from the region.
+	}) { error in
+		// something bad has happened
+	}
+} catch let err {
+	// Failed to initialize region (bad region, monitor is not supported by the hardware etc.)
+	print("Cannot monitor region due to an error: \(err)")
 }
-// Sometimes in the future you may decide to stop observing
-request.stop()
 ```
 
-To monitor a particular beacon:
+Usually you can ```pause()```/```start()``` or ```cancel()``` the request itself; just keep a reference to it.
+
+## Monitor Beacons
+
+You can easily to be notified when the user crosses a region defined by a beacon or get notified when users did found one or more beacons nearby.
+
+Just use ```monitor()``` function:
 
 ```swift
-let request = Beacon.monitorForBeacon(proximityUUID: familyUUID, major: majorID, minor: minorID, onFound: { beaconsFound in
-	// beaconsFound is an array of found beacons ([CLBeacon]) but in this case it contains only one beacon
-}) { error in
-	// something bad happened
+let b_proximity = "00194D5B-0A08-4697-B81C-C9BDE117412E"
+// You can omit major and minor to get notified about the entire beacon family defined by b_proximity
+let b_major = CLBeaconMajorValue(64224)
+let b_minor = CLBeaconMinorValue(43514)
+		
+do {
+	// Just create a Beacon structure which represent our beacon
+	let beacon = Beacon(proximity: proximity, major: major, minor: minor)
+	// Attempt to monitor beacon
+	try Beacons.monitor(beacon: beacon, events: Event.RegionBoundary, onStateDidChange: { state in
+		// events called when user crosses the boundary the region defined by passed beacon
+	}, onRangingBeacons: { visibleBeacons in
+		// events is fired countinously to get the list of visible beacons (with observed beacon) nearby
+	}, onError: { error in
+		// something went wrong. request is cancelled.
+	})
+} catch let err {
+	// failed to monitor beacon
 }
-// Sometimes in the future you may decide to stop observing
-request.stop()
 ```
 
-#### Act like a Beacon
+## Act like a Beacon
 
 You can set your device to act like a beacon (this feature works only in foreground due to some limitations of Apple's own methods).
 
+Keep in mind: advertising not works in background.
+
 ```swift
-let beacon = BeaconRequest(beaconWithUUID: uuid, major: major, minor: minor)	Beacon.advertise(beacon)
+let request = Beacons.advertise(beaconName: "name", UUID: proximity, major: major, minor: minor, powerRSSI: 4, serviceUUIDs: [])
 ```
+
+Use ```stop()``` on ```request``` to stop beacon advertise.
+
+Changes
+-------
+
+### Version 1.0.3 (2016/08/26):
+- [FIX #61](https://github.com/malcommac/SwiftLocation/issues/61) Fixed several issues with location services ```start()``` func.
+
+### Version 1.0.2 (2016/08/26):
+- [FIX #60](https://github.com/malcommac/SwiftLocation/issues/60) A new rewritten Beacon Monitoring service class
+- Added support for deferred location updates
+- Better handle not supported hardware errors
+- Fixed an issue which does not reset or start unwanted timeout timer in location services
+- Better support to ```pause(),start()``` and ```cancel()``` requests
+
+### Version 1.0.1 (2016/08/22):
+- [FIX #48](https://github.com/malcommac/SwiftLocation/issues/48) Fixed an issue which blocks the library to report correct values for ```.Room``` and ```.Navigation``` accuracy levels
+- [FIX #55](https://github.com/malcommac/SwiftLocation/issues/55) Fixed an issue with timeout timer of location manager which is called even when the location was found correctly.
+- [NEW] ```CLLocationAuthorizationStatus``` is now conform to CustomStringConvertible protocol.
+
+### Version 1.0.0 (2016/08/15):
+- First stable version
+
 
 Installation
 -------
@@ -298,11 +350,15 @@ SwiftLocation was created and mantained by Daniele Margutti.
 - Website: [danielemargutti.com](<http://www.danielemargutti.com>)
 - Twitter: [@danielemargutti](<http://www.twitter.com/danielemargutti>)
 
+Your app here!
+-------
 While SwiftLocation is free to use and change (I'm happy to discuss any PR with you) if you plan to use it in your project please consider to add:
 
 ```"Location Services provided by SwiftLocation by Daniele Margutti"```
 
 and a link to this GitHub page.
+
+Drop me an email so I'll add your creation here!
 
 SwiftLocation is available under the MIT license.
 

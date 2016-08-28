@@ -30,16 +30,18 @@
 import Foundation
 import CoreLocation
 
-public class VisitRequest: Request {
+open class VisitRequest: Request {
 		/// Last place received
-	private(set) var lastPlace: CLVisit?
+	fileprivate(set) var lastPlace: CLVisit?
 		/// Handler called when a new place is currently visited
-	public var onDidVisitPlace: VisitHandler?
+	open var onDidVisitPlace: VisitHandler?
 
 		/// Private vars
-	internal(set) var isEnabled: Bool = false
-	public var UUID: String = Foundation.UUID().uuidString
+	open var UUID: String = Foundation.UUID().uuidString
 	
+	open var rState: RequestState = .pending
+
+	internal weak var locator: LocationManager?
 	
 	/**
 	Create a new request with an associated handler to call
@@ -59,7 +61,7 @@ public class VisitRequest: Request {
 	
 	- returns: self instance, used to make the function chainable
 	*/
-	public func onDidVisit(_ handler: VisitHandler?) -> VisitRequest {
+	open func onDidVisit(_ handler: VisitHandler?) -> VisitRequest {
 		self.onDidVisitPlace = handler
 		return self
 	}
@@ -67,18 +69,30 @@ public class VisitRequest: Request {
 	/**
 	Start a new visit request
 	*/
-	public func start() {
-		let _ = Location.addVisitRequest(self)
+	open func start() {
+		guard let locator = self.locator else { return }
+		let previousState = self.rState
+		self.rState = .running
+		if locator.add(self) == false {
+			self.rState = previousState
+		}
 	}
 	
 	/**
 	Stop a visit request and remove it from the queue
 	*/
-	public func cancel() {
-		let _ = Location.stopInterestingPlacesRequest(self)
+	open func cancel(_ error: LocationError?) {
+		guard let locator = self.locator else { return }
+		if self.rState.isRunning {
+			if locator.remove(self) {
+				self.rState = .cancelled(error: error)
+			}
+		}
 	}
 	
-	public func pause() {
-		self.isEnabled = false
+	open func pause() {
+		if self.rState.isRunning {
+			self.rState = .paused
+		}
 	}
 }
