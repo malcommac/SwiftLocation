@@ -237,6 +237,7 @@ do {
 ```
 
 Usually you can ```pause()```/```start()``` or ```cancel()``` the request itself; just keep a reference to it.
+
 ([Documentation ↑](#documentation))
 <a name="monitoriBeacon" />
 ## Monitor Beacons
