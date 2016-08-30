@@ -3,7 +3,7 @@
 
 SwiftLocation
 =============
-####Easy Location Services and Beacon Monitoring for Swift
+#### Easy Location Services and Beacon Monitoring for Swift
 
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SwiftLocation.svg)](https://img.shields.io/cocoapods/v/SwiftLocation.svg)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
@@ -32,13 +32,13 @@ Main features includes:
 - **Beacon Family and Beacon** monitoring
 - **Set a device to act like a Beacon** (only in foreground)
 
-###Pre-requisites
+### Pre-requisites
 
 Before using SwiftLocation you must configure your project to use location services. First of all you need to specify a value for ```NSLocationAlwaysUsageDescription``` or ```NSLocationWhenInUseUsageDescription``` into your application's Info.plist file. The string value you add will be shown along with the authorization request the first time your app will try to use location services hardware.
 
 If you need background monitoring you should specify ```NSLocationAlwaysUsageDescription``` and specify the correct value in ```UIBackgroundModes``` key (you can learn more [here](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html))
 
-###SwiftLocation in your next big project? Tell it to me!
+### SwiftLocation in your next big project? Tell it to me!
 
 I'm collecting all the apps which uses SwiftLocation to manage beacon or location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com.
 
@@ -67,16 +67,17 @@ Changes are:
 Documentation
 -------
 
-* **Monitor Current User Location (one shout, continous delivery etc.)**
-* **Obtain Current Location without GPS**
-* **Monitor Device Heading**
-* **Reverse Address/Coordinates to CLPlacemark**
-* **Monitor Interesting Visits**
-* **Monitor Geographic Regions**
-* **Monitor Beacons & Beacon Families**
-* **Act like a Beacon**
+* **[Monitor Current User Location (one shout, continous delivery etc.)](#monitoruserlocation)**
+* **[Obtain Current Location without GPS](#locationWithIPscan)**
+* **[Monitor Device Heading](#headingSample)**
+* **[Reverse Address/Coordinates to CLPlacemark](#reverseAddressSaample)**
+* **[Monitor Interesting Visits](#interestingVisitsSample)**
+* **[Monitor Geographic Regions](#monitorGepRegSample)**
+* **[Monitor Beacons & Beacon Families](#monitoriBeacon)**
+* **[Act like a Beacon](#actLikeiBeacon)**
 
-## Monitor Current User Location (one shot, continous delivery etc.)
+<a name="monitoruserlocation" />
+##  Monitor Current User Location (one shot, continous delivery etc.)
 
 Getting current user's location is pretty easy; all location related services are provided by the ```LocationManager``` singleton class.
 
@@ -131,7 +132,7 @@ request.start() // Restart a paused request
 * ```Significant```: receive only valid significant location updates. This capability provides tremendous power savings for apps that want to track a user’s approximate location and do not need highly accurate position information
 
 
-
+<a name="locationWithIPscan" />
 ## Obtain Current Location without GPS
 
 Sometimes you could need to get the current approximate location and you may not need to turn on GPS hardware and waste user's battery. When accuracy is not required you can locate the user by it's public network IP address (obviously this require an internet connection).
@@ -143,7 +144,7 @@ Location.getLocation(withAccuracy: .IPScan, onSuccess: { (location) in
 	// something wrong has occurred; error will tell you what
 }
 ```
-
+<a name="headingSample" />
 ## Monitor Device Heading
 
 You can get data about current device's heading using observeHeading() function.
@@ -164,7 +165,7 @@ Location.getHeading(HeadingFrequency.Continuous(interval: 5), accuracy: 1.5, all
 - Shortcuts to pause or resume requests: ```Location.startAllLocationRequests() ``` (start pending requests), ```Location.stopAllLocationRequests``` (pause or stop all requests), ```Location.stopSignificantLocationRequests()``` (pause or stop only significant requests)
 - Use ```Location.minimumDistance = ...``` to define the minimum distance (measured in meters) a device must move horizontally before an update event is generated (by default is ignored, all events are generated)
 
-
+<a name="reverseAddressSaample" />
 ## Reverse Address Strings or Coordinates
 
 You can do a reverse geocoding from a given pair of coordinates or a readable address string. You can use both Google or Apple's services to perform these request.
@@ -193,7 +194,7 @@ Location.reverse(coordinates: coordinates, onSuccess: { foundPlacemark in
 	// failed to reverse geocoding due to an error
 }
 ```
-
+<a name="interestingVisitsSample"
 ## Monitor Interesting Places
 
 ```CoreLocation``` allows you to get notified when user visits an interesting place by returning a ```CLVisit``` object: it encapsulates information about interesting places that the user has been. Visit objects are created by the system. The visit includes the location where the visit occurred and information about the arrival and departure times as relevant. You do not create visit objects directly, nor should you subclass ```CLVisit```.
@@ -205,12 +206,12 @@ Location.getInterestingPlaces { newVisit in
 	// a new CLVisit object is returned
 }
 ```
-
+<a name="monitorGepRegSample" />
 ## Monitor Geographic Regions
 You can easily to be notified when the user crosses a region based boundary.
 You use region monitoring to detect boundary crossings of the specified region and you use those boundary crossings to perform related tasks. For example, upon approaching a dry cleaners, an app could notify the user to pick up any clothes that had been dropped off and are now ready.
 
-SwiftLocation offers to you a simple method called ```monitor()``` to get notified about these kind of events: 
+SwiftLocation offers to you a simple method called ```monitor()``` to get notified about these kind of events:
 
 ```swift
 // Define a geographic circle region
@@ -230,7 +231,7 @@ do {
 ```
 
 Usually you can ```pause()```/```start()``` or ```cancel()``` the request itself; just keep a reference to it.
-
+<a name="monitoriBeacon" />
 ## Monitor Beacons
 
 You can easily to be notified when the user crosses a region defined by a beacon or get notified when users did found one or more beacons nearby.
@@ -242,7 +243,7 @@ let b_proximity = "00194D5B-0A08-4697-B81C-C9BDE117412E"
 // You can omit major and minor to get notified about the entire beacon family defined by b_proximity
 let b_major = CLBeaconMajorValue(64224)
 let b_minor = CLBeaconMinorValue(43514)
-		
+
 do {
 	// Just create a Beacon structure which represent our beacon
 	let beacon = Beacon(proximity: proximity, major: major, minor: minor)
@@ -258,7 +259,7 @@ do {
 	// failed to monitor beacon
 }
 ```
-
+<a name="actLikeiBeacon" />
 ## Act like a Beacon
 
 You can set your device to act like a beacon (this feature works only in foreground due to some limitations of Apple's own methods).
