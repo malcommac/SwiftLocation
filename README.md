@@ -38,6 +38,7 @@ Before using SwiftLocation you must configure your project to use location servi
 
 If you need background monitoring you should specify ```NSLocationAlwaysUsageDescription``` and specify the correct value in ```UIBackgroundModes``` key (you can learn more [here](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html))
 
+
 ### SwiftLocation in your next big project? Tell it to me!
 
 I'm collecting all the apps which uses SwiftLocation to manage beacon or location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com.
@@ -144,6 +145,26 @@ Location.getLocation(withAccuracy: .IPScan, onSuccess: { (location) in
 }) { (lastValidLocation, error) in
 	// something wrong has occurred; error will tell you what
 }
+```
+To be able to find user's location this way, you need to update your `info.plist` and add required security settings for it. (iOS 9+):
+
+```
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>ip-api.com</key>
+      <dict>
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+        <key>NSTemporaryExceptionMinimumTLSVersion</key>
+        <string>TLSv1.1</string>
+      </dict>
+		</dict>
+	</dict>
 ```
 ([Documentation ↑](#documentation))
 <a name="headingSample" />
