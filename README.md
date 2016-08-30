@@ -132,6 +132,7 @@ request.start() // Restart a paused request
 * ```Significant```: receive only valid significant location updates. This capability provides tremendous power savings for apps that want to track a user’s approximate location and do not need highly accurate position information
 
 
+([Documentation ↑](#documentation))
 <a name="locationWithIPscan" />
 ## Obtain Current Location without GPS
 
@@ -144,6 +145,7 @@ Location.getLocation(withAccuracy: .IPScan, onSuccess: { (location) in
 	// something wrong has occurred; error will tell you what
 }
 ```
+([Documentation ↑](#documentation))
 <a name="headingSample" />
 ## Monitor Device Heading
 
@@ -165,6 +167,7 @@ Location.getHeading(HeadingFrequency.Continuous(interval: 5), accuracy: 1.5, all
 - Shortcuts to pause or resume requests: ```Location.startAllLocationRequests() ``` (start pending requests), ```Location.stopAllLocationRequests``` (pause or stop all requests), ```Location.stopSignificantLocationRequests()``` (pause or stop only significant requests)
 - Use ```Location.minimumDistance = ...``` to define the minimum distance (measured in meters) a device must move horizontally before an update event is generated (by default is ignored, all events are generated)
 
+([Documentation ↑](#documentation))
 <a name="reverseAddressSaample" />
 ## Reverse Address Strings or Coordinates
 
@@ -194,7 +197,8 @@ Location.reverse(coordinates: coordinates, onSuccess: { foundPlacemark in
 	// failed to reverse geocoding due to an error
 }
 ```
-<a name="interestingVisitsSample"
+([Documentation ↑](#documentation))
+<a name="interestingVisitsSample" />
 ## Monitor Interesting Places
 
 ```CoreLocation``` allows you to get notified when user visits an interesting place by returning a ```CLVisit``` object: it encapsulates information about interesting places that the user has been. Visit objects are created by the system. The visit includes the location where the visit occurred and information about the arrival and departure times as relevant. You do not create visit objects directly, nor should you subclass ```CLVisit```.
@@ -206,6 +210,8 @@ Location.getInterestingPlaces { newVisit in
 	// a new CLVisit object is returned
 }
 ```
+
+([Documentation ↑](#documentation))
 <a name="monitorGepRegSample" />
 ## Monitor Geographic Regions
 You can easily to be notified when the user crosses a region based boundary.
@@ -231,6 +237,7 @@ do {
 ```
 
 Usually you can ```pause()```/```start()``` or ```cancel()``` the request itself; just keep a reference to it.
+([Documentation ↑](#documentation))
 <a name="monitoriBeacon" />
 ## Monitor Beacons
 
@@ -259,6 +266,7 @@ do {
 	// failed to monitor beacon
 }
 ```
+([Documentation ↑](#documentation))
 <a name="actLikeiBeacon" />
 ## Act like a Beacon
 
@@ -272,6 +280,7 @@ let request = Beacons.advertise(beaconName: "name", UUID: proximity, major: majo
 
 Use ```stop()``` on ```request``` to stop beacon advertise.
 
+([Documentation ↑](#documentation))
 Changes
 -------
 
