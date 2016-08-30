@@ -330,7 +330,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private Methods] Manage Requests
 	
 	fileprivate func getLocationViaIPScan(_ timeout: TimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
-		let URLRequest = Foundation.URLRequest(url: URL(string: "http://ip-api.com/json")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
+		let URLRequest = Foundation.URLRequest(url: URL(string: "http://ip-api.com/json?fields=lat,lon,status,country,countryCode,zip")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
 		let sessionConfig = URLSessionConfiguration.default
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: URLRequest) { (data, response, error) in
