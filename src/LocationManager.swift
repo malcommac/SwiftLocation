@@ -126,6 +126,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
+  @discardableResult
 	open func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval? = nil, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
 		
 		if accuracy == .ipScan {
