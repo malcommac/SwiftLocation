@@ -30,7 +30,7 @@ import Foundation
 import CoreLocation
 import MapKit
 
-public class LocationRequest: AuthorizedRequest  {
+public class LocationRequest: Request  {
 		/// Handler called on error
 	internal var onErrorHandler: LocationHandlerError?
 		/// Handler called on success

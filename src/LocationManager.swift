@@ -430,9 +430,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	private func dispatchAuthorizationDidChange(newStatus: CLAuthorizationStatus) {
 		func _dispatch(request: Request) {
-			if let request = request as? AuthorizedRequest {
-				request.onAuthorizationDidChange?(newStatus)
-			}
+			request.onAuthorizationDidChange?(newStatus)
 		}
 		
 		self.visitsObservers.forEach({ _dispatch($0) })

@@ -30,7 +30,7 @@
 import Foundation
 import CoreLocation
 
-public class VisitRequest: AuthorizedRequest {
+public class VisitRequest: Request {
 		/// Last place received
 	private(set) var lastPlace: CLVisit?
 		/// Handler called when a new place is currently visited

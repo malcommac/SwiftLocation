@@ -163,6 +163,12 @@ extension CLGeocoder: Request {
 	public var rState: RequestState {
 		return .Undetermined
 	}
+	
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange? {
+		// not supported
+		get { return nil }
+		set { }
+	}
 }
 
 // MARK: - Support for Request protocol in NSURLSessionDataTast object
@@ -187,6 +193,12 @@ extension NSURLSessionDataTask: Request {
 	
 	public var rState: RequestState {
 		return .Undetermined
+	}
+	
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange? {
+		// not supported
+		get { return nil }
+		set { }
 	}
 }
 
@@ -216,9 +228,8 @@ public protocol Request {
 	
 	/// State of the request
 	var rState: RequestState { get }
-}
-
-public protocol AuthorizedRequest : Request {
+	
+	//  You can observe for authorization changes in CLLocationManager
 	var onAuthorizationDidChange: LocationHandlerAuthDidChange? { get set }
 }
 

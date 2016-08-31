@@ -30,7 +30,7 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconRegionRequest: NSObject, AuthorizedRequest {
+public class BeaconRegionRequest: NSObject, Request {
 	
 	public var UUID: String
 	public var rState: RequestState = .Pending

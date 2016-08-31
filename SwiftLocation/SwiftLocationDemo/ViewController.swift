@@ -16,10 +16,13 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		Location.getLocation(withAccuracy: .City, frequency: .Continuous, timeout: nil, onSuccess: { (loc) in
+		var r = Location.getLocation(withAccuracy: .City, frequency: .Continuous, timeout: nil, onSuccess: { (loc) in
 			print("loc \(loc)")
 			}) { (last, err) in
 				print("err \(err)")
+		}
+		r.onAuthorizationDidChange = { newStatus in
+			print("New status \(newStatus)")
 		}
 		
 //		// Do any additional setup after loading the view, typically from a nib.

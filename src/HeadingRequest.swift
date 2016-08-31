@@ -29,7 +29,7 @@
 import Foundation
 import CoreLocation
 
-public class HeadingRequest: AuthorizedRequest {
+public class HeadingRequest: Request {
 		/// Unique identifier of the heading request
 	public var UUID: String = NSUUID().UUIDString
 		/// Handler to call when a new heading value is received
