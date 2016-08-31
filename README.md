@@ -76,6 +76,7 @@ Documentation
 * **[Monitor Geographic Regions](#monitorGepRegSample)**
 * **[Monitor Beacons & Beacon Families](#monitoriBeacon)**
 * **[Act like a Beacon](#actLikeiBeacon)**
+* **[Observe CLLocationManager Auth Events](#observeCLLocationManagerEvents)**
 
 <a name="monitoruserlocation" />
 ##  Monitor Current User Location (one shot, continous delivery etc.)
@@ -312,6 +313,25 @@ let request = Beacons.advertise(beaconName: "name", UUID: proximity, major: majo
 Use ```stop()``` on ```request``` to stop beacon advertise.
 
 ([Documentation ↑](#documentation))
+
+## Observe CLLocationManager Auth Events
+<a name="observeCLLocationManagerEvents" />
+You can observe CLLocationManager authorization changes events by subscribing the ```.onAuthorizationDidChange()``` method.
+That's an example:
+
+```swift
+var request = Location.getLocation(withAccuracy: .City, frequency: .Continuous, timeout: nil, onSuccess: { (loc) in
+	// location update
+}) { (last, err) in
+	// error
+}
+
+request.onAuthorizationDidChange = { newStatus in
+	print("New status \(newStatus)")
+}
+```
+([Documentation ↑](#documentation))
+
 Changes
 -------
 
