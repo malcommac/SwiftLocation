@@ -113,7 +113,7 @@ request.start() // Restart a paused request
 
 **ACCURACY**:
 
-* ```IPScan```: (Network connection is required). Get an approximate location by using device's IP addres. It does not require GPS sensor or user authorizations.
+* ```IPScan```: (Network connection is required). Get an approximate location by using device's IP address. It does not require GPS sensor or user authorizations.
 * ```Any```: First available location is accepted, no matter the accuracy
 * ```Country```: Only locations accurate to the nearest 100 kilometers are dispatched
 * ```City```: Only locations accurate to the nearest three kilometers are dispatched
@@ -166,6 +166,15 @@ To be able to find user's location this way, you need to update your `info.plist
 		</dict>
 	</dict>
 ```
+
+If you intent to use this method in a commercial App or don't want to hit the [usage limit](http://ip-api.com/docs/) of the underlying API, you can use your [Pro key](https://signup.ip-api.com) like this:
+
+```swift
+  // Before using the API, e.g. in AppDelegate
+	Location.ipAPIKey = "{YOUR-KEY-HERE}"
+```
+
+
 ([Documentation ↑](#documentation))
 <a name="headingSample" />
 ## Monitor Device Heading

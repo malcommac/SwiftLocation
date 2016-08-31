@@ -61,6 +61,9 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	/// You can specify a valid Google API Key if you want to use Google geocoding services without a strict quota
 	open var googleAPIKey: String?
 	
+  /// You can set a Pro key for the ip-api.com service in case of a commercial use or simple wanting better results.
+  open var ipAPIKey: String?
+  
 		/// A Boolean value indicating whether the app wants to receive location updates when suspended. By default it's false.
 		/// See .allowsBackgroundLocationUpdates of CLLocationManager for a detailed description of this var.
 	open var allowsBackgroundEvents: Bool = false {
@@ -330,7 +333,16 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: [Private Methods] Manage Requests
 	
 	fileprivate func getLocationViaIPScan(_ timeout: TimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
-		let URLRequest = Foundation.URLRequest(url: URL(string: "http://ip-api.com/json?fields=lat,lon,status,country,countryCode,zip")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
+    
+    var urlPrefix = "http://"
+    var keyParam = ""
+    
+    if let key = ipAPIKey {
+      urlPrefix = "https://pro."
+      keyParam = "&key=\(key)"
+    }
+    
+		let URLRequest = Foundation.URLRequest(url: URL(string: "\(urlPrefix)ip-api.com/json?fields=lat,lon,status,country,countryCode,zip\(keyParam)")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
 		let sessionConfig = URLSessionConfiguration.default
 		let session = URLSession(configuration: sessionConfig)
 		let task = session.dataTask(with: URLRequest) { (data, response, error) in
