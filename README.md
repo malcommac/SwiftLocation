@@ -338,6 +338,7 @@ Changes
 ### Version 1.0.4 (2016/08/31):
 - Added support for ip-api Pro API Key
 - Added documentation reference for ip-api limit usage, pro version and app transport security on iOS 9 or later.
+- Each ```Request``` implement ```.onAuthorizationDidChange()``` so you can observe for CLLocationManager auth events.
 
 ### Version 1.0.3 (2016/08/26):
 - [FIX #61](https://github.com/malcommac/SwiftLocation/issues/61) Fixed several issues with location services ```start()``` func.
