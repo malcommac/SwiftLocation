@@ -218,11 +218,17 @@ public protocol Request {
 	var rState: RequestState { get }
 }
 
+public protocol AuthorizedRequest : Request {
+	var onAuthorizationDidChange: LocationHandlerAuthDidChange? { get set }
+}
+
 /// Handlers
 
 public typealias LocationHandlerError = ((CLLocation?, LocationError) -> Void)
 public typealias LocationHandlerSuccess = (CLLocation -> Void)
 public typealias LocationHandlerPaused = (CLLocation? -> Void)
+
+public typealias LocationHandlerAuthDidChange = (CLAuthorizationStatus? -> Void)
 
 public typealias RLocationErrorHandler = (LocationError -> Void)
 public typealias RLocationSuccessHandler = (CLPlacemark -> Void)

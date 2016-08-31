@@ -30,7 +30,7 @@ import Foundation
 import CoreLocation
 import MapKit
 
-public class LocationRequest: Request  {
+public class LocationRequest: AuthorizedRequest  {
 		/// Handler called on error
 	internal var onErrorHandler: LocationHandlerError?
 		/// Handler called on success
@@ -41,6 +41,8 @@ public class LocationRequest: Request  {
 	private var timeoutTimer: NSTimer?
 		/// Unique identifier of the request
 	public var UUID: String = NSUUID().UUIDString
+	/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 	
 	public weak var locator: LocationManager?
 	

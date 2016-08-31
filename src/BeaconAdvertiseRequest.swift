@@ -30,7 +30,7 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconAdvertiseRequest: NSObject, Request {
+public class BeaconAdvertiseRequest: NSObject, AuthorizedRequest {
 	
 	
 	public var UUID: String
@@ -38,6 +38,8 @@ public class BeaconAdvertiseRequest: NSObject, Request {
 	private(set) var region: CLBeaconRegion
 	private(set) var RSSIPower: NSNumber?
 	private(set) var name: String
+	/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 	
 	init?(name: String, proximityUUID: String, major: CLBeaconMajorValue? = nil, minor: CLBeaconMinorValue? = nil) {
 		self.name = name

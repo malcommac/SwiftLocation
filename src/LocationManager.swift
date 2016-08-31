@@ -428,6 +428,18 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		self.headingObservers.forEach({ $0.rState = state})
 	}
 	
+	private func dispatchAuthorizationDidChange(newStatus: CLAuthorizationStatus) {
+		func _dispatch(request: Request) {
+			if let request = request as? AuthorizedRequest {
+				request.onAuthorizationDidChange?(newStatus)
+			}
+		}
+		
+		self.visitsObservers.forEach({ _dispatch($0) })
+		self.locationObservers.forEach({ _dispatch($0) })
+		self.headingObservers.forEach({ _dispatch($0) })
+	}
+	
 	internal func updateLocationUpdateService() {
 		let enabledObservers = locationObservers.filter({ $0.rState.isRunning == true })
 		if enabledObservers.count == 0 {
@@ -492,6 +504,7 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		self.stopAllLocationRequests(withError: nil, pause: true)
 		return true
 	}
+
 	
 	//MARK: [Private Methods] Location Manager Delegate
 	
@@ -505,6 +518,8 @@ public class LocationManager: NSObject, CLLocationManagerDelegate {
 		default:
 			break
 		}
+		// Dispatch any request which listen for authorization changes
+		self.dispatchAuthorizationDidChange(status)
 	}
 	
 	@objc public func locationManager(manager: CLLocationManager, didVisit visit: CLVisit) {

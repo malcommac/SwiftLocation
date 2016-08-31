@@ -30,13 +30,15 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconRegionRequest: NSObject, Request {
+public class BeaconRegionRequest: NSObject, AuthorizedRequest {
 	
 	public var UUID: String
 	public var rState: RequestState = .Pending
 	private(set) var region: CLBeaconRegion
 	private(set) var type: Event
-	
+	/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+
 	public var onStateDidChange: RegionStateDidChange?
 	public var onRangingBeacons: RegionBeaconsRanging?
 	public var onError: RegionMonitorError?
@@ -73,5 +75,5 @@ public class BeaconRegionRequest: NSObject, Request {
 			}
 		}
 	}
-	
+
 }

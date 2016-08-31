@@ -30,11 +30,13 @@
 import Foundation
 import CoreLocation
 
-public class VisitRequest: Request {
+public class VisitRequest: AuthorizedRequest {
 		/// Last place received
 	private(set) var lastPlace: CLVisit?
 		/// Handler called when a new place is currently visited
 	public var onDidVisitPlace: VisitHandler?
+		/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 
 		/// Private vars
 	public var UUID: String = NSUUID().UUIDString
@@ -95,4 +97,5 @@ public class VisitRequest: Request {
 			self.rState = .Paused
 		}
 	}
+
 }

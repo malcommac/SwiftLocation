@@ -29,7 +29,7 @@
 import Foundation
 import CoreLocation
 
-public class GeoRegionRequest: NSObject, Request {
+public class GeoRegionRequest: NSObject, AuthorizedRequest {
 	
 	public var UUID: String
 	
@@ -41,7 +41,10 @@ public class GeoRegionRequest: NSObject, Request {
 		return region.radius
 	}
 	private(set) var region: CLCircularRegion
-	
+
+	/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+
 	public var onStateDidChange: RegionStateDidChange?
 	public var onError: RegionMonitorError?
 	
@@ -65,7 +68,5 @@ public class GeoRegionRequest: NSObject, Request {
 	public func start() {
 		Beacons.add(request: self)
 	}
-	
-
 	
 }

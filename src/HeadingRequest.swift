@@ -29,13 +29,15 @@
 import Foundation
 import CoreLocation
 
-public class HeadingRequest: Request {
+public class HeadingRequest: AuthorizedRequest {
 		/// Unique identifier of the heading request
 	public var UUID: String = NSUUID().UUIDString
 		/// Handler to call when a new heading value is received
 	internal var onReceiveUpdates: HeadingHandlerSuccess?
 		/// Handler to call when an error has occurred
 	internal var onError: HeadingHandlerError?
+		/// Authorization did change
+	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 	
 		/// Last heading received
 	private(set) var lastHeading: CLHeading?
@@ -174,4 +176,5 @@ public class HeadingRequest: Request {
 			return (degreeDiff > minChange)
 		}
 	}
+
 }
