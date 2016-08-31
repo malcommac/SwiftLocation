@@ -15,7 +15,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "399"
             endingLineNumber = "399"
-            landmarkName = "updateHeadingService()"
+            landmarkName = "remove(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -719,8 +719,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "254"
             endingLineNumber = "254"
-            landmarkName = "startAllLocationRequests()"
-            landmarkType = "5">
+            landmarkName = "LocationManager"
+            landmarkType = "3">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
@@ -782,7 +782,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "422"
             endingLineNumber = "422"
-            landmarkName = "updateLocationUpdateService()"
+            landmarkName = "updateVisitingService()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -814,8 +814,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "430"
             endingLineNumber = "430"
-            landmarkName = "updateLocationUpdateService()"
-            landmarkType = "5">
+            landmarkName = "LocationManager"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
