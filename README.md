@@ -18,7 +18,7 @@ Pick the right version:
 
 - Official **Swift 2.2** is in master (and develop)
 - **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
-- **Swift 3.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift3).
+- **Swift 3.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-3.0).
 - Old unsupported **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
 
 Main features includes:
