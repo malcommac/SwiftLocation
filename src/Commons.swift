@@ -321,6 +321,7 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 	case NoDataReturned
 	case NotSupported
 	case InvalidBeaconData
+	case Forced
 	
 	public var description: String {
 		switch self {
@@ -344,6 +345,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "Feature Not Supported"
 		case .InvalidBeaconData:
 			return "Cannot create monitor for beacon. Invalid data"
+		case .Forced:
+			return "Request Manually Cancelled"
 		}
 	}
 }
