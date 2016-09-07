@@ -211,7 +211,7 @@ public protocol Request {
 	
 	- parameter error: optional error to cancel the request
 	*/
-	func cancel(error: LocationError?)
+	func cancel(error: LocationError? = nil)
 	
 	/**
 	Pause a running request
