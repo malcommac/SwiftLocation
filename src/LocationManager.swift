@@ -129,7 +129,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
-	open func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval? = nil, onSuccess: LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+	open func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval? = nil, onSuccess: @escaping LocationHandlerSuccess, onError: @escaping LocationHandlerError) -> Request {
 		
 		if accuracy == .ipScan {
 			// Location via IP scan works in a different way
@@ -164,7 +164,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request istance
 	*/
-	open func getHeading(_ frequency: HeadingFrequency = .continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: HeadingHandlerSuccess, onError error: HeadingHandlerError) -> Request {
+	open func getHeading(_ frequency: HeadingFrequency = .continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: @escaping HeadingHandlerSuccess, onError error: @escaping HeadingHandlerError) -> Request {
 		let request = HeadingRequest(withFrequency: frequency, accuracy: accuracy, allowsCalibration: allowsCalibration)
 		request.locator = self
 		request.onReceiveUpdates = update
@@ -201,7 +201,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler: handler called when location reverse operation was completed successfully. It contains a valid CLPlacemark instance.
 	- parameter fHandler: handler called when the operation fails due to an error.
 	*/
-	open func reverse(address: String, using service: ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(address: String, using service: ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
 			return self.reverse_apple(address: address, onSuccess: onSuccess, onError: onError)
@@ -220,7 +220,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
 	
-	open func reverse(coordinates: CLLocationCoordinate2D, using service:ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(coordinates: CLLocationCoordinate2D, using service:ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
 		return self.reverse(location: location, using: service, onSuccess: onSuccess, onError: onError)
 	}
@@ -233,7 +233,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
-	open func reverse(location: CLLocation, using service :ReverseService = .apple, onSuccess: RLocationSuccessHandler, onError: RLocationErrorHandler) -> Request {
+	open func reverse(location: CLLocation, using service :ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
 			return self.reverse_location_apple(location, onSuccess: onSuccess, onError: onError)
@@ -331,7 +331,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Manage Requests
 	
-	fileprivate func getLocationViaIPScan(_ timeout: TimeInterval?, onSuccess:LocationHandlerSuccess, onError: LocationHandlerError) -> Request {
+	fileprivate func getLocationViaIPScan(_ timeout: TimeInterval?, onSuccess:@escaping LocationHandlerSuccess, onError: @escaping LocationHandlerError) -> Request {
 		var urlPrefix = "http://"
 		var keyParam = ""
 		
@@ -589,7 +589,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: [Private Methods] Reverse Address/Location
 	
-	fileprivate func reverse_apple(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_apple(address: String, onSuccess sHandler: @escaping RLocationSuccessHandler, onError fHandler: @escaping RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
 			if error != nil {
@@ -605,7 +605,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		return geocoder
 	}
 	
-	fileprivate func reverse_google(address: String, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_google(address: String, onSuccess sHandler: @escaping RLocationSuccessHandler, onError fHandler: @escaping RLocationErrorHandler) -> Request {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?address=\(address)"
 		if self.googleAPIKey != nil {
 			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
@@ -636,7 +636,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		return task
 	}
 	
-	fileprivate func reverse_location_apple(_ location: CLLocation, onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_location_apple(_ location: CLLocation, onSuccess sHandler: @escaping RLocationSuccessHandler, onError fHandler: @escaping RLocationErrorHandler) -> Request {
 		let geocoder = CLGeocoder()
 		geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
 			if (placemarks?.count > 0) {
@@ -651,7 +651,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		return geocoder
 	}
 	
-	fileprivate func reverse_location_google(_ location: CLLocation,  onSuccess sHandler: RLocationSuccessHandler, onError fHandler: RLocationErrorHandler) -> Request {
+	fileprivate func reverse_location_google(_ location: CLLocation,  onSuccess sHandler: @escaping RLocationSuccessHandler, onError fHandler: @escaping RLocationErrorHandler) -> Request {
 		var APIURLString = "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(location.coordinate.latitude),\(location.coordinate.longitude)"
 		if self.googleAPIKey != nil {
 			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"

@@ -110,7 +110,7 @@ open class HeadingRequest: Request {
 	
 	- returns: self, used to make the function chainable
 	*/
-	open func onReceiveUpdates(_ handler :HeadingHandlerSuccess) -> HeadingRequest {
+	open func onReceiveUpdates(_ handler :@escaping HeadingHandlerSuccess) -> HeadingRequest {
 		self.onReceiveUpdates = handler
 		return self
 	}
@@ -122,7 +122,7 @@ open class HeadingRequest: Request {
 	
 	- returns: self, used to make the function chainable
 	*/
-	open func onError(_ handler :HeadingHandlerError) -> HeadingRequest {
+	open func onError(_ handler :@escaping HeadingHandlerError) -> HeadingRequest {
 		self.onError = handler
 		return self
 	}

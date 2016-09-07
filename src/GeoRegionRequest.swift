@@ -56,7 +56,7 @@ open class GeoRegionRequest: NSObject, Request {
 	}
 	
 	open func cancel(_ error: LocationError?) {
-		Beacons.remove(request: self, error: error)
+		_ = Beacons.remove(request: self, error: error)
 	}
 	
 	open func pause() {
@@ -66,7 +66,7 @@ open class GeoRegionRequest: NSObject, Request {
 	}
 	
 	open func start() {
-		Beacons.add(request: self)
+		_ = Beacons.add(request: self)
 	}
 	
 }

@@ -118,7 +118,7 @@ open class LocationRequest: Request  {
 	
 	- returns: return self instance in order to perform a chain of handlers
 	*/
-	open func onError(_ err: LocationHandlerError) -> LocationRequest {
+	open func onError(_ err: @escaping LocationHandlerError) -> LocationRequest {
 		self.onErrorHandler = err
 		return self
 	}
@@ -130,7 +130,7 @@ open class LocationRequest: Request  {
 	
 	- returns: return self instance in order to perform a chain of handlers
 	*/
-	open func onSuccess(_ succ: LocationHandlerSuccess) -> LocationRequest {
+	open func onSuccess(_ succ: @escaping LocationHandlerSuccess) -> LocationRequest {
 		self.onSuccessHandler = succ
 		return self
 	}
@@ -144,7 +144,7 @@ open class LocationRequest: Request  {
 	
 	- returns: return self instance in order to perform a chain of handlers
 	*/
-	open func onPause(_ handler: LocationHandlerPaused) -> LocationRequest {
+	open func onPause(_ handler: @escaping LocationHandlerPaused) -> LocationRequest {
 		self.onPausesHandler = handler
 		return self
 	}

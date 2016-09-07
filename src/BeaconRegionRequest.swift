@@ -59,7 +59,7 @@ open class BeaconRegionRequest: NSObject, Request {
 	}
 	
 	open func cancel(_ error: LocationError?) {
-		Beacons.remove(request: self, error: error)
+		_ = Beacons.remove(request: self, error: error)
 	}
 	
 	open func pause() {

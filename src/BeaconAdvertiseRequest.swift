@@ -58,13 +58,13 @@ open class BeaconAdvertiseRequest: NSObject, Request {
 	
 	open func cancel(_ error: LocationError?) {
 		if self.rState.isRunning == true {
-			Beacons.stopAdvertise(self.name, error: error)
+			_ = Beacons.stopAdvertise(self.name, error: error)
 		}
 	}
 	
 	open func pause() {
 		if self.rState.isRunning == true {
-			Beacons.stopAdvertise(self.name, error: nil)
+			_ = Beacons.stopAdvertise(self.name, error: nil)
 			self.rState = .paused
 		}
 	}
