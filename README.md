@@ -362,9 +362,14 @@ platform :ios, '9.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'SwiftLocation', '~> 1.0'
+    pod 'SwiftLocation', '~> 1.0.5'
 end
 ```
+
+Swift Versions:
+
+- **Swift 2.2** ```pod 'SwiftLocation', '1.0.5'```
+- **Swift 3** ```pod 'SwiftLocation', '>= 1.0.6'```
 
 Then, run the following command:
 
