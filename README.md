@@ -16,10 +16,10 @@ It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 
 Pick the right version:
 
-- Official **Swift 2.2** is in master (and develop)
-- **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
-- **Swift 3.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-3.0).
-- Old unsupported **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
+- **Swift 3.0** is in master (and develop) (CocoaPods Tag >= 1.0.6)
+- Old **Swift 2.2** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.2). (CocoaPods Tag = 1.0.5)
+- Old **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
+- Old **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
 
 Main features includes:
 
@@ -42,28 +42,6 @@ If you need background monitoring you should specify ```NSLocationAlwaysUsageDes
 ### SwiftLocation in your next big project? Tell it to me!
 
 I'm collecting all the apps which uses SwiftLocation to manage beacon or location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com.
-
-From SwiftLocation 0.x to 1.0
--------
-Several changes are made from 0.x branch to 1.0 especially from the side of the location manager.
-It's pretty easy to align your project with this news version.
-Since 1.0 we will keep the API stable and any change will use @available metatag of Swift to keep you in track.
-
-Changes are:
-
-#### Renamed Methods
-- ```LocationManager.shared.``` is now replaced by ```Location.```
-- ```BeaconManager.shared.``` is now replaced by ```Beacon.```
-- Each request is conform to ```Request``` protocol. Where allowed you can use ```start()```, ```pause()``` or ```cancel()``` a running request.
-- ```observeLocations()``` is now replaced with ```getLocation()``` (and it allows you to specify a custom timeout)
-- ```observeInterestingPlaces()``` is now replaced with ```getInterestingPlaces()```
-- Reverse geocoding services are now under the ```reverse``` function umbrella (```reverse(location:...), reverse(address:... and reverse(coordinates:...)```)
-
-#### Other Changes
-- ```Accuracy``` now include IP Address Scan (```.IPScan```) to get the current location (```locateByIPAddress()``` was removed). It works as usual, without asking sensor authorization to the user.
-- ```observeHeading()``` is now replaced with ```getHeading```. Heading services now works correctly and allow you to specify a frequency (```HeadingFrequency```: ```.Continous(interval)``` to receive new heading at specified time intervals; ```.TrueNorth(minDegree)``` and ```.MagneticNorth(minDegree)``` allows you to receive events only when a specified deviation from the last catched heading is reported).
-- ```HeadingRequest``` has now a ```allowsCalibration``` property instead of a ```onCalibrationRequired()``` function.
-- ```onSuccess``` handler in ```HeadingRequest``` is now ```onReceiveUpdates```
 
 Documentation
 -------
@@ -334,6 +312,10 @@ request.onAuthorizationDidChange = { newStatus in
 
 Changes
 -------
+
+### Version 1.0.5 (2016/09/09):
+- Request's cancel() function now has error as optional argument
+- **This is the last Swift 2.2 version**
 
 ### Version 1.0.4 (2016/08/31):
 - Added support for ip-api Pro API Key
