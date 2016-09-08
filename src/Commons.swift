@@ -148,6 +148,10 @@ extension CLGeocoder: Request {
 		cancelGeocode()
 	}
 	
+	public func cancel() {
+		cancelGeocode()
+	}
+	
 	public func pause() {
 		// not available
 	}
@@ -212,6 +216,12 @@ public protocol Request {
 	- parameter error: optional error to cancel the request
 	*/
 	func cancel(error: LocationError?)
+	
+	/**
+	Cancel an operation without passing an error.
+	Woraround because we cannot have default value for a protocol param
+	*/
+	func cancel()
 	
 	/**
 	Pause a running request
@@ -321,6 +331,7 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 	case NoDataReturned
 	case NotSupported
 	case InvalidBeaconData
+	case Forced
 	
 	public var description: String {
 		switch self {
@@ -344,6 +355,8 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "Feature Not Supported"
 		case .InvalidBeaconData:
 			return "Cannot create monitor for beacon. Invalid data"
+		case .Forced:
+			return "Request Manually Cancelled"
 		}
 	}
 }

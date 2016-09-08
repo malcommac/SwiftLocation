@@ -160,6 +160,13 @@ public class LocationRequest: Request  {
 	}
 	
 	/**
+	Terminate request without errors
+	*/
+	public func cancel() {
+		self.cancel(nil)
+	}
+	
+	/**
 	Temporary pauses receiving updates for this request. Request is not removed from the queue and you can resume it using start()
 	*/
 	public func pause() {
