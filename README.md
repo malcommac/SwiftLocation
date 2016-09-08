@@ -368,8 +368,9 @@ end
 
 Swift Versions:
 
-- **Swift 2.2** ```pod 'SwiftLocation', '1.0.5'```
 - **Swift 3** ```pod 'SwiftLocation', '>= 1.0.6'```
+- **Swift 2.3** ```pod 'SwiftLocation', :git => 'https://github.com/malcommac/SwiftLocation.git', :branch => 'feature/swift2.3'```
+- **Swift 2.2** ```pod 'SwiftLocation', '1.0.5'```
 
 Then, run the following command:
 
