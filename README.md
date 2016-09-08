@@ -17,9 +17,9 @@ It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 Pick the right version:
 
 - **Swift 3.0** is in master (and develop) (CocoaPods Tag >= 1.0.6)
-- Old **Swift 2.2** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.2). (CocoaPods Tag = 1.0.5)
-- Old **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
-- Old **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
+- Old/Unsupported **Swift 2.2** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.2). (CocoaPods Tag = 1.0.5)
+- Old/Unsupported **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
+- Old/Unsupported **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
 
 Main features includes:
 

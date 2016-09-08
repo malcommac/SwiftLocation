@@ -30,18 +30,18 @@
 import Foundation
 import CoreLocation
 
-public class VisitRequest: Request {
+open class VisitRequest: Request {
 		/// Last place received
-	private(set) var lastPlace: CLVisit?
+	fileprivate(set) var lastPlace: CLVisit?
 		/// Handler called when a new place is currently visited
-	public var onDidVisitPlace: VisitHandler?
+	open var onDidVisitPlace: VisitHandler?
 		/// Authorization did change
-	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+	open var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 
 		/// Private vars
-	public var UUID: String = NSUUID().UUIDString
+	open var UUID: String = Foundation.UUID().uuidString
 	
-	public var rState: RequestState = .Pending
+	open var rState: RequestState = .pending
 
 	internal weak var locator: LocationManager?
 	
@@ -63,7 +63,7 @@ public class VisitRequest: Request {
 	
 	- returns: self instance, used to make the function chainable
 	*/
-	public func onDidVisit(handler: VisitHandler?) -> VisitRequest {
+	open func onDidVisit(_ handler: VisitHandler?) -> VisitRequest {
 		self.onDidVisitPlace = handler
 		return self
 	}
@@ -71,10 +71,10 @@ public class VisitRequest: Request {
 	/**
 	Start a new visit request
 	*/
-	public func start() {
+	open func start() {
 		guard let locator = self.locator else { return }
 		let previousState = self.rState
-		self.rState = .Running
+		self.rState = .running
 		if locator.add(self) == false {
 			self.rState = previousState
 		}
@@ -83,22 +83,22 @@ public class VisitRequest: Request {
 	/**
 	Stop a visit request and remove it from the queue
 	*/
-	public func cancel(error: LocationError?) {
+	open func cancel(_ error: LocationError?) {
 		guard let locator = self.locator else { return }
 		if self.rState.isRunning {
 			if locator.remove(self) {
-				self.rState = .Cancelled(error: error)
+				self.rState = .cancelled(error: error)
 			}
 		}
 	}
 	
-	public func cancel() {
+	open func cancel() {
 		self.cancel(nil)
 	}
 	
-	public func pause() {
+	open func pause() {
 		if self.rState.isRunning {
-			self.rState = .Paused
+			self.rState = .paused
 		}
 	}
 
