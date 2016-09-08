@@ -148,6 +148,10 @@ extension CLGeocoder: Request {
 		cancelGeocode()
 	}
 	
+	public func cancel() {
+		cancelGeocode()
+	}
+	
 	public func pause() {
 		// not available
 	}
@@ -211,7 +215,13 @@ public protocol Request {
 	
 	- parameter error: optional error to cancel the request
 	*/
-	func cancel(error: LocationError? = nil)
+	func cancel(error: LocationError?)
+	
+	/**
+	Cancel an operation without passing an error.
+	Woraround because we cannot have default value for a protocol param
+	*/
+	func cancel()
 	
 	/**
 	Pause a running request

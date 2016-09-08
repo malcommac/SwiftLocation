@@ -141,6 +141,13 @@ public class HeadingRequest: Request {
 		}
 	}
 	
+	/**
+	Terminate request without errors
+	*/
+	public func cancel() {
+		self.cancel(nil)
+	}
+	
 	//MARK: - Private
 	
 	internal func didReceiveEventFromManager(error: NSError?, heading: CLHeading?) {
