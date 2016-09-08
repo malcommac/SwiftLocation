@@ -211,7 +211,7 @@ public protocol Request {
 	
 	- parameter error: optional error to cancel the request
 	*/
-	func cancel(error: LocationError? = nil)
+	func cancel(error: LocationError?)
 	
 	/**
 	Pause a running request
@@ -321,7 +321,6 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 	case NoDataReturned
 	case NotSupported
 	case InvalidBeaconData
-	case Forced
 	
 	public var description: String {
 		switch self {
@@ -345,8 +344,6 @@ public enum LocationError: ErrorType, CustomStringConvertible {
 			return "Feature Not Supported"
 		case .InvalidBeaconData:
 			return "Cannot create monitor for beacon. Invalid data"
-		case .Forced:
-			return "Request Manually Cancelled"
 		}
 	}
 }
