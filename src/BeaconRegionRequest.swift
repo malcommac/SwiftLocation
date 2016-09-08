@@ -30,25 +30,25 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconRegionRequest: NSObject, Request {
+open class BeaconRegionRequest: NSObject, Request {
 	
-	public var UUID: String
-	public var rState: RequestState = .Pending
-	private(set) var region: CLBeaconRegion
-	private(set) var type: Event
+	open var UUID: String
+	open var rState: RequestState = .pending
+	fileprivate(set) var region: CLBeaconRegion
+	fileprivate(set) var type: Event
 	/// Authorization did change
-	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+	open var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 
-	public var onStateDidChange: RegionStateDidChange?
-	public var onRangingBeacons: RegionBeaconsRanging?
-	public var onError: RegionMonitorError?
+	open var onStateDidChange: RegionStateDidChange?
+	open var onRangingBeacons: RegionBeaconsRanging?
+	open var onError: RegionMonitorError?
 	
 	init?(beacon: Beacon, monitor: Event) {
 		self.type = monitor
-		guard let proximityUUID = NSUUID(UUIDString: beacon.proximityUUID) else { // invalid Proximity UUID
+		guard let proximityUUID = Foundation.UUID(uuidString: beacon.proximityUUID) else { // invalid Proximity UUID
 			return nil
 		}
-		self.UUID = proximityUUID.UUIDString
+		self.UUID = proximityUUID.uuidString
 		if beacon.major == nil && beacon.minor == nil {
 			self.region = CLBeaconRegion(proximityUUID: proximityUUID, identifier: self.UUID)
 		} else if beacon.major != nil && beacon.minor != nil {
@@ -58,27 +58,24 @@ public class BeaconRegionRequest: NSObject, Request {
 		}
 	}
 	
-	public func cancel(error: LocationError?) {
-		Beacons.remove(request: self, error: error)
+	open func cancel(_ error: LocationError?) {
+		_ = Beacons.remove(request: self, error: error)
 	}
 	
-	/**
-	Terminate request without errors
-	*/
-	public func cancel() {
+	open func cancel() {
 		self.cancel(nil)
 	}
 	
-	public func pause() {
+	open func pause() {
 		if Beacons.remove(request: self) == true {
-			self.rState = .Paused
+			self.rState = .paused
 		}
 	}
 	
-	public func start() {
+	open func start() {
 		if self.rState.isRunning == false {
 			if Beacons.add(request: self) == true {
-				self.rState = .Running
+				self.rState = .running
 			}
 		}
 	}

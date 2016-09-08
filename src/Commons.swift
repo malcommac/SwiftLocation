@@ -37,14 +37,14 @@ State of the beacon region monitoring
 - Exited:  exited from the region
 */
 public enum RegionState {
-	case Entered
-	case Exited
+	case entered
+	case exited
 }
 
 /**
 *  This option set define the type of events you can monitor via BeaconManager class's monitor() func
 */
-public struct Event : OptionSetType {
+public struct Event : OptionSet {
 	public let rawValue: UInt8
 	public init(rawValue: UInt8) { self.rawValue = rawValue }
 	
@@ -92,17 +92,17 @@ This define the state of a request. Usually you don't need to acces to this info
 - Undetermined:    Undetermined state is usually used when the object cannot support request protocol
 */
 public enum RequestState {
-	case Pending
-	case Paused
-	case Cancelled(error: LocationError?)
-	case Running
-	case WaitingUserAuth
-	case Undetermined
+	case pending
+	case paused
+	case cancelled(error: LocationError?)
+	case running
+	case waitingUserAuth
+	case undetermined
 	
 	/// Request is running
 	public var isRunning: Bool {
 		switch self {
-		case .Running:
+		case .running:
 			return true
 		default:
 			return false
@@ -112,7 +112,7 @@ public enum RequestState {
 	/// Request is not running but can be started anytime
 	public var canStart: Bool {
 		switch self {
-		case .Paused, .Pending:
+		case .paused, .pending:
 			return true
 		default:
 			return false
@@ -122,7 +122,7 @@ public enum RequestState {
 	/// Request is on queue but it's in pause state
 	public var isPending: Bool {
 		switch self {
-		case .Pending, .WaitingUserAuth:
+		case .pending, .waitingUserAuth:
 			return true
 		default:
 			return false
@@ -132,7 +132,7 @@ public enum RequestState {
 	/// Request is on queue but it's in pause state
 	public var isCancelled: Bool {
 		switch self {
-		case .Cancelled(_):
+		case .cancelled(_):
 			return true
 		default:
 			return false
@@ -144,7 +144,7 @@ public enum RequestState {
 
 extension CLGeocoder: Request {
 	
-	public func cancel(error: LocationError?) {
+	public func cancel(_ error: LocationError?) {
 		cancelGeocode()
 	}
 	
@@ -165,7 +165,7 @@ extension CLGeocoder: Request {
 	}
 	
 	public var rState: RequestState {
-		return .Undetermined
+		return .undetermined
 	}
 	
 	public var onAuthorizationDidChange: LocationHandlerAuthDidChange? {
@@ -177,7 +177,7 @@ extension CLGeocoder: Request {
 
 // MARK: - Support for Request protocol in NSURLSessionDataTast object
 
-extension NSURLSessionDataTask: Request {
+extension URLSessionDataTask: Request {
 
 	public func pause() {
 		self.suspend()
@@ -191,12 +191,12 @@ extension NSURLSessionDataTask: Request {
 		return "\(self.hash)"
 	}
 	
-	public func cancel(error: LocationError?) {
+	public func cancel(_ error: LocationError?) {
 		self.cancel()
 	}
 	
 	public var rState: RequestState {
-		return .Undetermined
+		return .undetermined
 	}
 	
 	public var onAuthorizationDidChange: LocationHandlerAuthDidChange? {
@@ -215,11 +215,10 @@ public protocol Request {
 	
 	- parameter error: optional error to cancel the request
 	*/
-	func cancel(error: LocationError?)
+	func cancel(_ error: LocationError?)
 	
 	/**
-	Cancel an operation without passing an error.
-	Woraround because we cannot have default value for a protocol param
+	Cancel a running request without passing an error
 	*/
 	func cancel()
 	
@@ -246,23 +245,23 @@ public protocol Request {
 /// Handlers
 
 public typealias LocationHandlerError = ((CLLocation?, LocationError) -> Void)
-public typealias LocationHandlerSuccess = (CLLocation -> Void)
-public typealias LocationHandlerPaused = (CLLocation? -> Void)
+public typealias LocationHandlerSuccess = ((CLLocation) -> Void)
+public typealias LocationHandlerPaused = ((CLLocation?) -> Void)
 
-public typealias LocationHandlerAuthDidChange = (CLAuthorizationStatus? -> Void)
+public typealias LocationHandlerAuthDidChange = ((CLAuthorizationStatus?) -> Void)
 
-public typealias RLocationErrorHandler = (LocationError -> Void)
-public typealias RLocationSuccessHandler = (CLPlacemark -> Void)
+public typealias RLocationErrorHandler = ((LocationError) -> Void)
+public typealias RLocationSuccessHandler = ((CLPlacemark) -> Void)
 
-public typealias HeadingHandlerError = (LocationError -> Void)
-public typealias HeadingHandlerSuccess = (CLHeading -> Void)
-public typealias HeadingHandlerCalibration = (Void -> Bool)
+public typealias HeadingHandlerError = ((LocationError) -> Void)
+public typealias HeadingHandlerSuccess = ((CLHeading) -> Void)
+public typealias HeadingHandlerCalibration = ((Void) -> Bool)
 
-public typealias VisitHandler = (CLVisit -> Void)
+public typealias VisitHandler = ((CLVisit) -> Void)
 
-public typealias RegionStateDidChange = (RegionState -> Void)
-public typealias RegionBeaconsRanging = ([CLBeacon] -> Void)
-public typealias RegionMonitorError = (LocationError -> Void)
+public typealias RegionStateDidChange = ((RegionState) -> Void)
+public typealias RegionBeaconsRanging = (([CLBeacon]) -> Void)
+public typealias RegionMonitorError = ((LocationError) -> Void)
 
 /**
 Type of service to used to perform the request
@@ -271,8 +270,8 @@ Type of service to used to perform the request
 - Google: google own services (maybe limited in quota usage)
 */
 public enum ReverseService {
-	case Apple
-	case Google
+	case apple
+	case google
 }
 
 internal struct CLPlacemarkDictionaryKey {
@@ -295,15 +294,15 @@ internal struct CLPlacemarkDictionaryKey {
 extension CLAuthorizationStatus: CustomStringConvertible {
 	public var description: String {
 		switch self {
-		case .Denied:
+		case .denied:
 			return "User Denied"
-		case .AuthorizedAlways:
+		case .authorizedAlways:
 			return "Always Authorized"
-		case .NotDetermined:
+		case .notDetermined:
 			return "Not Determined"
-		case .Restricted:
+		case .restricted:
 			return "Restricted"
-		case .AuthorizedWhenInUse:
+		case .authorizedWhenInUse:
 			return "Authorized In Use"
 		}
 	}
@@ -322,41 +321,38 @@ Define all possible error related to SwiftLocation library
 - NoDataReturned:              No data returned from this request
 - NotSupported:                Feature is not supported by the current hardware
 */
-public enum LocationError: ErrorType, CustomStringConvertible {
-	case MissingAuthorizationInPlist
-	case RequestTimeout
-	case AuthorizationDidChange(newStatus: CLAuthorizationStatus)
-	case LocationManager(error: NSError?)
-	case LocationNotAvailable
-	case NoDataReturned
-	case NotSupported
-	case InvalidBeaconData
-	case Forced
+public enum LocationError: Error, CustomStringConvertible {
+	case missingAuthorizationInPlist
+	case requestTimeout
+	case authorizationDidChange(newStatus: CLAuthorizationStatus)
+	case locationManager(error: NSError?)
+	case locationNotAvailable
+	case noDataReturned
+	case notSupported
+	case invalidBeaconData
 	
 	public var description: String {
 		switch self {
-		case .MissingAuthorizationInPlist:
+		case .missingAuthorizationInPlist:
 			return "Missing Authorization in .plist file"
-		case .RequestTimeout:
+		case .requestTimeout:
 			return "Timeout for request"
-		case .AuthorizationDidChange(let status):
+		case .authorizationDidChange(let status):
 			return "Failed due to user auth status: '\(status)'"
-		case .LocationManager(let err):
+		case .locationManager(let err):
 			if let error = err {
 				return "Location manager error: \(error.localizedDescription)"
 			} else {
 				return "Generic location manager error"
 			}
-		case .LocationNotAvailable:
+		case .locationNotAvailable:
 			return "Location not avaiable"
-		case .NoDataReturned:
+		case .noDataReturned:
 			return "No Data Returned"
-		case .NotSupported:
+		case .notSupported:
 			return "Feature Not Supported"
-		case .InvalidBeaconData:
+		case .invalidBeaconData:
 			return "Cannot create monitor for beacon. Invalid data"
-		case .Forced:
-			return "Request Manually Cancelled"
 		}
 	}
 }
@@ -370,18 +366,18 @@ Location service state
 - Authorized:   This app is authorized to use location services.
 */
 public enum LocationServiceState: Equatable {
-	case Disabled
-	case Undetermined
-	case Denied
-	case Restricted
-	case Authorized(always: Bool)
+	case disabled
+	case undetermined
+	case denied
+	case restricted
+	case authorized(always: Bool)
 }
 
 public func == (lhs: LocationServiceState, rhs: LocationServiceState) -> Bool {
 	switch (lhs,rhs) {
-	case (.Authorized(let a1), .Authorized(let a2)):
+	case (.authorized(let a1), .authorized(let a2)):
 		return a1 == a2
-	case (.Disabled,.Disabled), (.Undetermined,.Undetermined), (.Denied,.Denied), (.Restricted,.Restricted):
+	case (.disabled,.disabled), (.undetermined,.undetermined), (.denied,.denied), (.restricted,.restricted):
 		return true
 	default:
 		return false
@@ -396,9 +392,9 @@ Location authorization status
 - OnlyInUse: app can receive location updates only in foreground
 */
 public enum LocationAuthType {
-	case None
-	case Always
-	case OnlyInUse
+	case none
+	case always
+	case onlyInUse
 }
 
 // MARK: - CLLocationManager
@@ -409,20 +405,20 @@ extension CLLocationManager {
 	public static var locationAuthStatus: LocationServiceState {
 		get {
 			if CLLocationManager.locationServicesEnabled() == false {
-				return .Disabled
+				return .disabled
 			} else {
 				let status = CLLocationManager.authorizationStatus()
 				switch status {
-				case .NotDetermined:
-					return .Undetermined
-				case .Denied:
-					return .Denied
-				case .Restricted:
-					return .Restricted
-				case .AuthorizedAlways:
-					return .Authorized(always: true)
-				case .AuthorizedWhenInUse:
-					return .Authorized(always: false)
+				case .notDetermined:
+					return .undetermined
+				case .denied:
+					return .denied
+				case .restricted:
+					return .restricted
+				case .authorizedAlways:
+					return .authorized(always: true)
+				case .authorizedWhenInUse:
+					return .authorized(always: false)
 				}
 			}
 		}
@@ -435,12 +431,12 @@ extension CLLocationManager {
 		/// Value of these keys if the message you want to show into system location request message the first time you
 		/// will access to the location manager.
 	internal static var bundleLocationAuthType: LocationAuthType {
-		let hasAlwaysAuth = (NSBundle.mainBundle().objectForInfoDictionaryKey("NSLocationAlwaysUsageDescription") != nil)
-		let hasInUseAuth = (NSBundle.mainBundle().objectForInfoDictionaryKey("NSLocationWhenInUseUsageDescription") != nil)
+		let hasAlwaysAuth = (Bundle.main.object(forInfoDictionaryKey: "NSLocationAlwaysUsageDescription") != nil)
+		let hasInUseAuth = (Bundle.main.object(forInfoDictionaryKey: "NSLocationWhenInUseUsageDescription") != nil)
 		
-		if hasAlwaysAuth == true { return .Always }
-		if hasInUseAuth == true { return .OnlyInUse }
-		return .None
+		if hasAlwaysAuth == true { return .always }
+		if hasInUseAuth == true { return .onlyInUse }
+		return .none
 	}
 }
 
@@ -464,27 +460,27 @@ Allows you to specify the accuracy you want to achieve with a request.
 														 (you should use it only when device is plugged in due to high battery usage level)
 */
 public enum Accuracy: Int {
-	case IPScan = -1
-	case Any = 0
-	case Country = 1
-	case City = 2
-	case Neighborhood = 3
-	case Block = 4
-	case House = 5
-	case Room = 6
-	case Navigation = 7
+	case ipScan = -1
+	case any = 0
+	case country = 1
+	case city = 2
+	case neighborhood = 3
+	case block = 4
+	case house = 5
+	case room = 6
+	case navigation = 7
 	
 	public var meters: Double {
 		switch self {
-		case Any:			return Double.infinity
-		case Country:		return 100000.0
-		case City:			return kCLLocationAccuracyThreeKilometers
-		case Neighborhood:	return kCLLocationAccuracyKilometer
-		case Block:			return kCLLocationAccuracyHundredMeters
-		case House:			return kCLLocationAccuracyNearestTenMeters
-		case Room:			return kCLLocationAccuracyBest
-		case Navigation:	return kCLLocationAccuracyBestForNavigation
-		case IPScan:		return Double.infinity // Not used
+		case .any:			return Double.infinity
+		case .country:		return 100000.0
+		case .city:			return kCLLocationAccuracyThreeKilometers
+		case .neighborhood:	return kCLLocationAccuracyKilometer
+		case .block:			return kCLLocationAccuracyHundredMeters
+		case .house:			return kCLLocationAccuracyNearestTenMeters
+		case .room:			return kCLLocationAccuracyBest
+		case .navigation:	return kCLLocationAccuracyBestForNavigation
+		case .ipScan:		return Double.infinity // Not used
 		}
 	}
 	
@@ -495,9 +491,9 @@ public enum Accuracy: Int {
 	
 	- returns: true if location has an accuracy equal or grater than the one set by the struct itself
 	*/
-	internal func isLocationValidForAccuracy(obj: CLLocation) -> Bool {
+	internal func isLocationValidForAccuracy(_ obj: CLLocation) -> Bool {
 		switch self {
-		case Room, .Navigation:
+		case .room, .navigation:
 			return (obj.horizontalAccuracy < kCLLocationAccuracyNearestTenMeters)
 		default:
 			return (obj.horizontalAccuracy <= self.meters)
@@ -517,17 +513,17 @@ is added to the main queue of the location manager.
 - Significant:         receive only valid significant location updates. This capability provides tremendous power savings for apps that want to track a user’s approximate location and do not need highly accurate position information.
 */
 public enum UpdateFrequency: Equatable, Comparable {
-	case Continuous
-	case OneShot
-	case ByDistanceIntervals(meters: Double)
-	case Significant
+	case continuous
+	case oneShot
+	case byDistanceIntervals(meters: Double)
+	case significant
 }
 
 public func == (lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	switch (lhs,rhs) {
-	case (.ByDistanceIntervals(let d1), .ByDistanceIntervals(let d2)) where d1 == d2:
+	case (.byDistanceIntervals(let d1), .byDistanceIntervals(let d2)) where d1 == d2:
 		return true
-	case (.Continuous,.Continuous), (.OneShot, .OneShot), (.Significant, .Significant):
+	case (.continuous,.continuous), (.oneShot, .oneShot), (.significant, .significant):
 		return true
 	default:
 		return false
@@ -552,11 +548,11 @@ public func >= (lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 
 private func u_lowerThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	switch (lhs, rhs) {
-	case (.Continuous, _), (.OneShot, _):
+	case (.continuous, _), (.oneShot, _):
 		return true
-	case (.ByDistanceIntervals(let d1),.ByDistanceIntervals(let d2)):
+	case (.byDistanceIntervals(let d1),.byDistanceIntervals(let d2)):
 		return (e == true ? d1 <= d2 : d1 < d2)
-	case (.Significant, .Significant):
+	case (.significant, .significant):
 		return true
 	default:
 		return false
@@ -565,9 +561,9 @@ private func u_lowerThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: Update
 
 private func u_graterThan(includeEqual e: Bool, lhs: UpdateFrequency, rhs: UpdateFrequency) -> Bool {
 	switch (lhs, rhs) {
-	case (.Significant, _):
+	case (.significant, _):
 		return true
-	case (.ByDistanceIntervals(let d1),.ByDistanceIntervals(let d2)):
+	case (.byDistanceIntervals(let d1),.byDistanceIntervals(let d2)):
 		return (e == true ? d1 >= d2 : d1 > d2)
 	default:
 		return false
@@ -582,7 +578,7 @@ Specify an interval to receive new heading events
 - TrueNorth:     Receive events only when true north degree is changed at least of specified interval
 */
 public enum HeadingFrequency {
-	case Continuous(interval: NSTimeInterval?)
-	case MagneticNorth(minChange: CLLocationDirection)
-	case TrueNorth(minChange: CLLocationDirection)
+	case continuous(interval: TimeInterval?)
+	case magneticNorth(minChange: CLLocationDirection)
+	case trueNorth(minChange: CLLocationDirection)
 }

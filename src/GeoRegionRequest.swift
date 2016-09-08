@@ -29,51 +29,48 @@
 import Foundation
 import CoreLocation
 
-public class GeoRegionRequest: NSObject, Request {
+open class GeoRegionRequest: NSObject, Request {
 	
-	public var UUID: String
+	open var UUID: String
 	
-	public var coordinates: CLLocationCoordinate2D {
+	open var coordinates: CLLocationCoordinate2D {
 		return region.center
 	}
 	
-	public var radius: CLLocationDistance {
+	open var radius: CLLocationDistance {
 		return region.radius
 	}
-	private(set) var region: CLCircularRegion
+	fileprivate(set) var region: CLCircularRegion
 
 	/// Authorization did change
-	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+	open var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 
-	public var onStateDidChange: RegionStateDidChange?
-	public var onError: RegionMonitorError?
+	open var onStateDidChange: RegionStateDidChange?
+	open var onError: RegionMonitorError?
 	
-	public var rState: RequestState = .Pending
+	open var rState: RequestState = .pending
 	
 	public init(coordinates: CLLocationCoordinate2D, radius: CLLocationDistance) {
-		self.UUID = NSUUID().UUIDString
+		self.UUID = Foundation.UUID().uuidString
 		self.region = CLCircularRegion(center: coordinates, radius: radius, identifier: self.UUID)
 	}
 	
-	public func cancel(error: LocationError?) {
-		Beacons.remove(request: self, error: error)
+	open func cancel(_ error: LocationError?) {
+		_ = Beacons.remove(request: self, error: error)
 	}
 	
-	/**
-	Terminate request without errors
-	*/
-	public func cancel() {
+	open func cancel() {
 		self.cancel(nil)
 	}
 	
-	public func pause() {
+	open func pause() {
 		if Beacons.remove(request: self) == true {
-			self.rState = .Paused
+			self.rState = .paused
 		}
 	}
 	
-	public func start() {
-		Beacons.add(request: self)
+	open func start() {
+		_ = Beacons.add(request: self)
 	}
 	
 }

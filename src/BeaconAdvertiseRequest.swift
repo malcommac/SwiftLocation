@@ -30,23 +30,23 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-public class BeaconAdvertiseRequest: NSObject, Request {
+open class BeaconAdvertiseRequest: NSObject, Request {
 	
 	
-	public var UUID: String
-	public var rState: RequestState = .Pending
-	private(set) var region: CLBeaconRegion
-	private(set) var RSSIPower: NSNumber?
-	private(set) var name: String
+	open var UUID: String
+	open var rState: RequestState = .pending
+	fileprivate(set) var region: CLBeaconRegion
+	fileprivate(set) var RSSIPower: NSNumber?
+	fileprivate(set) var name: String
 	/// Authorization did change
-	public var onAuthorizationDidChange: LocationHandlerAuthDidChange?
+	open var onAuthorizationDidChange: LocationHandlerAuthDidChange?
 	
 	init?(name: String, proximityUUID: String, major: CLBeaconMajorValue? = nil, minor: CLBeaconMinorValue? = nil) {
 		self.name = name
-		guard let proximityUUID = NSUUID(UUIDString: proximityUUID) else { // invalid Proximity UUID
+		guard let proximityUUID = Foundation.UUID(uuidString: proximityUUID) else { // invalid Proximity UUID
 			return nil
 		}
-		self.UUID = proximityUUID.UUIDString
+		self.UUID = proximityUUID.uuidString
 		if major == nil && minor == nil {
 			self.region = CLBeaconRegion(proximityUUID: proximityUUID, identifier: self.UUID)
 		} else if major != nil && minor != nil {
@@ -56,38 +56,35 @@ public class BeaconAdvertiseRequest: NSObject, Request {
 		}
 	}
 	
-	public func cancel(error: LocationError?) {
+	open func cancel(_ error: LocationError?) {
 		if self.rState.isRunning == true {
-			Beacons.stopAdvertise(self.name, error: error)
+			_ = Beacons.stopAdvertise(self.name, error: error)
 		}
 	}
 	
-	/**
-	Terminate request without errors
-	*/
-	public func cancel() {
+	open func cancel() {
 		self.cancel(nil)
 	}
 	
-	public func pause() {
+	open func pause() {
 		if self.rState.isRunning == true {
-			Beacons.stopAdvertise(self.name, error: nil)
-			self.rState = .Paused
+			_ = Beacons.stopAdvertise(self.name, error: nil)
+			self.rState = .paused
 		}
 	}
 	
-	public func start() {
+	open func start() {
 		if self.rState.canStart == true {
-			self.rState = .Running
+			self.rState = .running
 			Beacons.updateBeaconAdvertise()
 		}
 	}
 	
-	internal func dataToAdvertise() -> [String:AnyObject!] {
-		let data: [String:AnyObject!] = [
-			CBAdvertisementDataLocalNameKey : self.name,
-			CBAdvertisementDataManufacturerDataKey : self.region.peripheralDataWithMeasuredPower(self.RSSIPower),
-			CBAdvertisementDataServiceUUIDsKey : [self.UUID]]
+	internal func dataToAdvertise() -> [String:AnyObject?] {
+		let data: [String:AnyObject?] = [
+			CBAdvertisementDataLocalNameKey : self.name as ImplicitlyUnwrappedOptional<AnyObject>,
+			CBAdvertisementDataManufacturerDataKey : self.region.peripheralData(withMeasuredPower: self.RSSIPower),
+			CBAdvertisementDataServiceUUIDsKey : self.UUID as Optional<AnyObject>]
 		return data
 	}
 

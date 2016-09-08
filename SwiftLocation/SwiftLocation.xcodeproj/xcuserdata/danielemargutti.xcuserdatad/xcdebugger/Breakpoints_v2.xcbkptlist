@@ -223,8 +223,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "339"
             endingLineNumber = "339"
-            landmarkName = "BeaconsManager"
-            landmarkType = "3">
+            landmarkName = "monitoredGeo(forRegion:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -239,8 +239,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "345"
             endingLineNumber = "345"
-            landmarkName = "BeaconsManager"
-            landmarkType = "3">
+            landmarkName = "monitoredBeacon(forRegion:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -256,7 +256,7 @@
             startingLineNumber = "244"
             endingLineNumber = "244"
             landmarkName = "requestLocationServiceAuthorizationIfNeeded()"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -270,9 +270,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "349"
-            endingLineNumber = "349"
-            landmarkName = "BeaconsManager"
-            landmarkType = "3">
+            endingLineNumber = "349">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -287,8 +285,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "304"
             endingLineNumber = "304"
-            landmarkName = "locationManager(_:didExitRegion:)"
-            landmarkType = "5">
+            landmarkName = "peripheralManagerDidUpdateState(_:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
@@ -335,8 +333,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "299"
             endingLineNumber = "299"
-            landmarkName = "locationManager(_:didEnterRegion:)"
-            landmarkType = "5">
+            landmarkName = "peripheralManagerDidUpdateState(_:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
@@ -383,8 +381,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "317"
             endingLineNumber = "317"
-            landmarkName = "locationManager(_:rangingBeaconsDidFailFor:withError:)"
-            landmarkType = "5">
+            landmarkName = "BeaconsManager"
+            landmarkType = "3">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
@@ -432,7 +430,7 @@
             startingLineNumber = "198"
             endingLineNumber = "198"
             landmarkName = "add(request:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -448,7 +446,7 @@
             startingLineNumber = "215"
             endingLineNumber = "215"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -464,7 +462,7 @@
             startingLineNumber = "220"
             endingLineNumber = "220"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -480,7 +478,7 @@
             startingLineNumber = "232"
             endingLineNumber = "232"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -496,7 +494,7 @@
             startingLineNumber = "234"
             endingLineNumber = "234"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -511,8 +509,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "311"
             endingLineNumber = "311"
-            landmarkName = "locationManager(_:monitoringDidFailForRegion:withError:)"
-            landmarkType = "5">
+            landmarkName = "locationManager(_:didEnterRegion:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -527,8 +525,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "329"
             endingLineNumber = "329"
-            landmarkName = "monitoredGeo(forRegion:)"
-            landmarkType = "5">
+            landmarkName = "BeaconsManager"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -543,8 +541,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "335"
             endingLineNumber = "335"
-            landmarkName = "monitoredBeacon(forRegion:)"
-            landmarkType = "5">
+            landmarkName = "BeaconsManager"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -559,8 +557,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "276"
             endingLineNumber = "276"
-            landmarkName = "locationManager(_:didChangeAuthorizationStatus:)"
-            landmarkType = "5">
+            landmarkName = "dispatchAuthorizationDidChange(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -576,7 +574,7 @@
             startingLineNumber = "258"
             endingLineNumber = "258"
             landmarkName = "cancelAllMonitorsForRegion(_:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -592,7 +590,7 @@
             startingLineNumber = "217"
             endingLineNumber = "217"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -608,7 +606,7 @@
             startingLineNumber = "227"
             endingLineNumber = "227"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -624,7 +622,7 @@
             startingLineNumber = "230"
             endingLineNumber = "230"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -640,7 +638,7 @@
             startingLineNumber = "212"
             endingLineNumber = "212"
             landmarkName = "remove(request:error:)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -655,8 +653,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "321"
             endingLineNumber = "321"
-            landmarkName = "locationManager(_:didRangeBeacons:inRegion:)"
-            landmarkType = "5">
+            landmarkName = "locationManager(_:monitoringDidFailFor:withError:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
