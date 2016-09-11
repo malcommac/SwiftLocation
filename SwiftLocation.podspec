@@ -7,8 +7,7 @@ Pod::Spec.new do |s|
   s.social_media_url = 'http://twitter.com/danielemargutti'
   s.authors = { 'Daniele Margutti' => 'hello@danielemargutti.com' }
   s.source = { :git => 'https://github.com/malcommac/SwiftLocation.git', :tag => s.version }
-
   s.ios.deployment_target = '8.0'
-
+  s.frameworks            = "CoreLocation", "MapKit", "Foundation"
   s.source_files = 'src/*.swift'
 end
