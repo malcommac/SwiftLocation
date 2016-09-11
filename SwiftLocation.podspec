@@ -1,4 +1,14 @@
 Pod::Spec.new do |s|
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |configuration|
+      configuration.build_settings['SWIFT_VERSION'] = "3.0"
+    end
+  end
+end
+
+
   s.name = 'SwiftLocation'
   s.version = '1.0.6'
   s.license = 'MIT'
@@ -10,12 +20,4 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '8.0'
   s.frameworks            = "CoreLocation", "MapKit", "Foundation"
   s.source_files = 'src/*.swift'
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |configuration|
-      configuration.build_settings['SWIFT_VERSION'] = "3.0"
-    end
-  end
 end
