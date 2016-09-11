@@ -10,7 +10,7 @@ end
 
 
   s.name = 'SwiftLocation'
-  s.version = '1.0.6'
+  s.version = '1.1.0'
   s.license = 'MIT'
   s.summary = 'Elegant Location Services and Beacon Monitoring in Swift'
   s.homepage = 'https://github.com/malcommac/SwiftLocation'
