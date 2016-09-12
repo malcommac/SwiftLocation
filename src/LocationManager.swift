@@ -378,6 +378,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 				self.headingObservers.append(request)
 			}
 			self.updateHeadingService()
+            return true
 		}
 		else if let request = request as? LocationRequest {
 			if self.locationObservers.index(where: {$0.UUID == request.UUID}) == nil {
