@@ -52,7 +52,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 let DefaultTimeout: TimeInterval = 30.0
 
-public let Location:LocationManager = LocationManager()
+public let SwiftyLocation:LocationManager = LocationManager()
 
 open class LocationManager: NSObject, CLLocationManagerDelegate {
 	//MARK: Public Variables
