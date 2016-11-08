@@ -692,7 +692,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 			throw LocationError.noDataReturned
 		}
 		
-		var addressDict = [String:AnyObject]()
+		var addressDict = [String:Any]()
 		addressDict[CLPlacemarkDictionaryKey.kCountry] = resultDict["country"] as! NSString
 		addressDict[CLPlacemarkDictionaryKey.kCountryCode] = resultDict["countryCode"] as! NSString
 		addressDict[CLPlacemarkDictionaryKey.kPostCodeExtension] = resultDict["zip"] as! NSString
@@ -709,7 +709,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	fileprivate func parseGoogleLocationData(_ resultDict: NSDictionary) -> CLPlacemark {
 		let locationDict = (resultDict.value(forKey: "results") as! NSArray).firstObject as! NSDictionary
 		
-		var addressDict = [String:AnyObject]()
+		var addressDict = [String:Any]()
 		
 		// Parse coordinates
 		let geometry = locationDict.object(forKey: "geometry") as! NSDictionary
@@ -724,9 +724,9 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		addressDict[CLPlacemarkDictionaryKey.kState] = JSONComponent("administrative_area_level_1", inArray: addressComponents, ofType: "short_name")
 		addressDict[CLPlacemarkDictionaryKey.kStreet] = formattedAddressArray.first! as NSString
 		addressDict[CLPlacemarkDictionaryKey.kThoroughfare] = JSONComponent("route", inArray: addressComponents, ofType: "long_name")
-		addressDict[CLPlacemarkDictionaryKey.kFormattedAddressLines] = formattedAddressArray as AnyObject
+		addressDict[CLPlacemarkDictionaryKey.kFormattedAddressLines] = formattedAddressArray as Any
 		addressDict[CLPlacemarkDictionaryKey.kSubThoroughfare] = JSONComponent("street_number", inArray: addressComponents, ofType: "long_name")
-		addressDict[CLPlacemarkDictionaryKey.kPostCodeExtension] = "" as AnyObject
+		addressDict[CLPlacemarkDictionaryKey.kPostCodeExtension] = "" as Any
 		addressDict[CLPlacemarkDictionaryKey.kCity] = JSONComponent("locality", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kZIP] = JSONComponent("postal_code", inArray: addressComponents, ofType: "long_name")
 		addressDict[CLPlacemarkDictionaryKey.kCountry] = JSONComponent("country", inArray: addressComponents, ofType: "long_name")
