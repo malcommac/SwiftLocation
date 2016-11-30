@@ -341,10 +341,8 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 		let urlString = "\(urlPrefix)ip-api.com/json?fields=lat,lon,status,country,countryCode,zip\(keyParam)"
 		let URLRequest = Foundation.URLRequest(url: URL(string: urlString)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? DefaultTimeout)
-		
-		let sessionConfig = URLSessionConfiguration.default
-		let session = URLSession(configuration: sessionConfig)
-		let task = session.dataTask(with: URLRequest) { (data, response, error) in
+
+		let task = NetRequest(URLRequest, complete: { data, error in
 			if let data = data as Data? {
 				do {
 					if let resultDict = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
@@ -357,8 +355,8 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 					onError(nil,LocationError.locationManager(error: error))
 				}
 			}
-		}
-		task.resume()
+		})
+		task.start()
 		return task
 	}
 	
@@ -613,9 +611,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		}
 		let APIURL = URL(string: APIURLString)
 		let APIURLRequest = URLRequest(url: APIURL!)
-		let sessionConfig = URLSessionConfiguration.default
-		let session = URLSession(configuration: sessionConfig)
-		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
+		let task = NetRequest(APIURLRequest, complete: { data, error in
 			if error != nil {
 				fHandler(LocationError.locationManager(error: error as NSError?))
 			} else {
@@ -632,8 +628,8 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 					}
 				}
 			}
-		}
-		task.resume()
+		})
+		task.start()
 		return task
 	}
 	
@@ -660,9 +656,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		APIURLString = APIURLString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 		let APIURL = URL(string: APIURLString)
 		let APIURLRequest = URLRequest(url: APIURL!)
-		let sessionConfig = URLSessionConfiguration.default
-		let session = URLSession(configuration: sessionConfig)
-		let task = session.dataTask(with: APIURLRequest) { (data, response, error) in
+		let task = NetRequest(APIURLRequest, complete: { data, error in
 			if error != nil {
 				fHandler(LocationError.locationManager(error: error as NSError?))
 			} else {
@@ -679,8 +673,8 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 					}
 				}
 			}
-		}
-		task.resume()
+		})
+		task.start()
 		return task
 	}
 	

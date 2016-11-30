@@ -84,7 +84,7 @@ Location.getLocation(withAccuracy: .Block, frequency: .OneShot, timeout: 50, onS
 }) { (lastValidLocation, error) in
 }
 // Sometimes in the future
-request.stop() // Stop receiving updates
+request.cancel() // Stop receiving updates
 request.pause() // Temporary pause events
 request.start() // Restart a paused request
 ```
@@ -291,7 +291,7 @@ Keep in mind: advertising not works in background.
 let request = Beacons.advertise(beaconName: "name", UUID: proximity, major: major, minor: minor, powerRSSI: 4, serviceUUIDs: [])
 ```
 
-Use ```stop()``` on ```request``` to stop beacon advertise.
+Use ```cancel()``` on ```request``` to stop beacon advertise.
 
 ([Documentation ↑](#documentation))
 
