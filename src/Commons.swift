@@ -177,22 +177,36 @@ extension CLGeocoder: Request {
 
 // MARK: - Support for Request protocol in NSURLSessionDataTast object
 
-extension URLSessionDataTask: Request {
+public class NetRequest: Request {
 
+	private var task: URLSessionDataTask
+	
+	public init(_ APIURLRequest: URLRequest, complete: @escaping ((Data?, Error?) -> Void)) {
+		let sessionConfig = URLSessionConfiguration.default
+		let session = URLSession(configuration: sessionConfig)
+		self.task = session.dataTask(with: APIURLRequest, completionHandler: { data, response, error in
+			complete(data,error)
+		})
+	}
+	
+	public func cancel() {
+		task.cancel()
+	}
+	
 	public func pause() {
-		self.suspend()
+		task.suspend()
 	}
 	
 	public func start() {
-		self.resume()
+		task.resume()
 	}
 	
 	public var UUID: String {
-		return "\(self.hash)"
+		return "\(task.hash)"
 	}
 	
 	public func cancel(_ error: LocationError?) {
-		self.cancel()
+		task.cancel()
 	}
 	
 	public var rState: RequestState {
@@ -204,6 +218,7 @@ extension URLSessionDataTask: Request {
 		get { return nil }
 		set { }
 	}
+	
 }
 
 /**

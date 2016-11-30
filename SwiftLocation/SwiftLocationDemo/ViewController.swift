@@ -16,22 +16,22 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		var r = Location.getLocation(withAccuracy: .city, frequency: .continuous, timeout: nil, onSuccess: { (loc) in
-			print("loc \(loc)")
-			}) { (last, err) in
-				print("err \(err)")
-		}
-		r.onAuthorizationDidChange = { newStatus in
-			print("New status \(newStatus)")
-		}
+//		var r = Location.getLocation(withAccuracy: .city, frequency: .continuous, timeout: nil, onSuccess: { (loc) in
+//			print("loc \(loc)")
+//			}) { (last, err) in
+//				print("err \(err)")
+//		}
+//		r.onAuthorizationDidChange = { newStatus in
+//			print("New status \(newStatus)")
+//		}
 		
 //		// Do any additional setup after loading the view, typically from a nib.
 //		let major = CLBeaconMajorValue(64224)
 //		let minor = CLBeaconMinorValue(43514)
 //		let proximity = "00194D5B-0A08-4697-B81C-C9BDE117412E"
-//		
+//
 //		print("Beacon monitoring started \(proximity) - maj=\(major), min=\(minor)")
-//		
+//
 //		do {
 //			let beacon = Beacon(proximity: proximity, major: major, minor: minor)
 //			try Beacons.monitor(beacon: beacon, events: Event.RegionBoundary, onStateDidChange: { state in
