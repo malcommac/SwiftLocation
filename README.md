@@ -1,5 +1,5 @@
 <p align="center" >
-  <img src="https://raw.githubusercontent.com/malcommac/SwiftLocation/tree/2.0.0/logo.png" width=200px height=207px alt="SwiftLocation" title="SwiftLocation">
+  <img src="https://raw.githubusercontent.com/malcommac/SwiftLocation/2.0.0/logo.png" width=200px height=207px alt="SwiftLocation" title="SwiftLocation">
 </p>
 
 
