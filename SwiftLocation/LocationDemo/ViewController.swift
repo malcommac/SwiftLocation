@@ -48,12 +48,14 @@ class ViewController: UIViewController {
 		Location.start(req2)
 		Location.start(req3)
 */
-		let req1 = LocationRequest(accuracy: .room, frequency: .backgroundUpdate(meters: 0, timeout: 1), { loc in
-			print("\(Date().timeIntervalSince1970) new loc!")
-		}) { last, error in
+				
+		let req1 = LocationRequest(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .continuous, { location in
+			print("loc \(location)")
+		}) { (lastLoc, error) in
 			print("error")
 		}
 		Location.start(req1)
+		
 	}
 
 	override func didReceiveMemoryWarning() {

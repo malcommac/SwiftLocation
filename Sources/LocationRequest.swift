@@ -10,50 +10,6 @@ import Foundation
 import MapKit
 import CoreLocation
 
-public protocol Request: class, Hashable, Equatable {
-	
-	func resume() -> Bool
-	func pause() -> Bool
-	func cancel() -> Bool
-	
-	var state: RequestState { get }
-}
-
-
-/// This represent the state of a request
-///
-/// - idle: an idle request is not part of the main location queue. It's the initial state of a request before.
-/// - waitingUserAuth: this is a paused state. Request is running but actually it's paused waiting for user authorization.
-/// - running: a running request can receive events about location manager
-/// - paused: a paused request its part of the location queue but does not receive events
-/// - failed: a failed request its a request
-public enum RequestState {
-	case idle
-	case waitingUserAuth
-	case running
-	case paused
-	case failed
-	
-	public var isRunning: Bool {
-		switch self {
-		case .running, .failed:
-			return true
-		default:
-			return false
-		}
-	}
-	
-	public var isPaused: Bool {
-		switch self {
-		case .waitingUserAuth, .paused, .failed(_):
-			return true
-		default:
-			return false
-		}
-	}
-}
-
-
 /// Location events callbacks
 ///
 /// - onReceiveLocation: on receive new location callback
@@ -66,7 +22,7 @@ public enum LocCallback {
 	case onErrorOccurred(_: Context, _: onError)
 }
 
-public final class LocationRequest: Request {
+public class LocationRequest: Request {
 	
 	public typealias OnSuccessCallback = ((_ location: CLLocation) -> (Void))
 	public typealias OnErrorCallback = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void?))
@@ -80,7 +36,6 @@ public final class LocationRequest: Request {
 		}
 	}
 
-	
 	/// Set a valid interval to enable a timer. Timeout starts automatically
 	private var timeoutTimer: Timer?
 	public var timeout: TimeInterval? = nil {
@@ -136,7 +91,12 @@ public final class LocationRequest: Request {
 	public init(accuracy: Accuracy, frequency: Frequency,
 	            _ success: @escaping LocCallback.onSuccess, _ error: LocCallback.onError? = nil) {
 		self.accuracy = accuracy
-		self.frequency = frequency
+		if case .IPScan(_) = accuracy {
+			// If accuracy is IP Scan we will ignore frequency, always oneShot is set
+			self.frequency = .oneShot
+		} else {
+			self.frequency = frequency
+		}
 		
 		self.registeredCallbacks.append(LocCallback.onReceiveLocation(.main, success))
 		if error != nil {
@@ -150,26 +110,13 @@ public final class LocationRequest: Request {
 	/// - Returns: `true` if request has been started, `false` otherwise
 	@discardableResult
 	public func resume() -> Bool {
-		
 		let isAppInBackground = (UIApplication.shared.applicationState == .background)
 		let canStart = (isAppInBackground && self.isBackgroundRequest) || (!isAppInBackground && !self.isBackgroundRequest)
 		guard canStart == true else {
 			return false // cannot be started
 		}
-		
-		if self.isInQueue {
-			guard self.state.isPaused == true else { // if not paused we can't change the state
-				return false
-			}
-			// start a new request
-			self._state = .running
-			return true
-		} else {
-			// if not in queue this function register a new request
-			self._state = .running
-			Location.start(self)
-			return true
-		}
+		Location.start(self)
+		return true
 	}
 	
 	/// Pause a running request.
@@ -177,24 +124,14 @@ public final class LocationRequest: Request {
 	/// - Returns: `true` if request is paused, `false` otherwise.
 	@discardableResult
 	public func pause() -> Bool {
-		guard self.state.isRunning else {
-			return false
-		}
-		self._state = .paused
+		self.onPause()
 		return true
 	}
 	
 	/// Cancel a running request and remove it from queue.
-	///
-	/// - Returns: `true` if request was removed successfully, `false` otherwise.
 	@discardableResult
-	public func cancel() -> Bool {
-		guard self.isInQueue else {
-			return false
-		}
-		self._state = .idle
+	public func cancel() {
 		Location.cancel(self)
-		return true
 	}
 	
 	/// `true` if request is on location queue
@@ -205,7 +142,7 @@ public final class LocationRequest: Request {
 	/// `true` if request works in background app state
 	internal var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .backgroundUpdate(_,_):
+		case .whenTravelled(_,_):
 			return true
 		default:
 			return false
@@ -271,8 +208,8 @@ public final class LocationRequest: Request {
 	/// When an error is received if `cancelOnError` is `true` request is also removed from queue and transit to `failed` state.
 	///
 	/// - Parameter error: error received
-	internal func dispatchError(_ error: Error) {
-		guard self.state.isRunning else { return } // ignore if not running
+	internal func dispatchError(_ error: Error?) {
+		guard let error = error, self.state.isRunning else { return } // ignore if not running
 		// Alert callbacks
 		self.lastError = error
 		self.registeredCallbacks.forEach {
@@ -285,6 +222,23 @@ public final class LocationRequest: Request {
 			self.cancel()
 			self._state = .failed
 		}
+	}
+	
+	public func onResume() {
+		switch self.accuracy {
+		case .IPScan(_):
+			self.executeIPLocationRequest()
+		default:
+			break
+		}
+	}
+	
+	public func onPause() {
+		
+	}
+	
+	public func onCancel() {
+		
 	}
 }
 

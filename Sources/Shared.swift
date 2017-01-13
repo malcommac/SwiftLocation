@@ -11,6 +11,53 @@ import MapKit
 import CoreLocation
 
 
+/// This represent the state of a request
+///
+/// - idle: an idle request is not part of the main location queue. It's the initial state of a request before.
+/// - waitingUserAuth: this is a paused state. Request is running but actually it's paused waiting for user authorization.
+/// - running: a running request can receive events about location manager
+/// - paused: a paused request its part of the location queue but does not receive events
+/// - failed: a failed request its a request
+public enum RequestState {
+	case idle
+	case waitingUserAuth
+	case running
+	case paused
+	case failed
+	
+	public var isRunning: Bool {
+		switch self {
+		case .running, .failed, .idle:
+			return true
+		default:
+			return false
+		}
+	}
+	
+	public var isPaused: Bool {
+		switch self {
+		case .waitingUserAuth, .paused, .failed(_):
+			return true
+		default:
+			return false
+		}
+	}
+}
+
+/// Public Request Protocol
+public protocol Request: class, Hashable, Equatable {
+	
+	func resume() -> Bool
+	func pause() -> Bool
+	func cancel()
+	
+	func onResume()
+	func onPause()
+	func onCancel()
+	
+	var state: RequestState { get }
+}
+
 /// Location errors
 ///
 /// - missingAuthInInfoPlist: missing authorization strings (`NSLocationAlwaysUsageDescription` or `NSLocationWhenInUseUsageDescription` in Info.plist)
@@ -24,6 +71,8 @@ public enum LocationError: Error {
 	case timeout
 	case serviceNotAvailable
 	case backgroundModeNotSet
+	case noData
+	case invalidData
 }
 
 public enum Usage {

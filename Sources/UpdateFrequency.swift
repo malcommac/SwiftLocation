@@ -25,25 +25,24 @@ extension CLActivityType: CustomStringConvertible {
 }
 
 /// Frequency of location updates
+/// Note: `frequency` parameter is ignored (and set on `oneShot`) when `accuracy` is `IPScan`.
 ///
-/// - continuous: continous location updates
-/// - oneShot: one shot location update delivery (then cancel the request)
-/// - whenTravelled: continous location update when travelled distance is made or timeout reached (application must support background location)
-/// - significant: continous significant location update delivery
+/// - continuous: (Foreground) Continous location updates
+/// - oneShot: (Foreground) One shot location update delivery (then cancel the request)
+/// - whenTravelled: (Foreground/Background) Continous location update when travelled distance is made or timeout reached
+/// - significant: (Foreground/Background) Continous significant location update delivery
 public enum Frequency: Equatable, Comparable, CustomStringConvertible {
 	case continuous
 	case oneShot
 	case whenTravelled(meters: Double, timeout: TimeInterval)
-	case backgroundUpdate(meters: Double, timeout: TimeInterval)
 	case significant
 	
 	public var description: String {
 		switch self {
-		case .continuous:								return "Continuous"
-		case .oneShot:									return "One Shot"
-		case .whenTravelled(let m, let t):				return "Travelled (\(m) meters or \(t) seconds)"
-		case .backgroundUpdate(let m, timeout: let t):	return "Background (\(m) meters or \(t) seconds)"
-		case .significant:								return "Significant"
+		case .continuous:							return "Continuous"
+		case .oneShot:								return "One Shot"
+		case .whenTravelled(let m, let t):			return "Travelled (\(m) meters or \(t) seconds)"
+		case .significant:							return "Significant"
 		}
 	}
 	

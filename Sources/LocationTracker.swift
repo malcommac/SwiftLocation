@@ -98,10 +98,15 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	private var _locationSettings: Settings?
 	private(set) var locationSettings: Settings? {
 		set {
-			guard let settings = newValue else {
+			
+			func stopLocationServices() {
 				locationManager.stopUpdatingLocation()
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.disallowDeferredLocationUpdates()
+			}
+			
+			guard let settings = newValue else {
+				stopLocationServices()
 				_locationSettings = newValue
 				return
 			}
@@ -115,17 +120,22 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Set attributes for CLLocationManager instance
 			locationManager.activityType = settings.activity // activity type (used to better preserve battery based upon activity)
 			locationManager.desiredAccuracy = settings.accuracy.meters // accuracy (used to preserve battery based upon update frequency)
-			if settings.frequency == .significant && CLLocationManager.significantLocationChangeMonitoringAvailable() {
+			
+			switch settings.frequency {
+			case .significant:
+				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
+					stopLocationServices()
+					return
+				}
 				// If best frequency is significant location update (and hardware supports it) then start only significant location update
 				locationManager.stopUpdatingLocation()
 				locationManager.startMonitoringSignificantLocationChanges()
 				locationManager.disallowDeferredLocationUpdates()
-			} else if case .whenTravelled(let distance,let timeout) = settings.frequency {
+			case .whenTravelled(let meters, let timeout):
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.startUpdatingLocation()
-				locationManager.allowDeferredLocationUpdates(untilTraveled: distance, timeout: timeout)
-			} else {
-				// Otherwise start full location manager services
+				locationManager.allowDeferredLocationUpdates(untilTraveled: meters, timeout: timeout)
+			default:
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.startUpdatingLocation()
 				locationManager.disallowDeferredLocationUpdates()
@@ -160,7 +170,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		///   - lhs: A value to compare.
 		///   - rhs: Another value to compare.
 		public static func ==(lhs: LocationTracker.Settings, rhs: LocationTracker.Settings) -> Bool {
-			return (lhs.accuracy == rhs.accuracy && lhs.frequency == rhs.frequency && lhs.activity == rhs.activity)
+			return (lhs.accuracy.orderValue == rhs.accuracy.orderValue && lhs.frequency == rhs.frequency && lhs.activity == rhs.activity)
 		}
 	}
 	
@@ -169,42 +179,27 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		var task: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
 		var timer: Timer?
 		
-		func start() {
-			let state = UIApplication.shared.applicationState
-			if ((state == .background || state == .inactive) && task == UIBackgroundTaskInvalid) {
-				self.runBackgroundTask(after: 20)
-			}
-		}
-		
 		func stop() {
-			guard task != UIBackgroundTaskInvalid else { return }
-			UIApplication.shared.endBackgroundTask(task)
-			task = UIBackgroundTaskInvalid
+			timer?.invalidate()
+			UIApplication.shared.endBackgroundTask(self.task)
 		}
 		
-		private func runBackgroundTask(after time: TimeInterval) {
-			let app = UIApplication.shared
-			self.task = app.beginBackgroundTask(expirationHandler: { 
-				app.endBackgroundTask(self.task)
-				self.task = UIBackgroundTaskInvalid
+		func start(time: Double) {
+			self.task = UIApplication.shared.beginBackgroundTask(expirationHandler: {
+				self.start(time: 10)
 			})
-			
-			DispatchQueue.global(qos: .userInitiated).async {
-				self.timer?.invalidate()
-				self.timer = Timer.scheduledTimer(timeInterval: time,
-				                                  target: self,
-				                                  selector: #selector(self.timeFired),
-				                                  userInfo: nil,
-				                                  repeats: false)
-			}
 		}
 		
-		@objc func timeFired() {
-			let app = UIApplication.shared
-			let remaining = app.backgroundTimeRemaining
-			print("Remaining: \(remaining)")
-			Location.updateLocationServices()
-			self.runBackgroundTask(after: 5)
+		@objc private func startTrackingBg() {
+			let rm = UIApplication.shared.backgroundTimeRemaining
+			print("Call for location (rem=\(rm))")
+			Location.locationManager.requestLocation()
+			start(time: 10)
+		}
+		
+		
+		private func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
+			UIApplication.shared.endBackgroundTask(taskID)
 		}
 	}
 
@@ -246,19 +241,21 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Parameter request: request to enqueue
 	/// - Returns: `true` if added correctly to the queue, `false` otherwise.
 	public func start<T: Request>(_ requests: T...) {
-		var hasRegistrations = false
+		var hasChanges = false
 		for request in requests {
-			if self.isQueued(request) == true {
-				continue
-			}
 			
 			if let request = request as? LocationRequest {
+				request._state = .running
+				if self.isQueued(request) == true {
+					continue
+				}
 				self.locationObservers.append(request)
-				hasRegistrations = true
+				hasChanges = true
 			}
 		}
-		if hasRegistrations {
+		if hasChanges {
 			self.updateLocationServices()
+			requests.forEach { $0.onResume() }
 		}
 	}
 	
@@ -268,18 +265,22 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Parameter request: request to remove
 	/// - Returns: `true` if request was removed successfully, `false` if it's not part of the queue
 	public func cancel<T: Request>(_ requests: T...) {
-		var hasUnregistrations = false
+		var hasChanges = false
 		for request in requests {
-			if self.isQueued(request) == false { continue }
+			if self.isQueued(request) == false {
+				continue
+			}
 			
 			if let request = request as? LocationRequest {
 				locationObservers.remove(at: locationObservers.index(of: request)!)
-				hasUnregistrations = true
+				request._state = .paused
+				hasChanges = true
 			}
 		}
 
-		if hasUnregistrations == true {
+		if hasChanges == true {
 			self.updateLocationServices()
+			requests.forEach { $0.onCancel() }
 		}
 	}
 	
@@ -311,19 +312,29 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		
 		do {
-			// Check if device supports location services.
-			// If not dispatch the error to any running request and stop.
-			guard CLLocationManager.locationServicesEnabled() else {
-				locationObservers.forEach { $0.dispatchError(LocationError.serviceNotAvailable) }
+			// Evaluate best accuracy,frequency and activity type based upon all queued requests
+			guard let bestSettings = self.loc_bestSettings() else {
+				// No need to setup CLLocationManager, stop it.
+				self.locationSettings = nil
 				return
 			}
 			
-			// Check if we need to require user authorization to use location services
-			if try locationManager.requireAuthIfNeeded() == true {
-				// If requested, show the system modal and put any running request in `.waitingUserAuth` status
-				// then keep wait for any authorization status change
-				self.loc_setRequestState(.waitingUserAuth, forRequestsIn: [.running,.idle])
-				return
+			// Request authorizations if needed
+			if bestSettings.accuracy.accuracyRequireAuthorization == true {
+				// Check if device supports location services.
+				// If not dispatch the error to any running request and stop.
+				guard CLLocationManager.locationServicesEnabled() else {
+					locationObservers.forEach { $0.dispatchError(LocationError.serviceNotAvailable) }
+					return
+				}
+				
+				// Check if we need to require user authorization to use location services
+				if try locationManager.requireAuthIfNeeded() == true {
+					// If requested, show the system modal and put any running request in `.waitingUserAuth` status
+					// then keep wait for any authorization status change
+					self.loc_setRequestState(.waitingUserAuth, forRequestsIn: [.running,.idle])
+					return
+				}
 			}
 			
 			// If there is a request which needs background capabilities and we have not set it
@@ -342,12 +353,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Resume any paused request (a paused request is in `.waitingUserAuth`,`.paused` or `.failed`)
 			locationObservers.forEach { $0.resume() }
-			// Evaluate best accuracy,frequency and activity type based upon all queued requests
-			guard let bestSettings = self.loc_bestSettings() else {
-				// No need to setup CLLocationManager, stop it.
-				self.locationSettings = nil
-				return
-			}
+			
 			// Setup with best settings
 			self.locationSettings = bestSettings
 		} catch {
@@ -358,6 +364,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	/// Set the request's `state` for any queued requests which is in one the following states
+	///
+	/// - Parameters:
+	///   - newState: new state to set
+	///   - states: request's allowed state to be changed
 	private func loc_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
 		locationObservers.forEach {
 			if states.contains($0.state) {
@@ -396,7 +407,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				continue // request is not running, can be ignored
 			}
 			
-			if request.accuracy.rawValue < accuracy.rawValue {
+			if request.accuracy.orderValue < accuracy.orderValue {
 				accuracy = request.accuracy
 			}
 			if request.frequency < frequency {
@@ -414,7 +425,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	@objc func applicationDidEnterBackground() {
 		self.updateRequestStateAccordingToAppState(true)
-		self.background.start()
+		self.background.start(time: 10)
 		self.updateLocationServices()
 	}
 	
