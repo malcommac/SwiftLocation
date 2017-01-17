@@ -30,8 +30,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// Internal location manager reference
 	private var locationManager: CLLocationManager
 	
-	/// Queued rewquests regarding location services
+	/// Queued requests regarding location services
 	private var locationObservers: [LocationRequest] = []
+	
+	/// Queued requests regarding reverse geocoding services
+	private var reverseGeocoderObservers: [GeocoderRequest] = []
 	
 	/// This represent the status of the authorizations before a change
 	private var lastStatus: CLAuthorizationStatus = CLAuthorizationStatus.notDetermined
@@ -225,10 +228,79 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	/// Create and enque a new location tracking request
+	///
+	/// - Parameters:
+	///   - accuracy: accuracy of the location request (it may affect device's energy consumption)
+	///   - frequency: frequency of the location retrive process (it may affect device's energy consumption)
+	///   - timeout: optional timeout. If no location were found before timeout a `LocationError.timeout` error is reported.
+	///   - success: success handler to call when a new location were found for this request
+	///   - error: error handler to call when an error did occour while searching for request
+	/// - Returns: request
 	@discardableResult
 	public func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocationRequest.OnSuccessCallback, error: @escaping LocationRequest.OnErrorCallback) -> LocationRequest {
 		
 		let req = LocationRequest(accuracy: accuracy, frequency: frequency, success, error)
+		req.timeout = timeout
+		req.resume()
+		return req
+	}
+	
+	
+	/// Create and enqueue a new reverse geocoding request for an input address string
+	///
+	/// - Parameters:
+	///   - address: address string to reverse
+	///   - region: A geographical region to use as a hint when looking up the specified address.
+	///				Specifying a region lets you prioritize the returned set of results to locations that are close to some
+	///				specific geographical area, which is typically the user’s current location.
+	///   - timeout: timeout of the operation; nil to ignore timeout, a valid seconds interval. If reverse geocoding does not succeded or
+	///				 fail inside this time interval request fails with `LocationError.timeout` error and registered callbacks are called.
+	///
+	///   - success: success handler to call when reverse geocoding succeded
+	///   - failure: failure handler to call when reverse geocoding fails
+	/// - Returns: request
+	@discardableResult
+	public func getLocation(forString address: String, inRegion region: CLRegion? = nil, timeout: TimeInterval? = nil,
+	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+		let req = GeocoderRequest(address: address, region: region, success, failure)
+		req.timeout = timeout
+		req.resume()
+		return req
+	}
+	
+	
+	/// Create and enqueue a new reverse geocoding request for an instance of `CLLocation` object.
+	///
+	/// - Parameters:
+	///   - location: location to reverse
+	///   - timeout: timeout of the operation; nil to ignore timeout, a valid seconds interval. If reverse geocoding does not succeded or
+	///				 fail inside this time interval request fails with `LocationError.timeout` error and registered callbacks are called.
+	///   - success: success handler to call when reverse geocoding succeded
+	///   - failure: failure handler to call when reverse geocoding fails
+	/// - Returns: request
+	@discardableResult
+	public func getLocation(forLocation location: CLLocation, timeout: TimeInterval? = nil,
+	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+		let req = GeocoderRequest(location: location, success, failure)
+		req.timeout = timeout
+		req.resume()
+		return req
+	}
+	
+	
+	/// Create and enqueue a new reverse geocoding request for an Address Book `Dictionary` object.
+	///
+	/// - Parameters:
+	///   - dict: address book dictionary
+	///   - timeout: timeout of the operation; nil to ignore timeout, a valid seconds interval. If reverse geocoding does not succeded or
+	///				 fail inside this time interval request fails with `LocationError.timeout` error and registered callbacks are called.
+	///   - success: success handler to call when reverse geocoding succeded
+	///   - failure: failure handler to call when reverse geocoding fails
+	/// - Returns: request
+	public func getLocation(forABDictionary dict: [AnyHashable: Any], timeout: TimeInterval? = nil,
+	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+		let req = GeocoderRequest(abDictionary: dict, success, failure)
 		req.timeout = timeout
 		req.resume()
 		return req
@@ -244,12 +316,23 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		var hasChanges = false
 		for request in requests {
 			
+			// Location Requests
 			if let request = request as? LocationRequest {
-				request._state = .running
-				if self.isQueued(request) == true {
-					continue
+				let isAppInBackground = (UIApplication.shared.applicationState == .background)
+				let canStart = (isAppInBackground && request.isBackgroundRequest) || (!isAppInBackground && !request.isBackgroundRequest)
+				if canStart == true {
+					request._state = .running
+					if self.isQueued(request) == true { continue }
+					self.locationObservers.append(request)
+					hasChanges = true
 				}
-				self.locationObservers.append(request)
+			}
+			
+			// Geocoder Requests
+			if let request = request as? GeocoderRequest {
+				request._state = .running
+				if self.isQueued(request) == true { continue }
+				self.reverseGeocoderObservers.append(request)
 				hasChanges = true
 			}
 		}
@@ -271,8 +354,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				continue
 			}
 			
+			// Location Requests
 			if let request = request as? LocationRequest {
 				locationObservers.remove(at: locationObservers.index(of: request)!)
+				request._state = .paused
+				hasChanges = true
+			}
+			
+			// Geocoder requests
+			if let request = request as? GeocoderRequest {
+				locationObservers.remove(at: reverseGeocoderObservers.index(of: request)!)
 				request._state = .paused
 				hasChanges = true
 			}
@@ -281,6 +372,37 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		if hasChanges == true {
 			self.updateLocationServices()
 			requests.forEach { $0.onCancel() }
+		}
+	}
+	
+	/// Pause any passed queued reques
+	///
+	/// - Parameter requests: requests to pause
+	public func pause<T: Request>(_ requests: T...) {
+		var hasChanges = false
+		for request in requests {
+			if self.isQueued(request) == false { continue }
+			
+			if self.isQueued(request) && request.state.isRunning {
+				
+				// Location requests
+				if let request = request as? LocationRequest {
+					request._state = .paused
+					hasChanges = true
+				}
+				
+				// Geocoder requests
+				if let request = request as? GeocoderRequest {
+					locationObservers.remove(at: reverseGeocoderObservers.index(of: request)!)
+					request._state = .paused
+					hasChanges = true
+				}
+			}
+		}
+		
+		if hasChanges == true {
+			self.updateLocationServices()
+			requests.forEach { $0.onPause() }
 		}
 	}
 	

@@ -109,23 +109,16 @@ public class LocationRequest: Request {
 	///
 	/// - Returns: `true` if request has been started, `false` otherwise
 	@discardableResult
-	public func resume() -> Bool {
-		let isAppInBackground = (UIApplication.shared.applicationState == .background)
-		let canStart = (isAppInBackground && self.isBackgroundRequest) || (!isAppInBackground && !self.isBackgroundRequest)
-		guard canStart == true else {
-			return false // cannot be started
-		}
+	public func resume() {
 		Location.start(self)
-		return true
 	}
 	
 	/// Pause a running request.
 	///
 	/// - Returns: `true` if request is paused, `false` otherwise.
 	@discardableResult
-	public func pause() -> Bool {
-		self.onPause()
-		return true
+	public func pause() {
+		Location.pause(self)
 	}
 	
 	/// Cancel a running request and remove it from queue.
@@ -233,13 +226,9 @@ public class LocationRequest: Request {
 		}
 	}
 	
-	public func onPause() {
-		
-	}
+	public func onPause() { }
 	
-	public func onCancel() {
-		
-	}
+	public func onCancel() { }
 }
 
 public func ==(lhs: LocationRequest, rhs: LocationRequest) -> Bool {

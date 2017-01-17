@@ -47,8 +47,8 @@ public enum RequestState {
 /// Public Request Protocol
 public protocol Request: class, Hashable, Equatable {
 	
-	func resume() -> Bool
-	func pause() -> Bool
+	func resume()
+	func pause()
 	func cancel()
 	
 	func onResume()
