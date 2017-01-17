@@ -70,6 +70,7 @@ public enum LocationError: Error {
 	case authDidChange(_: CLAuthorizationStatus)
 	case timeout
 	case serviceNotAvailable
+	case requireAlwaysAuth
 	case backgroundModeNotSet
 	case noData
 	case invalidData

@@ -63,7 +63,8 @@ public class LocationRequest: Request {
 	/// Unique identifier of the request
 	private var identifier: String = NSUUID().uuidString
 	
-	/// `true` to remove from location queue the request itself if receive an error or timeout
+	/// `true` to remove from location queue the request itself if receive an error or timeout.
+	/// By default is `false`.
 	public var cancelOnError: Bool = false
 	
 	/// This represent the current state of the Request

@@ -28,7 +28,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/// Internal location manager reference
-	private var locationManager: CLLocationManager
+	internal var locationManager: CLLocationManager
 	
 	/// Queued requests regarding location services
 	private var locationObservers: [LocationRequest] = []
@@ -38,6 +38,9 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// Queued requests regarding heading services
 	private var headingObservers: [HeadingRequest] = []
+	
+	/// Queued requests regarding region monitor services
+	private var regionObservers: [RegionRequest] = []
 	
 	/// This represent the status of the authorizations before a change
 	private var lastStatus: CLAuthorizationStatus = CLAuthorizationStatus.notDetermined
@@ -220,6 +223,19 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	/// Asks whether the heading calibration alert should be displayed.
+	/// This method is called in an effort to calibrate the onboard hardware used to determine heading values.
+	/// Typically at the following times:
+	///  - The first time heading updates are ever requested
+	///  - When Core Location observes a significant change in magnitude or inclination of the observed magnetic field
+	///
+	/// If true from this method, Core Location displays the heading calibration alert on top of the current window.
+	/// The calibration alert prompts the user to move the device in a particular pattern so that Core Location can
+	/// distinguish between the Earth’s magnetic field and any local magnetic fields.
+	/// The alert remains visible until calibration is complete or until you explicitly dismiss it by calling the 
+	/// dismissHeadingCalibrationDisplay() method.
+	public var displayHeadingCalibration: Bool = true
+	
 	/// When `true` this property is a good way to improve battery life.
 	/// This function also scan for any running Request's `activityType` and see if location data is unlikely to change.
 	/// If yes (for example when user stops for food while using a navigation app) the location manager might pause updates
@@ -229,6 +245,28 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		didSet {
 			locationManager.pausesLocationUpdatesAutomatically = autoPauseUpdates
 		}
+	}
+	
+	/// The device orientation to use when computing heading values.
+	/// When computing heading values, the location manager assumes that the top of the device in portrait mode represents
+	/// due north (0 degrees) by default. For apps that run in other orientations, this may not always be the most convenient
+	/// orientation.
+	///
+	/// This property allows you to specify which device orientation you want the location manager to use as the reference
+	/// point for due north.
+	///
+	/// Although you can set the value of this property to unknown, faceUp, or faceDown, doing so has no effect on the
+	/// orientation reference point. The original reference point is retained instead.
+	/// Changing the value in this property affects only those heading values reported after the change is made.
+	public var headingOrientation: CLDeviceOrientation {
+		set { locationManager.headingOrientation = headingOrientation }
+		get { return locationManager.headingOrientation }
+	}
+	
+	/// You can use this method to dismiss it after an appropriate amount of time to ensure that your app’s user interface
+	/// is not unduly disrupted.
+	public func dismissHeadingCalibrationDisplay() {
+		locationManager.dismissHeadingCalibrationDisplay()
 	}
 	
 	/// Create and enque a new location tracking request
@@ -307,6 +345,19 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		req.timeout = timeout
 		req.resume()
 		return req
+	}
+	
+	
+	/// Allows you to receive heading update with a minimum filter degree
+	///
+	/// - Parameters:
+	///   - filter: The minimum angular change (measured in degrees) required to generate new heading events.
+	///   - success: succss handler
+	///   - failure: failure handler
+	/// - Returns: request
+	public func getHeading(filter: CLLocationDegrees,
+	                       success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) -> HeadingRequest {
+		return HeadingRequest(filter: filter, success: success, failure: failure)
 	}
 	
 	//MARK: Register/Unregister location requests
@@ -452,16 +503,109 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		return false
 	}
 	
+	//MARK: Internal Geofencing Manager Func
+	
+	internal func updateRegionMonitoringServices() {
+		// Region monitoring is not available for this hardware
+		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
+			self.regionObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
+			return
+		}
+		
+		// Region monitoring require always authorizaiton, if not generate error
+		guard CLLocationManager.locationUsage == .always else {
+			self.regionObservers.forEach { $0.dispatch(error: LocationError.requireAlwaysAuth) }
+			return
+		}
+		
+		do {
+			// Check if we need to require user authorization to use location services
+			if try locationManager.requireAuthIfNeeded() == true {
+				// If requested, show the system modal and put any running request in `.waitingUserAuth` status
+				// then keep wait for any authorization status change
+				self.region_setRequestState(.waitingUserAuth, forRequestsIn: [.running,.idle])
+				return
+			}
+			
+			let countRunning = regionObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
+			guard countRunning > 0 else {
+				// There is not any running request, we can stop monitoring all regions
+				locationManager.stopMonitoringAllRegions()
+				return
+			}
+			
+			// Monitor queued regions
+			regionObservers.forEach {
+				if $0.state.isRunning {
+					locationManager.startMonitoring(for: $0.region)
+				}
+			}
+		} catch {
+			regionObservers.forEach { $0.dispatch(error: error) }
+		}
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+		let region = self.regionObservers.filter { $0.region == region }.first
+		region?.onStartMonitoring?()
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+		let region = self.regionObservers.filter { $0.region == region }.first
+		region?.dispatch(error: error)
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+		let region = self.regionObservers.filter { $0.region == region }.first
+		region?.dispatch(event: .entered)
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+		let region = self.regionObservers.filter { $0.region == region }.first
+		region?.dispatch(event: .exited)
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+		let region = self.regionObservers.filter { $0.region == region }.first
+		region?.dispatch(state: state)
+	}
+	
 	//MARK: Internal Heading Manager Func
 	
 	internal func updateHeadingServices() {
+		// Heading service is not available on current hardware
+		guard CLLocationManager.headingAvailable() else {
+			self.headingObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
+			return
+		}
+		
 		let countRunning = headingObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
 		guard countRunning > 0 else {
 			// There is not any running request, we can stop location service to preserve battery.
 			locationManager.stopUpdatingHeading()
 			return
 		}
+		
+		// Find max accuracy in reporting heading and set it
+		var bestHeading: CLLocationDegrees = Double.infinity
+		for request in headingObservers {
+			guard let filter = request.filter else {
+				bestHeading = kCLHeadingFilterNone
+				break
+			}
+			bestHeading = min(bestHeading,filter)
+		}
+		locationManager.headingFilter = bestHeading
+		// Start
 		locationManager.startUpdatingHeading()
+	}
+	
+	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+		self.headingObservers.forEach { $0.dispatch(heading: newHeading) }
+	}
+	
+	public func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
+		return self.displayHeadingCalibration
 	}
 	
 	//MARK: Internal Location Manager Func
@@ -539,6 +683,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - states: request's allowed state to be changed
 	private func loc_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
 		locationObservers.forEach {
+			if states.contains($0.state) {
+				$0._state = newState
+			}
+		}
+	}
+	
+	private func region_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
+		regionObservers.forEach {
 			if states.contains($0.state) {
 				$0._state = newState
 			}
@@ -633,10 +785,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		switch status {
 		case .denied, .restricted:
 			locationObservers.forEach { $0.dispatch(error: LocationError.authDidChange(status)) }
+			regionObservers.forEach { $0.dispatch(error: LocationError.authDidChange(status)) }
+		
 			self.updateLocationServices()
+			self.updateRegionMonitoringServices()
 		case .authorizedAlways, .authorizedWhenInUse:
 			locationObservers.forEach { $0.resume() }
+			regionObservers.forEach { $0.resume() }
+			
 			self.updateLocationServices()
+			self.updateRegionMonitoringServices()
 		default:
 			break
 		}
@@ -644,6 +802,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
 		locationObservers.forEach { $0.dispatch(error: error) }
+		headingObservers.forEach { $0.dispatch(error: error) }
 	}
 	
 	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -652,7 +811,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			) else {
 				return
 		}
-		print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
+		//print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		self.lastLocation.set(location: location)
 		locationObservers.forEach { $0.dispatch(location: location) }
 	}

@@ -58,6 +58,9 @@ public class GeocoderRequest: Request {
 	/// Callbacks registered
 	public var registeredCallbacks: [GeocoderCallback] = []
 	
+	/// Remove queued request if an error has occurred. By default is `false`.
+	public var cancelOnError: Bool = false
+	
 	/// This represent the current state of the Request
 	internal var _previousState: RequestState = .idle
 	internal(set) var _state: RequestState = .idle {

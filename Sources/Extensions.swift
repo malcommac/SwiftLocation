@@ -45,3 +45,11 @@ public extension String {
 		Location.getLocation(forString: self, timeout: timeout, success: success, failure: failure)
 	}
 }
+
+public extension CLLocationManager {
+	
+	public func stopMonitoringAllRegions() {
+		self.monitoredRegions.forEach { self.stopMonitoring(for: $0) }
+	}
+	
+}
