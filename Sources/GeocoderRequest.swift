@@ -52,21 +52,47 @@ public class GeocoderRequest: Request {
 	/// Type of geocoding
 	private(set) var source: GeocoderSource
 	
+	/// Callback to call when request's state did change
+	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
+	
 	/// Callbacks registered
 	public var registeredCallbacks: [GeocoderCallback] = []
 	
 	/// This represent the current state of the Request
-	internal(set) var _state: RequestState = .idle
+	internal var _previousState: RequestState = .idle
+	internal(set) var _state: RequestState = .idle {
+		didSet {
+			if _previousState != _state {
+				onStateChange?(_previousState,_state)
+				_previousState = _state
+			}
+		}
+	}
 	public var state: RequestState {
 		get {
 			return self._state
 		}
 	}
 	
+	/// Set a valid interval to enable a timer. Timeout starts automatically
+	private var timeoutTimer: Timer?
 	public var timeout: TimeInterval? = nil {
 		didSet {
-			
+			timeoutTimer?.invalidate()
+			timeoutTimer = nil
+			guard let interval = self.timeout else {
+				return
+			}
+			self.timeoutTimer = Timer.scheduledTimer(timeInterval: interval,
+			                                         target: self,
+			                                         selector: #selector(timeoutTimerFired),
+			                                         userInfo: nil,
+			                                         repeats: false)
 		}
+	}
+	
+	@objc func timeoutTimerFired() {
+		self.dispatch(error: LocationError.timeout)
 	}
 	
 	/// Initialize a new geocoder request for an address string

@@ -36,6 +36,9 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// Queued requests regarding reverse geocoding services
 	private var reverseGeocoderObservers: [GeocoderRequest] = []
 	
+	/// Queued requests regarding heading services
+	private var headingObservers: [HeadingRequest] = []
+	
 	/// This represent the status of the authorizations before a change
 	private var lastStatus: CLAuthorizationStatus = CLAuthorizationStatus.notDetermined
 	
@@ -335,9 +338,19 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				self.reverseGeocoderObservers.append(request)
 				hasChanges = true
 			}
+			
+			// Heading requests
+			if let request = request as? HeadingRequest {
+				request._state = .running
+				if self.isQueued(request) == true { continue }
+				self.headingObservers.append(request)
+				hasChanges = true
+			}
+			
 		}
 		if hasChanges {
 			self.updateLocationServices()
+			self.updateHeadingServices()
 			requests.forEach { $0.onResume() }
 		}
 	}
@@ -357,20 +370,28 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Location Requests
 			if let request = request as? LocationRequest {
 				locationObservers.remove(at: locationObservers.index(of: request)!)
-				request._state = .paused
+				request._state = .idle
 				hasChanges = true
 			}
 			
 			// Geocoder requests
 			if let request = request as? GeocoderRequest {
 				locationObservers.remove(at: reverseGeocoderObservers.index(of: request)!)
-				request._state = .paused
+				request._state = .idle
+				hasChanges = true
+			}
+			
+			// Heading requests
+			if let request = request as? HeadingRequest {
+				headingObservers.remove(at: headingObservers.index(of: request)!)
+				request._state = .idle
 				hasChanges = true
 			}
 		}
 
 		if hasChanges == true {
 			self.updateLocationServices()
+			self.updateHeadingServices()
 			requests.forEach { $0.onCancel() }
 		}
 	}
@@ -393,7 +414,12 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				
 				// Geocoder requests
 				if let request = request as? GeocoderRequest {
-					locationObservers.remove(at: reverseGeocoderObservers.index(of: request)!)
+					request._state = .paused
+					hasChanges = true
+				}
+				
+				// Heading requests
+				if let request = request as? HeadingRequest {
 					request._state = .paused
 					hasChanges = true
 				}
@@ -402,6 +428,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		if hasChanges == true {
 			self.updateLocationServices()
+			self.updateHeadingServices()
 			requests.forEach { $0.onPause() }
 		}
 	}
@@ -412,10 +439,29 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Returns: `true` if request is in a queue, `false` otherwise
 	internal func isQueued<T: Request>(_ request: T?) -> Bool {
 		guard let request = request else { return false }
+		
+		// Location Request
 		if let request = request as? LocationRequest {
 			return locationObservers.contains(request)
 		}
+		
+		// Geocoder Request
+		if let request = request as? GeocoderRequest {
+			return reverseGeocoderObservers.contains(request)
+		}
 		return false
+	}
+	
+	//MARK: Internal Heading Manager Func
+	
+	internal func updateHeadingServices() {
+		let countRunning = headingObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
+		guard countRunning > 0 else {
+			// There is not any running request, we can stop location service to preserve battery.
+			locationManager.stopUpdatingHeading()
+			return
+		}
+		locationManager.startUpdatingHeading()
 	}
 	
 	//MARK: Internal Location Manager Func
@@ -446,7 +492,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				// Check if device supports location services.
 				// If not dispatch the error to any running request and stop.
 				guard CLLocationManager.locationServicesEnabled() else {
-					locationObservers.forEach { $0.dispatchError(LocationError.serviceNotAvailable) }
+					locationObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
 					return
 				}
 				
@@ -462,7 +508,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// If there is a request which needs background capabilities and we have not set it
 			// dispatch proper error.
 			if hasBackgroundRequests && CLLocationManager.isBackgroundUpdateEnabled == false {
-				locationObservers.forEach { $0.dispatchError(LocationError.backgroundModeNotSet) }
+				locationObservers.forEach { $0.dispatch(error: LocationError.backgroundModeNotSet) }
 				return
 			}
 			
@@ -482,7 +528,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Something went wrong, stop all...
 			self.locationSettings = nil
 			// ... and dispatch error to any request
-			locationObservers.forEach { $0.dispatchError(error) }
+			locationObservers.forEach { $0.dispatch(error: error) }
 		}
 	}
 	
@@ -586,7 +632,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		switch status {
 		case .denied, .restricted:
-			locationObservers.forEach { $0.dispatchError(LocationError.authDidChange(status)) }
+			locationObservers.forEach { $0.dispatch(error: LocationError.authDidChange(status)) }
 			self.updateLocationServices()
 		case .authorizedAlways, .authorizedWhenInUse:
 			locationObservers.forEach { $0.resume() }
@@ -597,7 +643,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	}
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		locationObservers.forEach { $0.dispatchError(error) }
+		locationObservers.forEach { $0.dispatch(error: error) }
 	}
 	
 	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -608,6 +654,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		self.lastLocation.set(location: location)
-		locationObservers.forEach { $0.dispatchLocation(location) }
+		locationObservers.forEach { $0.dispatch(location: location) }
 	}
 }

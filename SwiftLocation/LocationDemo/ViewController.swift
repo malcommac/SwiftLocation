@@ -48,14 +48,30 @@ class ViewController: UIViewController {
 		Location.start(req2)
 		Location.start(req3)
 */
-				
-		let req1 = LocationRequest(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .continuous, { location in
+		
+		
+		let req1 = LocationRequest(accuracy: .IPScan(IPService(.petabyet)), frequency: .continuous, { location in
 			print("loc \(location)")
 		}) { (lastLoc, error) in
 			print("error")
 		}
+		req1.onStateChange = { old,new in
+			print("\(old) --> \(new)")
+		}
 		Location.start(req1)
+
 		
+		/*
+		let req2 = GeocoderRequest(address: "Via Veneto 12, Rieti", { placemarks in
+			print("\(placemarks.count) placemarks found")
+		}) { error in
+			print("Error")
+		}
+		req2.onStateChange = { old,new in
+			print("\(old) --> \(new)")
+		}
+		Location.start(req2)
+*/
 	}
 
 	override func didReceiveMemoryWarning() {

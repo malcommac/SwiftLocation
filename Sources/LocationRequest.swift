@@ -54,7 +54,7 @@ public class LocationRequest: Request {
 	}
 	
 	@objc func timeoutTimerFired() {
-		self.dispatchError(LocationError.timeout)
+		self.dispatch(error: LocationError.timeout)
 	}
 	
 	private(set) var lastLocation: CLLocation?
@@ -67,12 +67,23 @@ public class LocationRequest: Request {
 	public var cancelOnError: Bool = false
 	
 	/// This represent the current state of the Request
-	internal(set) var _state: RequestState = .idle
+	internal var _previousState: RequestState = .idle
+	internal(set) var _state: RequestState = .idle {
+		didSet {
+			if _previousState != _state {
+				onStateChange?(_previousState,_state)
+				_previousState = _state
+			}
+		}
+	}
 	public var state: RequestState {
 		get {
 			return self._state
 		}
 	}
+	
+	/// Callback to call when request's state did change
+	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
 	/// Callbacks registered
 	public var registeredCallbacks: [LocCallback] = []
@@ -154,7 +165,7 @@ public class LocationRequest: Request {
 	/// and should be not modified.
 	///
 	/// - Parameter location: location received from system
-	internal func dispatchLocation(_ location: CLLocation?) {
+	internal func dispatch(location: CLLocation?) {
 		// if request is paused or location is nil we want to discard this event
 		guard self.state.isRunning, let loc = location else { return }
 		// if received location is not valid in accuracy we want to discard this event
@@ -201,7 +212,7 @@ public class LocationRequest: Request {
 	/// When an error is received if `cancelOnError` is `true` request is also removed from queue and transit to `failed` state.
 	///
 	/// - Parameter error: error received
-	internal func dispatchError(_ error: Error?) {
+	internal func dispatch(error: Error?) {
 		guard let error = error, self.state.isRunning else { return } // ignore if not running
 		// Alert callbacks
 		self.lastError = error
@@ -229,6 +240,21 @@ public class LocationRequest: Request {
 	public func onPause() { }
 	
 	public func onCancel() { }
+	
+	//MARK: IP Location Extensions
+	
+	internal func executeIPLocationRequest() {
+		guard case .IPScan(let service) = self.accuracy else {
+			return
+		}
+		service.getLocationFromIP(success: {
+			self.dispatch(location: $0)
+			self.cancel()
+		}) {
+			self.dispatch(error: $0)
+			self.cancel()
+		}
+	}
 }
 
 public func ==(lhs: LocationRequest, rhs: LocationRequest) -> Bool {
