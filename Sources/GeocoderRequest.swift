@@ -77,6 +77,10 @@ public class GeocoderRequest: Request {
 		}
 	}
 	
+	public var isBackgroundRequest: Bool {
+		return false
+	}
+	
 	/// Set a valid interval to enable a timer. Timeout starts automatically
 	private var timeoutTimer: Timer?
 	public var timeout: TimeInterval? = nil {
@@ -153,6 +157,10 @@ public class GeocoderRequest: Request {
 		return identifier.hash
 	}
 	
+	public var requiredAuth: Authorization {
+		return .none
+	}
+	
 	/// `true` if request is on location queue
 	internal var isInQueue: Bool {
 		return Location.isQueued(self) == true
@@ -217,7 +225,7 @@ public class GeocoderRequest: Request {
 	/// Dispatch error to any failure registered callback
 	///
 	/// - Parameter error: error to dispatch
-	private func dispatch(error: Error) {
+	public func dispatch(error: Error) {
 		self.registeredCallbacks.forEach {
 			if case .onErrorOccurred(let context, let handler) = $0 {
 				context.queue.async { handler(error) }

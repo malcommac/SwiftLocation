@@ -61,6 +61,14 @@ public class HeadingRequest: Request {
 		return Location.isQueued(self) == true
 	}
 	
+	public var requiredAuth: Authorization {
+		return .none
+	}
+	
+	public var isBackgroundRequest: Bool {
+		return false
+	}
+	
 	/// Initialize a new heading request
 	///
 	/// - Parameters:
@@ -83,7 +91,6 @@ public class HeadingRequest: Request {
 	}
 	
 	/// Resume a paused request or start it
-	@discardableResult
 	public func resume() {
 		Location.start(self)
 	}
@@ -91,7 +98,6 @@ public class HeadingRequest: Request {
 	/// Pause a running request.
 	///
 	/// - Returns: `true` if request is paused, `false` otherwise.
-	@discardableResult
 	public func pause() {
 		Location.pause(self)
 	}
@@ -138,7 +144,7 @@ public class HeadingRequest: Request {
 	/// Dispatch error to callbacks and remove request from queue if `cancelOnError` is `true`.
 	///
 	/// - Parameter error: error to dispatch
-	internal func dispatch(error: Error) {
+	public func dispatch(error: Error) {
 		self.registeredCallbacks.forEach {
 			if case .onErrorOccurred(let context, let handler) = $0 {
 				context.queue.async { handler(error) }

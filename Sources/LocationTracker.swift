@@ -31,51 +31,22 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	internal var locationManager: CLLocationManager
 	
 	/// Queued requests regarding location services
-	private var locationObservers: [LocationRequest] = []
+	private var locationsPool: RequestsPool<LocationRequest> = RequestsPool()
 	
 	/// Queued requests regarding reverse geocoding services
-	private var reverseGeocoderObservers: [GeocoderRequest] = []
+	private var geocodersPool: RequestsPool<GeocoderRequest> = RequestsPool()
 	
 	/// Queued requests regarding heading services
-	private var headingObservers: [HeadingRequest] = []
-	
+	private var headingPool: RequestsPool<HeadingRequest> = RequestsPool()
+
 	/// Queued requests regarding region monitor services
-	private var regionObservers: [RegionRequest] = []
+	private var regionPool: RequestsPool<RegionRequest> = RequestsPool()
 	
+	/// Queued requests regarding visits
+	private var visitsPool: RequestsPool<VisitsRequest> = RequestsPool()
+
 	/// This represent the status of the authorizations before a change
 	private var lastStatus: CLAuthorizationStatus = CLAuthorizationStatus.notDetermined
-	
-	/// `true` to listen for application's state change from background to foreground and viceversa
-	private var _listenForAppState: Bool = false
-	private var listenForAppState: Bool {
-		set {
-			func disableNotifications() {
-				 NotificationCenter.default.removeObserver(self)
-			}
-			func enableNotifications() {
-				let center = NotificationCenter.default
-				center.addObserver(self,
-				                   selector:  #selector(applicationDidEnterBackground),
-				                   name: NSNotification.Name.UIApplicationDidEnterBackground,
-				                   object: nil)
-				center.addObserver(self,
-				                   selector:  #selector(applicationDidBecomeActive),
-				                   name: NSNotification.Name.UIApplicationDidBecomeActive,
-				                   object: nil)
-			}
-			guard _listenForAppState != newValue else {
-				return
-			}
-			_listenForAppState = newValue
-			disableNotifications()
-			if newValue == true {
-				enableNotifications()
-			}
-		}
-		get {
-			return _listenForAppState
-		}
-	}
 	
 	/// This represent the last locations received (best accurated location and last received location)
 	private(set) var lastLocation = LastLocation()
@@ -167,7 +138,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		/// Description of the settings
 		public var description: String {
-			return "Settings:\n -Accuracy: \(accuracy)\n -Frequency:\(frequency)\n -Activity:\(activity)"
+			return "Settings:\n-Accuracy: \(accuracy)\n -Frequency:\(frequency)\n -Activity:\(activity)"
 		}
 		
 		/// Returns a Boolean value indicating whether two values are equal.
@@ -180,35 +151,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		///   - rhs: Another value to compare.
 		public static func ==(lhs: LocationTracker.Settings, rhs: LocationTracker.Settings) -> Bool {
 			return (lhs.accuracy.orderValue == rhs.accuracy.orderValue && lhs.frequency == rhs.frequency && lhs.activity == rhs.activity)
-		}
-	}
-	
-	private var background: BackgroundTask = BackgroundTask()
-	internal class BackgroundTask {
-		var task: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
-		var timer: Timer?
-		
-		func stop() {
-			timer?.invalidate()
-			UIApplication.shared.endBackgroundTask(self.task)
-		}
-		
-		func start(time: Double) {
-			self.task = UIApplication.shared.beginBackgroundTask(expirationHandler: {
-				self.start(time: 10)
-			})
-		}
-		
-		@objc private func startTrackingBg() {
-			let rm = UIApplication.shared.backgroundTimeRemaining
-			print("Call for location (rem=\(rm))")
-			Location.locationManager.requestLocation()
-			start(time: 10)
-		}
-		
-		
-		private func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
-			UIApplication.shared.endBackgroundTask(taskID)
 		}
 	}
 
@@ -371,14 +313,40 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - exit: callback for region exit event
 	///   - error: callback for errors
 	/// - Returns: request
+	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance,
 	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
 		return try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
 	}
 	
+	
+	/// Monitor a specified region
+	///
+	/// - Parameters:
+	///   - region: region to monitor
+	///   - enter: callback for region enter event
+	///   - exit: callback for region exit event
+	///   - error: callback for errors
+	///   - error: callback for errors
+	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	public func monitor(region: CLCircularRegion,
 	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
 		return try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
+	}
+	
+	
+	/// Calling this method begins the delivery of visit-related events to your app.
+	/// Enabling visit events for one location manager enables visit events for all other location manager objects in your app.
+	/// When a new visit event arrives callback is called and request still alive until removed.
+	/// This service require always authorization.
+	///
+	/// - Parameters:
+	///   - event: callback called when a new visit arrive
+	///   - error: callback called when an error occours
+	/// - Returns: request
+	/// - Throws: throw an exception if app does not support alway authorization
+	public func monitorVisit(event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws -> VisitsRequest {
+		return try VisitsRequest(event: event, error: error)
 	}
 	
 	//MARK: Register/Unregister location requests
@@ -397,34 +365,34 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				let canStart = (isAppInBackground && request.isBackgroundRequest) || (!isAppInBackground && !request.isBackgroundRequest)
 				if canStart == true {
 					request._state = .running
-					if self.isQueued(request) == true { continue }
-					self.locationObservers.append(request)
-					hasChanges = true
+					if locationsPool.add(request) {
+						hasChanges = true
+					}
 				}
 			}
 			
 			// Geocoder Requests
 			if let request = request as? GeocoderRequest {
 				request._state = .running
-				if self.isQueued(request) == true { continue }
-				self.reverseGeocoderObservers.append(request)
-				hasChanges = true
+				if geocodersPool.add(request) {
+					hasChanges = true
+				}
 			}
 			
 			// Heading requests
 			if let request = request as? HeadingRequest {
 				request._state = .running
-				if self.isQueued(request) == true { continue }
-				self.headingObservers.append(request)
-				hasChanges = true
+				if headingPool.add(request) {
+					hasChanges = true
+				}
 			}
 			
 			// Region Monitoring requests
 			if let request = request as? RegionRequest {
 				request._state = .running
-				if self.isQueued(request) == true { continue }
-				self.regionObservers.append(request)
-				hasChanges = true
+				if regionPool.add(request) {
+					hasChanges = true
+				}
 			}
 		}
 		if hasChanges {
@@ -447,21 +415,21 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Location Requests
 			if let request = request as? LocationRequest {
-				locationObservers.remove(at: locationObservers.index(of: request)!)
+				locationsPool.remove(request)
 				request._state = .idle
 				hasChanges = true
 			}
 			
 			// Geocoder requests
 			if let request = request as? GeocoderRequest {
-				locationObservers.remove(at: reverseGeocoderObservers.index(of: request)!)
+				geocodersPool.remove(request)
 				request._state = .idle
 				hasChanges = true
 			}
 			
 			// Heading requests
 			if let request = request as? HeadingRequest {
-				headingObservers.remove(at: headingObservers.index(of: request)!)
+				headingPool.remove(request)
 				request._state = .idle
 				hasChanges = true
 			}
@@ -469,7 +437,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Region Monitoring requests
 			if let request = request as? RegionRequest {
 				locationManager.stopMonitoring(for: request.region)
-				headingObservers.remove(at: regionObservers.index(of: request)!)
+				regionPool.remove(request)
 				request._state = .idle
 				hasChanges = true
 			}
@@ -524,11 +492,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	private func updateServicesStatus() {
-		self.updateLocationServices()
-		self.updateHeadingServices()
-		self.updateRegionMonitoringServices()
-	}
 	
 	/// Return `true` if target `request` is part of a queue.
 	///
@@ -539,125 +502,63 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		// Location Request
 		if let request = request as? LocationRequest {
-			return locationObservers.contains(request)
+			return locationsPool.isQueued(request)
 		}
 		
 		// Geocoder Request
 		if let request = request as? GeocoderRequest {
-			return reverseGeocoderObservers.contains(request)
+			return geocodersPool.isQueued(request)
 		}
 		
 		// Heading Request
 		if let request = request as? HeadingRequest {
-			return headingObservers.contains(request)
+			return headingPool.isQueued(request)
 		}
 		
 		// Region Request
 		if let request = request as? RegionRequest {
-			return regionObservers.contains(request)
+			return regionPool.isQueued(request)
 		}
 		return false
 	}
 	
-	//MARK: Internal Geofencing Manager Func
+	//MARK: CLLocationManager Visits Delegate
 	
-	internal func updateRegionMonitoringServices() {
-		// Region monitoring is not available for this hardware
-		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
-			self.regionObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
-			return
-		}
-		
-		// Region monitoring require always authorizaiton, if not generate error
-		guard CLLocationManager.locationUsage == .always else {
-			self.regionObservers.forEach { $0.dispatch(error: LocationError.requireAlwaysAuth) }
-			return
-		}
-		
-		do {
-			// Check if we need to require user authorization to use location services
-			if try locationManager.requireAuthIfNeeded() == true {
-				// If requested, show the system modal and put any running request in `.waitingUserAuth` status
-				// then keep wait for any authorization status change
-				self.region_setRequestState(.waitingUserAuth, forRequestsIn: [.running,.idle])
-				return
-			}
-			
-			let countRunning = regionObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
-			guard countRunning > 0 else {
-				// There is not any running request, we can stop monitoring all regions
-				locationManager.stopMonitoringAllRegions()
-				return
-			}
-			
-			// Monitor queued regions
-			regionObservers.forEach {
-				if $0.state.isRunning {
-					locationManager.startMonitoring(for: $0.region)
-				}
-			}
-		} catch {
-			regionObservers.forEach { $0.dispatch(error: error) }
-		}
+	public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+		self.visitsPool.dispatch(value: visit)
 	}
 	
+	//MARK: CLLocationManager Region Monitoring Delegate
+	
 	public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-		let region = self.regionObservers.filter { $0.region == region }.first
+		let region = self.regionPool.filter { $0.region == region }.first
 		region?.onStartMonitoring?()
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-		let region = self.regionObservers.filter { $0.region == region }.first
+		let region = self.regionPool.filter { $0.region == region }.first
 		region?.dispatch(error: error)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-		let region = self.regionObservers.filter { $0.region == region }.first
+		let region = self.regionPool.filter { $0.region == region }.first
 		region?.dispatch(event: .entered)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-		let region = self.regionObservers.filter { $0.region == region }.first
+		let region = self.regionPool.filter { $0.region == region }.first
 		region?.dispatch(event: .exited)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-		let region = self.regionObservers.filter { $0.region == region }.first
+		let region = self.regionPool.filter { $0.region == region }.first
 		region?.dispatch(state: state)
 	}
 	
 	//MARK: Internal Heading Manager Func
 	
-	internal func updateHeadingServices() {
-		// Heading service is not available on current hardware
-		guard CLLocationManager.headingAvailable() else {
-			self.headingObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
-			return
-		}
-		
-		let countRunning = headingObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
-		guard countRunning > 0 else {
-			// There is not any running request, we can stop location service to preserve battery.
-			locationManager.stopUpdatingHeading()
-			return
-		}
-		
-		// Find max accuracy in reporting heading and set it
-		var bestHeading: CLLocationDegrees = Double.infinity
-		for request in headingObservers {
-			guard let filter = request.filter else {
-				bestHeading = kCLHeadingFilterNone
-				break
-			}
-			bestHeading = min(bestHeading,filter)
-		}
-		locationManager.headingFilter = bestHeading
-		// Start
-		locationManager.startUpdatingHeading()
-	}
-	
 	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-		self.headingObservers.forEach { $0.dispatch(heading: newHeading) }
+		self.headingPool.dispatch(value: newHeading)
 	}
 	
 	public func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
@@ -666,119 +567,32 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	//MARK: Internal Location Manager Func
 	
-	/// Update location services based upon running Requests
-	internal func updateLocationServices() {
-		let hasBackgroundRequests = self.loc_hasBackgroundRequiredRequests()
-		self.listenForAppState = hasBackgroundRequests
-
-		let countRunning = locationObservers.reduce(0, { return $0 + ($1.state.isRunning ? 1 : 0) } )
-		guard countRunning > 0 else {
-			// There is not any running request, we can stop location service to preserve battery.
-			locationManager.stopUpdatingLocation()
-			locationManager.stopMonitoringSignificantLocationChanges()
-			return
-		}
-		
-		do {
-			// Evaluate best accuracy,frequency and activity type based upon all queued requests
-			guard let bestSettings = self.loc_bestSettings() else {
-				// No need to setup CLLocationManager, stop it.
-				self.locationSettings = nil
-				return
-			}
-			
-			// Request authorizations if needed
-			if bestSettings.accuracy.accuracyRequireAuthorization == true {
-				// Check if device supports location services.
-				// If not dispatch the error to any running request and stop.
-				guard CLLocationManager.locationServicesEnabled() else {
-					locationObservers.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
-					return
-				}
-				
-				// Check if we need to require user authorization to use location services
-				if try locationManager.requireAuthIfNeeded() == true {
-					// If requested, show the system modal and put any running request in `.waitingUserAuth` status
-					// then keep wait for any authorization status change
-					self.loc_setRequestState(.waitingUserAuth, forRequestsIn: [.running,.idle])
-					return
-				}
-			}
-			
-			// If there is a request which needs background capabilities and we have not set it
-			// dispatch proper error.
-			if hasBackgroundRequests && CLLocationManager.isBackgroundUpdateEnabled == false {
-				locationObservers.forEach { $0.dispatch(error: LocationError.backgroundModeNotSet) }
-				return
-			}
-			
-			// Everything is okay we can setup CLLocationManager based upon the most accuracted/most frequent
-			// Request queued and running.
-			
-			let isAppInBackground = (UIApplication.shared.applicationState == .background && CLLocationManager.isBackgroundUpdateEnabled)
-			self.locationManager.allowsBackgroundLocationUpdates = isAppInBackground
-			if isAppInBackground { self.autoPauseUpdates = false }
-			
-			// Resume any paused request (a paused request is in `.waitingUserAuth`,`.paused` or `.failed`)
-			locationObservers.forEach { $0.resume() }
-			
-			// Setup with best settings
-			self.locationSettings = bestSettings
-		} catch {
-			// Something went wrong, stop all...
-			self.locationSettings = nil
-			// ... and dispatch error to any request
-			locationObservers.forEach { $0.dispatch(error: error) }
-		}
-	}
-	
 	/// Set the request's `state` for any queued requests which is in one the following states
 	///
 	/// - Parameters:
 	///   - newState: new state to set
 	///   - states: request's allowed state to be changed
 	private func loc_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
-		locationObservers.forEach {
+		locationsPool.forEach {
 			if states.contains($0.state) {
 				$0._state = newState
 			}
 		}
-	}
-	
-	private func region_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
-		regionObservers.forEach {
-			if states.contains($0.state) {
-				$0._state = newState
-			}
-		}
-	}
-	
-	/// Return `true` if a running activity needs background capabilities, `false` otherwise
-	///
-	/// - Returns: boolean
-	private func loc_hasBackgroundRequiredRequests() -> Bool {
-		for request in self.locationObservers {
-			if request.isBackgroundRequest {
-				return true
-			}
-		}
-		return false
 	}
 	
 	/// Evaluate best settings based upon running location requests
 	///
 	/// - Returns: best settings
-	private func loc_bestSettings() -> Settings? {
-		guard locationObservers.count > 0 else {
+	private func locationTrackingBestSettings() -> Settings? {
+		guard locationsPool.countRunning > 0 else {
 			return nil // no settings, location manager can be disabled
 		}
 		
-		var accuracy: Accuracy = locationObservers.first!.accuracy
-		var frequency: Frequency = locationObservers.first!.frequency
-		var type: CLActivityType = locationObservers.first!.activity
+		var accuracy: Accuracy = .any
+		var frequency: Frequency = .significant
+		var type: CLActivityType = .other
 		
-		for i in 1 ..< locationObservers.count {
-			let request = locationObservers[i]
+		for request in locationsPool {
 			guard request.state.isRunning else {
 				continue // request is not running, can be ignored
 			}
@@ -796,69 +610,32 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 		return Settings(accuracy: accuracy, frequency: frequency, activity: type)
 	}
-	
-	//MARK: Application State
-	
-	@objc func applicationDidEnterBackground() {
-		self.updateRequestStateAccordingToAppState(true)
-		self.background.start(time: 10)
-		self.updateLocationServices()
-	}
-	
-	@objc func applicationDidBecomeActive() {
-		self.updateRequestStateAccordingToAppState(false)
-		self.background.stop()
-		self.updateLocationServices()
-	}
-	
-	/// Pause and Resume requests based upon their type (background/foreground based activities)
-	///
-	/// - Parameter isBackground: `true` if app is entering in background mode, `false` otherwise
-	private func updateRequestStateAccordingToAppState(_ isBackground: Bool) {
-		self.locationObservers.forEach {
-			if isBackground == true {
-				// when app is in background all foreground based request are paused
-				// while any background request is resumed.
-				if $0.isBackgroundRequest == false { $0.pause() }
-				else { $0.resume() }
-			} else {
-				// viceversa when app is in foreground all background-based activities are
-				// paused and foreground requests are resumed
-				if $0.isBackgroundRequest == true { $0.pause() }
-				else { $0.resume() }
-			}
-		}
-		// Then unpdate the location manager based upon current settings
-		self.updateLocationServices()
-	}
-	
-	//MARK: CLLocationManager Delegate
+
+	//MARK: CLLocationManager Location Tracking Delegate
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		locationObservers.forEach { $0.dispatchAuthChange(self.lastStatus, status) }
+		locationsPool.forEach { $0.dispatchAuthChange(self.lastStatus, status) }
 		self.lastStatus = status
 		
 		switch status {
 		case .denied, .restricted:
-			locationObservers.forEach { $0.dispatch(error: LocationError.authDidChange(status)) }
-			regionObservers.forEach { $0.dispatch(error: LocationError.authDidChange(status)) }
-		
+			let error = LocationError.authDidChange(status)
+			visitsPool.dispatch(error: error)
+			regionPool.dispatch(error: error)
+			locationsPool.dispatch(error: error)
+			
 			self.updateLocationServices()
 			self.updateRegionMonitoringServices()
 		case .authorizedAlways, .authorizedWhenInUse:
-			locationObservers.forEach { $0.resume() }
-			regionObservers.forEach { $0.resume() }
+			locationsPool.forEach { $0.resume() }
+			regionPool.forEach { $0.resume() }
+			visitsPool.forEach { $0.resume() }
 			
 			self.updateLocationServices()
 			self.updateRegionMonitoringServices()
 		default:
 			break
 		}
-	}
-	
-	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		locationObservers.forEach { $0.dispatch(error: error) }
-		headingObservers.forEach { $0.dispatch(error: error) }
 	}
 	
 	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -869,6 +646,206 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		//print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		self.lastLocation.set(location: location)
-		locationObservers.forEach { $0.dispatch(location: location) }
+		locationsPool.forEach { $0.dispatch(location: location) }
+	}
+	
+	//MARK: CLLocationManager Error Delegate
+	
+	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+		locationsPool.dispatch(error: error)
+		headingPool.dispatch(error: error)
+		visitsPool.dispatch(error: error)
+		regionPool.dispatch(error: error)
+	}
+	
+	//MARK: Update Services Status
+	
+	
+	/// Update services (turn on/off hardware) based upon running requests
+	private func updateServicesStatus() {
+		let pools = self.pools
+		
+		func updateAllServices() {
+			self.updateLocationServices()
+			self.updateHeadingServices()
+			self.updateRegionMonitoringServices()
+			self.updateVisitsServices()
+		}
+		
+		do {
+			// Check if we need to ask for authorization based upon currently running requests
+			guard try self.requireAuthorizationIfNeeded() == false else {
+				return
+			}
+			// Otherwise we can continue
+			updateAllServices()
+		} catch {
+			// Something went wrong, stop all...
+			self.locationSettings = nil
+			// Dispatch error
+			pools.forEach { $0.dispatch(error: error) }
+		}
+	}
+	
+	private var pools: [RequestPoolProtocol] {
+		let pools: [RequestPoolProtocol] = [locationsPool, regionPool, visitsPool,geocodersPool,headingPool]
+		return pools
+	}
+	
+	private func requireAuthorizationIfNeeded() throws -> Bool {
+		func pauseAllRunningRequest() {
+			// Mark running requests as pending
+			pools.forEach { $0.set(.waitingUserAuth, forRequestsIn: [.running,.idle]) }
+		}
+		
+		// This is the authorization keys set in Info.plist
+		let plistAuth = CLLocationManager.appAuthorization
+		// Get the max authorization between all running request
+		let requiredAuth = self.pools.map({ $0.requiredAuthorization }).reduce(.none, { $0 < $1 ? $0 : $1 })
+		// This is the current authorization of CLLocationManager
+		let currentAuth = LocAuth.status
+		
+		switch currentAuth {
+		case .denied,.disabled, .restricted:
+			// Authorization was explicity disabled
+			throw LocationError.authorizationDenided
+		default:
+			if requiredAuth == .always && currentAuth == .inUseAuthorized {
+				// We need always authorization but we have in-use authorization
+				if plistAuth != .always && plistAuth != .both { // we have not set the correct plist key to support this auth
+					throw LocationError.missingAuthInInfoPlist
+				}
+				// Okay we can require it
+				pauseAllRunningRequest()
+				locationManager.requestAlwaysAuthorization()
+				return true
+			}
+			if requiredAuth == .inuse && currentAuth == .undetermined {
+				// We have not set not always or in-use auth plist so we can continue
+				if plistAuth != .inuse && plistAuth != .both {
+					throw LocationError.missingAuthInInfoPlist
+				}
+				// require in use authorization
+				pauseAllRunningRequest()
+				locationManager.requestWhenInUseAuthorization()
+				return true
+			}
+		}
+		// We have enough rights to continue without requiring auth
+		return false
+	}
+	
+	/// Update visiting services
+	internal func updateVisitsServices() {
+		guard visitsPool.countRunning > 0 else {
+			// There is not any running request, we can stop monitoring all regions
+			locationManager.stopMonitoringVisits()
+			return
+		}
+		locationManager.startMonitoringVisits()
+	}
+	
+	/// Update location services based upon running Requests
+	internal func updateLocationServices() {
+		let hasBackgroundRequests = locationsPool.hasBackgroundRequests()
+		
+		guard locationsPool.countRunning > 0 else {
+			// There is not any running request, we can stop location service to preserve battery.
+			locationManager.stopUpdatingLocation()
+			locationManager.stopMonitoringSignificantLocationChanges()
+			return
+		}
+		
+		// Evaluate best accuracy,frequency and activity type based upon all queued requests
+		guard let bestSettings = self.locationTrackingBestSettings() else {
+			// No need to setup CLLocationManager, stop it.
+			self.locationSettings = nil
+			return
+		}
+		
+		// Request authorizations if needed
+		if bestSettings.accuracy.accuracyRequireAuthorization == true {
+			// Check if device supports location services.
+			// If not dispatch the error to any running request and stop.
+			guard CLLocationManager.locationServicesEnabled() else {
+				locationsPool.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
+				return
+			}
+		}
+		
+		// If there is a request which needs background capabilities and we have not set it
+		// dispatch proper error.
+		if hasBackgroundRequests && CLLocationManager.isBackgroundUpdateEnabled == false {
+			locationsPool.forEach { $0.dispatch(error: LocationError.backgroundModeNotSet) }
+			return
+		}
+		
+		// Everything is okay we can setup CLLocationManager based upon the most accuracted/most frequent
+		// Request queued and running.
+		
+		let isAppInBackground = (UIApplication.shared.applicationState == .background && CLLocationManager.isBackgroundUpdateEnabled)
+		self.locationManager.allowsBackgroundLocationUpdates = isAppInBackground
+		if isAppInBackground { self.autoPauseUpdates = false }
+		
+		// Resume any paused request (a paused request is in `.waitingUserAuth`,`.paused` or `.failed`)
+		locationsPool.forEach { $0.resume() }
+		
+		// Setup with best settings
+		self.locationSettings = bestSettings
+	}
+	
+	
+	internal func updateRegionMonitoringServices() {
+		// Region monitoring is not available for this hardware
+		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
+			regionPool.dispatch(error: LocationError.serviceNotAvailable)
+			return
+		}
+		
+		// Region monitoring require always authorizaiton, if not generate error
+		guard CLLocationManager.appAuthorization == .always else {
+			regionPool.dispatch(error: LocationError.requireAlwaysAuth)
+			return
+		}
+		
+		guard regionPool.countRunning > 0 else {
+			// There is not any running request, we can stop monitoring all regions
+			locationManager.stopMonitoringAllRegions()
+			return
+		}
+		
+		// Monitor queued regions
+		regionPool.forEach {
+			if $0.state.isRunning {
+				locationManager.startMonitoring(for: $0.region)
+			}
+		}
+	}
+	
+	internal func updateHeadingServices() {
+		// Heading service is not available on current hardware
+		guard CLLocationManager.headingAvailable() else {
+			self.headingPool.dispatch(error: LocationError.serviceNotAvailable)
+			return
+		}
+		
+		guard headingPool.countRunning > 0 else {
+			// There is not any running request, we can stop location service to preserve battery.
+			locationManager.stopUpdatingHeading()
+			return
+		}
+		
+		// Find max accuracy in reporting heading and set it
+		var bestHeading: CLLocationDegrees = Double.infinity
+		for request in headingPool {
+			guard let filter = request.filter else {
+				bestHeading = kCLHeadingFilterNone
+				break
+			}
+			bestHeading = min(bestHeading,filter)
+		}
+		locationManager.headingFilter = bestHeading
+		// Start
+		locationManager.startUpdatingHeading()
 	}
 }

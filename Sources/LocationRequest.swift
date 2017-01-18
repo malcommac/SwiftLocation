@@ -145,12 +145,21 @@ public class LocationRequest: Request {
 	}
 	
 	/// `true` if request works in background app state
-	internal var isBackgroundRequest: Bool {
+	public var isBackgroundRequest: Bool {
 		switch self.frequency {
 		case .whenTravelled(_,_):
 			return true
 		default:
 			return false
+		}
+	}
+	
+	public var requiredAuth: Authorization {
+		switch self.frequency {
+		case .whenTravelled(_,_):
+			return .always
+		default:
+			return .inuse
 		}
 	}
 	
@@ -213,8 +222,8 @@ public class LocationRequest: Request {
 	/// When an error is received if `cancelOnError` is `true` request is also removed from queue and transit to `failed` state.
 	///
 	/// - Parameter error: error received
-	internal func dispatch(error: Error?) {
-		guard let error = error, self.state.isRunning else { return } // ignore if not running
+	public func dispatch(error: Error) {
+		guard self.state.isRunning else { return } // ignore if not running
 		// Alert callbacks
 		self.lastError = error
 		self.registeredCallbacks.forEach {
@@ -252,7 +261,7 @@ public class LocationRequest: Request {
 			self.dispatch(location: $0)
 			self.cancel()
 		}) {
-			self.dispatch(error: $0)
+			self.dispatch(error: $0!)
 			self.cancel()
 		}
 	}

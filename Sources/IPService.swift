@@ -88,9 +88,9 @@ public struct IPService: CustomStringConvertible {
 					return
 				}
 				guard	let latitude = json.value(forKey: "latitude") as? CLLocationDegrees,
-					let longitude = json.value(forKey: "longitude") as? CLLocationDegrees else {
-						fail(LocationError.noData)
-						return
+						let longitude = json.value(forKey: "longitude") as? CLLocationDegrees else {
+					fail(LocationError.noData)
+					return
 				}
 				let loc = CLLocation(latitude: latitude, longitude: longitude)
 				success(loc)

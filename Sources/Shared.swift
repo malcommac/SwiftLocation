@@ -10,7 +10,6 @@ import Foundation
 import MapKit
 import CoreLocation
 
-
 /// This represent the state of a request
 ///
 /// - idle: an idle request is not part of the main location queue. It's the initial state of a request before.
@@ -56,6 +55,12 @@ public protocol Request: class, Hashable, Equatable {
 	func onCancel()
 	
 	var state: RequestState { get }
+	
+	var requiredAuth: Authorization { get }
+	
+	var isBackgroundRequest: Bool { get }
+	
+	func dispatch(error: Error)
 }
 
 /// Location errors
@@ -71,14 +76,17 @@ public enum LocationError: Error {
 	case timeout
 	case serviceNotAvailable
 	case requireAlwaysAuth
+	case authorizationDenided
 	case backgroundModeNotSet
 	case noData
 	case invalidData
+	case other(_: String)
 }
 
-public enum Usage {
+public enum Authorization : CustomStringConvertible, Comparable, Equatable {
 	case always
 	case inuse
+	case both
 	case none
 	
 	public var rawValue: String {
@@ -90,6 +98,44 @@ public enum Usage {
 		default:
 			return ""
 		}
+	}
+	
+	private var order: Int {
+		switch self {
+		case .both:		return 0
+		case .always:	return 1
+		case .inuse:	return 2
+		case .none:		return 3
+		}
+	}
+	
+	public var description: String {
+		switch self {
+		case .both:		return "Both"
+		case .always:	return "Always"
+		case .inuse:	return "When In Use"
+		case .none:		return "None"
+		}
+	}
+	
+	public static func <(lhs: Authorization, rhs: Authorization) -> Bool {
+		return lhs.order < rhs.order
+	}
+	
+	public static func <=(lhs: Authorization, rhs: Authorization) -> Bool {
+		return lhs.order <= rhs.order
+	}
+	
+	public static func >(lhs: Authorization, rhs: Authorization) -> Bool {
+		return lhs.order > rhs.order
+	}
+	
+	public static func >=(lhs: Authorization, rhs: Authorization) -> Bool {
+		return lhs.order >= rhs.order
+	}
+	
+	public static func ==(lhs: Authorization, rhs: Authorization) -> Bool {
+		return lhs.order == rhs.order
 	}
 }
 
@@ -126,15 +172,24 @@ public enum LocAuth {
 
 public extension CLLocationManager {
 	
-	public static var locationUsage: Usage {
+	public static var appAuthorization: Authorization {
 		let app = Bundle.main
-		if let _ = app.object(forInfoDictionaryKey: Usage.always.rawValue) {
-			return Usage.always
+		var isAlways = false
+		var isWhenInUse = false
+		if let _ = app.object(forInfoDictionaryKey: Authorization.always.rawValue) {
+			isAlways = true
 		}
-		if let _ = app.object(forInfoDictionaryKey: Usage.inuse.rawValue) {
-			return Usage.inuse
+		if let _ = app.object(forInfoDictionaryKey: Authorization.inuse.rawValue) {
+			isWhenInUse = true
 		}
-		return Usage.none
+		
+		if isWhenInUse && isAlways {
+			return .both
+		} else {
+			if isWhenInUse { return .inuse }
+			else if isAlways { return .always }
+			return .none
+		}
 	}
 	
 	public static var isBackgroundUpdateEnabled: Bool {
@@ -146,17 +201,4 @@ public extension CLLocationManager {
 		return false
 	}
 
-	
-	public func requireAuthIfNeeded() throws -> Bool {
-		if LocAuth.isAuthorized == true { return false }
-		switch CLLocationManager.locationUsage {
-		case .always:
-			self.requestAlwaysAuthorization()
-		case .inuse:
-			self.requestWhenInUseAuthorization()
-		case .none:
-			throw LocationError.missingAuthInInfoPlist
-		}
-		return true
-	}
 }

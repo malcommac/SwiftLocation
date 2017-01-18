@@ -59,9 +59,18 @@ class ViewController: UIViewController {
 		req1.onStateChange = { old,new in
 			print("\(old) --> \(new)")
 		}
-		Location.start(req1)
 
 		
+		let req4 = LocationRequest(accuracy: .country, frequency: .continuous, { loc in
+			print("loc \(loc)")
+		}) { lastLoc, error in
+			print("error \(error)")
+		}
+		req4.onStateChange = { old,new in
+			print("\(old) --> \(new)")
+		}
+		Location.start(req1,req4)
+
 		/*
 		let req2 = GeocoderRequest(address: "Via Veneto 12, Rieti", { placemarks in
 			print("\(placemarks.count) placemarks found")
