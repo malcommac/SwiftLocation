@@ -376,6 +376,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		return try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
 	}
 	
+	public func monitor(region: CLCircularRegion,
+	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+		return try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
+	}
+	
 	//MARK: Register/Unregister location requests
 	
 	/// Register a new request and enqueue it

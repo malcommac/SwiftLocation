@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftLocation
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -72,6 +73,7 @@ class ViewController: UIViewController {
 		}
 		Location.start(req2)
 */
+		
 	}
 
 	override func didReceiveMemoryWarning() {

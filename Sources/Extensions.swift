@@ -40,9 +40,10 @@ public extension String {
 	///					However, forward-geocoding requests may return multiple placemark objects in situations where
 	///					the specified address could not be resolved to a single location.
 	///   - failure:	callback to execute on failure
+	@discardableResult
 	public func reverse(timeout: TimeInterval? = nil,
-	                    _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError ) {
-		Location.getLocation(forString: self, timeout: timeout, success: success, failure: failure)
+	                    _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError ) -> GeocoderRequest {
+		return Location.getLocation(forString: self, timeout: timeout, success: success, failure: failure)
 	}
 }
 
@@ -51,5 +52,21 @@ public extension CLLocationManager {
 	public func stopMonitoringAllRegions() {
 		self.monitoredRegions.forEach { self.stopMonitoring(for: $0) }
 	}
+	
+	public class func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocationRequest.OnSuccessCallback, error: @escaping LocationRequest.OnErrorCallback) -> LocationRequest {
+		return Location.getLocation(accuracy: accuracy, frequency: frequency, timeout: timeout, success: success, error: error)
+	}
+	
+}
+
+public extension CLCircularRegion {
+	
+	@discardableResult
+	public func monitor(enter: RegionCallback.onEvent?,
+	                    exit: RegionCallback.onEvent?,
+	                    error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+		return try Location.monitor(region: self, enter: enter, exit: exit, error: error)
+	}
+
 	
 }

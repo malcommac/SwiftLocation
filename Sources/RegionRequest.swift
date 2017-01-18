@@ -93,6 +93,18 @@ public class RegionRequest: Request {
 		return identifier.hash
 	}
 	
+	public init(region: CLCircularRegion,
+	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
+		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
+			throw LocationError.serviceNotAvailable
+		}
+		
+		self.region = region
+		if enter != nil { self.add(callback: .onEnter(.main, enter!)) }
+		if exit != nil { self.add(callback: .onExit(.main, exit!)) }
+		if error != nil { self.add(callback: .onError(.main, error!)) }
+	}
+	
 	public init(center: CLLocationCoordinate2D, radius: CLLocationDistance,
 	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
 		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
