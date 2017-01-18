@@ -414,10 +414,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				hasChanges = true
 			}
 			
+			// Region Monitoring requests
+			if let request = request as? RegionRequest {
+				request._state = .running
+				if self.isQueued(request) == true { continue }
+				self.regionObservers.append(request)
+				hasChanges = true
+			}
 		}
 		if hasChanges {
-			self.updateLocationServices()
-			self.updateHeadingServices()
+			self.updateServicesStatus()
 			requests.forEach { $0.onResume() }
 		}
 	}
@@ -454,11 +460,18 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				request._state = .idle
 				hasChanges = true
 			}
+			
+			// Region Monitoring requests
+			if let request = request as? RegionRequest {
+				locationManager.stopMonitoring(for: request.region)
+				headingObservers.remove(at: regionObservers.index(of: request)!)
+				request._state = .idle
+				hasChanges = true
+			}
 		}
 
 		if hasChanges == true {
-			self.updateLocationServices()
-			self.updateHeadingServices()
+			self.updateServicesStatus()
 			requests.forEach { $0.onCancel() }
 		}
 	}
@@ -490,14 +503,26 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 					request._state = .paused
 					hasChanges = true
 				}
+				
+				// Region Monitoring requests
+				if let request = request as? RegionRequest {
+					locationManager.stopMonitoring(for: request.region)
+					request._state = .paused
+					hasChanges = true
+				}
 			}
 		}
 		
 		if hasChanges == true {
-			self.updateLocationServices()
-			self.updateHeadingServices()
+			self.updateServicesStatus()
 			requests.forEach { $0.onPause() }
 		}
+	}
+	
+	private func updateServicesStatus() {
+		self.updateLocationServices()
+		self.updateHeadingServices()
+		self.updateRegionMonitoringServices()
 	}
 	
 	/// Return `true` if target `request` is part of a queue.
@@ -515,6 +540,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// Geocoder Request
 		if let request = request as? GeocoderRequest {
 			return reverseGeocoderObservers.contains(request)
+		}
+		
+		// Heading Request
+		if let request = request as? HeadingRequest {
+			return headingObservers.contains(request)
+		}
+		
+		// Region Request
+		if let request = request as? RegionRequest {
+			return regionObservers.contains(request)
 		}
 		return false
 	}
