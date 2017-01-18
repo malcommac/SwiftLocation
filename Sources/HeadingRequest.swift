@@ -68,7 +68,10 @@ public class HeadingRequest: Request {
 	///   - success: handler called to receive new heading measures
 	///   - failure: handler called to receive errors
 	public init(filter: CLLocationDegrees? = nil,
-	            success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) {
+	            success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws {
+		guard CLLocationManager.headingAvailable() else {
+			throw LocationError.serviceNotAvailable
+		}
 		self.filter = filter
 		self.add(callback: HeadingCallback.onReceivedHeading(.main, success))
 		self.add(callback: HeadingCallback.onErrorOccurred(.main, failure))

@@ -11,12 +11,12 @@ import CoreLocation
 import MapKit
 
 public enum RegionCallback {
-	public typealias Success = ((Void) -> (Void))
-	public typealias Failure = ((Error) -> (Void))
+	public typealias onEvent = ((Void) -> (Void))
+	public typealias onFailure = ((Error) -> (Void))
 	
-	case onEnter(_: Context, _: Success)
-	case onExit(_: Context, _: Success)
-	case onError(_: Context, _: Failure)
+	case onEnter(_: Context, _: onEvent)
+	case onExit(_: Context, _: onEvent)
+	case onError(_: Context, _: onFailure)
 	
 	internal var isEnterEvent: Bool {
 		switch self {
@@ -94,7 +94,11 @@ public class RegionRequest: Request {
 	}
 	
 	public init(center: CLLocationCoordinate2D, radius: CLLocationDistance,
-	            onEnter enter: RegionCallback.Success?, onExit exit: RegionCallback.Success?, error: RegionCallback.Failure?) {
+	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
+		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
+			throw LocationError.serviceNotAvailable
+		}
+		
 		self.region = CLCircularRegion(center: center, radius: radius, identifier: self.identifier)
 		if enter != nil { self.add(callback: .onEnter(.main, enter!)) }
 		if exit != nil { self.add(callback: .onExit(.main, exit!)) }

@@ -356,8 +356,24 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - failure: failure handler
 	/// - Returns: request
 	public func getHeading(filter: CLLocationDegrees,
-	                       success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) -> HeadingRequest {
-		return HeadingRequest(filter: filter, success: success, failure: failure)
+	                       success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws -> HeadingRequest {
+		return try HeadingRequest(filter: filter, success: success, failure: failure)
+	}
+	
+	
+	/// Monitor a geographic region identified by a center coordinate and a radius.
+	/// Region monitoring
+	///
+	/// - Parameters:
+	///   - center: coordinate center
+	///   - radius: radius in meters
+	///   - enter: callback for region enter event
+	///   - exit: callback for region exit event
+	///   - error: callback for errors
+	/// - Returns: request
+	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance,
+	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+		return try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
 	}
 	
 	//MARK: Register/Unregister location requests
