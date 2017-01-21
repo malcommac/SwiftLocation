@@ -109,7 +109,6 @@ public class LocationRequest: Request {
 		if error != nil {
 			self.registeredCallbacks.append(LocCallback.onErrorOccurred(.main, error!))
 		}
-		self._state = (self.isBackgroundRequest ? .paused : .idle)
 	}
 	
 	/// Resume a paused request or add a new request in queue and start it.
@@ -139,7 +138,7 @@ public class LocationRequest: Request {
 	/// `true` if request works in background app state
 	public var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .whenTravelled(_,_):
+		case .whenTravelled(_,_), .significant:
 			return true
 		default:
 			return false
@@ -151,7 +150,7 @@ public class LocationRequest: Request {
 			return .none
 		}
 		switch self.frequency {
-		case .whenTravelled(_,_):
+		case .whenTravelled(_,_), .significant:
 			return .always
 		default:
 			return .inuse

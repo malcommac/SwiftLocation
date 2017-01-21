@@ -392,14 +392,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Location Requests
 			if let request = request as? LocationRequest {
-				let isAppInBackground = (UIApplication.shared.applicationState == .background)
-				let canStart = (isAppInBackground && request.isBackgroundRequest) || (!isAppInBackground && !request.isBackgroundRequest)
-				if canStart == true {
+			//	let isAppInBackground = (UIApplication.shared.applicationState == .background)
+			//	let canStart = (isAppInBackground && request.isBackgroundRequest) || (!isAppInBackground && !request.isBackgroundRequest)
+			//	if canStart == true {
 					request._state = .running
 					if locationsPool.add(request) {
 						hasChanges = true
 					}
-				}
+			//	}
 			}
 			
 			// Geocoder Requests
@@ -736,6 +736,9 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// This is the current authorization of CLLocationManager
 		let currentAuth = LocAuth.status
 		
+		print("Required auth is \(requiredAuth)")
+		print("Current auth is \(currentAuth)")
+		
 		if requiredAuth == .none {
 			// No authorization are needed
 			return false
@@ -746,7 +749,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Authorization was explicity disabled
 			throw LocationError.authorizationDenided
 		default:
-			if requiredAuth == .always && currentAuth == .inUseAuthorized {
+			if requiredAuth == .always && (currentAuth == .inUseAuthorized || currentAuth == .undetermined) {
 				// We need always authorization but we have in-use authorization
 				if plistAuth != .always && plistAuth != .both { // we have not set the correct plist key to support this auth
 					throw LocationError.missingAuthInInfoPlist

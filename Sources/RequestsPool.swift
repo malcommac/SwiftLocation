@@ -183,7 +183,8 @@ internal class RequestsPool<T: Request> : RequestsPoolProtocol, Sequence {
 	/// Return the minimum allowed authorization we should require to allow
 	/// currently queued and running requests
 	public var requiredAuthorization: Authorization {
-		return list.reduce(.none) { $0 < $1.requiredAuth ? $0 : $1.requiredAuth }
+		let auth = list.reduce(.none) { $0 < $1.requiredAuth ? $0 : $1.requiredAuth }
+		return auth
 	}
 	
 	var description: String {
