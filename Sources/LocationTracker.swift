@@ -129,6 +129,18 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			locationManager.activityType = settings.activity // activity type (used to better preserve battery based upon activity)
 			locationManager.desiredAccuracy = settings.accuracy.meters // accuracy (used to preserve battery based upon update frequency)
 			
+			func deferredLocationSettings() -> (meters: Double, timeout: TimeInterval)? {
+				var meters: Double? = nil
+				var timeout: TimeInterval? = nil
+				self.locationsPool.forEach {
+					if case let .whenTravelled(rMt,rTime) = $0.frequency {
+						if meters == nil || (rMt < meters!) { meters = rMt }
+						if timeout == nil || (rTime < timeout!) { timeout = rTime }
+					}
+				}
+				return (meters == nil ? nil : (meters!,timeout!))
+			}
+			
 			switch settings.frequency {
 			case .significant:
 				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
@@ -139,7 +151,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				locationManager.stopUpdatingLocation()
 				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.startMonitoringSignificantLocationChanges()
-				locationManager.disallowDeferredLocationUpdates()
 			case .whenTravelled(let meters, let timeout):
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.allowsBackgroundLocationUpdates = true
@@ -149,6 +160,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.allowsBackgroundLocationUpdates = false
 				locationManager.startUpdatingLocation()
+				locationManager.disallowDeferredLocationUpdates()
+			}
+			
+			// Turn on/off deferred location updates
+			if let deferredSettings = deferredLocationSettings() {
+				locationManager.allowDeferredLocationUpdates(untilTraveled: deferredSettings.meters,
+				                                             timeout: deferredSettings.timeout)
+			} else {
 				locationManager.disallowDeferredLocationUpdates()
 			}
 		}

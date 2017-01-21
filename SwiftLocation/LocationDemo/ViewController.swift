@@ -19,6 +19,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 	private var rq_ipscan: LocationRequest?
 	private var rq_oneshot: LocationRequest?
 	private var rq_background: LocationRequest?
+	private var rq_backgroundTravelled: LocationRequest?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -43,7 +44,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return 6
+		return 7	
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -70,6 +71,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			cell?.textLabel?.text = "Background Significant"
 			cell?.detailTextLabel?.text = "Background"
 		case 5:
+			cell?.textLabel?.text = "Background Travelled"
+			cell?.detailTextLabel?.text = "Background when travelled"
+		case 6:
 			cell?.textLabel?.text = "Status"
 			cell?.detailTextLabel?.text = "Get the status of the tracker."
 		default:
@@ -93,6 +97,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		case 4:
 			test_background()
 		case 5:
+			test_backgroundTravelled()
+		case 6:
 			tracker_description()
 		default:
 			break
@@ -102,6 +108,48 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 	private func tracker_description() {
 		print(Location.description)
 	}
+	
+	private func test_backgroundTravelled() {
+		if rq_backgroundTravelled != nil {
+			let alert = UIAlertController(title: "Action", message: "", preferredStyle: .actionSheet)
+			alert.addAction(UIAlertAction(title: "Pause", style: .default, handler: { _ in
+				self.rq_backgroundTravelled?.pause()
+			}))
+			if rq_background!.state.isPaused {
+				alert.addAction(UIAlertAction(title: "Resume", style: .default, handler: { _ in
+					self.rq_backgroundTravelled?.resume()
+				}))
+			} else {
+				alert.addAction(UIAlertAction(title: "Cancel/Remove", style: .default, handler: { _ in
+					self.rq_backgroundTravelled?.cancel()
+				}))
+			}
+			self.present(alert, animated: true, completion: nil)
+			return
+		}
+		
+		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .whenTravelled(meters: 5, timeout: 10), { loc in
+			print("\t\t[\(self.rq_backgroundTravelled!.name)] > New location \(loc)")
+			
+			let notification = UILocalNotification()
+			notification.alertTitle = "SIG.TRAVELLED LOCATION RECEIVED"
+			notification.alertBody = "\(loc.coordinate.latitude),\(loc.coordinate.longitude)"
+			notification.fireDate = Date()
+			UIApplication.shared.scheduleLocalNotification(notification)
+			
+		}, { (last, error) in
+			print("\t\t[\(self.rq_backgroundTravelled!.name)] > Error \(error)")
+			
+			let notification = UILocalNotification()
+			notification.alertTitle = "SIG.TRAVELLED LOCATION ERROR"
+			notification.alertBody = "\(error)"
+			notification.fireDate = Date()
+			UIApplication.shared.scheduleLocalNotification(notification)
+		})
+		rq_backgroundTravelled?.activity = .fitness
+		rq_backgroundTravelled!.resume()
+	}
+
 	
 	private func test_background() {
 		if rq_background != nil {
