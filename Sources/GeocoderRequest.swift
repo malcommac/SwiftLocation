@@ -29,10 +29,18 @@ public enum GeocoderCallback {
 /// - location: geocode of a `CLLocation` instance
 /// - address: geocode of a `String` address (ex. `"1, Infinite Loop, Cupertino (CA)"`)
 /// - abDictionary: geocode an Address Book dictionary
-public enum GeocoderSource {
+public enum GeocoderSource: CustomStringConvertible {
 	case location(_: CLLocation)
 	case address(_: String, _: CLRegion?)
 	case abDictionary(_: [AnyHashable : Any])
+	
+	public var description: String {
+		switch self {
+		case .location(let loc):	return "Location {\(loc.coordinate.latitude),\(loc.coordinate.longitude)}"
+		case .address(let add, _):	return "Address ('\(add)')"
+		case .abDictionary(let d):	return "AB Dict (\(d.keys.count) keys)"
+		}
+	}
 }
 
 public class GeocoderRequest: Request {
@@ -61,6 +69,9 @@ public class GeocoderRequest: Request {
 	/// Remove queued request if an error has occurred. By default is `false`.
 	public var cancelOnError: Bool = false
 	
+	/// Assigned request name, used for your own convenience
+	public var name: String?
+	
 	/// This represent the current state of the Request
 	internal var _previousState: RequestState = .idle
 	internal(set) var _state: RequestState = .idle {
@@ -75,6 +86,12 @@ public class GeocoderRequest: Request {
 		get {
 			return self._state
 		}
+	}
+	
+	/// Description of the request
+	public var description: String {
+		let name = (self.name ?? self.identifier)
+		return "[RGEO:\(name)] - Src=\(self.source) (Status=\(self.state), Queued=\(self.isInQueue))"
 	}
 	
 	public var isBackgroundRequest: Bool {
@@ -111,8 +128,9 @@ public class GeocoderRequest: Request {
 	///				specific geographical area, which is typically the user’s current location.
 	///   - success: handler to call on success
 	///   - failure: handler to call on failure
-	public init(address: String, region: CLRegion? = nil,
+	public init(name: String? = nil, address: String, region: CLRegion? = nil,
 	            _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError) {
+		self.name = name
 		self.source = .address(address, region)
 		self.add(callback: GeocoderCallback.onReversed(.main, success))
 		self.add(callback: GeocoderCallback.onErrorOccurred(.main, failure))
@@ -162,12 +180,11 @@ public class GeocoderRequest: Request {
 	}
 	
 	/// `true` if request is on location queue
-	internal var isInQueue: Bool {
+	public var isInQueue: Bool {
 		return Location.isQueued(self) == true
 	}
 	
 	/// Resume a paused request or start it
-	@discardableResult
 	public func resume() {
 		Location.start(self)
 	}
@@ -175,12 +192,11 @@ public class GeocoderRequest: Request {
 	/// Pause a running request.
 	///
 	/// - Returns: `true` if request is paused, `false` otherwise.
-	@discardableResult
 	public func pause() {
 		Location.pause(self)
 	}
 	
-	/// Cancel a running request and remove it from queue.
+	/// Cancel request and remove it from queue.
 	public func cancel() {
 		Location.cancel(self)
 	}

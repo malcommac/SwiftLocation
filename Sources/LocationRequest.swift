@@ -16,7 +16,7 @@ import CoreLocation
 /// - onErrorOccurred: on receive an error callback
 public enum LocCallback {
 	public typealias onSuccess = ((_ location: CLLocation) -> (Void))
-	public typealias onError = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void?))
+	public typealias onError = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void))
 	
 	case onReceiveLocation(_: Context, _: onSuccess)
 	case onErrorOccurred(_: Context, _: onError)
@@ -25,7 +25,7 @@ public enum LocCallback {
 public class LocationRequest: Request {
 	
 	public typealias OnSuccessCallback = ((_ location: CLLocation) -> (Void))
-	public typealias OnErrorCallback = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void?))
+	public typealias OnErrorCallback = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void))
 	public typealias OnAuthDidChangeCallback = ((_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) -> (Void))
 	
 	private(set) var frequency: Frequency
@@ -35,27 +35,21 @@ public class LocationRequest: Request {
 			Location.updateLocationServices()
 		}
 	}
+	
+	/// Assigned request name, used for your own convenience
+	public var name: String?
+	
+	/// Description of the request
+	public var description: String {
+		let name = (self.name ?? self.identifier)
+		return "[LOC:\(name)] - Acc=\(accuracy), Fq=\(frequency). (Status=\(self.state), Queued=\(self.isInQueue))"
+	}
+
+	/// Timeout timer
+	private var timeoutTimer: Timer?
 
 	/// Set a valid interval to enable a timer. Timeout starts automatically
-	private var timeoutTimer: Timer?
-	public var timeout: TimeInterval? = nil {
-		didSet {
-			timeoutTimer?.invalidate()
-			timeoutTimer = nil
-			guard let interval = self.timeout else {
-				return
-			}
-			self.timeoutTimer = Timer.scheduledTimer(timeInterval: interval,
-			                                         target: self,
-			                                         selector: #selector(timeoutTimerFired),
-			                                         userInfo: nil,
-			                                         repeats: false)
-		}
-	}
-	
-	@objc func timeoutTimerFired() {
-		self.dispatch(error: LocationError.timeout)
-	}
+	public var timeout: TimeInterval? = nil
 	
 	private(set) var lastLocation: CLLocation?
 	private(set) var lastError: Error?
@@ -100,8 +94,9 @@ public class LocationRequest: Request {
 	///   - frequency: frequency of updates for location meause
 	///   - success: callback called when a new location has been received
 	///   - error: callback called when an error has been received
-	public init(accuracy: Accuracy, frequency: Frequency,
+	public init(name: String? = nil, accuracy: Accuracy, frequency: Frequency,
 	            _ success: @escaping LocCallback.onSuccess, _ error: LocCallback.onError? = nil) {
+		self.name = name
 		self.accuracy = accuracy
 		if case .IPScan(_) = accuracy {
 			// If accuracy is IP Scan we will ignore frequency, always oneShot is set
@@ -120,7 +115,6 @@ public class LocationRequest: Request {
 	/// Resume a paused request or add a new request in queue and start it.
 	///
 	/// - Returns: `true` if request has been started, `false` otherwise
-	@discardableResult
 	public func resume() {
 		Location.start(self)
 	}
@@ -128,19 +122,17 @@ public class LocationRequest: Request {
 	/// Pause a running request.
 	///
 	/// - Returns: `true` if request is paused, `false` otherwise.
-	@discardableResult
 	public func pause() {
 		Location.pause(self)
 	}
 	
-	/// Cancel a running request and remove it from queue.
-	@discardableResult
+	/// Cancel request and remove it from queue.
 	public func cancel() {
 		Location.cancel(self)
 	}
-	
+
 	/// `true` if request is on location queue
-	internal var isInQueue: Bool {
+	public var isInQueue: Bool {
 		return Location.isQueued(self) == true
 	}
 	
@@ -155,6 +147,9 @@ public class LocationRequest: Request {
 	}
 	
 	public var requiredAuth: Authorization {
+		if case .IPScan(_) = self.accuracy {
+			return .none
+		}
 		switch self.frequency {
 		case .whenTravelled(_,_):
 			return .always
@@ -168,6 +163,31 @@ public class LocationRequest: Request {
 		return identifier.hash
 	}
 	
+	//MARK: Timeout Support
+	
+	/// Start timeout timer if a valid interval is specified.
+	/// Does nothing if not specified
+	private func startTimeout() {
+		stopTimeout()
+		guard let interval = self.timeout else { return }
+		self.timeoutTimer = Timer.scheduledTimer(timeInterval: interval,
+		                                         target: self,
+		                                         selector: #selector(timeoutTimerFired),
+		                                         userInfo: nil,
+		                                         repeats: false)
+	}
+	
+	
+	/// Stop timeout timer
+	private func stopTimeout() {
+		timeoutTimer?.invalidate()
+		timeoutTimer = nil
+	}
+	
+	@objc func timeoutTimerFired() {
+		self.dispatch(error: LocationError.timeout)
+	}
+	
 	//MARK: Events from Location Dispatcher
 	
 	
@@ -177,7 +197,7 @@ public class LocationRequest: Request {
 	/// - Parameter location: location received from system
 	internal func dispatch(location: CLLocation?) {
 		// if request is paused or location is nil we want to discard this event
-		guard self.state.isRunning, let loc = location else { return }
+		guard let loc = location else { return }
 		// if received location is not valid in accuracy we want to discard this event
 		guard accuracy.isValid(loc) else { return }
 		
@@ -203,11 +223,34 @@ public class LocationRequest: Request {
 				context.queue.async { handler(loc) }
 			}
 		}
-		if case .oneShot = self.frequency { // if one shot we can cancel and remove it
-			self.cancel()
-		}
+		
+		// Remove request from queue if some conditions are verified
+		stopRequestIfNeeded()
 	}
 
+	
+	/// Stop request according to settings
+	///
+	/// - Returns: `true` if request was stopped, `false` otherwise
+	@discardableResult
+	private func stopRequestIfNeeded() -> Bool {
+		var willStop = false
+		defer {
+			if willStop {
+				self.cancel()
+			}
+		}
+		
+		if case .oneShot = self.frequency {
+			// if one shot we can cancel and remove it
+			willStop = true
+		}
+		if case .IPScan(_) = self.accuracy {
+			// IP Scan services are one shot too
+			willStop = true
+		}
+		return willStop
+	}
 	
 	/// Internal receiver for status change event
 	///
@@ -217,31 +260,29 @@ public class LocationRequest: Request {
 		self.authChangeCallbacks.forEach { $0(old,new) }
 	}
 	
-	
 	/// Internal receiver for errors
 	/// When an error is received if `cancelOnError` is `true` request is also removed from queue and transit to `failed` state.
 	///
 	/// - Parameter error: error received
 	public func dispatch(error: Error) {
-		guard self.state.isRunning else { return } // ignore if not running
 		// Alert callbacks
-		self.lastError = error
 		self.registeredCallbacks.forEach {
 			if case .onErrorOccurred(let context, let handler) = $0 {
 				context.queue.async { handler(self.lastLocation,error) }
 			}
 		}
 		
-		if self.cancelOnError == true { // remove from main location queue
+		if self.cancelOnError == true || self.frequency == .oneShot { // remove from main location queue
 			self.cancel()
-			self._state = .failed
+			self._state = .failed(error)
 		}
 	}
 	
 	public func onResume() {
 		switch self.accuracy {
 		case .IPScan(_):
-			self.executeIPLocationRequest()
+			self.startTimeout() // start timer for timeout if necessary
+			self.executeIPLocationRequest() // execute request
 		default:
 			break
 		}
@@ -258,11 +299,11 @@ public class LocationRequest: Request {
 			return
 		}
 		service.getLocationFromIP(success: {
+			self.stopTimeout() // stop timeout timer
 			self.dispatch(location: $0)
-			self.cancel()
 		}) {
+			self.stopTimeout() // stop timeout timer
 			self.dispatch(error: $0!)
-			self.cancel()
 		}
 	}
 }

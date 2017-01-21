@@ -50,6 +50,9 @@ public class HeadingRequest: Request {
 		}
 	}
 	
+	/// Assigned request name, used for your own convenience
+	public var name: String?
+	
 	/// Cancel request if an error occours. By default is `false`.
 	public var cancelOnError: Bool = false
 	
@@ -57,7 +60,7 @@ public class HeadingRequest: Request {
 	private var previousHeading: CLHeading? = nil
 	
 	/// `true` if request is on location queue
-	internal var isInQueue: Bool {
+	public var isInQueue: Bool {
 		return Location.isQueued(self) == true
 	}
 	
@@ -69,17 +72,24 @@ public class HeadingRequest: Request {
 		return false
 	}
 	
+	/// Description of the request
+	public var description: String {
+		let name = (self.name ?? self.identifier)
+		return "[HEAD:\(name)] - Filter=\(self.filter) meters. (Status=\(self.state), Queued=\(self.isInQueue))"
+	}
+	
 	/// Initialize a new heading request
 	///
 	/// - Parameters:
 	///   - filter: The minimum angular change (measured in degrees) required to generate new heading events.
 	///   - success: handler called to receive new heading measures
 	///   - failure: handler called to receive errors
-	public init(filter: CLLocationDegrees? = nil,
+	public init(name: String? = nil, filter: CLLocationDegrees? = nil,
 	            success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws {
 		guard CLLocationManager.headingAvailable() else {
 			throw LocationError.serviceNotAvailable
 		}
+		self.name = name
 		self.filter = filter
 		self.add(callback: HeadingCallback.onReceivedHeading(.main, success))
 		self.add(callback: HeadingCallback.onErrorOccurred(.main, failure))
@@ -102,7 +112,7 @@ public class HeadingRequest: Request {
 		Location.pause(self)
 	}
 	
-	/// Cancel a running request and remove it from queue.
+	/// Cancel request and remove it from queue.
 	public func cancel() {
 		Location.cancel(self)
 	}
@@ -153,7 +163,7 @@ public class HeadingRequest: Request {
 		
 		if self.cancelOnError == true { // remove from main location queue
 			self.cancel()
-			self._state = .failed
+			self._state = .failed(error)
 		}
 	}
 	

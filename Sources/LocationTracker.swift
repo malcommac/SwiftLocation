@@ -13,6 +13,8 @@ import CoreLocation
 public let Location = LocationTracker.shared
 
 public final class LocationTracker: NSObject, CLLocationManagerDelegate {
+
+	public typealias RequestPoolDidChange = ((Any) -> (Void))
 	
 	/// This is a reference to LocationManager's singleton where the main queue for Requests.
 	static let shared : LocationTracker = {
@@ -25,7 +27,34 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		self.locationManager = CLLocationManager()
 		super.init()
 		self.locationManager.delegate = self
+		
+		// Listen for any change (add or remove) into all queues
+		let onAddHandler: ((Any) -> (Void)) = { self.onAddNewRequest?($0) }
+		let onRemoveHandler: ((Any) -> (Void)) = { self.onRemoveRequest?($0) }
+		for var pool in self.pools {
+			pool.onAdd = onAddHandler
+			pool.onRemove = onRemoveHandler
+		}
 	}
+	
+	public override var description: String {
+		let countRunning: Int = self.pools.reduce(0, { $0 + $1.countRunning })
+		let countPaused: Int = self.pools.reduce(0, { $0 + $1.countPaused })
+		let countAll: Int = self.pools.reduce(0, { $0 + $1.count })
+		var status = "TRACKER STATUS\n - \(countRunning) Running\n - \(countPaused) Paused\n - \(countAll) Total"
+		if let settings = self.locationSettings {
+			status += "\n- SETTINGS:\(settings)"
+		} else {
+			status += "\n- SETTINGS: All off"
+		}
+		return status
+	}
+	
+	/// Callback called when a new request is added
+	public var onAddNewRequest: RequestPoolDidChange? = nil
+	
+	/// Callback called when a request was removed
+	public var onRemoveRequest: RequestPoolDidChange? = nil
 	
 	/// Internal location manager reference
 	internal var locationManager: CLLocationManager
@@ -95,7 +124,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				return // ignore equal settings, avoid multiple sets
 			}
 			
-			print("New settings: \(newValue)")
 			_locationSettings = newValue
 			// Set attributes for CLLocationManager instance
 			locationManager.activityType = settings.activity // activity type (used to better preserve battery based upon activity)
@@ -109,14 +137,17 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				}
 				// If best frequency is significant location update (and hardware supports it) then start only significant location update
 				locationManager.stopUpdatingLocation()
+				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.startMonitoringSignificantLocationChanges()
 				locationManager.disallowDeferredLocationUpdates()
 			case .whenTravelled(let meters, let timeout):
 				locationManager.stopMonitoringSignificantLocationChanges()
+				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.startUpdatingLocation()
 				locationManager.allowDeferredLocationUpdates(untilTraveled: meters, timeout: timeout)
 			default:
 				locationManager.stopMonitoringSignificantLocationChanges()
+				locationManager.allowsBackgroundLocationUpdates = false
 				locationManager.startUpdatingLocation()
 				locationManager.disallowDeferredLocationUpdates()
 			}
@@ -138,7 +169,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		/// Description of the settings
 		public var description: String {
-			return "Settings:\n-Accuracy: \(accuracy)\n -Frequency:\(frequency)\n -Activity:\(activity)"
+			return "\n\t- Accuracy: '\(accuracy)'\n\t - Frequency: '\(frequency)'\n\t - Activity: '\(activity)'\n"
 		}
 		
 		/// Returns a Boolean value indicating whether two values are equal.
@@ -415,30 +446,30 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Location Requests
 			if let request = request as? LocationRequest {
-				locationsPool.remove(request)
 				request._state = .idle
+				locationsPool.remove(request)
 				hasChanges = true
 			}
 			
 			// Geocoder requests
 			if let request = request as? GeocoderRequest {
-				geocodersPool.remove(request)
 				request._state = .idle
+				geocodersPool.remove(request)
 				hasChanges = true
 			}
 			
 			// Heading requests
 			if let request = request as? HeadingRequest {
-				headingPool.remove(request)
 				request._state = .idle
+				headingPool.remove(request)
 				hasChanges = true
 			}
 			
 			// Region Monitoring requests
 			if let request = request as? RegionRequest {
+				request._state = .idle
 				locationManager.stopMonitoring(for: request.region)
 				regionPool.remove(request)
-				request._state = .idle
 				hasChanges = true
 			}
 		}
@@ -597,7 +628,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				continue // request is not running, can be ignored
 			}
 			
-			if request.accuracy.orderValue < accuracy.orderValue {
+			if request.accuracy.orderValue > accuracy.orderValue {
 				accuracy = request.accuracy
 			}
 			if request.frequency < frequency {
@@ -641,8 +672,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		guard let location = locations.max(by: { (l1, l2) -> Bool in
 			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
-			) else {
-				return
+		) else {
+			return
 		}
 		//print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		self.lastLocation.set(location: location)
@@ -687,8 +718,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	private var pools: [RequestPoolProtocol] {
-		let pools: [RequestPoolProtocol] = [locationsPool, regionPool, visitsPool,geocodersPool,headingPool]
+	private var pools: [RequestsPoolProtocol] {
+		let pools: [RequestsPoolProtocol] = [locationsPool, regionPool, visitsPool,geocodersPool,headingPool]
 		return pools
 	}
 	
@@ -704,6 +735,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		let requiredAuth = self.pools.map({ $0.requiredAuthorization }).reduce(.none, { $0 < $1 ? $0 : $1 })
 		// This is the current authorization of CLLocationManager
 		let currentAuth = LocAuth.status
+		
+		if requiredAuth == .none {
+			// No authorization are needed
+			return false
+		}
 		
 		switch currentAuth {
 		case .denied,.disabled, .restricted:
@@ -751,8 +787,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		guard locationsPool.countRunning > 0 else {
 			// There is not any running request, we can stop location service to preserve battery.
-			locationManager.stopUpdatingLocation()
-			locationManager.stopMonitoringSignificantLocationChanges()
+			self.locationSettings = nil
 			return
 		}
 		
@@ -788,7 +823,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		if isAppInBackground { self.autoPauseUpdates = false }
 		
 		// Resume any paused request (a paused request is in `.waitingUserAuth`,`.paused` or `.failed`)
-		locationsPool.forEach { $0.resume() }
+		locationsPool.iterate([.waitingUserAuth]) { $0.resume() }
 		
 		// Setup with best settings
 		self.locationSettings = bestSettings

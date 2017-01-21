@@ -26,7 +26,9 @@
 		<true/>
 	</dict>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Bla blasdas sds a ds ads adsasd</string>
+	<string>ALWAYS</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>INUSE</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

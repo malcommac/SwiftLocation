@@ -43,6 +43,9 @@ public class VisitsRequest: Request {
 	
 	public var cancelOnError: Bool = false
 	
+	/// Assigned request name, used for your own convenience
+	public var name: String?
+	
 	/// Hash value for Hashable protocol
 	public var hashValue: Int {
 		return identifier.hash
@@ -73,6 +76,17 @@ public class VisitsRequest: Request {
 		return .always
 	}
 	
+	/// Description of the request
+	public var description: String {
+		let name = (self.name ?? self.identifier)
+		return "[VIS:\(name)] (Status=\(self.state), Queued=\(self.isInQueue))"
+	}
+	
+	/// `true` if request is on location queue
+	public var isInQueue: Bool {
+		return Location.isQueued(self) == true
+	}
+	
 	/// Initialize a new visit request.
 	/// Visit objects contain as much information about the visit as possible but may not always include both the arrival
 	/// and departure times. For example, when the user arrives at a location, the system may send an event with only an arrival time. When 
@@ -84,10 +98,11 @@ public class VisitsRequest: Request {
 	///   - error: callback called when an error is thrown
 	/// - Throws: throw an exception if application is not configured correctly to receive Visits events. App should
 	///           require always authorization.
-	public init(event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws {
+	public init(name: String? = nil, event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws {
 		guard CLLocationManager.appAuthorization == .always else {
 			throw LocationError.other("NSLocationAlwaysUsageDescription in Info.plist is required to use Visits feature")
 		}
+		self.name = name
 		self.register(callback: VisitCallback.onDidVisit(.main, event))
 		self.register(callback: VisitCallback.onError(.main, error))
 	}
@@ -110,7 +125,7 @@ public class VisitsRequest: Request {
 		Location.start(self)
 	}
 	
-	/// Cancel events dispatch for this request
+	/// Cancel request and remove it from queue.
 	public func cancel() {
 		Location.cancel(self)
 	}
@@ -159,7 +174,7 @@ public class VisitsRequest: Request {
 		
 		if self.cancelOnError == true { // remove from main location queue
 			self.cancel()
-			self._state = .failed
+			self._state = .failed(error)
 		}
 	}
 	

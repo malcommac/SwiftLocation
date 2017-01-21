@@ -69,6 +69,9 @@ public class RegionRequest: Request {
 	/// Region to monitor
 	private(set) var region: CLCircularRegion
 	
+	/// Assigned request name, used for your own convenience
+	public var name: String?
+	
 	/// This represent the current state of the Request
 	internal var _previousState: RequestState = .idle
 	internal(set) var _state: RequestState = .idle {
@@ -116,6 +119,13 @@ public class RegionRequest: Request {
 		return identifier.hash
 	}
 	
+	/// Description of the request
+	public var description: String {
+		let name = (self.name ?? self.identifier)
+		let coordinates = "{\(self.region.center.latitude),\(self.region.center.longitude)}"
+		return "[REG:\(name)]/\(name) - Center=\(coordinates), Radius=\(self.region.radius) meters. (Status=\(self.state), Queued=\(self.isInQueue))"
+	}
+	
 	/// Initialize a new region monitoring request to monitor a region with given center and radius
 	///
 	/// - Parameters:
@@ -124,11 +134,12 @@ public class RegionRequest: Request {
 	///   - exit: callback to call when exiting from region
 	///   - error: callback to call on error
 	/// - Throws: throw an exception if configuration or hardware is not valid to use region monitoring
-	public init(region: CLCircularRegion,
+	public init(name: String? = nil, region: CLCircularRegion,
 	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
 		
 		try RegionRequest.validateConfiguration()
 		
+		self.name = name
 		self.region = region
 		if enter != nil { self.add(callback: .onEnter(.main, enter!)) }
 		if exit != nil { self.add(callback: .onExit(.main, exit!)) }
@@ -145,11 +156,12 @@ public class RegionRequest: Request {
 	///   - exit: callback to call when exiting from region
 	///   - error: callback to call on error
 	/// - Throws: throw an exception if configuration or hardware is not valid to use region monitoring
-	public init(center: CLLocationCoordinate2D, radius: CLLocationDistance,
+	public init(name: String? = nil, center: CLLocationCoordinate2D, radius: CLLocationDistance,
 	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
 		
 		try RegionRequest.validateConfiguration()
 		
+		self.name = name
 		self.region = CLCircularRegion(center: center, radius: radius, identifier: self.identifier)
 		if enter != nil { self.add(callback: .onEnter(.main, enter!)) }
 		if exit != nil { self.add(callback: .onExit(.main, exit!)) }
@@ -176,10 +188,9 @@ public class RegionRequest: Request {
 	}
 	
 	/// `true` if request is on location queue
-	internal var isInQueue: Bool {
+	public var isInQueue: Bool {
 		return Location.isQueued(self) == true
 	}
-	
 	
 	/// Retrieves the state of a region asynchronously.
 	/// Multiple call of this func cancel previous requests.
@@ -221,7 +232,7 @@ public class RegionRequest: Request {
 		Location.pause(self)
 	}
 	
-	/// Cancel a running request and remove it from queue.
+	/// Cancel request and remove it from queue.
 	public func cancel() {
 		Location.cancel(self)
 	}
@@ -246,8 +257,8 @@ public class RegionRequest: Request {
 		}
 		
 		if self.cancelOnError == true { // remove from main location queue
+			self._state = .failed(error)
 			self.cancel()
-			self._state = .failed
 		}
 	}
 	

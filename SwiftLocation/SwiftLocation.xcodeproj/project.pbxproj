@@ -25,12 +25,11 @@
 		085B77DE1E2ED38A0073814F /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085B77DD1E2ED38A0073814F /* RegionRequest.swift */; };
 		085B77E01E2F4A920073814F /* VisitsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085B77DF1E2F4A920073814F /* VisitsRequest.swift */; };
 		08B424DD1E266D9E0046EED6 /* Accuracy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424D71E266D9E0046EED6 /* Accuracy.swift */; };
-		08B424DE1E266D9E0046EED6 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424D81E266D9E0046EED6 /* Context.swift */; };
 		08B424DF1E266D9E0046EED6 /* LocationTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424D91E266D9E0046EED6 /* LocationTracker.swift */; };
 		08B424E01E266D9E0046EED6 /* LocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424DA1E266D9E0046EED6 /* LocationRequest.swift */; };
 		08B424E11E266D9E0046EED6 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424DB1E266D9E0046EED6 /* Shared.swift */; };
-		08B424E21E266D9E0046EED6 /* UpdateFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424DC1E266D9E0046EED6 /* UpdateFrequency.swift */; };
-		08B4CEBF1E2FCEB60075E24A /* RequestPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B4CEBE1E2FCEB60075E24A /* RequestPool.swift */; };
+		08B424E21E266D9E0046EED6 /* Frequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B424DC1E266D9E0046EED6 /* Frequency.swift */; };
+		08B4CEBF1E2FCEB60075E24A /* RequestsPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B4CEBE1E2FCEB60075E24A /* RequestsPool.swift */; };
 		08F1E9A71E23EF12003931B9 /* SwiftLocation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 083697481E22B5E4009E90F2 /* SwiftLocation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -87,12 +86,11 @@
 		085B77DD1E2ED38A0073814F /* RegionRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RegionRequest.swift; path = ../../Sources/RegionRequest.swift; sourceTree = "<group>"; };
 		085B77DF1E2F4A920073814F /* VisitsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VisitsRequest.swift; path = ../../Sources/VisitsRequest.swift; sourceTree = "<group>"; };
 		08B424D71E266D9E0046EED6 /* Accuracy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Accuracy.swift; path = ../../Sources/Accuracy.swift; sourceTree = "<group>"; };
-		08B424D81E266D9E0046EED6 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Context.swift; path = ../../Sources/Context.swift; sourceTree = "<group>"; };
 		08B424D91E266D9E0046EED6 /* LocationTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationTracker.swift; path = ../../Sources/LocationTracker.swift; sourceTree = "<group>"; };
 		08B424DA1E266D9E0046EED6 /* LocationRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationRequest.swift; path = ../../Sources/LocationRequest.swift; sourceTree = "<group>"; };
 		08B424DB1E266D9E0046EED6 /* Shared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Shared.swift; path = ../../Sources/Shared.swift; sourceTree = "<group>"; };
-		08B424DC1E266D9E0046EED6 /* UpdateFrequency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpdateFrequency.swift; path = ../../Sources/UpdateFrequency.swift; sourceTree = "<group>"; };
-		08B4CEBE1E2FCEB60075E24A /* RequestPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestPool.swift; path = ../../Sources/RequestPool.swift; sourceTree = "<group>"; };
+		08B424DC1E266D9E0046EED6 /* Frequency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Frequency.swift; path = ../../Sources/Frequency.swift; sourceTree = "<group>"; };
+		08B4CEBE1E2FCEB60075E24A /* RequestsPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestsPool.swift; path = ../../Sources/RequestsPool.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,10 +211,6 @@
 			isa = PBXGroup;
 			children = (
 				08B424D91E266D9E0046EED6 /* LocationTracker.swift */,
-				08B4CEBE1E2FCEB60075E24A /* RequestPool.swift */,
-				08B424D71E266D9E0046EED6 /* Accuracy.swift */,
-				08B424DC1E266D9E0046EED6 /* UpdateFrequency.swift */,
-				085B77D91E2E986F0073814F /* IPService.swift */,
 			);
 			name = "Location Tracker";
 			sourceTree = "<group>";
@@ -225,7 +219,10 @@
 			isa = PBXGroup;
 			children = (
 				08B424DB1E266D9E0046EED6 /* Shared.swift */,
-				08B424D81E266D9E0046EED6 /* Context.swift */,
+				08B4CEBE1E2FCEB60075E24A /* RequestsPool.swift */,
+				08B424D71E266D9E0046EED6 /* Accuracy.swift */,
+				08B424DC1E266D9E0046EED6 /* Frequency.swift */,
+				085B77D91E2E986F0073814F /* IPService.swift */,
 			);
 			name = Commons;
 			sourceTree = "<group>";
@@ -388,13 +385,12 @@
 				08B424DD1E266D9E0046EED6 /* Accuracy.swift in Sources */,
 				08B424E01E266D9E0046EED6 /* LocationRequest.swift in Sources */,
 				085B77D61E2E5E5F0073814F /* Extensions.swift in Sources */,
-				08B4CEBF1E2FCEB60075E24A /* RequestPool.swift in Sources */,
+				08B4CEBF1E2FCEB60075E24A /* RequestsPool.swift in Sources */,
 				085B77DC1E2EB3DC0073814F /* HeadingRequest.swift in Sources */,
 				085B77E01E2F4A920073814F /* VisitsRequest.swift in Sources */,
-				08B424DE1E266D9E0046EED6 /* Context.swift in Sources */,
 				085B77D81E2E65370073814F /* GeocoderRequest.swift in Sources */,
 				08B424DF1E266D9E0046EED6 /* LocationTracker.swift in Sources */,
-				08B424E21E266D9E0046EED6 /* UpdateFrequency.swift in Sources */,
+				08B424E21E266D9E0046EED6 /* Frequency.swift in Sources */,
 				085B77DA1E2E986F0073814F /* IPService.swift in Sources */,
 				085B77DE1E2ED38A0073814F /* RegionRequest.swift in Sources */,
 			);
