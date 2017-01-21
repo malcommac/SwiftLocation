@@ -670,19 +670,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		switch status {
 		case .denied, .restricted:
 			let error = LocationError.authDidChange(status)
-			visitsPool.dispatch(error: error)
-			regionPool.dispatch(error: error)
-			locationsPool.dispatch(error: error)
-			
-			self.updateLocationServices()
-			self.updateRegionMonitoringServices()
+			self.pools.forEach { $0.dispatch(error: error) }
+			self.updateServicesStatus()
 		case .authorizedAlways, .authorizedWhenInUse:
-			locationsPool.forEach { $0.resume() }
-			regionPool.forEach { $0.resume() }
-			visitsPool.forEach { $0.resume() }
-			
-			self.updateLocationServices()
-			self.updateRegionMonitoringServices()
+			self.pools.forEach { $0.resumeWaitingAuth() }
+			self.updateServicesStatus()
 		default:
 			break
 		}
@@ -694,7 +686,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		) else {
 			return
 		}
-		//print("\(Date())  -> \(location.horizontalAccuracy), \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		self.lastLocation.set(location: location)
 		locationsPool.forEach { $0.dispatch(location: location) }
 	}
@@ -702,10 +693,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	//MARK: CLLocationManager Error Delegate
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		locationsPool.dispatch(error: error)
-		headingPool.dispatch(error: error)
-		visitsPool.dispatch(error: error)
-		regionPool.dispatch(error: error)
+		self.pools.forEach { $0.dispatch(error: error) }
 	}
 	
 	//MARK: Update Services Status
@@ -754,9 +742,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		let requiredAuth = self.pools.map({ $0.requiredAuthorization }).reduce(.none, { $0 < $1 ? $0 : $1 })
 		// This is the current authorization of CLLocationManager
 		let currentAuth = LocAuth.status
-		
-		print("Required auth is \(requiredAuth)")
-		print("Current auth is \(currentAuth)")
 		
 		if requiredAuth == .none {
 			// No authorization are needed

@@ -26,6 +26,8 @@ internal protocol RequestsPoolProtocol: CustomStringConvertible {
 	var countRunning: Int { get }
 	var countPaused: Int { get }
 	var count: Int { get }
+	
+	func resumeWaitingAuth()
 }
 
 
@@ -141,6 +143,16 @@ internal class RequestsPool<T: Request> : RequestsPoolProtocol, Sequence {
 			}
 		}
 		
+	}
+	
+	
+	/// Resume any waiting for auth request
+	public func resumeWaitingAuth() {
+		self.iterate({ request in
+			return request.state == RequestState.waitingUserAuth
+		}) { request in
+			request.resume()
+		}
 	}
 	
 	/// Dispatch a value to all running requests
