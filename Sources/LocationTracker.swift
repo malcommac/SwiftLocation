@@ -151,14 +151,9 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				locationManager.disallowDeferredLocationUpdates()
 			}
 			
-			// Turn on/off deferred location updates
-			if let deferredSettings = deferredLocationSettings() {
-				locationManager.startUpdatingLocation()
-				locationManager.allowDeferredLocationUpdates(untilTraveled: deferredSettings.meters,
-				                                             timeout: deferredSettings.timeout)
-			} else {
-				locationManager.disallowDeferredLocationUpdates()
-			}
+			// If we have at least one location delivered and we have deferred location updates in queue
+			// we can activate deferred location updating, otherwise we will activate it when the first location arrive.
+			turnOnDeferredLocationUpdatesIfNeeded()
 		}
 		get {
 			return _locationSettings
@@ -621,6 +616,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	//MARK: Deferred Location Helper Funcs
+	
 	private func deferredLocationSettings() -> (meters: Double, timeout: TimeInterval, accuracy: Accuracy)? {
 		var meters: Double? = nil
 		var timeout: TimeInterval? = nil
@@ -635,6 +632,28 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		let accuracy = (accuracyIsNavigation ? Accuracy.navigation : Accuracy.room)
 		return (meters == nil ? nil : (meters!,timeout!, accuracy))
 	}
+	
+	private func hasDeferredLocationRequests() -> Bool {
+		for location in locationsPool {
+			if location.frequency.isDeferredFrequency {
+				return true
+			}
+		}
+		return false
+	}
+	
+	private func turnOnDeferredLocationUpdatesIfNeeded() {
+		// Turn on/off deferred location updates
+		if let deferredSettings = deferredLocationSettings() {
+			locationManager.startUpdatingLocation()
+			locationManager.allowDeferredLocationUpdates(untilTraveled: deferredSettings.meters,
+			                                             timeout: deferredSettings.timeout)
+		} else {
+			locationManager.disallowDeferredLocationUpdates()
+		}
+	}
+
+	//MARK: Location Tracking Helper Funcs
 	
 	/// Evaluate best settings based upon running location requests
 	///
@@ -670,14 +689,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// the location manager allows deferred updates only when GPS hardware
 		// is available on the device and when the desired accuracy is set to kCLLocationAccuracyBest
 		// or kCLLocationAccuracyBestForNavigation.
-		// - If the GPS hardware is not available, the location manager reports a deferredFailed error.
-		// - If the accuracy is not set to one of the supported values, the location manager reports a deferredAccuracyTooLow error.
-		// - In addition, the distanceFilter property of the location manager must be set to kCLDistanceFilterNone.
+		// - A) If the GPS hardware is not available, the location manager reports a deferredFailed error.
+		// - B) If the accuracy is not set to one of the supported values, the location manager reports a deferredAccuracyTooLow error.
+		// - C) In addition, the distanceFilter property of the location manager must be set to kCLDistanceFilterNone.
 		// If it is set to any other value, the location manager reports a deferredDistanceFiltered error.
-		if CLLocationManager.deferredLocationUpdatesAvailable()  {
-			if let deferredSettings = self.deferredLocationSettings() {
-				accuracy = deferredSettings.accuracy
-				distanceFilter = kCLDistanceFilterNone
+		if CLLocationManager.deferredLocationUpdatesAvailable()  { // deferred location is available
+			if let deferredSettings = self.deferredLocationSettings() { // has any deferred location request
+				accuracy = deferredSettings.accuracy // B)
+				distanceFilter = kCLDistanceFilterNone // C)
 			}
 		}
 		
@@ -709,8 +728,22 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		) else {
 			return
 		}
+		
+		if self.lastLocation.last == nil && self.hasDeferredLocationRequests() {
+			// Note: 
+			// We need to start the deferred location delivery (by calling allowDeferredLocationUpdates) after
+			// the first location is arrived. So if this is the first location we have received and we have
+			// running deferred location request we can start it.
+			turnOnDeferredLocationUpdatesIfNeeded()
+		}
+		
+		// Store last location
 		self.lastLocation.set(location: location)
-		locationsPool.forEach { $0.dispatch(location: location) }
+		
+		// Dispatch to any request (which is not of type deferred)
+		locationsPool.iterate({ return $0.frequency.isDeferredFrequency }, {
+			$0.dispatch(location: location)
+		})
 	}
 	
 	//MARK: CLLocationManager Deferred Error Delegate
