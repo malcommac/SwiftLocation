@@ -129,18 +129,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			locationManager.activityType = settings.activity // activity type (used to better preserve battery based upon activity)
 			locationManager.desiredAccuracy = settings.accuracy.meters // accuracy (used to preserve battery based upon update frequency)
 			
-			func deferredLocationSettings() -> (meters: Double, timeout: TimeInterval)? {
-				var meters: Double? = nil
-				var timeout: TimeInterval? = nil
-				self.locationsPool.forEach {
-					if case let .whenTravelled(rMt,rTime) = $0.frequency {
-						if meters == nil || (rMt < meters!) { meters = rMt }
-						if timeout == nil || (rTime < timeout!) { timeout = rTime }
-					}
-				}
-				return (meters == nil ? nil : (meters!,timeout!))
-			}
-			
 			switch settings.frequency {
 			case .significant:
 				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
@@ -151,7 +139,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				locationManager.stopUpdatingLocation()
 				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.startMonitoringSignificantLocationChanges()
-			case .whenTravelled(let meters, let timeout):
+			case .whenTravelled(let meters, let timeout,_):
 				locationManager.stopMonitoringSignificantLocationChanges()
 				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.startUpdatingLocation()
@@ -165,6 +153,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Turn on/off deferred location updates
 			if let deferredSettings = deferredLocationSettings() {
+				locationManager.startUpdatingLocation()
 				locationManager.allowDeferredLocationUpdates(untilTraveled: deferredSettings.meters,
 				                                             timeout: deferredSettings.timeout)
 			} else {
@@ -185,6 +174,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		/// Activity type set
 		var activity: CLActivityType
+		
+		var distanceFilter: CLLocationDistance
 		
 		/// Description of the settings
 		public var description: String {
@@ -630,6 +621,21 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	private func deferredLocationSettings() -> (meters: Double, timeout: TimeInterval, accuracy: Accuracy)? {
+		var meters: Double? = nil
+		var timeout: TimeInterval? = nil
+		var accuracyIsNavigation: Bool = false
+		self.locationsPool.forEach {
+			if case let .whenTravelled(rMt,rTime,rAcc) = $0.frequency {
+				if meters == nil || (rMt < meters!) { meters = rMt }
+				if timeout == nil || (rTime < timeout!) { timeout = rTime }
+				if rAcc == true { accuracyIsNavigation = true }
+			}
+		}
+		let accuracy = (accuracyIsNavigation ? Accuracy.navigation : Accuracy.room)
+		return (meters == nil ? nil : (meters!,timeout!, accuracy))
+	}
+	
 	/// Evaluate best settings based upon running location requests
 	///
 	/// - Returns: best settings
@@ -641,6 +647,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		var accuracy: Accuracy = .any
 		var frequency: Frequency = .significant
 		var type: CLActivityType = .other
+		var distanceFilter: CLLocationDistance = self.distanceFilter
 		
 		for request in locationsPool {
 			guard request.state.isRunning else {
@@ -657,8 +664,24 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				type = request.activity
 			}
 		}
-	
-		return Settings(accuracy: accuracy, frequency: frequency, activity: type)
+		
+		// DEFERRED LOCATION UPDATES
+		// Because deferred updates use the GPS to track location changes,
+		// the location manager allows deferred updates only when GPS hardware
+		// is available on the device and when the desired accuracy is set to kCLLocationAccuracyBest
+		// or kCLLocationAccuracyBestForNavigation.
+		// - If the GPS hardware is not available, the location manager reports a deferredFailed error.
+		// - If the accuracy is not set to one of the supported values, the location manager reports a deferredAccuracyTooLow error.
+		// - In addition, the distanceFilter property of the location manager must be set to kCLDistanceFilterNone.
+		// If it is set to any other value, the location manager reports a deferredDistanceFiltered error.
+		if CLLocationManager.deferredLocationUpdatesAvailable()  {
+			if let deferredSettings = self.deferredLocationSettings() {
+				accuracy = deferredSettings.accuracy
+				distanceFilter = kCLDistanceFilterNone
+			}
+		}
+		
+		return Settings(accuracy: accuracy, frequency: frequency, activity: type, distanceFilter: distanceFilter)
 	}
 
 	//MARK: CLLocationManager Location Tracking Delegate
@@ -690,10 +713,21 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		locationsPool.forEach { $0.dispatch(location: location) }
 	}
 	
+	//MARK: CLLocationManager Deferred Error Delegate
+
+	public func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+		// iterate over deferred locations
+		locationsPool.iterate({ return $0.frequency.isDeferredFrequency }, {
+			$0.dispatch(error: error ?? LocationError.unknown)
+		})
+	}
+	
 	//MARK: CLLocationManager Error Delegate
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		self.pools.forEach { $0.dispatch(error: error) }
+		locationsPool.iterate({ return $0.frequency.isDeferredFrequency }, {
+			$0.dispatch(error: error)
+		})
 	}
 	
 	//MARK: Update Services Status

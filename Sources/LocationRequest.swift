@@ -138,7 +138,7 @@ public class LocationRequest: Request {
 	/// `true` if request works in background app state
 	public var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .whenTravelled(_,_), .significant:
+		case .whenTravelled(_,_,_), .significant:
 			return true
 		default:
 			return false
@@ -150,7 +150,7 @@ public class LocationRequest: Request {
 			return .none
 		}
 		switch self.frequency {
-		case .whenTravelled(_,_), .significant:
+		case .whenTravelled(_,_,_), .significant:
 			return .always
 		default:
 			return .inuse
@@ -201,14 +201,16 @@ public class LocationRequest: Request {
 		guard accuracy.isValid(loc) else { return }
 		
 		if let settings = Location.locationSettings, let lastLocation = self.lastLocation {
-			if case .whenTravelled(let minDist, let minTime) = self.frequency {
-				if settings.frequency.isTravelledFrequency {
+			if case .whenTravelled(let minDist, let minTime, let isNavigationAccuracy) = self.frequency {
+				if settings.frequency.isDeferredFrequency {
 					// If our location manager is not set to receive locations at fixed amount of
 					// travelled distance or time (because due to some other requests there is an higher resolution)
 					// we need to simulate it by discarding manually data.
 					let timePassed = (loc.timestamp.timeIntervalSince(lastLocation.timestamp) >= minTime) // enough time is passed
 					let distancePassed = (loc.distance(from: lastLocation) >= minDist) // enough distance is passed
-					if distancePassed == false && timePassed == false {
+					let accuracy = (isNavigationAccuracy ? Accuracy.navigation : Accuracy.room)
+					let accuracyPassed = accuracy.isValid(loc)
+					if distancePassed == false && timePassed == false && accuracyPassed == false {
 						return // ignore
 					}
 				}

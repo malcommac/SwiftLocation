@@ -128,7 +128,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			return
 		}
 		
-		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .whenTravelled(meters: 5, timeout: 10), { loc in
+		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .whenTravelled(distance: 5, timeout: 10, navigation: true), { loc in
 			print("\t\t[\(self.rq_backgroundTravelled!.name)] > New location \(loc)")
 			
 			let notification = UILocalNotification()

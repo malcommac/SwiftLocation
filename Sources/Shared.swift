@@ -147,6 +147,7 @@ public enum LocationError: Error {
 	case authorizationDenided
 	case backgroundModeNotSet
 	case noData
+	case unknown
 	case invalidData
 	case other(_: String)
 }
