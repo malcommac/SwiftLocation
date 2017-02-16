@@ -83,6 +83,12 @@ public extension CLLocationManager {
 		return Location.getLocation(accuracy: accuracy, frequency: frequency, timeout: timeout, success: success, error: error)
 	}
 	
+	public func stopAllLocationServices() {
+		self.stopUpdatingLocation()
+		self.stopMonitoringSignificantLocationChanges()
+		self.disallowDeferredLocationUpdates()
+	}
+	
 }
 
 public extension CLCircularRegion {

@@ -202,7 +202,8 @@ public class RegionRequest: Request {
 		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
 			throw LocationError.serviceNotAvailable
 		}
-		guard CLLocationManager.appAuthorization == .always else {
+		let auth = CLLocationManager.appAuthorization
+		if auth != .always && auth != .both {
 			throw LocationError.other("NSLocationAlwaysUsageDescription in Info.plist is required to use Region Monitoring feature")
 		}
 	}

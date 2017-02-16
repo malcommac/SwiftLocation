@@ -44,8 +44,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// This is a reference to LocationManager's singleton where the main queue for Requests.
 	static let shared : LocationTracker = {
-		let instance = LocationTracker()
-		return instance
+		return LocationTracker()
 	}()
 	
 	/// Initialize func
@@ -67,11 +66,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		let countRunning: Int = self.pools.reduce(0, { $0 + $1.countRunning })
 		let countPaused: Int = self.pools.reduce(0, { $0 + $1.countPaused })
 		let countAll: Int = self.pools.reduce(0, { $0 + $1.count })
-		var status = "TRACKER STATUS\n - \(countRunning) Running\n - \(countPaused) Paused\n - \(countAll) Total"
+		var status = "Requests: \(countRunning)/\(countAll) (\(countPaused) paused)"
 		if let settings = self.locationSettings {
-			status += "\n- SETTINGS:\(settings)"
+			status += "\nSettings:\(settings)"
 		} else {
-			status += "\n- SETTINGS: All off"
+			status += "\nSettings: services off"
 		}
 		return status
 	}
@@ -108,47 +107,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// This represent the last locations received (best accurated location and last received location)
 	private(set) var lastLocation = LastLocation()
-	public struct LastLocation {
-		/// This is the best accurated measured location (may be old, check the `timestamp`)
-		public var bestAccurated: CLLocation?
-		/// This represent the last measured location by timestamp (may be innacurate, check `accuracy`)
-		public var last: CLLocation?
-		
-		/// Number of locations received
-		private(set) var count: Int = 0
-		
-		/// Store last value
-		///
-		/// - Parameter location: location to set
-		mutating internal func set(location: CLLocation) {
-			count += 1
-			if bestAccurated == nil {
-				self.bestAccurated = location
-			} else if location.horizontalAccuracy > self.bestAccurated!.horizontalAccuracy {
-				self.bestAccurated = location
-			}
-			if last == nil {
-				self.last = location
-			} else if location.timestamp > self.last!.timestamp {
-				self.last = location
-			}
-		}
-	}
-	
 	
 	/// Active CoreLocation settings based upon running requests
-	private var _locationSettings: Settings?
-	private(set) var locationSettings: Settings? {
+	private var _locationSettings: TrackerSettings?
+	private(set) var locationSettings: TrackerSettings? {
 		set {
 			
-			func stopLocationServices() {
-				locationManager.stopUpdatingLocation()
-				locationManager.stopMonitoringSignificantLocationChanges()
-				locationManager.disallowDeferredLocationUpdates()
-			}
-			
 			guard let settings = newValue else {
-				stopLocationServices()
+				locationManager.stopAllLocationServices()
 				_locationSettings = newValue
 				return
 			}
@@ -166,7 +132,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			switch settings.frequency {
 			case .significant:
 				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
-					stopLocationServices()
+					locationManager.stopAllLocationServices()
 					return
 				}
 				// If best frequency is significant location update (and hardware supports it) then start only significant location update
@@ -186,44 +152,6 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		get {
 			return _locationSettings
-		}
-	}
-		
-	public struct Settings: CustomStringConvertible, Equatable {
-		/// Accuracy set
-		var accuracy: Accuracy
-		
-		/// Frequency set
-		var frequency: Frequency
-		
-		/// The type of user activity associated with the location updates.
-		/// The location manager uses the information in this property as a cue to determine when location
-		/// updates may be automatically paused
-		var activity: CLActivityType
-		
-		/// Distance filter
-		/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
-		var distanceFilter: CLLocationDistance
-		
-		/// Description of the settings
-		public var description: String {
-			var desc = "\n\t- Accuracy: '\(accuracy)'"
-			desc += "\n\t - Frequency: '\(frequency)'"
-			desc += "\n\t - Activity: '\(activity)'"
-			desc += "\n\t - Distance filter: '\(distanceFilter)'"
-			return desc
-		}
-		
-		/// Returns a Boolean value indicating whether two values are equal.
-		///
-		/// Equality is the inverse of inequality. For any values `a` and `b`,
-		/// `a == b` implies that `a != b` is `false`.
-		///
-		/// - Parameters:
-		///   - lhs: A value to compare.
-		///   - rhs: Another value to compare.
-		public static func ==(lhs: LocationTracker.Settings, rhs: LocationTracker.Settings) -> Bool {
-			return (lhs.accuracy.orderValue == rhs.accuracy.orderValue && lhs.frequency == rhs.frequency && lhs.activity == rhs.activity)
 		}
 	}
 	
@@ -272,6 +200,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	public func dismissHeadingCalibrationDisplay() {
 		locationManager.dismissHeadingCalibrationDisplay()
 	}
+	
+	// MARK: - Get location
 	
 	/// Create and enque a new location tracking request
 	///
@@ -343,6 +273,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - success: success handler to call when reverse geocoding succeded
 	///   - failure: failure handler to call when reverse geocoding fails
 	/// - Returns: request
+	@discardableResult
 	public func getLocation(forABDictionary dict: [AnyHashable: Any], timeout: TimeInterval? = nil,
 	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
 		let req = GeocoderRequest(abDictionary: dict, success, failure)
@@ -351,6 +282,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		return req
 	}
 	
+	// MARK: - Get heading
 	
 	/// Allows you to receive heading update with a minimum filter degree
 	///
@@ -359,12 +291,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - success: succss handler
 	///   - failure: failure handler
 	/// - Returns: request
+	@discardableResult
 	public func getHeading(filter: CLLocationDegrees,
 	                       success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws -> HeadingRequest {
-		return try HeadingRequest(filter: filter, success: success, failure: failure)
+		let request = try HeadingRequest(filter: filter, success: success, failure: failure)
+		request.resume()
+		return request
 	}
 	
-	
+	// MARK: - Monitor geographic location
+
 	/// Monitor a geographic region identified by a center coordinate and a radius.
 	/// Region monitoring
 	///
@@ -376,9 +312,12 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - error: callback for errors
 	/// - Returns: request
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
+	@discardableResult
 	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance,
 	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
-		return try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
+		let request = try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
+		request.resume()
+		return request
 	}
 	
 	
@@ -391,9 +330,12 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - error: callback for errors
 	///   - error: callback for errors
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
+	@discardableResult
 	public func monitor(region: CLCircularRegion,
 	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
-		return try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
+		let request = try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
+		request.resume()
+		return request
 	}
 	
 	
@@ -407,11 +349,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - error: callback called when an error occours
 	/// - Returns: request
 	/// - Throws: throw an exception if app does not support alway authorization
+	@discardableResult
 	public func monitorVisit(event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws -> VisitsRequest {
-		return try VisitsRequest(event: event, error: error)
+		let request = try VisitsRequest(event: event, error: error)
+		request.resume()
+		return request
 	}
 	
-	//MARK: Register/Unregister location requests
+	//MARK: - Register/Unregister location requests
 	
 	/// Register a new request and enqueue it
 	///
@@ -617,7 +562,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		region?.dispatch(state: state)
 	}
 	
-	//MARK: Internal Heading Manager Func
+	//MARK: - Internal Heading Manager Func
 	
 	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
 		self.headingPool.dispatch(value: newHeading)
@@ -703,7 +648,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// Evaluate best settings based upon running location requests
 	///
 	/// - Returns: best settings
-	private func locationTrackingBestSettings() -> Settings? {
+	private func locationTrackingBestSettings() -> TrackerSettings? {
 		guard locationsPool.countRunning > 0 else {
 			return nil // no settings, location manager can be disabled
 		}
@@ -762,7 +707,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			frequency = .deferredUntil(distance: deferredSettings.meters, timeout: deferredSettings.timeout, navigation:  isNavigationAccuracy)
 		}
 		
-		return Settings(accuracy: accuracy, frequency: frequency, activity: type, distanceFilter: distanceFilter!)
+		return TrackerSettings(accuracy: accuracy, frequency: frequency, activity: type, distanceFilter: distanceFilter!)
 	}
 
 	//MARK: - CLLocationManager Location Tracking Delegate
@@ -979,7 +924,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		
 		// Region monitoring require always authorizaiton, if not generate error
-		guard CLLocationManager.appAuthorization == .always else {
+		let auth = CLLocationManager.appAuthorization
+		if auth != .always && auth != .both {
 			regionPool.dispatch(error: LocationError.requireAlwaysAuth)
 			return
 		}
@@ -998,6 +944,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
+	/// Update heading services
 	internal func updateHeadingServices() {
 		// Heading service is not available on current hardware
 		guard CLLocationManager.headingAvailable() else {

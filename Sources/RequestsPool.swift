@@ -147,9 +147,9 @@ internal class RequestsPool<T: Request> : RequestsPoolProtocol, Sequence {
 	/// - Parameters:
 	///   - states: compatible state
 	///   - iteration: iteration block
-	public func iterate(_ states: Set<RequestState>, _ iteration: ((T) -> (Void))) {
+	public func iterate(_ states: Set<RequestState>? = nil, _ iteration: ((T) -> (Void))) {
 		list.forEach {
-			if states.contains($0.state) {
+			if states == nil || (states != nil && states!.contains($0.state)) {
 				iteration($0)
 			}
 		}

@@ -90,9 +90,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			cell?.textLabel?.text = "Background Travelled"
 			cell?.detailTextLabel?.text = "Background when travelled"
 		case 6:
+			cell?.textLabel?.text = "Monitor Region"
+			cell?.detailTextLabel?.text = "Monitor a region"
+		case 7:
 			cell?.textLabel?.text = "Status"
 			cell?.detailTextLabel?.text = "Get the status of the tracker."
-		case 7:
+		case 8:
 			cell?.textLabel?.text = "Clear"
 			cell?.detailTextLabel?.text = "Clear"
 		default:
@@ -119,8 +122,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		case 5:
 			test_backgroundTravelled()
 		case 6:
-			tracker_description()
+			test_monitorRegion()
 		case 7:
+			tracker_description()
+		case 8:
 			textView?.text = ""
 		default:
 			break
@@ -129,6 +134,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 	
 	private func tracker_description() {
 		debug(Location.description)
+	}
+	
+	private func test_monitorRegion() {
+		let loc = CLLocationCoordinate2D(latitude: 41.917501, longitude: 12.543548)
+		let range = CLLocationDistance(100)
+		try! Location.monitor(regionAt: loc, radius: range, enter: { _ in
+			self.sendLocal(title: "MONITOR REGION", text: "ENTER")
+		}, exit: { _ in
+			self.sendLocal(title: "MONITOR REGION", text: "EXIT")
+		}) { error in
+			self.sendLocal(title: "MONITOR REGION", text: "ERROR \(error)")
+		}
+	}
+	
+	private func sendLocal(title: String, text: String) {
+		let notification = UILocalNotification()
+		notification.alertTitle = title
+		notification.alertBody = text
+		notification.fireDate = Date(timeIntervalSinceNow: 10)
+		UIApplication.shared.scheduleLocalNotification(notification)
 	}
 	
 	private func test_backgroundTravelled() {
@@ -152,21 +177,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		
 		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .deferredUntil(distance: 20, timeout: CLTimeIntervalMax, navigation: true), { loc in
 			self.debug("\t\t[\(self.rq_backgroundTravelled!.name)] > New location \(loc)")
-			
-			let notification = UILocalNotification()
-			notification.alertTitle = "SIG.TRAVELLED LOCATION RECEIVED"
-			notification.alertBody = "\(loc.coordinate.latitude),\(loc.coordinate.longitude)"
-			notification.fireDate = Date()
-			UIApplication.shared.scheduleLocalNotification(notification)
-			
 		}, { (last, error) in
 			self.debug("\t\t[\(self.rq_backgroundTravelled!.name)] > Error \(error)")
-			
-			let notification = UILocalNotification()
-			notification.alertTitle = "SIG.TRAVELLED LOCATION ERROR"
-			notification.alertBody = "\(error)"
-			notification.fireDate = Date()
-			UIApplication.shared.scheduleLocalNotification(notification)
 		})
 		rq_backgroundTravelled?.activity = .fitness
 		rq_backgroundTravelled!.resume()
@@ -194,21 +206,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		
 		rq_background = LocationRequest(name: "REQ_3", accuracy: .any, frequency: .significant, { loc in
 			self.debug("\t\t[\(self.rq_background!.name)] > New location \(loc)")
-			
-			let notification = UILocalNotification()
-			notification.alertTitle = "SIGNIFICANT LOCATION RECEIVED"
-			notification.alertBody = "\(loc.coordinate.latitude),\(loc.coordinate.longitude)"
-			notification.fireDate = Date()
-			UIApplication.shared.scheduleLocalNotification(notification)
-
 		}, { (last, error) in
 			self.debug("\t\t[\(self.rq_background!.name)] > Error \(error)")
-			
-			let notification = UILocalNotification()
-			notification.alertTitle = "SIGNIFICANT LOCATION ERROR"
-			notification.alertBody = "\(error)"
-			notification.fireDate = Date()
-			UIApplication.shared.scheduleLocalNotification(notification)
 		})
 		rq_background?.activity = .fitness
 		rq_background!.resume()
