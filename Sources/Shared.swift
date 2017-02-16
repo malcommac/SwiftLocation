@@ -134,25 +134,44 @@ public enum RequestState: CustomStringConvertible, Equatable, Hashable {
 /// Public Request Protocol
 public protocol Request: class, Hashable, Equatable, CustomStringConvertible {
 	
+	/// Resume or start request
 	func resume()
+	
+	/// Pause a running request (still in queue)
 	func pause()
+	
+	/// Cancel a running request and remove it from queue
 	func cancel()
 	
+	/// Called when a request is about to be resumed
 	func onResume()
+	
+	/// Called when a request is paused
 	func onPause()
+	
+	/// Called when a request is cancelled
 	func onCancel()
 	
+	/// State of the request
 	var state: RequestState { get }
 	
+	/// Define what kind of authorization it require
 	var requiredAuth: Authorization { get }
 	
+	/// Is a background request?
 	var isBackgroundRequest: Bool { get }
 	
+	/// Dispatch an error
+	///
+	/// - Parameter error: error
 	func dispatch(error: Error)
 	
+	/// Return `true` if request is on a queue
 	var isInQueue: Bool { get }
 	
+	/// Optional name of the request
 	var name: String? { get set }
+
 }
 
 /// Errors
