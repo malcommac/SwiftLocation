@@ -1,15 +1,52 @@
-//
-//  Accuracy.swift
-//  SwiftLocation
-//
-//  Created by Daniele Margutti on 08/01/2017.
-//  Copyright © 2017 Daniele Margutti. All rights reserved.
-//
+/*
+* SwiftLocation
+* Location & beacon tracking services made for Swift
+*
+* Created by:	Daniele Margutti
+* Email:		hello@danielemargutti.com
+* Web:			http://www.danielemargutti.com
+* Twitter:		@danielemargutti
+*
+* Copyright © 2017 Daniele Margutti
+*
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+*/
+
 
 import Foundation
 import MapKit
 import CoreLocation
 
+
+/// Define the accuracy of request
+///
+/// - IPScan: Use geolocation via IP address scan. It very efficent and does not require user authorization, however accuracy is very low (city based at the best)
+/// - any: Lowest accuracy (< 1000km is accepted)
+/// - country: Lower accuracy (< 100km is accepted)
+/// - city: City accuracy (<= 3km is accepted)
+/// - neighborhood: Neighborhood accuracy (less than a kilometer)
+/// - block: Block accuracy (hundred meters)
+/// - house: House accuracu (nearest ten meters)
+/// - room: Best accuracy
+/// - navigation: Best accuracy specific for navigation purposes
 public enum Accuracy: CustomStringConvertible {
 	case IPScan(_: IPService)
 	case any
@@ -70,7 +107,7 @@ public enum Accuracy: CustomStringConvertible {
 	
 	
 	/// CoreLocation user authorizations are required for this accuracy
-	public var accuracyRequireAuthorization: Bool {
+	public var requestUserAuth: Bool {
 		get {
 			guard case .IPScan(_) = self else { // only ip-scan does not require auth
 				return true

@@ -1,10 +1,35 @@
-//
-//  Request.swift
-//  SwiftLocation
-//
-//  Created by Daniele Margutti on 08/01/2017.
-//  Copyright © 2017 Daniele Margutti. All rights reserved.
-//
+/*
+* SwiftLocation
+* Location & beacon tracking services made for Swift
+*
+* Created by:	Daniele Margutti
+* Email:		hello@danielemargutti.com
+* Web:			http://www.danielemargutti.com
+* Twitter:		@danielemargutti
+*
+* Copyright © 2017 Daniele Margutti
+*
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+*/
+
 
 import Foundation
 import MapKit
@@ -28,8 +53,15 @@ public class LocationRequest: Request {
 	public typealias OnErrorCallback = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void))
 	public typealias OnAuthDidChangeCallback = ((_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) -> (Void))
 	
+	/// Desidered frequency of the updates
 	private(set) var frequency: Frequency
+	
+	/// Desidered accuracy
 	private(set) var accuracy:	Accuracy
+	
+	/// Type of activity.
+	/// It indicate the type of activity associated with location updates and helps the system to set best value
+	/// for energy efficency.
 	public var activity: CLActivityType = .other {
 		didSet {
 			Location.updateLocationServices()
@@ -51,7 +83,15 @@ public class LocationRequest: Request {
 	/// Set a valid interval to enable a timer. Timeout starts automatically
 	public var timeout: TimeInterval? = nil
 	
+	/// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+	/// This value is ignored when request is has `significant` frequency set.
+	/// Set it to `nil` to report all movements.
+	public var minimumDistance: CLLocationDistance? = nil
+	
+	/// Last valid meaured location
 	private(set) var lastLocation: CLLocation?
+	
+	/// Last received error
 	private(set) var lastError: Error?
 	
 	/// Unique identifier of the request
@@ -138,7 +178,7 @@ public class LocationRequest: Request {
 	/// `true` if request works in background app state
 	public var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .whenTravelled(_,_,_), .significant:
+		case .deferredUntil(_,_,_), .significant:
 			return true
 		default:
 			return false
@@ -150,7 +190,7 @@ public class LocationRequest: Request {
 			return .none
 		}
 		switch self.frequency {
-		case .whenTravelled(_,_,_), .significant:
+		case .deferredUntil(_,_,_), .significant:
 			return .always
 		default:
 			return .inuse
@@ -200,22 +240,10 @@ public class LocationRequest: Request {
 		// if received location is not valid in accuracy we want to discard this event
 		guard accuracy.isValid(loc) else { return }
 		
-		if let settings = Location.locationSettings, let lastLocation = self.lastLocation {
-			if case .whenTravelled(let minDist, let minTime, let isNavigationAccuracy) = self.frequency {
-				if settings.frequency.isDeferredFrequency {
-					// If our location manager is not set to receive locations at fixed amount of
-					// travelled distance or time (because due to some other requests there is an higher resolution)
-					// we need to simulate it by discarding manually data.
-					let timePassed = (loc.timestamp.timeIntervalSince(lastLocation.timestamp) >= minTime) // enough time is passed
-					let distancePassed = (loc.distance(from: lastLocation) >= minDist) // enough distance is passed
-					let accuracy = (isNavigationAccuracy ? Accuracy.navigation : Accuracy.room)
-					let accuracyPassed = accuracy.isValid(loc)
-					if distancePassed == false && timePassed == false && accuracyPassed == false {
-						return // ignore
-					}
-				}
-			}
-		}
+		// Validate request's accuracy
+		guard accuracy.isValid(loc) else { return }
+		// Validate minimum distance (if set)
+		guard isValidMinimumDistance(loc) else { return }
 		
 		// store last valid location an dispatch it to call
 		self.lastLocation = loc
@@ -227,6 +255,13 @@ public class LocationRequest: Request {
 		
 		// Remove request from queue if some conditions are verified
 		stopRequestIfNeeded()
+	}
+	
+	private func isValidMinimumDistance(_ loc: CLLocation) -> Bool {
+		// no filter by distance is applied, check passed
+		guard let lastLoc = self.lastLocation, let minDistance = self.minimumDistance else { return true }
+		// check horizontal distance
+		return (loc.distance(from: lastLoc) > minDistance)
 	}
 
 	

@@ -1,10 +1,34 @@
-//
-//  IPService.swift
-//  SwiftLocation
-//
-//  Created by Daniele Margutti on 17/01/2017.
-//  Copyright © 2017 Daniele Margutti. All rights reserved.
-//
+/*
+* SwiftLocation
+* Location & beacon tracking services made for Swift
+*
+* Created by:	Daniele Margutti
+* Email:		hello@danielemargutti.com
+* Web:			http://www.danielemargutti.com
+* Twitter:		@danielemargutti
+*
+* Copyright © 2017 Daniele Margutti
+*
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+*/
 
 import Foundation
 import CoreLocation
@@ -70,23 +94,38 @@ public struct IPService: CustomStringConvertible {
 		return request
 	}
 	
+	
+	/// Get location from current IP address
+	///
+	/// - Parameters:
+	///   - success: callback for success
+	///   - fail: callback for fails
 	public func getLocationFromIP(success: @escaping IPServiceSuccessCallback, fail: @escaping IPServiceFailureCallback)  {
 		self.execute(request: self.request, success, fail)
 	}
 	
+	
+	/// All these queries share the same output so we can group them in a single call
+	///
+	/// - Parameters:
+	///   - request: request to url
+	///   - success: success callback
+	///   - fail: fail callback
 	private func execute(request: NSURLRequest,
 	                     _ success: @escaping IPServiceSuccessCallback, _ fail: @escaping IPServiceFailureCallback) {
 		let task = URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
 			do {
-				guard let data = data else {
+				guard let data = data else { // something went wrong
 					fail(error)
 					return
 				}
+				// fail to deserialize JSON output
 				let opts = JSONSerialization.ReadingOptions.init(rawValue: 0)
 				guard let json = try JSONSerialization.jsonObject(with: data, options: opts) as? NSDictionary else {
 					fail(LocationError.noData)
 					return
 				}
+				// failed to get latitude and longitude keys
 				guard	let latitude = json.value(forKey: "latitude") as? CLLocationDegrees,
 						let longitude = json.value(forKey: "longitude") as? CLLocationDegrees else {
 					fail(LocationError.noData)

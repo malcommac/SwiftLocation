@@ -1,10 +1,34 @@
-//
-//  Shared.swift
-//  SwiftLocation
-//
-//  Created by Daniele Margutti on 08/01/2017.
-//  Copyright © 2017 Daniele Margutti. All rights reserved.
-//
+/*
+* SwiftLocation
+* Location & beacon tracking services made for Swift
+*
+* Created by:	Daniele Margutti
+* Email:		hello@danielemargutti.com
+* Web:			http://www.danielemargutti.com
+* Twitter:		@danielemargutti
+*
+* Copyright © 2017 Daniele Margutti
+*
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+*/
 
 import Foundation
 import MapKit
@@ -131,13 +155,19 @@ public protocol Request: class, Hashable, Equatable, CustomStringConvertible {
 	var name: String? { get set }
 }
 
-/// Location errors
+/// Errors
 ///
 /// - missingAuthInInfoPlist: missing authorization strings (`NSLocationAlwaysUsageDescription` or `NSLocationWhenInUseUsageDescription` in Info.plist)
 /// - authDidChange: authorization is changed to `.denied` or `.restricted` mode. Location services are not available anymore.
 /// - timeout: timeout for request is reached
 /// - serviceNotAvailable: hardware does not support required service
-/// - backgroundModeNotSet: one or more requests needs background capabilities enabled (see `UIBackgroundModes` in Info.plist)
+/// - requireAlwaysAuth: requested service require explicit always authorization from the user
+/// - authorizationDenided: permission was denied by the user
+/// - backgroundModeNotSet: background modes are missing for this feature
+/// - noData: no data received
+/// - unknown: unknown error occurred
+/// - invalidData: invalid data received
+/// - other: other error along with description
 public enum LocationError: Error {
 	case missingAuthInInfoPlist
 	case authDidChange(_: CLAuthorizationStatus)
@@ -152,6 +182,11 @@ public enum LocationError: Error {
 	case other(_: String)
 }
 
+/// Authorization
+/// - always: `always` authorization is present
+/// - inuse: only `when in use` authorization is present
+/// - both: both `always` and `inuse` authorizations are present
+/// - none: no authorizations are presents
 public enum Authorization : CustomStringConvertible, Comparable, Equatable {
 	case always
 	case inuse
@@ -205,6 +240,14 @@ public enum Authorization : CustomStringConvertible, Comparable, Equatable {
 	}
 }
 
+// MARK: - LocAuth
+
+/// Current authorization status
+/// - disabled: authorization is disabled
+/// - undetermined : authorization status cannot be determined
+/// - denied: authorization was denied by the user
+/// - alwaysAuthorized: user has authorized with `always` mode
+/// - inUseAuthorized: user has authorized with `in use` mode
 public enum LocAuth {
 	case disabled
 	case undetermined
@@ -213,6 +256,8 @@ public enum LocAuth {
 	case alwaysAuthorized
 	case inUseAuthorized
 	
+	
+	/// current status of the authorizations
 	public static var status: LocAuth {
 		guard CLLocationManager.locationServicesEnabled() else {
 			return .disabled
@@ -226,6 +271,7 @@ public enum LocAuth {
 		}
 	}
 	
+	/// Permission was granted by the user
 	public static var isAuthorized: Bool {
 		switch LocAuth.status {
 		case .alwaysAuthorized, .inUseAuthorized:
@@ -236,10 +282,15 @@ public enum LocAuth {
 	}
 }
 
+
+// MARK: - Extension of CLLocationManager
+
 public extension CLLocationManager {
 	
+	/// Evaluate current application status
 	public static var appAuthorization: Authorization {
-		guard let path = Bundle.main.path(forResource: "Info", ofType: "plist"), let dict = NSDictionary(contentsOfFile: path) else {
+		guard	let path = Bundle.main.path(forResource: "Info", ofType: "plist"),
+				let dict = NSDictionary(contentsOfFile: path) else {
 			return .none
 		}
 		var isAlways = false
@@ -263,6 +314,8 @@ public extension CLLocationManager {
 		}
 	}
 	
+	
+	/// Background location services are enabled
 	public static var isBackgroundUpdateEnabled: Bool {
 		if let backgroundModes = Bundle.main.object(forInfoDictionaryKey: "UIBackgroundModes") as? NSArray {
 			if backgroundModes.contains("location") && backgroundModes.contains("fetch") {

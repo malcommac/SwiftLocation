@@ -13,6 +13,7 @@ import CoreLocation
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
 	@IBOutlet public var table: UITableView?
+	@IBOutlet public var textView: UITextView?
 	
 	private var rq_continousLoc: LocationRequest?
 	private var rq_continousLoc2: LocationRequest?
@@ -27,15 +28,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		// Do any additional setup after loading the view, typically from a nib.
 	}
 	
+	func debug(_ string: String) {
+		DispatchQueue.main.async {
+			self.textView?.text = self.textView!.text + "\n\n\(string)"
+			
+			let stringLength:Int = self.textView!.text.characters.count
+			self.textView!.scrollRangeToVisible(NSMakeRange(stringLength-1, 0))
+		}
+	}
+	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
 		Location.onAddNewRequest = {
-			print("[+] \($0)")
+			self.debug("[+] \($0)")
 		}
 		Location.onRemoveRequest = {
-			print("[-] \($0)")
+			self.debug("[-] \($0)")
 		}
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(rec), name: NSNotification.Name(rawValue: "prova"), object: nil)
+	}
+	
+	public func rec(not: NSNotification) {
+		self.debug("\(not.userInfo!["text"])")
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -44,7 +60,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return 7	
+		return 8
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -76,10 +92,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		case 6:
 			cell?.textLabel?.text = "Status"
 			cell?.detailTextLabel?.text = "Get the status of the tracker."
+		case 7:
+			cell?.textLabel?.text = "Clear"
+			cell?.detailTextLabel?.text = "Clear"
 		default:
 			break
 		}
 		
+	
 		return cell!
 	}
 	
@@ -100,13 +120,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			test_backgroundTravelled()
 		case 6:
 			tracker_description()
+		case 7:
+			textView?.text = ""
 		default:
 			break
 		}
 	}
 	
 	private func tracker_description() {
-		print(Location.description)
+		debug(Location.description)
 	}
 	
 	private func test_backgroundTravelled() {
@@ -115,7 +137,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			alert.addAction(UIAlertAction(title: "Pause", style: .default, handler: { _ in
 				self.rq_backgroundTravelled?.pause()
 			}))
-			if rq_background!.state.isPaused {
+			if rq_backgroundTravelled!.state.isPaused {
 				alert.addAction(UIAlertAction(title: "Resume", style: .default, handler: { _ in
 					self.rq_backgroundTravelled?.resume()
 				}))
@@ -128,8 +150,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			return
 		}
 		
-		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .whenTravelled(distance: 5, timeout: 10, navigation: true), { loc in
-			print("\t\t[\(self.rq_backgroundTravelled!.name)] > New location \(loc)")
+		rq_backgroundTravelled = LocationRequest(name: "REQ_4", accuracy: .any, frequency: .deferredUntil(distance: 20, timeout: CLTimeIntervalMax, navigation: true), { loc in
+			self.debug("\t\t[\(self.rq_backgroundTravelled!.name)] > New location \(loc)")
 			
 			let notification = UILocalNotification()
 			notification.alertTitle = "SIG.TRAVELLED LOCATION RECEIVED"
@@ -138,7 +160,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			UIApplication.shared.scheduleLocalNotification(notification)
 			
 		}, { (last, error) in
-			print("\t\t[\(self.rq_backgroundTravelled!.name)] > Error \(error)")
+			self.debug("\t\t[\(self.rq_backgroundTravelled!.name)] > Error \(error)")
 			
 			let notification = UILocalNotification()
 			notification.alertTitle = "SIG.TRAVELLED LOCATION ERROR"
@@ -171,7 +193,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		}
 		
 		rq_background = LocationRequest(name: "REQ_3", accuracy: .any, frequency: .significant, { loc in
-			print("\t\t[\(self.rq_background!.name)] > New location \(loc)")
+			self.debug("\t\t[\(self.rq_background!.name)] > New location \(loc)")
 			
 			let notification = UILocalNotification()
 			notification.alertTitle = "SIGNIFICANT LOCATION RECEIVED"
@@ -180,7 +202,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 			UIApplication.shared.scheduleLocalNotification(notification)
 
 		}, { (last, error) in
-			print("\t\t[\(self.rq_background!.name)] > Error \(error)")
+			self.debug("\t\t[\(self.rq_background!.name)] > Error \(error)")
 			
 			let notification = UILocalNotification()
 			notification.alertTitle = "SIGNIFICANT LOCATION ERROR"
@@ -212,9 +234,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		}
 		
 		rq_oneshot = LocationRequest(name: "REQ_1", accuracy: .neighborhood, frequency: .oneShot, { loc in
-			print("\t\t[\(self.rq_oneshot!.name)] > New location \(loc)")
+			self.debug("\t\t[\(self.rq_oneshot!.name)] > New location \(loc)")
 		}, { (last, error) in
-			print("\t\t[\(self.rq_oneshot!.name)] > Error \(error)")
+			self.debug("\t\t[\(self.rq_oneshot!.name)] > Error \(error)")
 		})
 		rq_oneshot!.resume()
 	}
@@ -239,10 +261,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		}
 		
 		rq_continousLoc = LocationRequest(name: "REQ_1", accuracy: .city, frequency: .continuous, { loc in
-			print("\t\t[\(self.rq_continousLoc!.name)] > New location \(loc)")
+			self.debug("\t\t[\(self.rq_continousLoc!.name)] > New location \(loc)")
 		}, { (last, error) in
-			print("\t\t[\(self.rq_continousLoc!.name)] > Error \(error)")
+			self.debug("\t\t[\(self.rq_continousLoc!.name)] > Error \(error)")
 		})
+		rq_continousLoc?.minimumDistance = 10
 		rq_continousLoc!.resume()
 	}
 	
@@ -266,9 +289,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		}
 		
 		rq_continousLoc2 = LocationRequest(name: "REQ_2", accuracy: .block, frequency: .continuous, { loc in
-			print("\t\t[\(self.rq_continousLoc2!.name)] > New location \(loc)")
+			self.debug("\t\t[\(self.rq_continousLoc2!.name)] > New location \(loc)")
 		}, { (last, error) in
-			print("\t\t[\(self.rq_continousLoc2!.name)] > Error \(error)")
+			self.debug("\t\t[\(self.rq_continousLoc2!.name)] > Error \(error)")
 		})
 		rq_continousLoc2!.resume()
 	}
@@ -280,9 +303,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 		let fq = Frequency.oneShot
 		
 		rq_ipscan = LocationRequest(name: "REQ_0", accuracy: sv, frequency: fq, { location in
-			print("\t\t[\(self.rq_ipscan!.name)] > [\(randomService)]: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+			self.debug("\t\t[\(self.rq_ipscan!.name)] > [\(randomService)]: \(location.coordinate.latitude), \(location.coordinate.longitude)")
 		}, { (last, error) in
-			print("\t\t[\(self.rq_ipscan!.name)] > Error: \(error)")
+			self.debug("\t\t[\(self.rq_ipscan!.name)] > Error: \(error)")
 		})
 		rq_ipscan!.resume()
 	}
