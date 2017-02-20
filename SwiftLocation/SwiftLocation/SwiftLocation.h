@@ -2,8 +2,8 @@
 //  SwiftLocation.h
 //  SwiftLocation
 //
-//  Created by Daniele Margutti on 30/04/16.
-//  Copyright © 2016 danielemargutti. All rights reserved.
+//  Created by Daniele Margutti on 08/01/2017.
+//  Copyright © 2017 Daniele Margutti. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
