@@ -38,28 +38,30 @@ Take a look here:
 - [1.0.5](https://github.com/malcommac/SwiftLocation/releases/tag/1.0.5) Is the last version compatible with Swift 2.3 (not supported anymore)
 - [0.1.4](https://github.com/malcommac/SwiftLocation/releases/tag/0.1.4) Is the last version compatible with Swift 2.0 (not supported anymore)
 
+<a name="index" />
+
 ## Index
 * **[Introduction](#introduction)**
 * **[APIs Index](#api)**
-	* **[Location Monitoring](#location)**
-	* **[Reverse Geocoding](#reverse)**
-	* **[Heading Monitoring](#heading)**
-	* **[Region Monitoring](#region)**
-	* **[Visits Monitoring](#visits)**
+	* [Location Monitoring](#location)
+	* [Reverse Geocoding](#reverse)
+	* [Heading Monitoring](#heading)
+	* [Region Monitoring](#region)
+	* [Visits Monitoring](#visits)
 * **[Prerequisites](#prerequisites)**
 * **[Get Current Location](#getcurrentlocation)**
-	* **[Manage `LocationRequest`](#locationrequest)**
-	* **[Examples](#examples_location)**
+	* [Manage `LocationRequest`](#locationrequest)
+	* [Examples](#examples_location)
 * **[Reverse geocoding from address string](#reverse_string)**
-	* **[Examples](#examples_reverse)**
+	* [Examples](#examples_reverse)
 * **[Reverse geocoding from a `CLLocation`](#reverse_location)**
-	* **[Examples](#example_reverse_location)**
+	* [Examples](#example_reverse_location)
 * **[Get continous device's heading (`CLHeading`)](#get_heading)**
-	* **[Examples](#examples_heading)**
+	* [Examples](#examples_heading)
 * **[Monitor geographic region](#monitor_region)**
-	* **[Examples](#examples_monitor)**
+	* [Examples](#examples_monitor)**
 * **[Monitor Visits (`CLVisits`)](#monitor_visits)**
-	* **[Examples](#examples_visits)**
+	* [Examples](#examples_visits)
 * **[Background Updates](#background)**
 * **[More on `LocationTracker`](#locationtracker)**
 
@@ -74,6 +76,8 @@ Other:
 ## Introduction
 
 The main concept behind SwiftLocation is a central Location Manager class called `LocationTracker`. It automatically manages hardware resources by turning on/off and change filters level according to currently running requests: you just don't need to worry about battery usage, SwiftLocation takes care of it.
+
+([Index ↑](#index))
 
 <a name="api" />
 
@@ -122,6 +126,8 @@ The string value you add will be shown along with the authorization request the 
 
 If you need background monitoring you should specify `NSLocationAlwaysUsageDescription` and specify the correct value in `UIBackgroundModes` key (you can learn more here).
 
+([Index ↑](#index))
+
 <a name="getcurrentlocation" />
 
 ### Get Current Location
@@ -146,6 +152,8 @@ The most common request is to get the current user location.
 - `timeout`: define a maximum time interval (in seconds). If no updates are delivered to the request until that time the request itself generate a `LocationError.timeout` error in error callback. By passing `nil` timeout timer is disabled.
 - `success`: define a callback which is called when a new location is received. Received parameter is a `CLLocation` object.
 - `failure`: define a callback which is called when a new error (of type `Error`) is received. By default the request still running after an error; if you want to kill it automatically on error set the `cancelOnError` property to `true`.
+
+([Index ↑](#index))
 
 <a name="locationrequest" />
 
@@ -226,6 +234,9 @@ Location.getLocation(accuracy: .city, frequency: .continuous, success: { (_, loc
 		print("Location monitoring failed due to an error \(error)")
 }
 ```
+
+([Index ↑](#index))
+
 <a name="reverse_string" />
 
 ### Reverse geocoding from address string
@@ -253,6 +264,9 @@ Location.getLocation(forAddress: "1 Infinite Loop, Cupertino", success: { placem
 	print("Cannot reverse geocoding due to an error \(error)")
 }
 ```
+
+([Index ↑](#index))
+
 <a name="reverse_location" />
 
 ### Reverse geocoding from a `CLLocation`
@@ -301,6 +315,9 @@ do {
 	print("Cannot start heading updates: \(error)")
 }
 ```
+
+([Index ↑](#index))
+
 <a name="monitor_region" />
 
 ### Monitor geographic region
@@ -343,6 +360,9 @@ do {
 	print("Cannot start heading updates: \(error)")
 }
 ```
+
+([Index ↑](#index))
+
 <a name="monitor_visits" />
 
 ### Monitor Visits (`CLVisits`)
@@ -367,6 +387,9 @@ do {
 	print("Cannot start visit updates: \(error)")
 }
 ```
+
+([Index ↑](#index))
+
 <a name="background" />
 
 ### Background Updates
@@ -387,6 +410,8 @@ The significant location change is the least accurate of all the location monito
 
 You can also register a background task to get the most accurated result for a limited period of time.
 In your background task you can define a region monitoring request; as soon as the device crosses the region you will create another region from the current coordinates while entering and exiting from regions, did update location delegate gets called and you get the updated coordinate while application is in terminated mode.
+
+([Index ↑](#index))
 
 <a name="locationtracker" />
 
@@ -413,6 +438,8 @@ Location.onRemoveRequest = { req in
 - `lastLocation` last location get the last valid `CLLocation` obtained from the location manager.
 - `locationSettings` return the current settings for Location Tracker instance by returning a `TrackerSettings` struct with the following global `CLLocationManager` properties: `accuracy`, `frequency`, `activity`, `distanceFilter`. Values are evaluated continously based upon running requests.
 
+([Index ↑](#index))
+
 <a name="installation" />
 
 ## Installation
@@ -438,6 +465,9 @@ Add swiftline as dependency in your `Package.swift`
   )
 ```
 
+([Index ↑](#index))
+
+
 <a name="requirements" />
 
 ## Requirements
@@ -448,6 +478,8 @@ Current version is compatible with:
 * iOS 8.0 or later
 * macOS 10.10 or later
 * watchOS 2.0 or later
+
+([Index ↑](#index))
 
 <a name="credits" />
 
@@ -465,3 +497,4 @@ This software uses open source SwiftLocation's library to manage location update
 Web: http://github.com/malcommac/SwiftLocation
 Created by Daniele Margutti and licensed under MIT License.
 ```
+([Index ↑](#index))
