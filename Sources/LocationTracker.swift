@@ -368,14 +368,10 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			
 			// Location Requests
 			if let request = request as? LocationRequest {
-			//	let isAppInBackground = (UIApplication.shared.applicationState == .background)
-			//	let canStart = (isAppInBackground && request.isBackgroundRequest) || (!isAppInBackground && !request.isBackgroundRequest)
-			//	if canStart == true {
-					request._state = .running
-					if locationsPool.add(request) {
-						hasChanges = true
-					}
-			//	}
+				request._state = .running
+				if locationsPool.add(request) {
+					hasChanges = true
+				}
 			}
 			
 			// Geocoder Requests
@@ -740,7 +736,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// We need to start the deferred location delivery (by calling allowDeferredLocationUpdates) after
 		// the first location is arrived. So if this is the first location we have received and we have
 		// running deferred location request we can start it.
-		if self.lastLocation.count == 1 {
+		if self.lastLocation.last != nil {
 			turnOnOrOffDeferredLocationUpdates()
 		}
 		

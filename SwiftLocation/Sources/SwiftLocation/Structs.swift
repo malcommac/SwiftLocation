@@ -78,14 +78,10 @@ public struct LastLocation {
 	/// This represent the last measured location by timestamp (may be innacurate, check `accuracy`)
 	public var last: CLLocation?
 	
-	/// Number of locations received
-	private(set) var count: Int = 0
-	
 	/// Store last value
 	///
 	/// - Parameter location: location to set
 	mutating internal func set(location: CLLocation) {
-		count += 1
 		if bestAccurated == nil {
 			self.bestAccurated = location
 		} else if location.horizontalAccuracy > self.bestAccurated!.horizontalAccuracy {
