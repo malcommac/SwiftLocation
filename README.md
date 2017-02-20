@@ -41,6 +41,7 @@ Take a look here:
 <a name="index" />
 
 ## Index
+* **[Differences with 1.x](#migration)**
 * **[Introduction](#introduction)**
 * **[APIs Index](#api)**
 	* [Location Monitoring](#location)
@@ -70,6 +71,12 @@ Other:
 * **[Installation](#installation)**
 * **[Requirements](#requirements)**
 * **[Credits](#credits)**
+
+<a name="migration" />
+
+## Differences with 1.x
+
+SwiftLocation 2.x is a complete rewrite of the library. However, while some calls may appears different it's pretty much the same. If you are in dubt fell free to ask support via issue tracking. I'll try to reply fast as I can.
 
 <a name="introduction" />
 
