@@ -615,6 +615,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 		if self.googleAPIKey != nil {
 			APIURLString = "\(APIURLString)&key=\(self.googleAPIKey!)"
 		}
+		APIURLString = APIURLString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 		let APIURL = URL(string: APIURLString)
 		let APIURLRequest = URLRequest(url: APIURL!)
 		let task = NetRequest(APIURLRequest, complete: { data, error in
