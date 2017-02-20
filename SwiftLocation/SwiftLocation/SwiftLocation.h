@@ -6,7 +6,7 @@
 //  Copyright © 2017 Daniele Margutti. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for SwiftLocation.
 FOUNDATION_EXPORT double SwiftLocationVersionNumber;

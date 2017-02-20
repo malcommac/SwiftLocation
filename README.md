@@ -475,9 +475,7 @@ Add swiftline as dependency in your `Package.swift`
 Current version is compatible with:
 
 * Swift 3.0+
-* iOS 8.0 or later
-* macOS 10.10 or later
-* watchOS 2.0 or later
+* iOS 9.0 or later
 
 ([Index ↑](#index))
 
