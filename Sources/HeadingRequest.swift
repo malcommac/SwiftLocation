@@ -35,13 +35,15 @@ import Foundation
 import CoreLocation
 import MapKit
 
-public enum HeadingCallback {
-	public typealias onSuccess = ((_ heading: CLHeading) -> (Void))
-	public typealias onError = ((_ error: Error) -> (Void))
+public enum HeadingObserver {
+	public typealias onSuccess = ((_ request: HeadingRequest, _ heading: CLHeading) -> (Void))
+	public typealias onError = ((_ request: HeadingRequest, _ error: Error) -> (Void))
 	
 	case onReceivedHeading(_: Context, _: onSuccess)
 	case onErrorOccurred(_: Context, _: onError)
 }
+
+//MARK: - Heading Request
 
 public class HeadingRequest: Request {
 	
@@ -49,7 +51,7 @@ public class HeadingRequest: Request {
 	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
 	/// Registered callbacks
-	private var registeredCallbacks: [HeadingCallback] = []
+	private var registeredCallbacks: [HeadingObserver] = []
 	
 	/// This represent the current state of the Request
 	internal var _previousState: RequestState = .idle
@@ -112,17 +114,17 @@ public class HeadingRequest: Request {
 	///   - success: handler called to receive new heading measures
 	///   - failure: handler called to receive errors
 	public init(name: String? = nil, filter: CLLocationDegrees? = nil,
-	            success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws {
+	            success: @escaping HeadingObserver.onSuccess, failure: @escaping HeadingObserver.onError) throws {
 		guard CLLocationManager.headingAvailable() else {
 			throw LocationError.serviceNotAvailable
 		}
 		self.name = name
 		self.filter = filter
-		self.add(callback: HeadingCallback.onReceivedHeading(.main, success))
-		self.add(callback: HeadingCallback.onErrorOccurred(.main, failure))
+		self.add(callback: HeadingObserver.onReceivedHeading(.main, success))
+		self.add(callback: HeadingObserver.onErrorOccurred(.main, failure))
 	}
 
-	public func add(callback: HeadingCallback?) {
+	public func add(callback: HeadingObserver?) {
 		guard let callback = callback else { return }
 		self.registeredCallbacks.append(callback)
 	}
@@ -184,7 +186,7 @@ public class HeadingRequest: Request {
 	public func dispatch(error: Error) {
 		self.registeredCallbacks.forEach {
 			if case .onErrorOccurred(let context, let handler) = $0 {
-				context.queue.async { handler(error) }
+				context.queue.async { handler(self,error) }
 			}
 		}
 		
@@ -205,7 +207,7 @@ public class HeadingRequest: Request {
 		guard self.filterIsChangedEnough(heading: heading) else { return }
 		self.registeredCallbacks.forEach {
 			if case .onReceivedHeading(let context, let handler) = $0 {
-				context.queue.async { handler(heading) }
+				context.queue.async { handler(self,heading) }
 			}
 		}
 	}

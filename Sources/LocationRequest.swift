@@ -39,19 +39,18 @@ import CoreLocation
 ///
 /// - onReceiveLocation: on receive new location callback
 /// - onErrorOccurred: on receive an error callback
-public enum LocCallback {
-	public typealias onSuccess = ((_ location: CLLocation) -> (Void))
-	public typealias onError = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void))
+/// - onAuthDidChange: on receive a change in authorization status
+public enum LocObserver {
+	public typealias onSuccess = ((_ request: LocationRequest, _ location: CLLocation) -> (Void))
+	public typealias onError = ((_ request: LocationRequest, _ lastLocation: CLLocation? , _ error: Error) -> (Void))
+	public typealias onAuthChange = ((_ request: LocationRequest, _ old: CLAuthorizationStatus , _ new: CLAuthorizationStatus) -> (Void))
 	
 	case onReceiveLocation(_: Context, _: onSuccess)
 	case onErrorOccurred(_: Context, _: onError)
+	case onAuthDidChange(_: Context, _: onAuthChange)
 }
 
 public class LocationRequest: Request {
-	
-	public typealias OnSuccessCallback = ((_ location: CLLocation) -> (Void))
-	public typealias OnErrorCallback = ((_ lastLocation: CLLocation? , _ error: Error) -> (Void))
-	public typealias OnAuthDidChangeCallback = ((_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) -> (Void))
 	
 	/// Desidered frequency of the updates
 	private(set) var frequency: Frequency
@@ -121,10 +120,10 @@ public class LocationRequest: Request {
 	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
 	/// Callbacks registered
-	public var registeredCallbacks: [LocCallback] = []
+	public var registeredCallbacks: [LocObserver] = []
 	
 	/// This callback is called when Location Manager authorization state did change
-	public var authChangeCallbacks: [OnAuthDidChangeCallback] = []
+	//public var authChangeCallbacks: [OnAuthDidChangeCallback] = []
 	
 	/// Initialize a new `Request` with passed settings. In order to start it you should call `resume()`
 	/// function. You can also avoid direct `Request` init and use `Location` built-in functions.
@@ -135,7 +134,7 @@ public class LocationRequest: Request {
 	///   - success: callback called when a new location has been received
 	///   - error: callback called when an error has been received
 	public init(name: String? = nil, accuracy: Accuracy, frequency: Frequency,
-	            _ success: @escaping LocCallback.onSuccess, _ error: LocCallback.onError? = nil) {
+	            _ success: @escaping LocObserver.onSuccess, _ error: LocObserver.onError? = nil) {
 		self.name = name
 		self.accuracy = accuracy
 		if case .IPScan(_) = accuracy {
@@ -145,10 +144,14 @@ public class LocationRequest: Request {
 			self.frequency = frequency
 		}
 		
-		self.registeredCallbacks.append(LocCallback.onReceiveLocation(.main, success))
+		self.register(observer: LocObserver.onReceiveLocation(.main, success))
 		if error != nil {
-			self.registeredCallbacks.append(LocCallback.onErrorOccurred(.main, error!))
+			self.register(observer: LocObserver.onErrorOccurred(.main, error!))
 		}
+	}
+	
+	public func register(observer: LocObserver) {
+		self.registeredCallbacks.append(observer)
 	}
 	
 	/// Resume a paused request or add a new request in queue and start it.
@@ -249,7 +252,7 @@ public class LocationRequest: Request {
 		self.lastLocation = loc
 		self.registeredCallbacks.forEach {
 			if case .onReceiveLocation(let context, let handler) = $0 {
-				context.queue.async { handler(loc) }
+				context.queue.async { handler(self,loc) }
 			}
 		}
 		
@@ -293,7 +296,11 @@ public class LocationRequest: Request {
 	/// - Parameter status: new status
 	internal func dispatchAuthChange(_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) {
 		guard self.state.isRunning else { return }
-		self.authChangeCallbacks.forEach { $0(old,new) }
+		self.registeredCallbacks.forEach { callback in
+			if case .onAuthDidChange(let context, let handler) = callback {
+				context.queue.async { handler(self,old,new) }
+			}
+		}
 	}
 	
 	/// Internal receiver for errors
@@ -304,7 +311,7 @@ public class LocationRequest: Request {
 		// Alert callbacks
 		self.registeredCallbacks.forEach {
 			if case .onErrorOccurred(let context, let handler) = $0 {
-				context.queue.async { handler(self.lastLocation,error) }
+				context.queue.async { handler(self,self.lastLocation,error) }
 			}
 		}
 		

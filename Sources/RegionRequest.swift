@@ -40,9 +40,9 @@ import MapKit
 /// - onEnter: callback called when entering in region
 /// - onExit: callback called when exiting from region
 /// - onError: callback called on error
-public enum RegionCallback {
-	public typealias onEvent = ((Void) -> (Void))
-	public typealias onFailure = ((Error) -> (Void))
+public enum RegionObserver {
+	public typealias onEvent = ((_ request: RegionRequest) -> (Void))
+	public typealias onFailure = ((_ request: RegionRequest, _ error: Error) -> (Void))
 
 	case onEnter(_: Context, _: onEvent)
 	case onExit(_: Context, _: onEvent)
@@ -76,13 +76,15 @@ public enum RegionEvent {
 	case exited
 }
 
+// MARK: - Region Request
+
 public class RegionRequest: Request {
 	
 	/// Callback to call when request's state did change
 	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
 	/// Registered callbacks
-	private var registeredCallbacks: [RegionCallback] = []
+	private var registeredCallbacks: [RegionObserver] = []
 	
 	/// Callback called when monitoring for this region starts
 	public var onStartMonitoring: ((Void) -> (Void))? = nil
@@ -161,7 +163,7 @@ public class RegionRequest: Request {
 	///   - error: callback to call on error
 	/// - Throws: throw an exception if configuration or hardware is not valid to use region monitoring
 	public init(name: String? = nil, region: CLCircularRegion,
-	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
+	            onEnter enter: RegionObserver.onEvent?, onExit exit: RegionObserver.onEvent?, error: RegionObserver.onFailure?) throws {
 		
 		try RegionRequest.validateConfiguration()
 		
@@ -183,7 +185,7 @@ public class RegionRequest: Request {
 	///   - error: callback to call on error
 	/// - Throws: throw an exception if configuration or hardware is not valid to use region monitoring
 	public init(name: String? = nil, center: CLLocationCoordinate2D, radius: CLLocationDistance,
-	            onEnter enter: RegionCallback.onEvent?, onExit exit: RegionCallback.onEvent?, error: RegionCallback.onFailure?) throws {
+	            onEnter enter: RegionObserver.onEvent?, onExit exit: RegionObserver.onEvent?, error: RegionObserver.onFailure?) throws {
 		
 		try RegionRequest.validateConfiguration()
 		
@@ -208,7 +210,7 @@ public class RegionRequest: Request {
 		}
 	}
 	
-	private func add(callback: RegionCallback?) {
+	private func add(callback: RegionObserver?) {
 		guard let callback = callback else { return }
 		registeredCallbacks.append(callback)
 		self.updateNotifications()
@@ -279,7 +281,7 @@ public class RegionRequest: Request {
 	public func dispatch(error: Error) {
 		self.registeredCallbacks.forEach {
 			if case .onError(let context, let handler) = $0 {
-				context.queue.async { handler(error) }
+				context.queue.async { handler(self,error) }
 			}
 		}
 		
@@ -297,9 +299,9 @@ public class RegionRequest: Request {
 		self.registeredCallbacks.forEach {
 			switch ($0, event) {
 			case (.onEnter(let context, let handler), .entered) :
-				context.queue.async { handler() }
+				context.queue.async { handler(self) }
 			case (.onExit(let context, let handler), .exited):
-				context.queue.async { handler() }
+				context.queue.async { handler(self) }
 			default:
 				break
 			}

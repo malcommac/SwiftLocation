@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,40 +19,8 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ocp-1R-0sn">
-                                <rect key="frame" x="0.0" y="20" width="375" height="480"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="Y7C-Z9-vfc"/>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Qpb-q8-e6o"/>
-                                </connections>
-                            </tableView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="at2-FC-G1J">
-                                <rect key="frame" x="0.0" y="500" width="375" height="167"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="167" id="2KL-UW-bUK"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="11"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="at2-FC-G1J" secondAttribute="trailing" id="3Ae-UY-djS"/>
-                            <constraint firstAttribute="trailing" secondItem="ocp-1R-0sn" secondAttribute="trailing" id="IAj-eG-jD8"/>
-                            <constraint firstItem="ocp-1R-0sn" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Yon-99-iXw"/>
-                            <constraint firstItem="ocp-1R-0sn" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ZeQ-c2-rQx"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="at2-FC-G1J" secondAttribute="bottom" id="aE3-Hq-9Qa"/>
-                            <constraint firstItem="at2-FC-G1J" firstAttribute="top" secondItem="ocp-1R-0sn" secondAttribute="bottom" id="y8W-79-6ld"/>
-                            <constraint firstItem="at2-FC-G1J" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ymp-dc-t5H"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="table" destination="ocp-1R-0sn" id="lYE-Oo-6l1"/>
-                        <outlet property="textView" destination="at2-FC-G1J" id="oUe-jl-Bm8"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

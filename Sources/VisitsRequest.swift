@@ -40,13 +40,15 @@ import MapKit
 ///
 /// - onDidVisit: callback called when a new visit is generated
 /// - onError: callback called on error
-public enum VisitCallback {
+public enum VisitObserver {
 	public typealias onVisit = ((CLVisit) -> (Void))
 	public typealias onFailure = ((Error) -> (Void))
 	
 	case onDidVisit(_: Context, _: onVisit)
 	case onError(_: Context, _: onFailure)
 }
+
+// MARK: - Visit Request
 
 public class VisitsRequest: Request {
 	
@@ -78,7 +80,7 @@ public class VisitsRequest: Request {
 	/// Callback to call when request's state did change
 	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
-	private var registeredCallbacks: [VisitCallback] = []
+	private var registeredCallbacks: [VisitObserver] = []
 	
 	/// This represent the current state of the Request
 	internal var _previousState: RequestState = .idle
@@ -122,19 +124,19 @@ public class VisitsRequest: Request {
 	///   - error: callback called when an error is thrown
 	/// - Throws: throw an exception if application is not configured correctly to receive Visits events. App should
 	///           require always authorization.
-	public init(name: String? = nil, event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws {
+	public init(name: String? = nil, event: @escaping VisitObserver.onVisit, error: @escaping VisitObserver.onFailure) throws {
 		guard CLLocationManager.appAuthorization == .always else {
 			throw LocationError.other("NSLocationAlwaysUsageDescription in Info.plist is required to use Visits feature")
 		}
 		self.name = name
-		self.register(callback: VisitCallback.onDidVisit(.main, event))
-		self.register(callback: VisitCallback.onError(.main, error))
+		self.register(callback: VisitObserver.onDidVisit(.main, event))
+		self.register(callback: VisitObserver.onError(.main, error))
 	}
 	
 	/// Register a new callback for this request
 	///
 	/// - Parameter callback: callback to register
-	public func register(callback: VisitCallback?) {
+	public func register(callback: VisitObserver?) {
 		guard let callback = callback else { return }
 		self.registeredCallbacks.append(callback)
 	}

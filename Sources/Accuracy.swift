@@ -42,9 +42,9 @@ import CoreLocation
 /// - any: Lowest accuracy (< 1000km is accepted)
 /// - country: Lower accuracy (< 100km is accepted)
 /// - city: City accuracy (<= 3km is accepted)
-/// - neighborhood: Neighborhood accuracy (less than a kilometer)
-/// - block: Block accuracy (hundred meters)
-/// - house: House accuracu (nearest ten meters)
+/// - neighborhood: Neighborhood accuracy (less than a kilometer is accepted)
+/// - block: Block accuracy (hundred meters are accepted)
+/// - house: House accuracy (nearest ten meters are accepted)
 /// - room: Best accuracy
 /// - navigation: Best accuracy specific for navigation purposes
 public enum Accuracy: CustomStringConvertible {

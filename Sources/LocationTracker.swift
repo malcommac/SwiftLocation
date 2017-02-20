@@ -85,19 +85,19 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	internal var locationManager: CLLocationManager
 	
 	/// Queued requests regarding location services
-	private var locationsPool: RequestsPool<LocationRequest> = RequestsPool()
+	private var locationRequests: RequestsQueue<LocationRequest> = RequestsQueue()
 	
 	/// Queued requests regarding reverse geocoding services
-	private var geocodersPool: RequestsPool<GeocoderRequest> = RequestsPool()
+	private var geocoderRequests: RequestsQueue<GeocoderRequest> = RequestsQueue()
 	
 	/// Queued requests regarding heading services
-	private var headingPool: RequestsPool<HeadingRequest> = RequestsPool()
+	private var headingRequests: RequestsQueue<HeadingRequest> = RequestsQueue()
 
 	/// Queued requests regarding region monitor services
-	private var regionPool: RequestsPool<RegionRequest> = RequestsPool()
+	private var regionRequests: RequestsQueue<RegionRequest> = RequestsQueue()
 	
 	/// Queued requests regarding visits
-	private var visitsPool: RequestsPool<VisitsRequest> = RequestsPool()
+	private var visitRequests: RequestsQueue<VisitsRequest> = RequestsQueue()
 
 	/// This represent the status of the authorizations before a change
 	private var lastStatus: CLAuthorizationStatus = CLAuthorizationStatus.notDetermined
@@ -213,7 +213,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - error: error handler to call when an error did occour while searching for request
 	/// - Returns: request
 	@discardableResult
-	public func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocationRequest.OnSuccessCallback, error: @escaping LocationRequest.OnErrorCallback) -> LocationRequest {
+	public func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocObserver.onSuccess, error: @escaping LocObserver.onError) -> LocationRequest {
 		
 		let req = LocationRequest(accuracy: accuracy, frequency: frequency, success, error)
 		req.timeout = timeout
@@ -236,8 +236,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - failure: failure handler to call when reverse geocoding fails
 	/// - Returns: request
 	@discardableResult
-	public func getLocation(forString address: String, inRegion region: CLRegion? = nil, timeout: TimeInterval? = nil,
-	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+	public func getLocation(forAddress address: String, inRegion region: CLRegion? = nil, timeout: TimeInterval? = nil,
+	                        success: @escaping GeocoderObserver.onSuccess, failure: @escaping GeocoderObserver.onError) -> GeocoderRequest {
 		let req = GeocoderRequest(address: address, region: region, success, failure)
 		req.timeout = timeout
 		req.resume()
@@ -255,8 +255,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - failure: failure handler to call when reverse geocoding fails
 	/// - Returns: request
 	@discardableResult
-	public func getLocation(forLocation location: CLLocation, timeout: TimeInterval? = nil,
-	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+	public func getPlacemark(forLocation location: CLLocation, timeout: TimeInterval? = nil,
+	                        success: @escaping GeocoderObserver.onSuccess, failure: @escaping GeocoderObserver.onError) -> GeocoderRequest {
 		let req = GeocoderRequest(location: location, success, failure)
 		req.timeout = timeout
 		req.resume()
@@ -275,7 +275,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Returns: request
 	@discardableResult
 	public func getLocation(forABDictionary dict: [AnyHashable: Any], timeout: TimeInterval? = nil,
-	                        success: @escaping GeocoderCallback.onSuccess, failure: @escaping GeocoderCallback.onError) -> GeocoderRequest {
+	                        success: @escaping GeocoderObserver.onSuccess, failure: @escaping GeocoderObserver.onError) -> GeocoderRequest {
 		let req = GeocoderRequest(abDictionary: dict, success, failure)
 		req.timeout = timeout
 		req.resume()
@@ -292,8 +292,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - failure: failure handler
 	/// - Returns: request
 	@discardableResult
-	public func getHeading(filter: CLLocationDegrees,
-	                       success: @escaping HeadingCallback.onSuccess, failure: @escaping HeadingCallback.onError) throws -> HeadingRequest {
+	public func getContinousHeading(filter: CLLocationDegrees,
+	                       success: @escaping HeadingObserver.onSuccess, failure: @escaping HeadingObserver.onError) throws -> HeadingRequest {
 		let request = try HeadingRequest(filter: filter, success: success, failure: failure)
 		request.resume()
 		return request
@@ -314,7 +314,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	@discardableResult
 	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance,
-	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+	                    enter: RegionObserver.onEvent?, exit: RegionObserver.onEvent?, error: @escaping RegionObserver.onFailure) throws -> RegionRequest {
 		let request = try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
 		request.resume()
 		return request
@@ -332,7 +332,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	@discardableResult
 	public func monitor(region: CLCircularRegion,
-	                    enter: RegionCallback.onEvent?, exit: RegionCallback.onEvent?, error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+	                    enter: RegionObserver.onEvent?, exit: RegionObserver.onEvent?, error: @escaping RegionObserver.onFailure) throws -> RegionRequest {
 		let request = try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
 		request.resume()
 		return request
@@ -350,7 +350,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Returns: request
 	/// - Throws: throw an exception if app does not support alway authorization
 	@discardableResult
-	public func monitorVisit(event: @escaping VisitCallback.onVisit, error: @escaping VisitCallback.onFailure) throws -> VisitsRequest {
+	public func monitorVisit(event: @escaping VisitObserver.onVisit, error: @escaping VisitObserver.onFailure) throws -> VisitsRequest {
 		let request = try VisitsRequest(event: event, error: error)
 		request.resume()
 		return request
@@ -369,7 +369,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Location Requests
 			if let request = request as? LocationRequest {
 				request._state = .running
-				if locationsPool.add(request) {
+				if locationRequests.add(request) {
 					hasChanges = true
 				}
 			}
@@ -377,7 +377,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Geocoder Requests
 			if let request = request as? GeocoderRequest {
 				request._state = .running
-				if geocodersPool.add(request) {
+				if geocoderRequests.add(request) {
 					hasChanges = true
 				}
 			}
@@ -385,7 +385,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Heading requests
 			if let request = request as? HeadingRequest {
 				request._state = .running
-				if headingPool.add(request) {
+				if headingRequests.add(request) {
 					hasChanges = true
 				}
 			}
@@ -393,7 +393,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Region Monitoring requests
 			if let request = request as? RegionRequest {
 				request._state = .running
-				if regionPool.add(request) {
+				if regionRequests.add(request) {
 					hasChanges = true
 				}
 			}
@@ -419,21 +419,21 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Location Requests
 			if let request = request as? LocationRequest {
 				request._state = .idle
-				locationsPool.remove(request)
+				locationRequests.remove(request)
 				hasChanges = true
 			}
 			
 			// Geocoder requests
 			if let request = request as? GeocoderRequest {
 				request._state = .idle
-				geocodersPool.remove(request)
+				geocoderRequests.remove(request)
 				hasChanges = true
 			}
 			
 			// Heading requests
 			if let request = request as? HeadingRequest {
 				request._state = .idle
-				headingPool.remove(request)
+				headingRequests.remove(request)
 				hasChanges = true
 			}
 			
@@ -441,7 +441,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			if let request = request as? RegionRequest {
 				request._state = .idle
 				locationManager.stopMonitoring(for: request.region)
-				regionPool.remove(request)
+				regionRequests.remove(request)
 				hasChanges = true
 			}
 		}
@@ -505,22 +505,22 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		// Location Request
 		if let request = request as? LocationRequest {
-			return locationsPool.isQueued(request)
+			return locationRequests.isQueued(request)
 		}
 		
 		// Geocoder Request
 		if let request = request as? GeocoderRequest {
-			return geocodersPool.isQueued(request)
+			return geocoderRequests.isQueued(request)
 		}
 		
 		// Heading Request
 		if let request = request as? HeadingRequest {
-			return headingPool.isQueued(request)
+			return headingRequests.isQueued(request)
 		}
 		
 		// Region Request
 		if let request = request as? RegionRequest {
-			return regionPool.isQueued(request)
+			return regionRequests.isQueued(request)
 		}
 		return false
 	}
@@ -528,40 +528,40 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	//MARK: CLLocationManager Visits Delegate
 	
 	public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
-		self.visitsPool.dispatch(value: visit)
+		self.visitRequests.dispatch(value: visit)
 	}
 	
 	//MARK: CLLocationManager Region Monitoring Delegate
 	
 	public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-		let region = self.regionPool.filter { $0.region == region }.first
+		let region = self.regionRequests.filter { $0.region == region }.first
 		region?.onStartMonitoring?()
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-		let region = self.regionPool.filter { $0.region == region }.first
+		let region = self.regionRequests.filter { $0.region == region }.first
 		region?.dispatch(error: error)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-		let region = self.regionPool.filter { $0.region == region }.first
+		let region = self.regionRequests.filter { $0.region == region }.first
 		region?.dispatch(event: .entered)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-		let region = self.regionPool.filter { $0.region == region }.first
+		let region = self.regionRequests.filter { $0.region == region }.first
 		region?.dispatch(event: .exited)
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-		let region = self.regionPool.filter { $0.region == region }.first
+		let region = self.regionRequests.filter { $0.region == region }.first
 		region?.dispatch(state: state)
 	}
 	
 	//MARK: - Internal Heading Manager Func
 	
 	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-		self.headingPool.dispatch(value: newHeading)
+		self.headingRequests.dispatch(value: newHeading)
 	}
 	
 	public func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
@@ -576,7 +576,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - newState: new state to set
 	///   - states: request's allowed state to be changed
 	private func loc_setRequestState(_ newState: RequestState, forRequestsIn states: Set<RequestState>) {
-		locationsPool.forEach {
+		locationRequests.forEach {
 			if states.contains($0.state) {
 				$0._state = newState
 			}
@@ -608,7 +608,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		var meters: Double? = nil
 		var timeout: TimeInterval? = nil
 		var accuracyIsNavigation: Bool = false
-		self.locationsPool.forEach {
+		self.locationRequests.forEach {
 			if case let .deferredUntil(rMt,rTime,rAcc) = $0.frequency {
 				if meters == nil || (rMt < meters!) { meters = rMt }
 				if timeout == nil || (rTime < timeout!) { timeout = rTime }
@@ -645,7 +645,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///
 	/// - Returns: best settings
 	private func locationTrackingBestSettings() -> TrackerSettings? {
-		guard locationsPool.countRunning > 0 else {
+		guard locationRequests.countRunning > 0 else {
 			return nil // no settings, location manager can be disabled
 		}
 		
@@ -654,7 +654,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		var type: CLActivityType = .other
 		var distanceFilter: CLLocationDistance? = kCLDistanceFilterNone
 		
-		for request in locationsPool {
+		for request in locationRequests {
 			guard request.state.isRunning else {
 				continue // request is not running, can be ignored
 			}
@@ -709,7 +709,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	//MARK: - CLLocationManager Location Tracking Delegate
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		locationsPool.forEach { $0.dispatchAuthChange(self.lastStatus, status) }
+		locationRequests.forEach { $0.dispatchAuthChange(self.lastStatus, status) }
 		self.lastStatus = status
 		
 		switch status {
@@ -744,7 +744,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		self.lastLocation.set(location: location)
 		
 		// Dispatch to any request (which is not of type deferred)
-		locationsPool.iterate({ return ($0.frequency.isDeferredFrequency == false) }, {
+		locationRequests.iterate({ return ($0.frequency.isDeferredFrequency == false) }, {
 			$0.dispatch(location: location)
 		})
 	}
@@ -753,7 +753,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 
 	public func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
 		// iterate over deferred locations
-		locationsPool.iterate({ return $0.frequency.isDeferredFrequency }, {
+		locationRequests.iterate({ return $0.frequency.isDeferredFrequency }, {
 			$0.dispatch(error: error ?? LocationError.unknown)
 		})
 	}
@@ -761,7 +761,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	//MARK: CLLocationManager Error Delegate
 	
 	@objc open func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		locationsPool.iterate({ return $0.frequency.isDeferredFrequency }, {
+		locationRequests.iterate({ return $0.frequency.isDeferredFrequency }, {
 			$0.dispatch(error: error)
 		})
 	}
@@ -794,8 +794,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	private var pools: [RequestsPoolProtocol] {
-		let pools: [RequestsPoolProtocol] = [locationsPool, regionPool, visitsPool,geocodersPool,headingPool]
+	private var pools: [RequestsQueueProtocol] {
+		let pools: [RequestsQueueProtocol] = [locationRequests, regionRequests, visitRequests,geocoderRequests,headingRequests]
 		return pools
 	}
 	
@@ -855,7 +855,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// Update visiting services
 	internal func updateVisitsServices() {
-		guard visitsPool.countRunning > 0 else {
+		guard visitRequests.countRunning > 0 else {
 			// There is not any running request, we can stop monitoring all regions
 			locationManager.stopMonitoringVisits()
 			return
@@ -865,9 +865,9 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// Update location services based upon running Requests
 	internal func updateLocationServices() {
-		let hasBackgroundRequests = locationsPool.hasBackgroundRequests()
+		let hasBackgroundRequests = locationRequests.hasBackgroundRequests()
 		
-		guard locationsPool.countRunning > 0 else {
+		guard locationRequests.countRunning > 0 else {
 			// There is not any running request, we can stop location service to preserve battery.
 			self.locationSettings = nil
 			return
@@ -885,7 +885,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			// Check if device supports location services.
 			// If not dispatch the error to any running request and stop.
 			guard CLLocationManager.locationServicesEnabled() else {
-				locationsPool.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
+				locationRequests.forEach { $0.dispatch(error: LocationError.serviceNotAvailable) }
 				return
 			}
 		}
@@ -893,7 +893,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// If there is a request which needs background capabilities and we have not set it
 		// dispatch proper error.
 		if hasBackgroundRequests && CLLocationManager.isBackgroundUpdateEnabled == false {
-			locationsPool.forEach { $0.dispatch(error: LocationError.backgroundModeNotSet) }
+			locationRequests.forEach { $0.dispatch(error: LocationError.backgroundModeNotSet) }
 			return
 		}
 		
@@ -905,7 +905,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		if isAppInBackground { self.autoPauseUpdates = false }
 		
 		// Resume any paused request (a paused request is in `.waitingUserAuth`,`.paused` or `.failed`)
-		locationsPool.iterate([.waitingUserAuth]) { $0.resume() }
+		locationRequests.iterate([.waitingUserAuth]) { $0.resume() }
 		
 		// Setup with best settings
 		self.locationSettings = bestSettings
@@ -915,25 +915,25 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	internal func updateRegionMonitoringServices() {
 		// Region monitoring is not available for this hardware
 		guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
-			regionPool.dispatch(error: LocationError.serviceNotAvailable)
+			regionRequests.dispatch(error: LocationError.serviceNotAvailable)
 			return
 		}
 		
 		// Region monitoring require always authorizaiton, if not generate error
 		let auth = CLLocationManager.appAuthorization
 		if auth != .always && auth != .both {
-			regionPool.dispatch(error: LocationError.requireAlwaysAuth)
+			regionRequests.dispatch(error: LocationError.requireAlwaysAuth)
 			return
 		}
 		
-		guard regionPool.countRunning > 0 else {
+		guard regionRequests.countRunning > 0 else {
 			// There is not any running request, we can stop monitoring all regions
 			locationManager.stopMonitoringAllRegions()
 			return
 		}
 		
 		// Monitor queued regions
-		regionPool.forEach {
+		regionRequests.forEach {
 			if $0.state.isRunning {
 				locationManager.startMonitoring(for: $0.region)
 			}
@@ -944,11 +944,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	internal func updateHeadingServices() {
 		// Heading service is not available on current hardware
 		guard CLLocationManager.headingAvailable() else {
-			self.headingPool.dispatch(error: LocationError.serviceNotAvailable)
+			self.headingRequests.dispatch(error: LocationError.serviceNotAvailable)
 			return
 		}
 		
-		guard headingPool.countRunning > 0 else {
+		guard headingRequests.countRunning > 0 else {
 			// There is not any running request, we can stop location service to preserve battery.
 			locationManager.stopUpdatingHeading()
 			return
@@ -956,7 +956,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		
 		// Find max accuracy in reporting heading and set it
 		var bestHeading: CLLocationDegrees = Double.infinity
-		for request in headingPool {
+		for request in headingRequests {
 			guard let filter = request.filter else {
 				bestHeading = kCLHeadingFilterNone
 				break

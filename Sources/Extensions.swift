@@ -49,8 +49,8 @@ public extension CLLocation {
 	///   - fail:		callback to execute on failure. Failure may be a generic error or `LocationError.noData` if no
 	///					placemark were found.
 	public func reverse(timeout: TimeInterval? = nil,
-	                    _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError ) {
-		Location.getLocation(forLocation: self, timeout: timeout, success: success, failure: failure)
+	                    _ success: @escaping GeocoderObserver.onSuccess, _ failure: @escaping GeocoderObserver.onError ) {
+		Location.getPlacemark(forLocation: self, timeout: timeout, success: success, failure: failure)
 	}
 	
 }
@@ -67,8 +67,8 @@ public extension String {
 	///   - failure:	callback to execute on failure
 	@discardableResult
 	public func reverse(timeout: TimeInterval? = nil,
-	                    _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError ) -> GeocoderRequest {
-		return Location.getLocation(forString: self, timeout: timeout, success: success, failure: failure)
+	                    _ success: @escaping GeocoderObserver.onSuccess, _ failure: @escaping GeocoderObserver.onError ) -> GeocoderRequest {
+		return Location.getLocation(forAddress: self, timeout: timeout, success: success, failure: failure)
 	}
 }
 
@@ -79,7 +79,7 @@ public extension CLLocationManager {
 		self.monitoredRegions.forEach { self.stopMonitoring(for: $0) }
 	}
 	
-	public class func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocationRequest.OnSuccessCallback, error: @escaping LocationRequest.OnErrorCallback) -> LocationRequest {
+	public class func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocObserver.onSuccess, error: @escaping LocObserver.onError) -> LocationRequest {
 		return Location.getLocation(accuracy: accuracy, frequency: frequency, timeout: timeout, success: success, error: error)
 	}
 	
@@ -94,9 +94,9 @@ public extension CLLocationManager {
 public extension CLCircularRegion {
 	
 	@discardableResult
-	public func monitor(enter: RegionCallback.onEvent?,
-	                    exit: RegionCallback.onEvent?,
-	                    error: @escaping RegionCallback.onFailure) throws -> RegionRequest {
+	public func monitor(enter: RegionObserver.onEvent?,
+	                    exit: RegionObserver.onEvent?,
+	                    error: @escaping RegionObserver.onFailure) throws -> RegionRequest {
 		return try Location.monitor(region: self, enter: enter, exit: exit, error: error)
 	}
 

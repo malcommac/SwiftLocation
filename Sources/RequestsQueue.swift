@@ -37,7 +37,7 @@ import MapKit
 
 
 /// Conformance protocol
-internal protocol RequestsPoolProtocol: CustomStringConvertible {
+internal protocol RequestsQueueProtocol: CustomStringConvertible {
 	typealias PoolChange = ((Any) -> (Void))
 
 	var requiredAuthorization: Authorization { get }
@@ -58,10 +58,10 @@ internal protocol RequestsPoolProtocol: CustomStringConvertible {
 
 /// This class represent a pool of requests.
 /// Each object must be conform to `Request` protocol.
-internal class RequestsPool<T: Request> : RequestsPoolProtocol, Sequence {
+internal class RequestsQueue<T: Request> : RequestsQueueProtocol, Sequence {
 	
 	/// List of requests in queue
-	private var list: Set<T> = []
+	private(set) var list: Set<T> = []
 	
 	/// Return the number of queued requests
 	public var count: Int {
@@ -79,10 +79,10 @@ internal class RequestsPool<T: Request> : RequestsPoolProtocol, Sequence {
 	}
 
 	/// Callback called when an item was removed from the list
-	public var onRemove: RequestsPoolProtocol.PoolChange? = nil
+	public var onRemove: RequestsQueueProtocol.PoolChange? = nil
 	
 	/// Callback called when a new item is added to the list
-	public var onAdd: RequestsPoolProtocol.PoolChange? = nil
+	public var onAdd: RequestsQueueProtocol.PoolChange? = nil
 	
 	/// Add a new request to the pool
 	///

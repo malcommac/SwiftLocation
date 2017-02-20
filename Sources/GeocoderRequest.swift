@@ -40,7 +40,7 @@ import CoreLocation
 ///
 /// - onReversed: success callback
 /// - onErrorOccurred: failure callback
-public enum GeocoderCallback {
+public enum GeocoderObserver {
 	public typealias onSuccess = ((_ placemarks: [CLPlacemark]) -> (Void))
 	public typealias onError = ((_ error: Error) -> (Void))
 	
@@ -68,6 +68,8 @@ public enum GeocoderSource: CustomStringConvertible {
 	}
 }
 
+// MARK: - Geocoder Request
+
 public class GeocoderRequest: Request {
 	
 	/// Cached placemark founds
@@ -89,7 +91,7 @@ public class GeocoderRequest: Request {
 	public var onStateChange: ((_ old: RequestState, _ new: RequestState) -> (Void))?
 	
 	/// Callbacks registered
-	public var registeredCallbacks: [GeocoderCallback] = []
+	public var registeredCallbacks: [GeocoderObserver] = []
 	
 	/// Remove queued request if an error has occurred. By default is `false`.
 	public var cancelOnError: Bool = false
@@ -155,11 +157,11 @@ public class GeocoderRequest: Request {
 	///   - success: handler to call on success
 	///   - failure: handler to call on failure
 	public init(name: String? = nil, address: String, region: CLRegion? = nil,
-	            _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError) {
+	            _ success: @escaping GeocoderObserver.onSuccess, _ failure: @escaping GeocoderObserver.onError) {
 		self.name = name
 		self.source = .address(address, region)
-		self.add(callback: GeocoderCallback.onReversed(.main, success))
-		self.add(callback: GeocoderCallback.onErrorOccurred(.main, failure))
+		self.add(callback: GeocoderObserver.onReversed(.main, success))
+		self.add(callback: GeocoderObserver.onErrorOccurred(.main, failure))
 	}
 	
 	/// Initialize a new reverse geocoder request for a `CLLocation` instance.
@@ -169,10 +171,10 @@ public class GeocoderRequest: Request {
 	///   - success: handler to call on success
 	///   - failure: handler to call on failure
 	public init(location: CLLocation,
-	            _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError) {
+	            _ success: @escaping GeocoderObserver.onSuccess, _ failure: @escaping GeocoderObserver.onError) {
 		self.source = .location(location)
-		self.add(callback: GeocoderCallback.onReversed(.main, success))
-		self.add(callback: GeocoderCallback.onErrorOccurred(.main, failure))
+		self.add(callback: GeocoderObserver.onReversed(.main, success))
+		self.add(callback: GeocoderObserver.onErrorOccurred(.main, failure))
 	}
 	
 	/// Initialize a new reverse geocoder request for an Address Book dictionary containing information about the address to look up.
@@ -182,16 +184,16 @@ public class GeocoderRequest: Request {
 	///   - success: handler to call on success
 	///   - failure: handler to call on failure
 	public init(abDictionary: [AnyHashable : Any],
-	            _ success: @escaping GeocoderCallback.onSuccess, _ failure: @escaping GeocoderCallback.onError) {
+	            _ success: @escaping GeocoderObserver.onSuccess, _ failure: @escaping GeocoderObserver.onError) {
 		self.source = .abDictionary(abDictionary)
-		self.add(callback: GeocoderCallback.onReversed(.main, success))
-		self.add(callback: GeocoderCallback.onErrorOccurred(.main, failure))
+		self.add(callback: GeocoderObserver.onReversed(.main, success))
+		self.add(callback: GeocoderObserver.onErrorOccurred(.main, failure))
 	}
 	
 	/// Register a new callback to call on `success` or `failure`
 	///
 	/// - Parameter callback: callback to append into registered callback list
-	public func add(callback: GeocoderCallback?) {
+	public func add(callback: GeocoderObserver?) {
 		guard let callback = callback else { return }
 		self.registeredCallbacks.append(callback)
 	}
