@@ -12,7 +12,7 @@
 <p align="center" >★★ <b>Star our github repository to help us!</b> ★★</p>
 
 # SwiftLocation
-SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) monitor beacons and do beacon advertising.
+SwiftLocation is a lightweight library you can use to monitor locations, make reverse geocoding (both with Apple and Google's services) and more!
 It's really easy to use and it's compatible both with Swift 2.2, 2.3 and 3.0.
 
 ★★ Star our GitHub repository to help us! ★★
@@ -24,6 +24,11 @@ Pick the right version:
 - Old/Unsupported **Swift 2.3** branch is [here](https://github.com/malcommac/SwiftLocation/tree/feature/swift2.3).
 - Old/Unsupported **Swift 2.0** branch is [here](https://github.com/malcommac/SwiftLocation/tree/swift-2.0)
 
+### Bluetooth Support
+Bluetooth support was removed temporary since 1.2.0.
+We will restore it later or in another subspecs/library.
+If you are using BT monitoring please use 1.1.1 version from CocoaPods.
+
 Main features includes:
 
 - **Auto Management of hardware resources**: SwiftLocation turns off hardware if not used by our observers. Don't worry, we take care of your user's battery usage!
@@ -32,8 +37,6 @@ Main features includes:
 - **Reverse geocoding** (from address string/coordinates to placemark) using both Apple and Google services (with support for API key)
 - **GPS-less location fetching** using network IP address
 - **Geographic region** monitoring (enter/exit from regions)
-- **Beacon Family and Beacon** monitoring
-- **Set a device to act like a Beacon** (only in foreground)
 
 ### Pre-requisites
 
@@ -44,7 +47,7 @@ If you need background monitoring you should specify ```NSLocationAlwaysUsageDes
 
 ### SwiftLocation in your next big project? Tell it to me!
 
-I'm collecting all the apps which uses SwiftLocation to manage beacon or location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com.
+I'm collecting all the apps which uses SwiftLocation to manage location. If you are using SwiftLocation in your project please fill a PR to this file or send an email to hello@danielemargutti.com.
 
 Documentation
 -------
@@ -55,8 +58,6 @@ Documentation
 * **[Reverse Address/Coordinates to CLPlacemark](#reverseAddressSaample)**
 * **[Monitor Interesting Visits](#interestingVisitsSample)**
 * **[Monitor Geographic Regions](#monitorGepRegSample)**
-* **[Monitor Beacons & Beacon Families](#monitoriBeacon)**
-* **[Act like a Beacon](#actLikeiBeacon)**
 * **[Observe CLLocationManager Auth Events](#observeCLLocationManagerEvents)**
 
 <a name="monitoruserlocation" />
@@ -223,78 +224,6 @@ Location.getInterestingPlaces { newVisit in
 }
 ```
 
-([Documentation ↑](#documentation))
-<a name="monitorGepRegSample" />
-## Monitor Geographic Regions
-You can easily to be notified when the user crosses a region based boundary.
-You use region monitoring to detect boundary crossings of the specified region and you use those boundary crossings to perform related tasks. For example, upon approaching a dry cleaners, an app could notify the user to pick up any clothes that had been dropped off and are now ready.
-
-SwiftLocation offers to you a simple method called ```monitor()``` to get notified about these kind of events:
-
-```swift
-// Define a geographic circle region
-let centerPoint = CLLocationCoordinate2DMake(0, 0)
-let radius = CLLocationDistance(100)
-do {
-   // Attempt to monitor the region
-	let request = try Beacons.monitor(geographicRegion: centerPoint, radius: radius, onStateDidChange: { newState in
-		// newState is .Entered if user entered into the region defined by the center point and the radius or .Exited if it move away from the region.
-	}) { error in
-		// something bad has happened
-	}
-} catch let err {
-	// Failed to initialize region (bad region, monitor is not supported by the hardware etc.)
-	print("Cannot monitor region due to an error: \(err)")
-}
-```
-
-Usually you can ```pause()```/```start()``` or ```cancel()``` the request itself; just keep a reference to it.
-
-([Documentation ↑](#documentation))
-<a name="monitoriBeacon" />
-## Monitor Beacons
-
-You can easily to be notified when the user crosses a region defined by a beacon or get notified when users did found one or more beacons nearby.
-
-Just use ```monitor()``` function:
-
-```swift
-let b_proximity = "00194D5B-0A08-4697-B81C-C9BDE117412E"
-// You can omit major and minor to get notified about the entire beacon family defined by b_proximity
-let b_major = CLBeaconMajorValue(64224)
-let b_minor = CLBeaconMinorValue(43514)
-
-do {
-	// Just create a Beacon structure which represent our beacon
-	let beacon = Beacon(proximity: proximity, major: major, minor: minor)
-	// Attempt to monitor beacon
-	try Beacons.monitor(beacon: beacon, events: Event.RegionBoundary, onStateDidChange: { state in
-		// events called when user crosses the boundary the region defined by passed beacon
-	}, onRangingBeacons: { visibleBeacons in
-		// events is fired countinously to get the list of visible beacons (with observed beacon) nearby
-	}, onError: { error in
-		// something went wrong. request is cancelled.
-	})
-} catch let err {
-	// failed to monitor beacon
-}
-```
-([Documentation ↑](#documentation))
-<a name="actLikeiBeacon" />
-## Act like a Beacon
-
-You can set your device to act like a beacon (this feature works only in foreground due to some limitations of Apple's own methods).
-
-Keep in mind: advertising not works in background.
-
-```swift
-let request = Beacons.advertise(beaconName: "name", UUID: proximity, major: major, minor: minor, powerRSSI: 4, serviceUUIDs: [])
-```
-
-Use ```cancel()``` on ```request``` to stop beacon advertise.
-
-([Documentation ↑](#documentation))
-
 ## Observe CLLocationManager Auth Events
 <a name="observeCLLocationManagerEvents" />
 You can observe CLLocationManager authorization changes events by subscribing the ```.onAuthorizationDidChange()``` method.
@@ -315,6 +244,9 @@ request.onAuthorizationDidChange = { newStatus in
 
 Changes
 -------
+
+### Version 1.2.0 (2017/02/20):
+- Removed temporary Bluetooth support (use 1.1.1 as temporary workaround).
 
 ### Version 1.0.5 (2016/09/09):
 - Request's cancel() function now has error as optional argument
