@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0810"
+   LastUpgradeVersion = "0820"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+               BlueprintIdentifier = "083697471E22B5E4009E90F2"
                BuildableName = "SwiftLocation.framework"
                BlueprintName = "SwiftLocation"
                ReferencedContainer = "container:SwiftLocation.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "08819F1C1CD51F9B00EFD938"
+               BlueprintIdentifier = "083697501E22B5E5009E90F2"
                BuildableName = "SwiftLocationTests.xctest"
                BlueprintName = "SwiftLocationTests"
                ReferencedContainer = "container:SwiftLocation.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BlueprintIdentifier = "083697471E22B5E4009E90F2"
             BuildableName = "SwiftLocation.framework"
             BlueprintName = "SwiftLocation"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
@@ -64,7 +64,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BlueprintIdentifier = "083697471E22B5E4009E90F2"
             BuildableName = "SwiftLocation.framework"
             BlueprintName = "SwiftLocation"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
@@ -82,7 +82,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "08819F121CD51F9B00EFD938"
+            BlueprintIdentifier = "083697471E22B5E4009E90F2"
             BuildableName = "SwiftLocation.framework"
             BlueprintName = "SwiftLocation"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
