@@ -18,7 +18,7 @@ Main features includes:
 - **Location monitoring**: easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations).
 - **Device Heading**: get current device's heading easily
 - **Reverse geocoding**: (from address string/coordinates to placemark) using both Apple and Google services (with support for API key)
-- **GPS-less location**: fetching using network IP address with 4 different providers
+- **GPS-less location**: fetching using network IP address with 4 different providers (`freeGeoIP`, `petabyet`, `smartIP` or `telize`)
 - **Geographic region monitoring**: monitor background location enter/exit
 
 ## You also may like
@@ -35,7 +35,7 @@ Take a look here:
 
 ## Releases History
 - [1.1.1](https://github.com/malcommac/SwiftLocation/releases/tag/1.1.1) is the last version with Beacon Monitoring active (actually we have a plan to add it as subspec but right now is temporary disabled).
-- [1.0.5]https://github.com/malcommac/SwiftLocation/releases/tag/1.0.5) Is the last version compatible with Swift 2.3 (not supported anymore)
+- [1.0.5](https://github.com/malcommac/SwiftLocation/releases/tag/1.0.5) Is the last version compatible with Swift 2.3 (not supported anymore)
 - [0.1.4](https://github.com/malcommac/SwiftLocation/releases/tag/0.1.4) Is the last version compatible with Swift 2.0 (not supported anymore)
 
 ## Index
@@ -60,7 +60,14 @@ Take a look here:
 	* **[Examples](#examples_monitor)**
 * **[Monitor Visits (`CLVisits`)](#monitor_visits)**
 	* **[Examples](#examples_visits)**
+* **[Background Updates](#background)**
 * **[More on `LocationTracker`](#locationtracker)**
+
+Other:
+
+* **[Installation](#installation)**
+* **[Requirements](#requirements)**
+* **[Credits](#credits)**
 
 <a name="introduction" />
 
@@ -76,30 +83,30 @@ When you need to perform a location operation you can call one of the available 
 
 <a name="location" />
 
-#### Location Monitoring (`LocationRequest` subclass of `Request`)
+#### Location Monitoring (`LocationRequest`)
 - `getLocation(accuracy:frequency:timeout:success:failure:)` to get the current device location
 - `getLocation(forAddress:inRegion:timeout:success:failure)` to perform a reverse geocoding from an address string
 - `getLocation(forABDictionary:timeout:success:failure:)` to get the location from a given Address Book record
 
 <a name="reverse" />
 
-#### Reverse Geocoding (`GeocoderRequest` subclass of `Request`)
+#### Reverse Geocoding (`GeocoderRequest`)
 - `getPlacemark(forLocation:timeout:success:failure:)` to get placemarks from a specified location
 
 <a name="heading" />
 
-#### Heading Monitoring (`HeadingRequest` subclass of `Request`)
+#### Heading Monitoring (`HeadingRequest`)
 - `getContinousHeading(filter:success:failure)` to get continous device's heading
 
 <a name="region" />
 
-#### Region Monitoring (`RegionRequest` subclass of `Request`)
+#### Region Monitoring (`RegionRequest`)
 - `monitor(regionAt:radius:enter:exit:error:)` to get notified when user enter/exit from a region defined by given coordinates and radius
 - `monitor(region:enter:exit:error:)` to get notified when user enter/exit from a given region
 
 <a name="visits" />
 
-#### Visit Monitoring (`VisitsRequest` subclass of `Request`)
+#### Visit Monitoring (`VisitsRequest`)
 - `monitorVisit(event:error)` to get notified when user visit an 'important' region (ie. home, or work)
 
 Each of this method create a `Request` instance which will be added to the `LocationTracker`'s pool and started automatically.
@@ -179,6 +186,28 @@ Location.getLocation(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .oneSh
 }) { (_, last, error) in
 	print("Something bad has occurred \(error)")
 }
+```
+
+Note:
+To be able to find user's location this way, you need to update your info.plist and add required security settings for it. (iOS 9+):
+
+```
+<dict>
+	<key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>ip-api.com</key>
+      <dict>
+        <key>NSIncludesSubdomains</key>
+        <true/>
+        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+        <key>NSTemporaryExceptionMinimumTLSVersion</key>
+        <string>TLSv1.1</string>
+      </dict>
+        </dict>
+    </dict>
 ```
 
 ##### 2. Getting continous location (`CLLocation`)
@@ -338,6 +367,27 @@ do {
 	print("Cannot start visit updates: \(error)")
 }
 ```
+<a name="background" />
+
+### Background Updates
+
+Background monitoring is a sensitive topic; efficent use of device's battery is one of hit point for Apple.
+
+#### Significant Locations
+At this time the only way to get continous update even if the app is in background is to use `significant` location monitoring.
+Basically you need to:
+- Add the `NSLocationAlwaysUsageDescription` description in your app's `Info.plist`
+- Turn on `Background Fetch` and `Location Updates` checkbox in `Project Settings > Capabilities > Background Modes`
+- Register a `significant` location request in your `AppDelegate`'s `application(application:didFinishLaunchingWithOptions:)`
+
+You will receive only significant updates from location manager. What it does mean?
+The significant location change is the least accurate of all the location monitoring types. It only gets its updates when there is a cell tower transition or change. This can mean a varying level of accuracy and updates based on where the user is. City area, more updates with more towers. Out of town, interstate, fewer towers and changes.
+
+### Using Background Task
+
+You can also register a background task to get the most accurated result for a limited period of time.
+In your background task you can define a region monitoring request; as soon as the device crosses the region you will create another region from the current coordinates while entering and exiting from regions, did update location delegate gets called and you get the updated coordinate while application is in terminated mode.
+
 <a name="locationtracker" />
 
 ### More on `LocationTracker`
