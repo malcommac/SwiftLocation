@@ -129,6 +129,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request instance. Use it to pause, resume or stop request
 	*/
+	@discardableResult
 	open func getLocation(withAccuracy accuracy: Accuracy, frequency: UpdateFrequency = .oneShot, timeout: TimeInterval? = nil, onSuccess: @escaping LocationHandlerSuccess, onError: @escaping LocationHandlerError) -> Request {
 		
 		if accuracy == .ipScan {
@@ -164,6 +165,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: request istance
 	*/
+	@discardableResult
 	open func getHeading(_ frequency: HeadingFrequency = .continuous(interval: nil), accuracy: CLLocationDirection, allowsCalibration: Bool = true, didUpdate update: @escaping HeadingHandlerSuccess, onError error: @escaping HeadingHandlerError) -> Request {
 		let request = HeadingRequest(withFrequency: frequency, accuracy: accuracy, allowsCalibration: allowsCalibration)
 		request.locator = self
@@ -183,6 +185,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: the request object which represent the current observer. You can use it to pause/resume or stop the observer itself.
 	*/
+	@discardableResult
 	open func getInterestingPlaces(onDidVisit handler: VisitHandler?) -> Request {
 		let request = VisitRequest(onDidVisit: handler)
 		request.locator = self
@@ -201,6 +204,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler: handler called when location reverse operation was completed successfully. It contains a valid CLPlacemark instance.
 	- parameter fHandler: handler called when the operation fails due to an error.
 	*/
+	@discardableResult
 	open func reverse(address: String, using service: ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
@@ -219,7 +223,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
-	
+	@discardableResult
 	open func reverse(coordinates: CLLocationCoordinate2D, using service:ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
 		return self.reverse(location: location, using: service, onSuccess: onSuccess, onError: onError)
@@ -233,6 +237,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	- parameter sHandler:    handler called when location geocoding succeded and a valid CLPlacemark is returned
 	- parameter fHandler:    handler called when location geocoding fails due to an error
 	*/
+	@discardableResult
 	open func reverse(location: CLLocation, using service :ReverseService = .apple, onSuccess: @escaping RLocationSuccessHandler, onError: @escaping RLocationErrorHandler) -> Request {
 		switch service {
 		case .apple:
@@ -253,6 +258,7 @@ open class LocationManager: NSObject, CLLocationManagerDelegate {
 	
 	- returns: true if deferred update are supported, false otherwise
 	*/
+	@discardableResult
 	open func deferLocationUpdates(untilTravelled distance: CLLocationDistance?, timeout: TimeInterval?) -> Bool {
 		if CLLocationManager.deferredLocationUpdatesAvailable() == false {
 			return false

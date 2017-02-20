@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'SwiftLocation'
-  s.version = '1.1.1'
+  s.version = '1.2.0'
   s.license = 'MIT'
   s.summary = 'Elegant Location Services and Beacon Monitoring in Swift'
   s.homepage = 'https://github.com/malcommac/SwiftLocation'
@@ -9,6 +9,6 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/malcommac/SwiftLocation.git', :tag => s.version }
   s.ios.deployment_target = '8.0'
   s.frameworks            = "CoreLocation", "MapKit", "Foundation"
-  s.source_files = 'src/*.swift'
+  s.source_files = 'Sources/**/*.swift'
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.0' }
 end
