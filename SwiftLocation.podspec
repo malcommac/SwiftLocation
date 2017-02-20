@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'SwiftLocation'
-  s.version = '2.0.0'
+  s.version = '2.0.1'
   s.license = 'MIT'
   s.summary = 'Efficent and Easy Location Monitoring in Swift'
   s.homepage = 'https://github.com/malcommac/SwiftLocation'

@@ -1,6 +1,6 @@
 /*
 * SwiftLocation
-* Location & beacon tracking services made for Swift
+* Easy and Efficent Location Tracker for Swift
 *
 * Created by:	Daniele Margutti
 * Email:		hello@danielemargutti.com
