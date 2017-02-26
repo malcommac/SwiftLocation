@@ -32,6 +32,7 @@ Take a look here:
 * **[SwiftRichString](https://github.com/malcommac/SwiftRichString)** - Elegant and painless attributed string in Swift
 * **[SwiftScanner](https://github.com/malcommac/SwiftScanner)** - String scanner in pure Swift with full unicode support
 * **[SwiftSimplify](https://github.com/malcommac/SwiftSimplify)** - Tiny high-performance Swift Polyline Simplification Library
+* **[SwiftMsgPack](https://github.com/malcommac/SwiftMsgPack)** - MsgPack Encoder/Decoder in Swit
 
 ## Releases History
 - [1.1.1](https://github.com/malcommac/SwiftLocation/releases/tag/1.1.1) is the last version with Beacon Monitoring active (actually we have a plan to add it as subspec but right now is temporary disabled).
