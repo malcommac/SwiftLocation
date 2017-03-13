@@ -322,9 +322,9 @@ public class LocationRequest: Request {
 	}
 	
 	public func onResume() {
+		self.startTimeout() // start timer for timeout if necessary
 		switch self.accuracy {
 		case .IPScan(_):
-			self.startTimeout() // start timer for timeout if necessary
 			self.executeIPLocationRequest() // execute request
 		default:
 			break
