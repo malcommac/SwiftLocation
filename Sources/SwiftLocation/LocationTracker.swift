@@ -44,7 +44,15 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	
 	/// This is a reference to LocationManager's singleton where the main queue for Requests.
 	static let shared : LocationTracker = {
-		return LocationTracker()
+		// CLLocationManager must be created on main thread otherwise
+		// it will generate an error at init time.
+		if Thread.isMainThread {
+			return LocationTracker()
+		} else {
+			return DispatchQueue.main.sync {
+				return LocationTracker()
+			}
+		}
 	}()
 	
 	/// Initialize func
