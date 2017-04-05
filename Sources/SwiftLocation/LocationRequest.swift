@@ -295,7 +295,6 @@ public class LocationRequest: Request {
 	///
 	/// - Parameter status: new status
 	internal func dispatchAuthChange(_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) {
-		guard self.state.isRunning else { return }
 		self.registeredCallbacks.forEach { callback in
 			if case .onAuthDidChange(let context, let handler) = callback {
 				context.queue.async { handler(self,old,new) }
