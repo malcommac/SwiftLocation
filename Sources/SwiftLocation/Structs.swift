@@ -74,9 +74,9 @@ public struct TrackerSettings: CustomStringConvertible, Equatable {
 
 public struct LastLocation {
 	/// This is the best accurated measured location (may be old, check the `timestamp`)
-	public var bestAccurated: CLLocation?
+	private(set) var bestAccurated: CLLocation?
 	/// This represent the last measured location by timestamp (may be innacurate, check `accuracy`)
-	public var last: CLLocation?
+	private(set) var last: CLLocation?
 	
 	/// Store last value
 	///
@@ -93,4 +93,19 @@ public struct LastLocation {
 			self.last = location
 		}
 	}
+}
+
+extension CLAuthorizationStatus: CustomStringConvertible {
+
+	/// Description of the authorization status
+	public var description: String {
+		switch self {
+		case .authorizedAlways:		return "Authorized Always"
+		case .authorizedWhenInUse:	return "Authorized When In Use"
+		case .denied:				return "Denied"
+		case .notDetermined:		return "Not Determined"
+		case .restricted:			return "Restricted"
+		}
+	}
+	
 }
