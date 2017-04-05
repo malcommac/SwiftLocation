@@ -74,7 +74,7 @@ public enum Accuracy: CustomStringConvertible {
 	}
 	
 	/// Accuracy measured in meters
-	public var meters: Double {
+	public var level: CLLocationDistance {
 		switch self {
 		case .IPScan(_):	return Double.infinity
 		case .any:			return 1000000.0
@@ -85,6 +85,21 @@ public enum Accuracy: CustomStringConvertible {
 		case .house:		return kCLLocationAccuracyNearestTenMeters
 		case .room:			return kCLLocationAccuracyBest
 		case .navigation:	return kCLLocationAccuracyBestForNavigation
+		}
+	}
+	
+	/// Validation level in meters
+	public var threshold: Double {
+		switch self {
+		case .IPScan(_):	return Double.infinity
+		case .any:			return 1000000.0
+		case .country:		return 100000.0
+		case .city:			return 5000.0
+		case .neighborhood:	return 1000.0
+		case .block:		return 100.0
+		case .house:		return 15.0
+		case .room:			return 5.0
+		case .navigation:	return 5.0
 		}
 	}
 	
@@ -101,7 +116,7 @@ public enum Accuracy: CustomStringConvertible {
 			return (location.horizontalAccuracy < kCLLocationAccuracyNearestTenMeters)
 		default:
 			// Otherwise we can check meters
-			return (location.horizontalAccuracy <= self.meters)
+			return (location.horizontalAccuracy <= self.threshold)
 		}
 	}
 	
@@ -123,9 +138,9 @@ public enum Accuracy: CustomStringConvertible {
 		case .any:						return "Any"
 		case .country:					return "Country"
 		case .city:						return "City"
-		case .neighborhood:				return "Neighborhood (\(self.meters) meters)"
-		case .block:					return "Block (\(self.meters) meters)"
-		case .house:					return "House (\(self.meters) meters)"
+		case .neighborhood:				return "Neighborhood (\(self.threshold) meters)"
+		case .block:					return "Block (\(self.threshold) meters)"
+		case .house:					return "House (\(self.threshold) meters)"
 		case .room:						return "Room"
 		case .navigation:				return "Navigation"
 		}
