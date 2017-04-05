@@ -19,24 +19,16 @@ class ViewController: UIViewController {
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		Location.onAddNewRequest = { req in
-			print("A new request is added to the queue \(req)")
-		}
-		Location.onRemoveRequest = { req in
-			print("An existing request was removed from the queue \(req)")
-		}
-		
-		/*
-		let x = Location.getLocation(accuracy: .city, frequency: .continuous, success: { (_, location) in
+		let x = Location.getLocation(accuracy: .room, frequency: .continuous, success: { (_, location) in
 			print("A new update of location is available: \(location)")
 		}) { (request, last, error) in
 			request.cancel() // stop continous location monitoring on error
 			print("Location monitoring failed due to an error \(error)")
 		}
 		x.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) in
-			print("Authorization moved from \(oldAuth) to \(newAuth)")
+			print("Authorization moved from '\(oldAuth)' to '\(newAuth)'")
 		}))
-	*/
+		
 		
 		/*
 		Location.getLocation(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .oneShot, success: { _,location in
