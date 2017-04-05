@@ -181,7 +181,7 @@ public class LocationRequest: Request {
 	/// `true` if request works in background app state
 	public var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .deferredUntil(_,_,_), .significant:
+		case .deferredUntil(_,_,_):
 			return true
 		default:
 			return false

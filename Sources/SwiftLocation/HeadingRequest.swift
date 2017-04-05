@@ -104,7 +104,7 @@ public class HeadingRequest: Request {
 	/// Description of the request
 	public var description: String {
 		let name = (self.name ?? self.identifier)
-		return "[HEAD:\(name)] - Filter=\(self.filter) meters. (Status=\(self.state), Queued=\(self.isInQueue))"
+		return "[HEAD:\(name)] - Filter=\(String(describing: self.filter)) meters. (Status=\(self.state), Queued=\(self.isInQueue))"
 	}
 	
 	/// Initialize a new heading request
