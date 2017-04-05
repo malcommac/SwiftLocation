@@ -181,7 +181,7 @@ public class LocationRequest: Request {
 	/// `true` if request works in background app state
 	public var isBackgroundRequest: Bool {
 		switch self.frequency {
-		case .deferredUntil(_,_,_), .significant:
+		case .deferredUntil(_,_,_):
 			return true
 		default:
 			return false
@@ -295,7 +295,6 @@ public class LocationRequest: Request {
 	///
 	/// - Parameter status: new status
 	internal func dispatchAuthChange(_ old: CLAuthorizationStatus, _ new: CLAuthorizationStatus) {
-		guard self.state.isRunning else { return }
 		self.registeredCallbacks.forEach { callback in
 			if case .onAuthDidChange(let context, let handler) = callback {
 				context.queue.async { handler(self,old,new) }
@@ -322,9 +321,9 @@ public class LocationRequest: Request {
 	}
 	
 	public func onResume() {
+		self.startTimeout() // start timer for timeout if necessary
 		switch self.accuracy {
 		case .IPScan(_):
-			self.startTimeout() // start timer for timeout if necessary
 			self.executeIPLocationRequest() // execute request
 		default:
 			break

@@ -41,10 +41,20 @@ public let Location = LocationTracker.shared
 public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 
 	public typealias RequestPoolDidChange = ((Any) -> (Void))
+	public typealias LocationTrackerSettingsDidChange = ((TrackerSettings) -> (Void))
+	public typealias LocationDidChange = ((CLLocation) -> (Void))
 	
 	/// This is a reference to LocationManager's singleton where the main queue for Requests.
 	static let shared : LocationTracker = {
-		return LocationTracker()
+		// CLLocationManager must be created on main thread otherwise
+		// it will generate an error at init time.
+		if Thread.isMainThread {
+			return LocationTracker()
+		} else {
+			return DispatchQueue.main.sync {
+				return LocationTracker()
+			}
+		}
 	}()
 	
 	/// Initialize func
@@ -81,6 +91,12 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// Callback called when a request was removed
 	public var onRemoveRequest: RequestPoolDidChange? = nil
 	
+	/// Called when location manager settings did change
+	public var onChangeTrackerSettings: LocationTrackerSettingsDidChange? = nil
+	
+	/// On Receive new location
+	public var onReceiveNewLocation: LocationDidChange? = nil
+	
 	/// Internal location manager reference
 	internal var locationManager: CLLocationManager
 	
@@ -106,7 +122,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	private(set) var isDeferred: Bool = false
 	
 	/// This represent the last locations received (best accurated location and last received location)
-	private(set) var lastLocation = LastLocation()
+	public private(set) var lastLocation = LastLocation()
 	
 	/// Active CoreLocation settings based upon running requests
 	private var _locationSettings: TrackerSettings?
@@ -126,9 +142,11 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			_locationSettings = newValue
 			// Set attributes for CLLocationManager instance
 			locationManager.activityType = settings.activity // activity type (used to better preserve battery based upon activity)
-			locationManager.desiredAccuracy = settings.accuracy.meters // accuracy (used to preserve battery based upon update frequency)
+			locationManager.desiredAccuracy = settings.accuracy.level // accuracy (used to preserve battery based upon update frequency)
 			locationManager.distanceFilter = settings.distanceFilter
 			
+			self.onChangeTrackerSettings?(settings)
+
 			switch settings.frequency {
 			case .significant:
 				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
@@ -149,6 +167,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 				locationManager.startUpdatingLocation()
 				locationManager.disallowDeferredLocationUpdates()
 			}
+			
 		}
 		get {
 			return _locationSettings
@@ -625,7 +644,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		// Turn on/off deferred location updates
 		if let defSettings = deferredLocationSettings() {
 			if self.isDeferred == false {
-				locationManager.desiredAccuracy = defSettings.accuracy.meters
+				locationManager.desiredAccuracy = defSettings.accuracy.level
 				locationManager.allowsBackgroundLocationUpdates = true
 				locationManager.pausesLocationUpdatesAutomatically = true
 				locationManager.allowDeferredLocationUpdates(untilTraveled: defSettings.meters, timeout: defSettings.timeout)
@@ -699,7 +718,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		if isDeferredAvailable, let deferredSettings = self.deferredLocationSettings() { // has any deferred location request
 			accuracy = deferredSettings.accuracy // B)
 			distanceFilter = kCLDistanceFilterNone // C)
-			let isNavigationAccuracy = (deferredSettings.accuracy.meters == kCLLocationAccuracyBestForNavigation)
+			let isNavigationAccuracy = (deferredSettings.accuracy.level == kCLLocationAccuracyBestForNavigation)
 			frequency = .deferredUntil(distance: deferredSettings.meters, timeout: deferredSettings.timeout, navigation:  isNavigationAccuracy)
 		}
 		
@@ -726,11 +745,10 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	}
 	
 	@objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		guard let location = locations.max(by: { (l1, l2) -> Bool in
-			return l1.timestamp.timeIntervalSince1970 < l2.timestamp.timeIntervalSince1970}
-		) else {
+		guard let location = locations.last else {
 			return
 		}
+		self.onReceiveNewLocation?(location)
 		
 		// Note:
 		// We need to start the deferred location delivery (by calling allowDeferredLocationUpdates) after
@@ -879,6 +897,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			self.locationSettings = nil
 			return
 		}
+		
+		print("Settings \(bestSettings)")
 		
 		// Request authorizations if needed
 		if bestSettings.accuracy.requestUserAuth == true {

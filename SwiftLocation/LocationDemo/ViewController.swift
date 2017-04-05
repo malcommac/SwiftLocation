@@ -10,33 +10,70 @@ import UIKit
 import SwiftLocation
 import CoreLocation
 
+public extension UITextView {
+	public func scrollBottom() {
+		guard self.text.characters.count > 0 else {
+			return
+		}
+		let stringLength:Int = self.text.characters.count
+		self.scrollRangeToVisible(NSMakeRange(stringLength-1, 0))
+	}
+}
+
+public extension CLLocation {
+	
+	public var shortDesc: String {
+		return "- lat,lng=\(self.coordinate.latitude),\(self.coordinate.longitude), h-acc=\(self.horizontalAccuracy) mts\n"
+	}
+	
+}
+
 class ViewController: UIViewController {
+	
+	@IBOutlet private var textView: UITextView?
+	@IBOutlet private var textViewAll: UITextView?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		self.textView?.layoutManager.allowsNonContiguousLayout = false
+		self.textViewAll?.layoutManager.allowsNonContiguousLayout = false
+
+	}
+	
+	private func log(_ value: String) {
+		self.textView!.insertText(value)
+		self.textView!.scrollBottom()
+	}
+	
+	private func logAll(_ value: String) {
+		self.textViewAll!.insertText(value)
+		self.textViewAll!.scrollBottom()
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		Location.onAddNewRequest = { req in
-			print("A new request is added to the queue \(req)")
-		}
-		Location.onRemoveRequest = { req in
-			print("An existing request was removed from the queue \(req)")
+		Location.onChangeTrackerSettings = { settings in
+			self.log(String(describing: settings))
 		}
 		
-		/*
-		let x = Location.getLocation(accuracy: .city, frequency: .continuous, success: { (_, location) in
-			print("A new update of location is available: \(location)")
+		let x = Location.getLocation(accuracy: .room, frequency: .continuous, timeout: 60*60*5, success: { (_, location) in
+			self.log(location.shortDesc)
+			
 		}) { (request, last, error) in
+			self.log("Location monitoring failed due to an error \(error)")
+
 			request.cancel() // stop continous location monitoring on error
-			print("Location monitoring failed due to an error \(error)")
 		}
 		x.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) in
-			print("Authorization moved from \(oldAuth) to \(newAuth)")
+			print("Authorization moved from '\(oldAuth)' to '\(newAuth)'")
 		}))
-	*/
+		
+		Location.onReceiveNewLocation = { location in
+			self.logAll(location.shortDesc)
+		}
+		
 		
 		/*
 		Location.getLocation(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .oneShot, success: { _,location in
