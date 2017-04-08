@@ -49,19 +49,19 @@ public enum RegionObserver {
 	case onError(_: Context, _: onFailure)
 	
 	
-	/// ‘true‘ if event represent a region enter
+	/// ‘true‘ if event represents a region enter
 	internal var isEnterEvent: Bool {
 		switch self {
 		case .onEnter(_, _):	return true
-		default:				return false
+		default:		return false
 		}
 	}
 	
-	/// `false` if event represent a region exit
+	/// `true` if event represents a region exit
 	internal var isExitEvent: Bool {
 		switch self {
 		case .onExit(_, _):	return true
-		default:				return false
+		default:		return false
 		}
 	}
 }
@@ -154,7 +154,7 @@ public class RegionRequest: Request {
 		return "[REG:\(name)]/\(name) - Center=\(coordinates), Radius=\(self.region.radius) meters. (Status=\(self.state), Queued=\(self.isInQueue))"
 	}
 	
-	/// Initialize a new region monitoring request to monitor a region with given center and radius
+	/// Initialize a new region monitoring request to monitor a region with a given center and radius
 	///
 	/// - Parameters:
 	///   - region: region to monitor
