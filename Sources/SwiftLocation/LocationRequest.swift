@@ -165,11 +165,13 @@ public class LocationRequest: Request {
 	///
 	/// - Returns: `true` if request is paused, `false` otherwise.
 	public func pause() {
+		self.stopTimeout()
 		Location.pause(self)
 	}
 	
 	/// Cancel request and remove it from queue.
 	public func cancel() {
+		self.stopTimeout()
 		Location.cancel(self)
 	}
 
