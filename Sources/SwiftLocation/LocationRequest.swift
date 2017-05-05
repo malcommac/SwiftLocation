@@ -228,6 +228,11 @@ public class LocationRequest: Request {
 	
 	@objc func timeoutTimerFired() {
 		self.dispatch(error: LocationError.timeout)
+		
+		// If continous location restart timer
+		if self.cancelOnError == false || self.frequency != .oneShot {
+			self.startTimeout()
+		}
 	}
 	
 	//MARK: Events from Location Dispatcher
