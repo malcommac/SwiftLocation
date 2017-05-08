@@ -230,12 +230,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///   - timeout: optional timeout. If no location were found before timeout a `LocationError.timeout` error is reported.
 	///   - success: success handler to call when a new location were found for this request
 	///   - error: error handler to call when an error did occour while searching for request
+	///	  - cancelOnError: if `true` request will be cancelled when first error is received (both timeout or location service error)
 	/// - Returns: request
 	@discardableResult
-	public func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, success: @escaping LocObserver.onSuccess, error: @escaping LocObserver.onError) -> LocationRequest {
+	public func getLocation(accuracy: Accuracy, frequency: Frequency, timeout: TimeInterval? = nil, cancelOnError: Bool = false, success: @escaping LocObserver.onSuccess, error: @escaping LocObserver.onError) -> LocationRequest {
 		
 		let req = LocationRequest(accuracy: accuracy, frequency: frequency, success, error)
 		req.timeout = timeout
+		req.cancelOnError = cancelOnError
 		req.resume()
 		return req
 	}
@@ -250,15 +252,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///				specific geographical area, which is typically the user’s current location.
 	///   - timeout: timeout of the operation; nil to ignore timeout, a valid seconds interval. If reverse geocoding does not succeded or
 	///				 fail inside this time interval request fails with `LocationError.timeout` error and registered callbacks are called.
+	///	  - cancelOnError: if `true` request will be cancelled when first error is received (both timeout or location service error)
 	///
 	///   - success: success handler to call when reverse geocoding succeded
 	///   - failure: failure handler to call when reverse geocoding fails
 	/// - Returns: request
 	@discardableResult
-	public func getLocation(forAddress address: String, inRegion region: CLRegion? = nil, timeout: TimeInterval? = nil,
-	                        success: @escaping GeocoderObserver.onSuccess, failure: @escaping GeocoderObserver.onError) -> GeocoderRequest {
+	public func getLocation(forAddress address: String, inRegion region: CLRegion? = nil, timeout: TimeInterval? = nil, cancelOnError: Bool = false, success: @escaping GeocoderObserver.onSuccess, failure: @escaping GeocoderObserver.onError) -> GeocoderRequest {
 		let req = GeocoderRequest(address: address, region: region, success, failure)
 		req.timeout = timeout
+		req.cancelOnError = cancelOnError
 		req.resume()
 		return req
 	}
@@ -307,14 +310,16 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///
 	/// - Parameters:
 	///   - filter: The minimum angular change (measured in degrees) required to generate new heading events.
+	///	  - cancelOnError: if `true` request will be cancelled when first error is received (both timeout or location service error)
 	///   - success: succss handler
 	///   - failure: failure handler
 	/// - Returns: request
 	@discardableResult
-	public func getContinousHeading(filter: CLLocationDegrees,
-	                       success: @escaping HeadingObserver.onSuccess, failure: @escaping HeadingObserver.onError) throws -> HeadingRequest {
+	public func getContinousHeading(filter: CLLocationDegrees, cancelOnError: Bool = false,
+	                                success: @escaping HeadingObserver.onSuccess, failure: @escaping HeadingObserver.onError) throws -> HeadingRequest {
 		let request = try HeadingRequest(filter: filter, success: success, failure: failure)
 		request.resume()
+		request.cancelOnError = cancelOnError
 		return request
 	}
 	
@@ -326,16 +331,18 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	/// - Parameters:
 	///   - center: coordinate center
 	///   - radius: radius in meters
+	///	  - cancelOnError: if `true` request will be cancelled when first error is received (both timeout or location service error)
 	///   - enter: callback for region enter event
 	///   - exit: callback for region exit event
 	///   - error: callback for errors
 	/// - Returns: request
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	@discardableResult
-	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance,
+	public func monitor(regionAt center: CLLocationCoordinate2D, radius: CLLocationDistance, cancelOnError: Bool = false,
 	                    enter: RegionObserver.onEvent?, exit: RegionObserver.onEvent?, error: @escaping RegionObserver.onFailure) throws -> RegionRequest {
 		let request = try RegionRequest(center: center, radius: radius, onEnter: enter, onExit: exit, error: error)
 		request.resume()
+		request.cancelOnError = cancelOnError
 		return request
 	}
 	
@@ -344,15 +351,17 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 	///
 	/// - Parameters:
 	///   - region: region to monitor
+	///	  - cancelOnError: if `true` request will be cancelled when first error is received (both timeout or location service error)
 	///   - enter: callback for region enter event
 	///   - exit: callback for region exit event
 	///   - error: callback for errors
 	///   - error: callback for errors
 	/// - Throws: throw `LocationError.serviceNotAvailable` if hardware does not support region monitoring
 	@discardableResult
-	public func monitor(region: CLCircularRegion,
+	public func monitor(region: CLCircularRegion, cancelOnError: Bool = false,
 	                    enter: RegionObserver.onEvent?, exit: RegionObserver.onEvent?, error: @escaping RegionObserver.onFailure) throws -> RegionRequest {
 		let request = try RegionRequest(region: region, onEnter: enter, onExit: exit, error: error)
+		request.cancelOnError = cancelOnError
 		request.resume()
 		return request
 	}

@@ -265,6 +265,8 @@ public class LocationRequest: Request {
 		
 		// Remove request from queue if some conditions are verified
 		stopRequestIfNeeded()
+		// Stop and restart timeout timer if needed
+		startTimeout()
 	}
 	
 	private func isValidMinimumDistance(_ loc: CLLocation) -> Bool {
