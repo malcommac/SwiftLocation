@@ -418,8 +418,8 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			}
 		}
 		if hasChanges {
-			self.updateServicesStatus()
 			requests.forEach { $0.onResume() }
+			self.updateServicesStatus()
 		}
 	}
 	

@@ -232,7 +232,7 @@ public class LocationRequest: Request {
 		self.dispatch(error: LocationError.timeout)
 		
 		// If continous location restart timer
-		if self.cancelOnError == false || self.frequency != .oneShot {
+		if self.cancelOnError == false {
 			self.startTimeout()
 		}
 	}
