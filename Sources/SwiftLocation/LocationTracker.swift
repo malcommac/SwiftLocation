@@ -148,14 +148,14 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 			self.onChangeTrackerSettings?(settings)
 
 			switch settings.frequency {
-			case .significant:
+			case .significant(let allowsBackgroundUpdates):
 				guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
 					locationManager.stopAllLocationServices()
 					return
 				}
 				// If best frequency is significant location update (and hardware supports it) then start only significant location update
 				locationManager.stopUpdatingLocation()
-				locationManager.allowsBackgroundLocationUpdates = true
+				locationManager.allowsBackgroundLocationUpdates = allowsBackgroundUpdates
 				locationManager.startMonitoringSignificantLocationChanges()
 			case .deferredUntil(_,_,_):
 				locationManager.stopMonitoringSignificantLocationChanges()
@@ -678,7 +678,7 @@ public final class LocationTracker: NSObject, CLLocationManagerDelegate {
 		}
 		
 		var accuracy: Accuracy = .any
-		var frequency: Frequency = .significant
+    var frequency: Frequency = .significant(allowsBackgroundUpdates: false)
 		var type: CLActivityType = .other
 		var distanceFilter: CLLocationDistance? = kCLDistanceFilterNone
 		

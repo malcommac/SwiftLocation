@@ -63,7 +63,7 @@ public enum Frequency: Equatable, Comparable, CustomStringConvertible {
 	case continuous
 	case oneShot
 	case deferredUntil(distance: Double, timeout: TimeInterval, navigation: Bool)
-	case significant
+  case significant(allowsBackgroundUpdates: Bool)
 	
 	public var description: String {
 		switch self {
@@ -73,8 +73,8 @@ public enum Frequency: Equatable, Comparable, CustomStringConvertible {
 			return "One Shot"
 		case .deferredUntil(let m, let t, let n):
 			return "Deferred until (\(m) meters or \(t) seconds " + (n == true ? "navigation" : "best") + ")"
-		case .significant:
-			return "Significant"
+		case .significant(let allowsBackgroundUpdates):
+      return "Significant with background updates: \(allowsBackgroundUpdates == true ? "true" : "false")"
 		}
 	}
 	
@@ -105,8 +105,8 @@ public func <(lhs: Frequency, rhs: Frequency) -> Bool {
 		return true
 	case (.deferredUntil(let d1,_,_), .deferredUntil(let d2,_,_)):
 		return d1 < d2
-	case (.significant, .significant):
-		return true
+	case (.significant(let backgroundUpdates1), .significant):
+		return backgroundUpdates1
 	default:
 		return false
 	}
