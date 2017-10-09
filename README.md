@@ -21,18 +21,22 @@ Main features includes:
 - **GPS-less location**: fetching using network IP address with 4 different providers (`freeGeoIP`, `petabyet`, `smartIP` or `telize`)
 - **Geographic region monitoring**: monitor background location enter/exit
 
-## You also may like
+## OTHER LIBRARIES YOU MAY LIKE
 
-Do you like `SwiftLocation`? I'm also working on several other opensource libraries.
+I'm also working on several other projects you may like.
+Take a look below:
 
-Take a look here:
+<p align="center" >
 
-* **[SwiftDate](https://github.com/malcommac/SwiftDate)** - Date & Timezone management in Swift
-* **[Hydra](https://github.com/malcommac/Hydra)** - Promises & Async/Await - Write better async code in Swift
-* **[SwiftRichString](https://github.com/malcommac/SwiftRichString)** - Elegant and painless attributed string in Swift
-* **[SwiftScanner](https://github.com/malcommac/SwiftScanner)** - String scanner in pure Swift with full unicode support
-* **[SwiftSimplify](https://github.com/malcommac/SwiftSimplify)** - Tiny high-performance Swift Polyline Simplification Library
-* **[SwiftMsgPack](https://github.com/malcommac/SwiftMsgPack)** - MsgPack Encoder/Decoder in Swit
+| Library         | Description                                      |
+|-----------------|--------------------------------------------------|
+| [**SwiftDate**](https://github.com/malcommac/SwiftDate)       | The best way to manage date/timezones in Swift   |
+| [**Hydra**](https://github.com/malcommac/Hydra)           | Write better async code: async/await & promises  |
+| [**Flow**](https://github.com/malcommac/Flow) | A new declarative approach to table managment. Forget datasource & delegates. |
+| [**SwiftRichString**](https://github.com/malcommac/SwiftRichString) | Elegant & Painless NSAttributedString in Swift   |
+| [**SwiftLocation**](https://github.com/malcommac/SwiftLocation)   | Efficient location manager                       |
+| [**SwiftMsgPack**](https://github.com/malcommac/SwiftMsgPack)    | Fast/efficient msgPack encoder/decoder           |
+</p>
 
 ## Releases History
 - [1.1.1](https://github.com/malcommac/SwiftLocation/releases/tag/1.1.1) is the last version with Beacon Monitoring active (actually we have a plan to add it as subspec but right now is temporary disabled).
