@@ -87,7 +87,7 @@ public class RegionRequest: Request {
 	private var registeredCallbacks: [RegionObserver] = []
 	
 	/// Callback called when monitoring for this region starts
-	public var onStartMonitoring: ((Void) -> (Void))? = nil
+	public var onStartMonitoring: (() -> (Void))? = nil
 	
 	public typealias DetermineStateCallback = ((CLRegionState) -> (Void))
 	private var stateCallback: DetermineStateCallback? = nil
