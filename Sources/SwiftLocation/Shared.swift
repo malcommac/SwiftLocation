@@ -132,7 +132,7 @@ public enum RequestState: CustomStringConvertible, Equatable, Hashable {
 }
 
 /// Public Request Protocol
-public protocol Request: class, Hashable, Equatable, CustomStringConvertible {
+public protocol Request: class, Hashable, CustomStringConvertible {
 	
 	/// Resume or start request
 	func resume()
