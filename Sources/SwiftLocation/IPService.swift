@@ -83,10 +83,10 @@ public struct IPService: CustomStringConvertible {
 	private var request: NSURLRequest {
 		var url: String = ""
 		switch self.service {
-		case .freeGeoIP:	url = "http://freegeoip.net/json/"
-		case .petabyet:		url = "http://api.petabyet.com/geoip/"
-		case .smartIP:		url = "http://smart-ip.net/geoip-json/"
-		case .telize:		url = "http://www.telize.com/geoip/"
+		case .freeGeoIP:	url = "https://freegeoip.net/json/"
+		case .petabyet:		url = "https://api.petabyet.com/geoip/"
+		case .smartIP:		url = "https://smart-ip.net/geoip-json/"
+		case .telize:		url = "https://www.telize.com/geoip/"
 		}
 		let request = NSMutableURLRequest(url: URL(string: url)!,
 		                                  cachePolicy: NSURLRequest.CachePolicy.reloadIgnoringCacheData,
