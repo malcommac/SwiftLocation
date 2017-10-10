@@ -74,9 +74,9 @@ public struct TrackerSettings: CustomStringConvertible, Equatable {
 
 public struct LastLocation {
 	/// This is the best accurated measured location (may be old, check the `timestamp`)
-	private(set) var bestAccurated: CLLocation?
+	public private(set) var bestAccurated: CLLocation?
 	/// This represent the last measured location by timestamp (may be innacurate, check `accuracy`)
-	private(set) var last: CLLocation?
+	public private(set) var last: CLLocation?
 	
 	/// Store last value
 	///
