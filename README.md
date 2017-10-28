@@ -2,7 +2,9 @@
 <img src="https://raw.githubusercontent.com/malcommac/SwiftLocation/3.0.0/logo.png" width=385px height=116px alt="SwiftLocation" title="SwiftLocation">
 </p>
 
+<p align="center" >
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![CI Status](https://travis-ci.org/malcommac/Swiftlocation.svg)](https://travis-ci.org/malcommac/Swiftlocation) [![Version](https://img.shields.io/cocoapods/v/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![License](https://img.shields.io/cocoapods/l/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![Platform](https://img.shields.io/cocoapods/p/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation)
+<p/>
 
 <p align="center" >Easy & Efficient Location Tracking for iOS<br/>
 Made with ♥ for Swift 4
@@ -17,11 +19,3 @@ Stop struggling with CoreLocation services settings and delegate, try now a new 
 
 Main features of the library includes:
 
-|  | Features |
-|:---------:|
-| observer pattern support |
-|  “one shot” closure based location requests ( more robust than iOS 9 CoreLocation API |
-|authorization check and response support |
-|  distance and time-based filtering |
-| automatic low-power location tracking adjustment when backgrounded setting |
-| automatic low-power location tracking adjustment from battery monitoring setting |
