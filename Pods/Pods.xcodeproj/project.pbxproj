@@ -1,0 +1,1731 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		049E3D70DBBAA34876CCB53E509CC9F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		0A109134755BD88A5295C4842468DF87 /* SwiftyJSON-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 05CA09B061E193906653AC21FD3A94F1 /* SwiftyJSON-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		117BEAD43FFE840843180C2B0A23B689 /* Pods-SwiftLocation-watchOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E1300BD38BAA40C49EE09BE6F065B9AC /* Pods-SwiftLocation-watchOS-dummy.m */; };
+		2B6636636B9F5B65DD8C95564DA8F728 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		2CD1281C0870FCA4B42EC523508A7D02 /* Pods-TestApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E08237E10C746DB30B55677D57C97465 /* Pods-TestApplication-dummy.m */; };
+		30F68EF6D7E3B12CE807FEC7DBDE456D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		368A047CCABBC574094A614AB75F8841 /* SwiftyJSON-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B9BBA8F5B33E56C38F5546432F66B7 /* SwiftyJSON-dummy.m */; };
+		38C107489DEF8CC7A888691FC076010E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		5BC899C7C21E06737C4AF602F7289DBB /* Pods-SwiftLocation-iOS Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D14C8A7490D230385ADA30A829EE4EA5 /* Pods-SwiftLocation-iOS Tests-dummy.m */; };
+		5C404EADD58829487824436FDF37D776 /* Pods-SwiftLocation-iOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A12EB8093B1749E46FFA9BA1110A6EDF /* Pods-SwiftLocation-iOS-dummy.m */; };
+		63406BFCAB57EEE51F18299F1CE74812 /* Pods-SwiftLocation-tvOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A3A427024710F16B8651281506B620F4 /* Pods-SwiftLocation-tvOS-dummy.m */; };
+		7B4BD116DE01F8EEC4C874C8A70743E6 /* Pods-SwiftLocation-macOS Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 576BEAB2B61C9E50220532419AD61D17 /* Pods-SwiftLocation-macOS Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		803D8C81A6A7F7B9884107463F7823D4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		861D07C0CF14E709B868F1C268E6AE13 /* Pods-TestApplication-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A80CA8A25069A1239B83DB5C392EA5BC /* Pods-TestApplication-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8A89F56AE50710059134CD5CB77FF0A1 /* Pods-SwiftLocation-tvOS Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F02ABDB1C500F1609B7B4661ED517085 /* Pods-SwiftLocation-tvOS Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		90B2F07901028A0E4758ECAC217DBF49 /* Pods-SwiftLocation-macOS Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C25E03247D55C603CED29F450A582993 /* Pods-SwiftLocation-macOS Tests-dummy.m */; };
+		93576D6ED1BD781AE46FA031C9ED40FD /* Pods-SwiftLocation-tvOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7995F88443C014AC327B093BB84DC5C7 /* Pods-SwiftLocation-tvOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		95703E38DEE578BB5C7DD5C5BE1AB449 /* Pods-SwiftLocation-iOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 08A3C1FE21CDAD74A7B8CB7EF4132C09 /* Pods-SwiftLocation-iOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9ADB1CFC767A2125B3915B3A14A4A289 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		9C260D9B224928901F3DDA1F6E4C3494 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		A4FE718ACF5677790076045DC7588B37 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		A523459DB8393B300D530081C13526A3 /* Pods-SwiftLocation-tvOS Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E44ED5B6B112ECA1ABA5AE0DB0E3136 /* Pods-SwiftLocation-tvOS Tests-dummy.m */; };
+		A5A72A0A21713870DE0B633EBC462D1C /* Pods-SwiftLocation-iOS Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA86A58CB83AE1608A97CE515065422 /* Pods-SwiftLocation-iOS Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AFE71D3AFCD55B1CFA8BB0E6913E819B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		D59CAA7E78A100380D2CA5B7752125AB /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE506ECE97701EBA44FDBFF401C1A04 /* SwiftyJSON.swift */; };
+		DB612F5501A56FD0C418D8E40F55DC19 /* Pods-SwiftLocation-watchOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 640285D08EA94341B573E2AC717CE44F /* Pods-SwiftLocation-watchOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EF539105D81DB95230170DD744324CE8 /* Pods-SwiftLocation-macOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 95373E3523F29E7944BE276679AD209B /* Pods-SwiftLocation-macOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F74D3FF29627024059F0090A8CA5D47A /* Pods-SwiftLocation-macOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F515ECE81CD121EA94758B7564978F2 /* Pods-SwiftLocation-macOS-dummy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2BBC971EDF298E40EEA5A4CCBFCD5D59 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		31CE986E2AE61452EF4E2032C1CA8B05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		6715A84CBD8AA10544CDAEDF237A4B45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		88C89BBF92B1F32B9CE2D49124F2393F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		9403FB6C8D798CFDF0BEB604E7B566AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		9FA8C8653257F9EE198DAB65C824EB72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		BA7164E0F5EDA699EED94A3DBD285D99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+		CE02651F6DBF3063ECA9297B2C2F272E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9B8E4D88042A8E309275D2AE3A29A8D;
+			remoteInfo = SwiftyJSON;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		05CA09B061E193906653AC21FD3A94F1 /* SwiftyJSON-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-umbrella.h"; sourceTree = "<group>"; };
+		08A3C1FE21CDAD74A7B8CB7EF4132C09 /* Pods-SwiftLocation-iOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-iOS-umbrella.h"; sourceTree = "<group>"; };
+		09A331A7D54B852AB7E023B201EF2415 /* Pods-TestApplication-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TestApplication-frameworks.sh"; sourceTree = "<group>"; };
+		09A95ABD65A2F820C93F80F47372630F /* Pods-SwiftLocation-tvOS Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-tvOS Tests-resources.sh"; sourceTree = "<group>"; };
+		0E7055F306CF38CE2C116BA09677E0C9 /* Pods_SwiftLocation_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1115449660F9E19095D7E27D970A2BDD /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		121ADA7B47FFEA8902121942E500EC87 /* Pods-SwiftLocation-tvOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-tvOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		198889D1704CC544230DD49700E63BBA /* Pods-TestApplication-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TestApplication-acknowledgements.plist"; sourceTree = "<group>"; };
+		1AA579D56ABF6C46EDA43DDCD9FF76FC /* Pods-SwiftLocation-macOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-macOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		1B5ED9ECC6FDDE2A402AA84350665BC3 /* Pods_SwiftLocation_tvOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_tvOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E552E28A23A4DFD3A2A2DAFAFCF539F /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2032E1072F40E7EF61C500799D10A103 /* Pods-SwiftLocation-iOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-iOS-resources.sh"; sourceTree = "<group>"; };
+		203901B31AA46996029C1EADBB136CC5 /* Pods-SwiftLocation-macOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-macOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		24AB8DFBF0F49C33E81EADDA1D352F22 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		275338D24BCD990F91256C1E05FF5261 /* Pods_SwiftLocation_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A92D099A2CD71CA07545FA9E38983F3 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2B1E7B72959F6661AFEDB33CC3E21DFF /* Pods_SwiftLocation_iOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_iOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E7F7C62EE34D2D271E6E1234A2002B2 /* SwiftyJSON.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftyJSON.xcconfig; sourceTree = "<group>"; };
+		2F5113BA12539484E935B77CDC7C6718 /* Pods-SwiftLocation-tvOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-tvOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		30F7E1A9E6BD9E6E7D66AD316F723747 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32B9BBA8F5B33E56C38F5546432F66B7 /* SwiftyJSON-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyJSON-dummy.m"; sourceTree = "<group>"; };
+		366E3FF58ACB511D10BC3C8CC1A2ADD9 /* Pods_TestApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3944D833C9CCFF01DC53858D0B0B9E2B /* Pods-SwiftLocation-watchOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-watchOS-resources.sh"; sourceTree = "<group>"; };
+		3B723C1DCA4687B6034958B06BB79504 /* Pods-SwiftLocation-iOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-iOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		3E44ED5B6B112ECA1ABA5AE0DB0E3136 /* Pods-SwiftLocation-tvOS Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-tvOS Tests-dummy.m"; sourceTree = "<group>"; };
+		482C61B633691CE4F6D6BDABE32DA558 /* Pods-SwiftLocation-macOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-macOS-resources.sh"; sourceTree = "<group>"; };
+		49A372665CF8C08CEEC8D3BC04D5BD0A /* Pods-SwiftLocation-macOS Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-macOS Tests.modulemap"; sourceTree = "<group>"; };
+		554E0BD1B9C497ECC59ACEE88376477B /* Pods-SwiftLocation-tvOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-tvOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		564D09D35EF985DB8A91759FF4D2B19F /* Pods-SwiftLocation-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-macOS.release.xcconfig"; sourceTree = "<group>"; };
+		5683DEA7EB8FE32377610748CF21A2F2 /* Pods-SwiftLocation-iOS Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-iOS Tests.modulemap"; sourceTree = "<group>"; };
+		56ECEC7339328564B777BB584ADD4555 /* Pods-SwiftLocation-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		576BEAB2B61C9E50220532419AD61D17 /* Pods-SwiftLocation-macOS Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-macOS Tests-umbrella.h"; sourceTree = "<group>"; };
+		5931D56A6546A7F908D1FA4771FD768C /* Pods-SwiftLocation-macOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-macOS.modulemap"; sourceTree = "<group>"; };
+		620FAE0C0F388FD4538BA1C9EE4CA5DC /* Pods-TestApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TestApplication.debug.xcconfig"; sourceTree = "<group>"; };
+		632FF1EE988385F720BCD9C2FE6C4EFD /* Pods-SwiftLocation-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		640285D08EA94341B573E2AC717CE44F /* Pods-SwiftLocation-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-watchOS-umbrella.h"; sourceTree = "<group>"; };
+		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		669E2CAB860FCA2E9B2B58C1EAAEAB86 /* Pods-SwiftLocation-iOS Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-iOS Tests-frameworks.sh"; sourceTree = "<group>"; };
+		6A33813A7726310A8BB5401F68769C05 /* Pods-SwiftLocation-watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-watchOS.debug.xcconfig"; sourceTree = "<group>"; };
+		6B4A97A55C4C5F21B025CB5D81DCB2A7 /* Pods-SwiftLocation-iOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-iOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		6D68A25511D936B8DB3C23895E0DC36B /* Pods-SwiftLocation-tvOS Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-tvOS Tests.modulemap"; sourceTree = "<group>"; };
+		77794F8EF30DC5BD24E143F3E51BC745 /* Pods-TestApplication-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TestApplication-resources.sh"; sourceTree = "<group>"; };
+		790ACCCAF139C3BC37FEDC85421A486E /* Pods-TestApplication.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-TestApplication.modulemap"; sourceTree = "<group>"; };
+		7995F88443C014AC327B093BB84DC5C7 /* Pods-SwiftLocation-tvOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-tvOS-umbrella.h"; sourceTree = "<group>"; };
+		80E7ACB10C305CEBF5F52FB7AE43AD01 /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		83D6E0D62A74BF4CCDE2FFF2B5D87D01 /* Pods_SwiftLocation_macOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_macOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		84BBE94AD19AB98BE7F51F15CC83C3EF /* Pods-SwiftLocation-iOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-iOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		8708BE8E1899343524672B80D1085CA6 /* Pods-SwiftLocation-tvOS Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-tvOS Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		87BFAA655711F65EB09F67731F5C1D7D /* Pods-SwiftLocation-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		9162180675D5568D9E5633758E7F746A /* Pods-SwiftLocation-tvOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-tvOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		92756712538EE35E586FC0FC2A22F851 /* Pods-SwiftLocation-macOS Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-macOS Tests-frameworks.sh"; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		95373E3523F29E7944BE276679AD209B /* Pods-SwiftLocation-macOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-macOS-umbrella.h"; sourceTree = "<group>"; };
+		9B0190572F179DD0C3EC29C53C475A98 /* Pods-SwiftLocation-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-iOS.modulemap"; sourceTree = "<group>"; };
+		9CC9FB33163534FD3BE5F8CBDBB2056E /* Pods-SwiftLocation-macOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-macOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		9F515ECE81CD121EA94758B7564978F2 /* Pods-SwiftLocation-macOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-macOS-dummy.m"; sourceTree = "<group>"; };
+		9FACC1153BFE25F94E33A3EBB487B0EA /* Pods-SwiftLocation-iOS Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-iOS Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		A12EB8093B1749E46FFA9BA1110A6EDF /* Pods-SwiftLocation-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-iOS-dummy.m"; sourceTree = "<group>"; };
+		A3A427024710F16B8651281506B620F4 /* Pods-SwiftLocation-tvOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-tvOS-dummy.m"; sourceTree = "<group>"; };
+		A48E822473404A196A61F11BC3B4AF28 /* Pods-SwiftLocation-tvOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-tvOS-resources.sh"; sourceTree = "<group>"; };
+		A80CA8A25069A1239B83DB5C392EA5BC /* Pods-TestApplication-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TestApplication-umbrella.h"; sourceTree = "<group>"; };
+		A8D3BD36DA8FBA262EA9B5096973C88C /* Pods-SwiftLocation-iOS Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-iOS Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		AC7D14FBEFF082067B803F6897A2363E /* Pods-SwiftLocation-macOS Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-macOS Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		AE18121DFF8A570EC98907903445B17B /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B62BCC70F33FD3B46CA08FEBE95C8CC3 /* Pods-SwiftLocation-macOS Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-macOS Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		BB31C9A489BEE14842382C71F95CE395 /* Pods_SwiftLocation_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA86A58CB83AE1608A97CE515065422 /* Pods-SwiftLocation-iOS Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-iOS Tests-umbrella.h"; sourceTree = "<group>"; };
+		BBF610E40BDF6E542FA21FF7E5491205 /* SwiftyJSON-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-prefix.pch"; sourceTree = "<group>"; };
+		BD00F4C8C93F37EBB462149B01B2F725 /* Pods-SwiftLocation-watchOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SwiftLocation-watchOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		BDE506ECE97701EBA44FDBFF401C1A04 /* SwiftyJSON.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Source/SwiftyJSON.swift; sourceTree = "<group>"; };
+		BDFA1C9FC613B0BC8437ACE0BB3D1C2A /* Pods-SwiftLocation-watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-watchOS.release.xcconfig"; sourceTree = "<group>"; };
+		C11385E59A75D13CDAE0349E2F8D68F3 /* Pods-SwiftLocation-tvOS Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-tvOS Tests-frameworks.sh"; sourceTree = "<group>"; };
+		C25E03247D55C603CED29F450A582993 /* Pods-SwiftLocation-macOS Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-macOS Tests-dummy.m"; sourceTree = "<group>"; };
+		C37B77A231FBCE775D34C913150BE5E7 /* Pods-TestApplication-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TestApplication-acknowledgements.markdown"; sourceTree = "<group>"; };
+		C4A9A658C966F6BB111BEDBDEA1F874A /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CB57D805979E85721527BCF36F2952B3 /* Pods-SwiftLocation-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-macOS.debug.xcconfig"; sourceTree = "<group>"; };
+		CB964A36EDC4497091BC4905E8C362DE /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE27E0AB99D6D1D1E1EE84878D6F52DE /* Pods-SwiftLocation-tvOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-tvOS.modulemap"; sourceTree = "<group>"; };
+		D032A29E584B77AE187E586922267CF5 /* SwiftyJSON.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = SwiftyJSON.modulemap; sourceTree = "<group>"; };
+		D0F6EDA74C719550AD1B15011FB11468 /* Pods-SwiftLocation-tvOS Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-tvOS Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		D14C8A7490D230385ADA30A829EE4EA5 /* Pods-SwiftLocation-iOS Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-iOS Tests-dummy.m"; sourceTree = "<group>"; };
+		D63ADAFDA985DC5BC705FACA08AFC36A /* Pods-SwiftLocation-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-SwiftLocation-watchOS.modulemap"; sourceTree = "<group>"; };
+		D6DBC16122747C8748D8BC00640782AD /* Pods-SwiftLocation-iOS Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-iOS Tests-resources.sh"; sourceTree = "<group>"; };
+		D811B07CD96ABA22A5CFACC80E528B14 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DB04B230F4E4B1160B4CD3EA6A403B0B /* Pods_SwiftLocation_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocation_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E08237E10C746DB30B55677D57C97465 /* Pods-TestApplication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TestApplication-dummy.m"; sourceTree = "<group>"; };
+		E1300BD38BAA40C49EE09BE6F065B9AC /* Pods-SwiftLocation-watchOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SwiftLocation-watchOS-dummy.m"; sourceTree = "<group>"; };
+		E33B9E2C0C645D37D67AA6C55253757D /* Pods-SwiftLocation-macOS Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SwiftLocation-macOS Tests-resources.sh"; sourceTree = "<group>"; };
+		E8F8951858D63160EB0A6E61C6EA3448 /* Pods-SwiftLocation-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		EE04CC6336F387308F2E4FE4F089487D /* Pods-TestApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TestApplication.release.xcconfig"; sourceTree = "<group>"; };
+		F02ABDB1C500F1609B7B4661ED517085 /* Pods-SwiftLocation-tvOS Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SwiftLocation-tvOS Tests-umbrella.h"; sourceTree = "<group>"; };
+		F66C76EE58F71E4407F7F1409466AD37 /* Pods-SwiftLocation-macOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SwiftLocation-macOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		FB3EBB4878B17414DF0BA47C7AA4A2C3 /* Pods-SwiftLocation-watchOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-watchOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		FF2408398D98638AE2CDF60A91706868 /* Pods-SwiftLocation-iOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SwiftLocation-iOS-acknowledgements.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F7B41083F7E0AF433BA4BBD1D34DC2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C260D9B224928901F3DDA1F6E4C3494 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		398EF72DACDD6CDCDA2F01CC83D56B7B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9ADB1CFC767A2125B3915B3A14A4A289 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E9A26EDEA7C51D3C18292D3A1628BD9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				803D8C81A6A7F7B9884107463F7823D4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		51490123FEC206C7DDCBFC9709D9265C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AFE71D3AFCD55B1CFA8BB0E6913E819B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8C34AF479C6DA42568F4EC06BADCFA8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38C107489DEF8CC7A888691FC076010E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8E8C3C60ACB0762D5F6E0ABC07266D4D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				049E3D70DBBAA34876CCB53E509CC9F7 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95BE35B6D06ACA66B496DAD56807F7BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30F68EF6D7E3B12CE807FEC7DBDE456D /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FEAB054826F9CDC645551298113C16D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4FE718ACF5677790076045DC7588B37 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7619F92A4D4ACDC8234DE452DDEC8E5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6636636B9F5B65DD8C95564DA8F728 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		020DC3B5D17AB4DCEC2F7366067894B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				275338D24BCD990F91256C1E05FF5261 /* Pods_SwiftLocation_iOS.framework */,
+				2B1E7B72959F6661AFEDB33CC3E21DFF /* Pods_SwiftLocation_iOS_Tests.framework */,
+				BB31C9A489BEE14842382C71F95CE395 /* Pods_SwiftLocation_macOS.framework */,
+				83D6E0D62A74BF4CCDE2FFF2B5D87D01 /* Pods_SwiftLocation_macOS_Tests.framework */,
+				DB04B230F4E4B1160B4CD3EA6A403B0B /* Pods_SwiftLocation_tvOS.framework */,
+				1B5ED9ECC6FDDE2A402AA84350665BC3 /* Pods_SwiftLocation_tvOS_Tests.framework */,
+				0E7055F306CF38CE2C116BA09677E0C9 /* Pods_SwiftLocation_watchOS.framework */,
+				366E3FF58ACB511D10BC3C8CC1A2ADD9 /* Pods_TestApplication.framework */,
+				80E7ACB10C305CEBF5F52FB7AE43AD01 /* SwiftyJSON.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1AAEC6A7B8CBE48C8585F17DE485B550 /* Pods-SwiftLocation-macOS Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AE18121DFF8A570EC98907903445B17B /* Info.plist */,
+				49A372665CF8C08CEEC8D3BC04D5BD0A /* Pods-SwiftLocation-macOS Tests.modulemap */,
+				B62BCC70F33FD3B46CA08FEBE95C8CC3 /* Pods-SwiftLocation-macOS Tests-acknowledgements.markdown */,
+				AC7D14FBEFF082067B803F6897A2363E /* Pods-SwiftLocation-macOS Tests-acknowledgements.plist */,
+				C25E03247D55C603CED29F450A582993 /* Pods-SwiftLocation-macOS Tests-dummy.m */,
+				92756712538EE35E586FC0FC2A22F851 /* Pods-SwiftLocation-macOS Tests-frameworks.sh */,
+				E33B9E2C0C645D37D67AA6C55253757D /* Pods-SwiftLocation-macOS Tests-resources.sh */,
+				576BEAB2B61C9E50220532419AD61D17 /* Pods-SwiftLocation-macOS Tests-umbrella.h */,
+				F66C76EE58F71E4407F7F1409466AD37 /* Pods-SwiftLocation-macOS Tests.debug.xcconfig */,
+				1AA579D56ABF6C46EDA43DDCD9FF76FC /* Pods-SwiftLocation-macOS Tests.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-macOS Tests";
+			path = "Target Support Files/Pods-SwiftLocation-macOS Tests";
+			sourceTree = "<group>";
+		};
+		70A8E4D3C62B6C203D238581DA091C21 /* SwiftyJSON */ = {
+			isa = PBXGroup;
+			children = (
+				BDE506ECE97701EBA44FDBFF401C1A04 /* SwiftyJSON.swift */,
+				8EC39E1DC11846207722B71AAFE40F98 /* Support Files */,
+			);
+			path = SwiftyJSON;
+			sourceTree = "<group>";
+		};
+		7616511724F69FA267606257D76F856E /* Pods-TestApplication */ = {
+			isa = PBXGroup;
+			children = (
+				1E552E28A23A4DFD3A2A2DAFAFCF539F /* Info.plist */,
+				790ACCCAF139C3BC37FEDC85421A486E /* Pods-TestApplication.modulemap */,
+				C37B77A231FBCE775D34C913150BE5E7 /* Pods-TestApplication-acknowledgements.markdown */,
+				198889D1704CC544230DD49700E63BBA /* Pods-TestApplication-acknowledgements.plist */,
+				E08237E10C746DB30B55677D57C97465 /* Pods-TestApplication-dummy.m */,
+				09A331A7D54B852AB7E023B201EF2415 /* Pods-TestApplication-frameworks.sh */,
+				77794F8EF30DC5BD24E143F3E51BC745 /* Pods-TestApplication-resources.sh */,
+				A80CA8A25069A1239B83DB5C392EA5BC /* Pods-TestApplication-umbrella.h */,
+				620FAE0C0F388FD4538BA1C9EE4CA5DC /* Pods-TestApplication.debug.xcconfig */,
+				EE04CC6336F387308F2E4FE4F089487D /* Pods-TestApplication.release.xcconfig */,
+			);
+			name = "Pods-TestApplication";
+			path = "Target Support Files/Pods-TestApplication";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				BD1E3C710F12F4B4C092FC8E2AD22110 /* Pods */,
+				020DC3B5D17AB4DCEC2F7366067894B2 /* Products */,
+				A80FA2803D750761D6896EDA0466F23A /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		876CCBCFDCE0FF48C6CFD181054959C9 /* Pods-SwiftLocation-tvOS Tests */ = {
+			isa = PBXGroup;
+			children = (
+				2A92D099A2CD71CA07545FA9E38983F3 /* Info.plist */,
+				6D68A25511D936B8DB3C23895E0DC36B /* Pods-SwiftLocation-tvOS Tests.modulemap */,
+				8708BE8E1899343524672B80D1085CA6 /* Pods-SwiftLocation-tvOS Tests-acknowledgements.markdown */,
+				D0F6EDA74C719550AD1B15011FB11468 /* Pods-SwiftLocation-tvOS Tests-acknowledgements.plist */,
+				3E44ED5B6B112ECA1ABA5AE0DB0E3136 /* Pods-SwiftLocation-tvOS Tests-dummy.m */,
+				C11385E59A75D13CDAE0349E2F8D68F3 /* Pods-SwiftLocation-tvOS Tests-frameworks.sh */,
+				09A95ABD65A2F820C93F80F47372630F /* Pods-SwiftLocation-tvOS Tests-resources.sh */,
+				F02ABDB1C500F1609B7B4661ED517085 /* Pods-SwiftLocation-tvOS Tests-umbrella.h */,
+				554E0BD1B9C497ECC59ACEE88376477B /* Pods-SwiftLocation-tvOS Tests.debug.xcconfig */,
+				121ADA7B47FFEA8902121942E500EC87 /* Pods-SwiftLocation-tvOS Tests.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-tvOS Tests";
+			path = "Target Support Files/Pods-SwiftLocation-tvOS Tests";
+			sourceTree = "<group>";
+		};
+		89A7D8EFF2E15E1D12ECA82FB9556E1A /* Pods-SwiftLocation-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				1115449660F9E19095D7E27D970A2BDD /* Info.plist */,
+				9B0190572F179DD0C3EC29C53C475A98 /* Pods-SwiftLocation-iOS.modulemap */,
+				84BBE94AD19AB98BE7F51F15CC83C3EF /* Pods-SwiftLocation-iOS-acknowledgements.markdown */,
+				FF2408398D98638AE2CDF60A91706868 /* Pods-SwiftLocation-iOS-acknowledgements.plist */,
+				A12EB8093B1749E46FFA9BA1110A6EDF /* Pods-SwiftLocation-iOS-dummy.m */,
+				2032E1072F40E7EF61C500799D10A103 /* Pods-SwiftLocation-iOS-resources.sh */,
+				08A3C1FE21CDAD74A7B8CB7EF4132C09 /* Pods-SwiftLocation-iOS-umbrella.h */,
+				632FF1EE988385F720BCD9C2FE6C4EFD /* Pods-SwiftLocation-iOS.debug.xcconfig */,
+				56ECEC7339328564B777BB584ADD4555 /* Pods-SwiftLocation-iOS.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-iOS";
+			path = "Target Support Files/Pods-SwiftLocation-iOS";
+			sourceTree = "<group>";
+		};
+		8EC39E1DC11846207722B71AAFE40F98 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C4A9A658C966F6BB111BEDBDEA1F874A /* Info.plist */,
+				D032A29E584B77AE187E586922267CF5 /* SwiftyJSON.modulemap */,
+				2E7F7C62EE34D2D271E6E1234A2002B2 /* SwiftyJSON.xcconfig */,
+				32B9BBA8F5B33E56C38F5546432F66B7 /* SwiftyJSON-dummy.m */,
+				BBF610E40BDF6E542FA21FF7E5491205 /* SwiftyJSON-prefix.pch */,
+				05CA09B061E193906653AC21FD3A94F1 /* SwiftyJSON-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/SwiftyJSON";
+			sourceTree = "<group>";
+		};
+		A77B5456B289DEB3916E57AC6DD8FD8D /* Pods-SwiftLocation-iOS Tests */ = {
+			isa = PBXGroup;
+			children = (
+				CB964A36EDC4497091BC4905E8C362DE /* Info.plist */,
+				5683DEA7EB8FE32377610748CF21A2F2 /* Pods-SwiftLocation-iOS Tests.modulemap */,
+				9FACC1153BFE25F94E33A3EBB487B0EA /* Pods-SwiftLocation-iOS Tests-acknowledgements.markdown */,
+				A8D3BD36DA8FBA262EA9B5096973C88C /* Pods-SwiftLocation-iOS Tests-acknowledgements.plist */,
+				D14C8A7490D230385ADA30A829EE4EA5 /* Pods-SwiftLocation-iOS Tests-dummy.m */,
+				669E2CAB860FCA2E9B2B58C1EAAEAB86 /* Pods-SwiftLocation-iOS Tests-frameworks.sh */,
+				D6DBC16122747C8748D8BC00640782AD /* Pods-SwiftLocation-iOS Tests-resources.sh */,
+				BBA86A58CB83AE1608A97CE515065422 /* Pods-SwiftLocation-iOS Tests-umbrella.h */,
+				6B4A97A55C4C5F21B025CB5D81DCB2A7 /* Pods-SwiftLocation-iOS Tests.debug.xcconfig */,
+				3B723C1DCA4687B6034958B06BB79504 /* Pods-SwiftLocation-iOS Tests.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-iOS Tests";
+			path = "Target Support Files/Pods-SwiftLocation-iOS Tests";
+			sourceTree = "<group>";
+		};
+		A80FA2803D750761D6896EDA0466F23A /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				89A7D8EFF2E15E1D12ECA82FB9556E1A /* Pods-SwiftLocation-iOS */,
+				A77B5456B289DEB3916E57AC6DD8FD8D /* Pods-SwiftLocation-iOS Tests */,
+				D7D3FB5F4FEB9DDD82E4EB6FC7792C4C /* Pods-SwiftLocation-macOS */,
+				1AAEC6A7B8CBE48C8585F17DE485B550 /* Pods-SwiftLocation-macOS Tests */,
+				C8F8E00B46BB91600DDBCD41B52C3D7B /* Pods-SwiftLocation-tvOS */,
+				876CCBCFDCE0FF48C6CFD181054959C9 /* Pods-SwiftLocation-tvOS Tests */,
+				DA02FEAD3F8A612989EE871E8F5D5EB6 /* Pods-SwiftLocation-watchOS */,
+				7616511724F69FA267606257D76F856E /* Pods-TestApplication */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D35AF013A5F0BAD4F32504907A52519E /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BD1E3C710F12F4B4C092FC8E2AD22110 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				70A8E4D3C62B6C203D238581DA091C21 /* SwiftyJSON */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		C8F8E00B46BB91600DDBCD41B52C3D7B /* Pods-SwiftLocation-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				30F7E1A9E6BD9E6E7D66AD316F723747 /* Info.plist */,
+				CE27E0AB99D6D1D1E1EE84878D6F52DE /* Pods-SwiftLocation-tvOS.modulemap */,
+				2F5113BA12539484E935B77CDC7C6718 /* Pods-SwiftLocation-tvOS-acknowledgements.markdown */,
+				9162180675D5568D9E5633758E7F746A /* Pods-SwiftLocation-tvOS-acknowledgements.plist */,
+				A3A427024710F16B8651281506B620F4 /* Pods-SwiftLocation-tvOS-dummy.m */,
+				A48E822473404A196A61F11BC3B4AF28 /* Pods-SwiftLocation-tvOS-resources.sh */,
+				7995F88443C014AC327B093BB84DC5C7 /* Pods-SwiftLocation-tvOS-umbrella.h */,
+				87BFAA655711F65EB09F67731F5C1D7D /* Pods-SwiftLocation-tvOS.debug.xcconfig */,
+				E8F8951858D63160EB0A6E61C6EA3448 /* Pods-SwiftLocation-tvOS.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-tvOS";
+			path = "Target Support Files/Pods-SwiftLocation-tvOS";
+			sourceTree = "<group>";
+		};
+		D35AF013A5F0BAD4F32504907A52519E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		D7D3FB5F4FEB9DDD82E4EB6FC7792C4C /* Pods-SwiftLocation-macOS */ = {
+			isa = PBXGroup;
+			children = (
+				24AB8DFBF0F49C33E81EADDA1D352F22 /* Info.plist */,
+				5931D56A6546A7F908D1FA4771FD768C /* Pods-SwiftLocation-macOS.modulemap */,
+				203901B31AA46996029C1EADBB136CC5 /* Pods-SwiftLocation-macOS-acknowledgements.markdown */,
+				9CC9FB33163534FD3BE5F8CBDBB2056E /* Pods-SwiftLocation-macOS-acknowledgements.plist */,
+				9F515ECE81CD121EA94758B7564978F2 /* Pods-SwiftLocation-macOS-dummy.m */,
+				482C61B633691CE4F6D6BDABE32DA558 /* Pods-SwiftLocation-macOS-resources.sh */,
+				95373E3523F29E7944BE276679AD209B /* Pods-SwiftLocation-macOS-umbrella.h */,
+				CB57D805979E85721527BCF36F2952B3 /* Pods-SwiftLocation-macOS.debug.xcconfig */,
+				564D09D35EF985DB8A91759FF4D2B19F /* Pods-SwiftLocation-macOS.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-macOS";
+			path = "Target Support Files/Pods-SwiftLocation-macOS";
+			sourceTree = "<group>";
+		};
+		DA02FEAD3F8A612989EE871E8F5D5EB6 /* Pods-SwiftLocation-watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				D811B07CD96ABA22A5CFACC80E528B14 /* Info.plist */,
+				D63ADAFDA985DC5BC705FACA08AFC36A /* Pods-SwiftLocation-watchOS.modulemap */,
+				BD00F4C8C93F37EBB462149B01B2F725 /* Pods-SwiftLocation-watchOS-acknowledgements.markdown */,
+				FB3EBB4878B17414DF0BA47C7AA4A2C3 /* Pods-SwiftLocation-watchOS-acknowledgements.plist */,
+				E1300BD38BAA40C49EE09BE6F065B9AC /* Pods-SwiftLocation-watchOS-dummy.m */,
+				3944D833C9CCFF01DC53858D0B0B9E2B /* Pods-SwiftLocation-watchOS-resources.sh */,
+				640285D08EA94341B573E2AC717CE44F /* Pods-SwiftLocation-watchOS-umbrella.h */,
+				6A33813A7726310A8BB5401F68769C05 /* Pods-SwiftLocation-watchOS.debug.xcconfig */,
+				BDFA1C9FC613B0BC8437ACE0BB3D1C2A /* Pods-SwiftLocation-watchOS.release.xcconfig */,
+			);
+			name = "Pods-SwiftLocation-watchOS";
+			path = "Target Support Files/Pods-SwiftLocation-watchOS";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		082AF598D548ECC4ADF0AA0518E9C456 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B4BD116DE01F8EEC4C874C8A70743E6 /* Pods-SwiftLocation-macOS Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0AE72A8D710C9AC4535A6E42E9646390 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95703E38DEE578BB5C7DD5C5BE1AB449 /* Pods-SwiftLocation-iOS-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		263C8D7CF7C62A1376AB24FE05768D86 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF539105D81DB95230170DD744324CE8 /* Pods-SwiftLocation-macOS-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		941A9530986437048781D4DD0A38FCDA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A109134755BD88A5295C4842468DF87 /* SwiftyJSON-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		967209D3A79312BECAB07D6A28842260 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A89F56AE50710059134CD5CB77FF0A1 /* Pods-SwiftLocation-tvOS Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B56F89971CE2CA3FC889EF1D6C3E2C68 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5A72A0A21713870DE0B633EBC462D1C /* Pods-SwiftLocation-iOS Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC1E24CE4F3D85F1A2B10C972E23DA8D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				861D07C0CF14E709B868F1C268E6AE13 /* Pods-TestApplication-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F75CDB0A8F92F48E97BCD571B71518CE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93576D6ED1BD781AE46FA031C9ED40FD /* Pods-SwiftLocation-tvOS-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FFFFFCF5496EE3162DB20067DF47D48B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB612F5501A56FD0C418D8E40F55DC19 /* Pods-SwiftLocation-watchOS-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		081591315D3E830C975D010A73CD34ED /* Pods-SwiftLocation-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E8B1CF1C93AC5912BB2C9E0AA2F3B6C /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-tvOS" */;
+			buildPhases = (
+				410BC05922C66B4F1EE306526DA36643 /* Sources */,
+				8C34AF479C6DA42568F4EC06BADCFA8C /* Frameworks */,
+				F75CDB0A8F92F48E97BCD571B71518CE /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F6AC7AB2E58795557A0123B9A10C2931 /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-tvOS";
+			productName = "Pods-SwiftLocation-tvOS";
+			productReference = DB04B230F4E4B1160B4CD3EA6A403B0B /* Pods_SwiftLocation_tvOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		159B7EE20B76787496350F07442AF0CD /* Pods-TestApplication */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB03A38CCB10A5AE1687A9CFB37D58A5 /* Build configuration list for PBXNativeTarget "Pods-TestApplication" */;
+			buildPhases = (
+				3C2383302C9E0BD3BD385666F9B21BEA /* Sources */,
+				95BE35B6D06ACA66B496DAD56807F7BF /* Frameworks */,
+				BC1E24CE4F3D85F1A2B10C972E23DA8D /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B25575E655FFA5ECF973E509373F6893 /* PBXTargetDependency */,
+			);
+			name = "Pods-TestApplication";
+			productName = "Pods-TestApplication";
+			productReference = 366E3FF58ACB511D10BC3C8CC1A2ADD9 /* Pods_TestApplication.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		1D915131CC1508DB6E40333CE03DC07A /* Pods-SwiftLocation-watchOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B1D05BE5DA88CD8F05EB25911FCE2BD /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-watchOS" */;
+			buildPhases = (
+				E362BCBF027CEA7B97819005CEED577F /* Sources */,
+				E7619F92A4D4ACDC8234DE452DDEC8E5 /* Frameworks */,
+				FFFFFCF5496EE3162DB20067DF47D48B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3446DA2B6295AD07184EF14693B818DE /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-watchOS";
+			productName = "Pods-SwiftLocation-watchOS";
+			productReference = 0E7055F306CF38CE2C116BA09677E0C9 /* Pods_SwiftLocation_watchOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		541C0AC0D1BDE624E03E7792ACF47355 /* Pods-SwiftLocation-tvOS Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B58BCD6049C767E4FDBB4119E71061D8 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-tvOS Tests" */;
+			buildPhases = (
+				631102BCF25A6703E513CF9BBBE84EE6 /* Sources */,
+				3E9A26EDEA7C51D3C18292D3A1628BD9 /* Frameworks */,
+				967209D3A79312BECAB07D6A28842260 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6E731EF09D7550956D4D61057EA817BE /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-tvOS Tests";
+			productName = "Pods-SwiftLocation-tvOS Tests";
+			productReference = 1B5ED9ECC6FDDE2A402AA84350665BC3 /* Pods_SwiftLocation_tvOS_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		84A3495AD38BE7D7473C12B824E30507 /* Pods-SwiftLocation-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEE19F755E56B8E1FBA1780EA2A971F8 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-iOS" */;
+			buildPhases = (
+				6B1C44DFA7FE9605F3906C9E0D28BB42 /* Sources */,
+				51490123FEC206C7DDCBFC9709D9265C /* Frameworks */,
+				0AE72A8D710C9AC4535A6E42E9646390 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F3FDAA10B9ACCC10BE2D17000F4B686F /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-iOS";
+			productName = "Pods-SwiftLocation-iOS";
+			productReference = 275338D24BCD990F91256C1E05FF5261 /* Pods_SwiftLocation_iOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		8B02A5260EF016409A9C15EB8899A425 /* Pods-SwiftLocation-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A3FB8E15A78ADC9F81D2A83C167D31F /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-macOS" */;
+			buildPhases = (
+				FDA47567DF1789719C9707211B0D9377 /* Sources */,
+				8E8C3C60ACB0762D5F6E0ABC07266D4D /* Frameworks */,
+				263C8D7CF7C62A1376AB24FE05768D86 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ECF9DE0CE3FA85205DB7600F8A560EDC /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-macOS";
+			productName = "Pods-SwiftLocation-macOS";
+			productReference = BB31C9A489BEE14842382C71F95CE395 /* Pods_SwiftLocation_macOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		995A69946DBA128D4D0997586F94BC77 /* Pods-SwiftLocation-iOS Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FACF031A5D91AD3773A64A4F31625A92 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-iOS Tests" */;
+			buildPhases = (
+				9D4DB3BD5890E7EBCEAA71BA846346D9 /* Sources */,
+				2F7B41083F7E0AF433BA4BBD1D34DC2F /* Frameworks */,
+				B56F89971CE2CA3FC889EF1D6C3E2C68 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				517DBE624BB96FCAA91ACFC048BD2FB5 /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-iOS Tests";
+			productName = "Pods-SwiftLocation-iOS Tests";
+			productReference = 2B1E7B72959F6661AFEDB33CC3E21DFF /* Pods_SwiftLocation_iOS_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		9D092DC174FD09491F6CA8949C37B324 /* Pods-SwiftLocation-macOS Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DE703F4621AA9A4DBBA17036FF56D04 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-macOS Tests" */;
+			buildPhases = (
+				663D44611A623D2A96EA88F49F2079E4 /* Sources */,
+				398EF72DACDD6CDCDA2F01CC83D56B7B /* Frameworks */,
+				082AF598D548ECC4ADF0AA0518E9C456 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09615B22E63BF9B4F518F10F6903C855 /* PBXTargetDependency */,
+			);
+			name = "Pods-SwiftLocation-macOS Tests";
+			productName = "Pods-SwiftLocation-macOS Tests";
+			productReference = 83D6E0D62A74BF4CCDE2FFF2B5D87D01 /* Pods_SwiftLocation_macOS_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B7081E44DD76A9138B6C8C5E3054CD0E /* Build configuration list for PBXNativeTarget "SwiftyJSON" */;
+			buildPhases = (
+				D9D9DCCD87E6FAE6D62C1C453FEC2FE3 /* Sources */,
+				9FEAB054826F9CDC645551298113C16D /* Frameworks */,
+				941A9530986437048781D4DD0A38FCDA /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftyJSON;
+			productName = SwiftyJSON;
+			productReference = 80E7ACB10C305CEBF5F52FB7AE43AD01 /* SwiftyJSON.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 020DC3B5D17AB4DCEC2F7366067894B2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				84A3495AD38BE7D7473C12B824E30507 /* Pods-SwiftLocation-iOS */,
+				995A69946DBA128D4D0997586F94BC77 /* Pods-SwiftLocation-iOS Tests */,
+				8B02A5260EF016409A9C15EB8899A425 /* Pods-SwiftLocation-macOS */,
+				9D092DC174FD09491F6CA8949C37B324 /* Pods-SwiftLocation-macOS Tests */,
+				081591315D3E830C975D010A73CD34ED /* Pods-SwiftLocation-tvOS */,
+				541C0AC0D1BDE624E03E7792ACF47355 /* Pods-SwiftLocation-tvOS Tests */,
+				1D915131CC1508DB6E40333CE03DC07A /* Pods-SwiftLocation-watchOS */,
+				159B7EE20B76787496350F07442AF0CD /* Pods-TestApplication */,
+				E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3C2383302C9E0BD3BD385666F9B21BEA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CD1281C0870FCA4B42EC523508A7D02 /* Pods-TestApplication-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		410BC05922C66B4F1EE306526DA36643 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63406BFCAB57EEE51F18299F1CE74812 /* Pods-SwiftLocation-tvOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		631102BCF25A6703E513CF9BBBE84EE6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A523459DB8393B300D530081C13526A3 /* Pods-SwiftLocation-tvOS Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		663D44611A623D2A96EA88F49F2079E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90B2F07901028A0E4758ECAC217DBF49 /* Pods-SwiftLocation-macOS Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B1C44DFA7FE9605F3906C9E0D28BB42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C404EADD58829487824436FDF37D776 /* Pods-SwiftLocation-iOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D4DB3BD5890E7EBCEAA71BA846346D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5BC899C7C21E06737C4AF602F7289DBB /* Pods-SwiftLocation-iOS Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D9D9DCCD87E6FAE6D62C1C453FEC2FE3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				368A047CCABBC574094A614AB75F8841 /* SwiftyJSON-dummy.m in Sources */,
+				D59CAA7E78A100380D2CA5B7752125AB /* SwiftyJSON.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E362BCBF027CEA7B97819005CEED577F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				117BEAD43FFE840843180C2B0A23B689 /* Pods-SwiftLocation-watchOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDA47567DF1789719C9707211B0D9377 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F74D3FF29627024059F0090A8CA5D47A /* Pods-SwiftLocation-macOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		09615B22E63BF9B4F518F10F6903C855 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 9FA8C8653257F9EE198DAB65C824EB72 /* PBXContainerItemProxy */;
+		};
+		3446DA2B6295AD07184EF14693B818DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 31CE986E2AE61452EF4E2032C1CA8B05 /* PBXContainerItemProxy */;
+		};
+		517DBE624BB96FCAA91ACFC048BD2FB5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 2BBC971EDF298E40EEA5A4CCBFCD5D59 /* PBXContainerItemProxy */;
+		};
+		6E731EF09D7550956D4D61057EA817BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = BA7164E0F5EDA699EED94A3DBD285D99 /* PBXContainerItemProxy */;
+		};
+		B25575E655FFA5ECF973E509373F6893 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = CE02651F6DBF3063ECA9297B2C2F272E /* PBXContainerItemProxy */;
+		};
+		ECF9DE0CE3FA85205DB7600F8A560EDC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 6715A84CBD8AA10544CDAEDF237A4B45 /* PBXContainerItemProxy */;
+		};
+		F3FDAA10B9ACCC10BE2D17000F4B686F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 9403FB6C8D798CFDF0BEB604E7B566AA /* PBXContainerItemProxy */;
+		};
+		F6AC7AB2E58795557A0123B9A10C2931 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			target = E9B8E4D88042A8E309275D2AE3A29A8D /* SwiftyJSON */;
+			targetProxy = 88C89BBF92B1F32B9CE2D49124F2393F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		058345804C29F06A98C2452E24F30BAC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 632FF1EE988385F720BCD9C2FE6C4EFD /* Pods-SwiftLocation-iOS.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-iOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-iOS/Pods-SwiftLocation-iOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_iOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		116703BB96013A87DFF6963EE825F302 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6A33813A7726310A8BB5401F68769C05 /* Pods-SwiftLocation-watchOS.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-watchOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-watchOS/Pods-SwiftLocation-watchOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_watchOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		38EDCBD2BDABE2B008501F6386ED0DF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 564D09D35EF985DB8A91759FF4D2B19F /* Pods-SwiftLocation-macOS.release.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-macOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-macOS/Pods-SwiftLocation-macOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_macOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6383DEC0F205922EF32A79A719102C67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CB57D805979E85721527BCF36F2952B3 /* Pods-SwiftLocation-macOS.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-macOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-macOS/Pods-SwiftLocation-macOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_macOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		67B5A01A16F1B070A0688830BF9D9F30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F66C76EE58F71E4407F7F1409466AD37 /* Pods-SwiftLocation-macOS Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-macOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-macOS Tests/Pods-SwiftLocation-macOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_macOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		68182D80144FE57F64C63329E1ED19A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 554E0BD1B9C497ECC59ACEE88376477B /* Pods-SwiftLocation-tvOS Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-tvOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-tvOS Tests/Pods-SwiftLocation-tvOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_tvOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6F9224530522DD3C735EC96CF142642E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		76EC976C09F74B8E50740E386ACEF12B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BDFA1C9FC613B0BC8437ACE0BB3D1C2A /* Pods-SwiftLocation-watchOS.release.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-watchOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-watchOS/Pods-SwiftLocation-watchOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_watchOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		823DCBB35ADAFE92127B537F43E0A90A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 620FAE0C0F388FD4538BA1C9EE4CA5DC /* Pods-TestApplication.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-TestApplication/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-TestApplication/Pods-TestApplication.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_TestApplication;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		95E1B614470ED4077496AB3D98DC6980 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 121ADA7B47FFEA8902121942E500EC87 /* Pods-SwiftLocation-tvOS Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-tvOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-tvOS Tests/Pods-SwiftLocation-tvOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_tvOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		99F93E46DDC7131B8F424881A417645E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 56ECEC7339328564B777BB584ADD4555 /* Pods-SwiftLocation-iOS.release.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-iOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-iOS/Pods-SwiftLocation-iOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_iOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		9C775B758EF983C3AC0B48F1A14C5FE1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EE04CC6336F387308F2E4FE4F089487D /* Pods-TestApplication.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-TestApplication/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-TestApplication/Pods-TestApplication.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_TestApplication;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		A9427F1B47E9A7D7B8EB648B6B0DB0E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2E7F7C62EE34D2D271E6E1234A2002B2 /* SwiftyJSON.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/SwiftyJSON/SwiftyJSON-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/SwiftyJSON/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/SwiftyJSON/SwiftyJSON.modulemap";
+				PRODUCT_NAME = SwiftyJSON;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		AE15AFF674676933012873C72B7112C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1AA579D56ABF6C46EDA43DDCD9FF76FC /* Pods-SwiftLocation-macOS Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-macOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-macOS Tests/Pods-SwiftLocation-macOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_macOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B0D73EA44EF472A567ACB7BF5DED8B2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 87BFAA655711F65EB09F67731F5C1D7D /* Pods-SwiftLocation-tvOS.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-tvOS/Pods-SwiftLocation-tvOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_tvOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B57951D085A1B98A97F8A1062A5E5C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		B8C1F9C8C65FAEB493A9D2F397FF2DE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2E7F7C62EE34D2D271E6E1234A2002B2 /* SwiftyJSON.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/SwiftyJSON/SwiftyJSON-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/SwiftyJSON/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/SwiftyJSON/SwiftyJSON.modulemap";
+				PRODUCT_NAME = SwiftyJSON;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		C1A7C6706827BA4156DB755F0C836CD6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B4A97A55C4C5F21B025CB5D81DCB2A7 /* Pods-SwiftLocation-iOS Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-iOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-iOS Tests/Pods-SwiftLocation-iOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_iOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		C524E3CE27B4E5F53CF977043ECE5E7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3B723C1DCA4687B6034958B06BB79504 /* Pods-SwiftLocation-iOS Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-iOS Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-iOS Tests/Pods-SwiftLocation-iOS Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_iOS_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E7D354DEF7B95231CA607BABB8EB6BFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8F8951858D63160EB0A6E61C6EA3448 /* Pods-SwiftLocation-tvOS.release.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-SwiftLocation-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-SwiftLocation-tvOS/Pods-SwiftLocation-tvOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_SwiftLocation_tvOS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2B1D05BE5DA88CD8F05EB25911FCE2BD /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-watchOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				116703BB96013A87DFF6963EE825F302 /* Debug */,
+				76EC976C09F74B8E50740E386ACEF12B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B57951D085A1B98A97F8A1062A5E5C5B /* Debug */,
+				6F9224530522DD3C735EC96CF142642E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E8B1CF1C93AC5912BB2C9E0AA2F3B6C /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0D73EA44EF472A567ACB7BF5DED8B2A /* Debug */,
+				E7D354DEF7B95231CA607BABB8EB6BFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DE703F4621AA9A4DBBA17036FF56D04 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-macOS Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				67B5A01A16F1B070A0688830BF9D9F30 /* Debug */,
+				AE15AFF674676933012873C72B7112C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7A3FB8E15A78ADC9F81D2A83C167D31F /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6383DEC0F205922EF32A79A719102C67 /* Debug */,
+				38EDCBD2BDABE2B008501F6386ED0DF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B58BCD6049C767E4FDBB4119E71061D8 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-tvOS Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68182D80144FE57F64C63329E1ED19A9 /* Debug */,
+				95E1B614470ED4077496AB3D98DC6980 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B7081E44DD76A9138B6C8C5E3054CD0E /* Build configuration list for PBXNativeTarget "SwiftyJSON" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B8C1F9C8C65FAEB493A9D2F397FF2DE4 /* Debug */,
+				A9427F1B47E9A7D7B8EB648B6B0DB0E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB03A38CCB10A5AE1687A9CFB37D58A5 /* Build configuration list for PBXNativeTarget "Pods-TestApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				823DCBB35ADAFE92127B537F43E0A90A /* Debug */,
+				9C775B758EF983C3AC0B48F1A14C5FE1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEE19F755E56B8E1FBA1780EA2A971F8 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				058345804C29F06A98C2452E24F30BAC /* Debug */,
+				99F93E46DDC7131B8F424881A417645E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FACF031A5D91AD3773A64A4F31625A92 /* Build configuration list for PBXNativeTarget "Pods-SwiftLocation-iOS Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1A7C6706827BA4156DB755F0C836CD6 /* Debug */,
+				C524E3CE27B4E5F53CF977043ECE5E7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

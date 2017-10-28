@@ -33,6 +33,70 @@
 import Foundation
 import CoreLocation
 import MapKit
+import SwiftyJSON
+
+/// Type of operation to perform
+///
+/// - getLocation: get location from address string
+/// - getPlace: get place info from location coordinates
+public enum GeocoderOperation {
+	case getLocation(address: String)
+	case getPlace(coordinates: CLLocationCoordinate2D)
+}
+
+/// Supported geocoder services
+///
+/// - apple: apple built-in service
+/// - openStreetMap: open street map service (nominatim.openstreetmap.org)
+public enum GeocoderService {
+	case apple
+	case openStreetMap
+	
+	/// Create new request for given operation
+	///
+	/// - Parameter operation: operation to perform
+	/// - Returns: request instance
+	public func newRequest(operation: GeocoderOperation, timeout: TimeInterval?) -> GeocoderRequest {
+		let t = timeout ?? 10
+		switch self {
+		case .openStreetMap:
+			return Geocoder_OpenStreet(operation: operation, timeout: t)
+		case .apple:
+			return Geocoder_Apple(operation: operation, timeout: t)
+		}
+	}
+}
+
+public typealias GeocoderRequest_Success = (([Place]) -> (Void))
+public typealias GeocoderRequest_Failure = ((LocationError) -> (Void))
+
+/// Protocol for geocoder request instance
+public protocol GeocoderRequest {
+	
+	/// Success handler
+	var success: GeocoderRequest_Success? { get set }
+	
+	/// Failure handler
+	var failure: GeocoderRequest_Failure? { get set }
+	
+	func onSuccess(_ success: @escaping GeocoderRequest_Success) -> Self
+	
+	func onFailure(_ failure: @escaping GeocoderRequest_Failure) -> Self
+
+	/// Initialization of the geocoder request
+	///
+	/// - Parameter operation: operation to perform
+	init(operation: GeocoderOperation, timeout: TimeInterval)
+
+	/// Timeout interval
+	var timeout: TimeInterval? { get set }
+	
+	/// Execute operation
+	func execute()
+	
+	/// Cancel current execution (if any)
+	func cancel()
+}
 
 /// Identifier type of the request
 public typealias RequestID = String
@@ -413,6 +477,8 @@ public enum LocationError: Error {
 	case restricted
 	case disabled
 	case error
+	case other(_: String)
+	case dataParserError
 }
 
 /// The possible states that heading services can be in
@@ -423,5 +489,62 @@ public enum HeadingServiceState {
 	case available
 	case unavailable
 	case invalid
+}
+
+/// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
+public class JSONOperation {
+	
+	/// Task of the operation
+	private var task: URLSessionDataTask?
+	
+	/// Callback called on success
+	public var onSuccess: ((JSON) -> (Void))? = nil
+	
+	/// Callack called on failure
+	public var onFailure: ((LocationError) -> (Void))? = nil
+	
+	/// Initialize a new download operation with given url
+	///
+	/// - Parameters:
+	///   - url: url to download
+	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
+	public init(_ url: URL, timeout: TimeInterval? = nil) {
+		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
+		self.task = URLSession.shared.dataTask(with: request, completionHandler: self.onReceiveResponse)
+	}
+	
+	/// Response parser
+	///
+	/// - Parameters:
+	///   - data: data received if any
+	///   - response: url response if any
+	///   - error: error if any
+	private func onReceiveResponse(_ data: Data?, _ response: URLResponse?, _ error: Error?) {
+		if let e = error {
+			self.onFailure?(LocationError.other(e.localizedDescription))
+			return
+		}
+		guard let d = data else {
+			self.onFailure?(LocationError.dataParserError)
+			return
+		}
+		do {
+			let json = try JSON(data: d)
+			self.onSuccess?(json)
+		} catch {
+			self.onFailure?(LocationError.dataParserError)
+		}
+	}
+	
+	/// Execute download and parse
+	public func execute() {
+		self.task?.resume()
+	}
+	
+	/// Cancel operation
+	public func cancel() {
+		self.task?.cancel()
+	}
+	
 }
 

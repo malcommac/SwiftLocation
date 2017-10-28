@@ -8,6 +8,8 @@
 
 import UIKit
 import SwiftLocation
+import MapKit
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -22,11 +24,25 @@ class ViewController: UIViewController {
 		}
 	*/
 		
-		Locator.subscribePosition(accuracy: .city).onSuccess { loc in
+		/*Locator.subscribePosition(accuracy: .city).onSuccess { loc in
 			print("New: \(loc)")
 		}.onFailure { err, last in
 			print("Failed: \(err)")
+		}*/
+		
+		/*Locator.location(fromAddress: "Via Veneto 12, Rieti", using: .openStreetMap).onSuccess { places in
+			print(places)
+		}.onFailure { err in
+			print("err")
+		}*/
+		
+		let c = CLLocationCoordinate2DMake(41.890395, 12.493083)
+		Locator.location(fromCoordinates: c, using: .openStreetMap).onSuccess { places in
+			print(places)
+		}.onFailure { err in
+			print(err)
 		}
+		
 	}
 
 	override func didReceiveMemoryWarning() {

@@ -123,7 +123,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	// MARK: PUBLIC FUNCTIONS
+	// MARK: CURRENT LOCATION FUNCTIONS
 
 	/// Asynchronously requests the current location of the device using location services,
 	/// optionally waiting until the user grants the app permission
@@ -178,6 +178,40 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		return request
 	}
 	
+	// MARK: REVERSE GEOCODING
+	
+	/// Get the location from address string and return a `CLLocation` object.
+	/// Request is started automatically.
+	///
+	/// - Parameters:
+	///   - address: address string or place to search
+	///   - service: service to use, `nil` to user apple's built in service
+	///   - timeout: timeout interval, if `nil` 10 seconds timeout is used
+	/// - Returns: request
+	public func location(fromAddress address: String, using service: GeocoderService? = nil, timeout: TimeInterval? = nil) -> GeocoderRequest {
+		let request = (service ?? .apple).newRequest(operation: .getLocation(address: address), timeout: timeout)
+		request.execute()
+		return request
+	}
+	
+	
+	/// Get the location data from given coordinates.
+	/// Request is started automatically.
+	///
+	/// - Parameters:
+	///   - coordinates: coordinates to search
+	///   - service: service to use, `nil` to user apple's built in service
+	///   - timeout: timeout interval, if `nil` 10 seconds timeout is used
+	/// - Returns: request
+	public func location(fromCoordinates coordinates: CLLocationCoordinate2D, using service: GeocoderService? = nil, timeout: TimeInterval? = nil) -> GeocoderRequest {
+		let request = (service ?? .apple).newRequest(operation: .getPlace(coordinates: coordinates), timeout: timeout)
+		request.execute()
+		return request
+	}
+
+	
+	// MARK: DEVICE HEADING FUNCTIONS
+
 	/// Asynchronously requests the current heading of the device using location services.
 	/// The current heading (the most recent one acquired, regardless of accuracy level),
 	/// or nil if no valid heading was acquired
