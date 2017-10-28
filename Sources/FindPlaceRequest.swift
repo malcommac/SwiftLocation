@@ -9,13 +9,10 @@
 import Foundation
 import SwiftyJSON
 
-public enum FindPlaceOperation {
-	case autocompletePlaces(input: String)
-}
-
 public typealias FindPlaceRequest_Success = (([PlaceMatch]) -> (Void))
 public typealias FindPlaceRequest_Failure = ((LocationError) -> (Void))
 
+/// Public protocol for place find request
 public protocol FindPlaceRequest {
 	
 	/// Success handler
@@ -34,6 +31,7 @@ public protocol FindPlaceRequest {
 	func cancel()
 }
 
+/// Find Place with Google
 public class FindPlaceRequest_Google: FindPlaceRequest {
 	
 	/// session task
@@ -45,19 +43,19 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 	/// Failure callback
 	public var failure: FindPlaceRequest_Failure?
 	
-	/// Operation to execute
-	public private(set) var operation: FindPlaceOperation
-	
 	/// Timeout interval
 	public var timeout: TimeInterval
+	
+	/// Input to search
+	public private(set) var input: String
 	
 	/// Init new find place operation
 	///
 	/// - Parameters:
 	///   - operation: operation to execute
 	///   - timeout: timeout, `nil` uses default timeout of 10 seconds
-	public init(operation: FindPlaceOperation, timeout: TimeInterval? = nil) {
-		self.operation = operation
+	public init(input: String, timeout: TimeInterval? = nil) {
+		self.input = input
 		self.timeout = timeout ?? 10
 	}
 	
@@ -67,23 +65,20 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 			return
 		}
 		
-		switch self.operation {
-		case .autocompletePlaces(let input):
-			let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&key=\(APIKey)")!
-			self.task = JSONOperation(url, timeout: self.timeout)
-			self.task?.onFailure = { err in
-				self.failure?(err)
-			}
-			self.task?.onSuccess = { json in
-				if json["status"].stringValue != "OK" {
-					self.failure?(LocationError.other("Wrong google response"))
-					return
-				}
-				let places = PlaceMatch.load(list: json["predictions"].arrayValue)
-				self.success?(places)
-			}
-			self.task?.execute()
+		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&key=\(APIKey)")!
+		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task?.onFailure = { err in
+			self.failure?(err)
 		}
+		self.task?.onSuccess = { json in
+			if json["status"].stringValue != "OK" {
+				self.failure?(LocationError.other("Wrong google response"))
+				return
+			}
+			let places = PlaceMatch.load(list: json["predictions"].arrayValue)
+			self.success?(places)
+		}
+		self.task?.execute()
 	}
 	
 	public func cancel() {
@@ -92,12 +87,26 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 	
 }
 
+/// Identify a single match entry for a place search
 public class PlaceMatch {
+	
+	/// Identifier of the place
 	public internal(set) var placeID: String
+	
+	/// Name of the place
 	public internal(set) var name: String
+	
+	/// Main text of the place
 	public internal(set) var mainText: String
+	
+	/// Secondary text of the place
 	public internal(set) var secondaryText: String
+	
+	/// Place types string (google)
 	public internal(set) var types: [String]
+	
+	/// Place detail cache
+	public private(set) var detail: Place?
 
 	public init?(_ json: JSON) {
 		guard let placeID = json["place_id"].string else { return nil }
@@ -112,5 +121,27 @@ public class PlaceMatch {
 		return list.flatMap { PlaceMatch($0) }
 	}
 	
+	public func detail(timeout: TimeInterval? = nil,
+	                   onSuccess: @escaping ((Place) -> (Void)),
+	                   onFail: ((LocationError) -> (Void))? = nil) {
+		if let p = self.detail {
+			onSuccess(p)
+			return
+		}
+		guard let APIKey = Locator.api.googleAPIKey else {
+			onFail?(LocationError.missingAPIKey(forService: "google"))
+			return
+		}
+		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
+		let task = JSONOperation(url, timeout: timeout ?? 10)
+		task.onSuccess = { json in
+			self.detail = Place(googleJSON: json["result"])
+			onSuccess(self.detail!)
+		}
+		task.onFailure = { err in
+			onFail?(err)
+		}
+		task.execute()
+	}
 
 }

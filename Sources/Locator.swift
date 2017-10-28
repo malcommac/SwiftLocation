@@ -250,7 +250,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	@discardableResult
 	public func autocompletePlaces(with text: String, timeout: TimeInterval? = nil,
 	                         onSuccess: @escaping FindPlaceRequest_Success, onFail: @escaping FindPlaceRequest_Failure) -> FindPlaceRequest {
-		let request = FindPlaceRequest_Google(operation: .autocompletePlaces(input: text), timeout: timeout)
+		let request = FindPlaceRequest_Google(input: text, timeout: timeout)
+		request.success = onSuccess
+		request.failure = onFail
 		request.execute()
 		return request
 	}

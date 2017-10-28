@@ -64,7 +64,7 @@ public final class Geocoder_Google: GeocoderRequest {
 			self.failure?(err)
 		}
 		self.task?.onSuccess = { json in
-			let places = json["results"].arrayValue.map { self.parseResultPlace($0) }
+			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
 			self.success?(places)
 		}
 		self.task?.execute()
@@ -81,47 +81,12 @@ public final class Geocoder_Google: GeocoderRequest {
 			self.failure?(err)
 		}
 		self.task?.onSuccess = { json in
-			let places = json["results"].arrayValue.map { self.parseResultPlace($0) }
+			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
 			self.success?(places)
 		}
 		self.task?.execute()
 	}
 
-	private func parseResultPlace(_ json: JSON) -> Place {
-		
-		func ab(forType type: String) -> JSON? {
-			return json["address_components"].arrayValue.first(where: { data in
-				return data["types"].arrayValue.contains(where: { entry in
-					return entry.stringValue == type
-				})
-			})
-		}
-		
-		let place = Place()
-		if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
-			place.coordinates = CLLocationCoordinate2DMake(lat, lon)
-		}
-		place.name = ab(forType: "establishment")?["short_name"].string
-		if let countryData = ab(forType: "country") {
-			place.countryCode = countryData["short_name"].string
-			place.country = countryData["long_name"].string
-		}
-		place.postcode = ab(forType: "postal_code")?["short_name"].string
-		place.state = ab(forType: "administrative_area_level_1")?["short_name"].string
-		place.city = ab(forType: "locality")?["short_name"].string
-		place.cityDistrict = ab(forType: "administrative_area_level_2")?["short_name"].string
-		place.road = ab(forType: "route")?["short_name"].string
-		if place.road == nil {
-			place.road = ab(forType: "neighborhood")?["short_name"].string
-		}
-		place.houseNumber = ab(forType: "street_number")?["short_name"].string
-		place.POI = ab(forType: "point_of_interest")?["short_name"].string
-		place.rawDictionary = json.dictionaryObject
-		return place
-	}
-	
-
-	
 }
 
 //MARK: Geocoder OpenStreetMap
