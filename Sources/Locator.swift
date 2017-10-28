@@ -185,26 +185,43 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///
 	/// - Parameters:
 	///   - address: address string or place to search
+	///   - region: A geographical region to use as a hint when looking up the specified address. Specifying a region lets you prioritize
+	/// 			the returned set of results to locations that are close to some specific geographical area, which is typically
+	///				the user’s current location. It's valid only if you are using apple services.
 	///   - service: service to use, `nil` to user apple's built in service
 	///   - timeout: timeout interval, if `nil` 10 seconds timeout is used
+	///   - onSuccess: callback called on success
+	///   - onFail: callback called on failure
 	/// - Returns: request
-	public func location(fromAddress address: String, using service: GeocoderService? = nil, timeout: TimeInterval? = nil) -> GeocoderRequest {
-		let request = (service ?? .apple).newRequest(operation: .getLocation(address: address), timeout: timeout)
+	@discardableResult
+	public func location(fromAddress address: String, in region: CLRegion? = nil,
+	                     using service: GeocoderService? = nil, timeout: TimeInterval? = nil,
+	                     onSuccess: @escaping GeocoderRequest_Success, onFail: @escaping GeocoderRequest_Failure) -> GeocoderRequest {
+		var request = (service ?? .apple).newRequest(operation: .getLocation(address: address, region: region), timeout: timeout)
+		request.success = onSuccess
+		request.failure = onFail
 		request.execute()
 		return request
 	}
-	
-	
+
 	/// Get the location data from given coordinates.
 	/// Request is started automatically.
 	///
 	/// - Parameters:
 	///   - coordinates: coordinates to search
+	///   - locale: The locale to use when returning the address information. You might specify a value for this parameter when you want the address returned in a locale that differs from the user's current language settings. Specify nil to use the user's default locale information. It's valid only if you are using apple services.
 	///   - service: service to use, `nil` to user apple's built in service
+	///   - onSuccess: callback called on success
+	///   - onFail: callback called on failure
 	///   - timeout: timeout interval, if `nil` 10 seconds timeout is used
-	/// - Returns: request
-	public func location(fromCoordinates coordinates: CLLocationCoordinate2D, using service: GeocoderService? = nil, timeout: TimeInterval? = nil) -> GeocoderRequest {
-		let request = (service ?? .apple).newRequest(operation: .getPlace(coordinates: coordinates), timeout: timeout)
+	///   - timeout: timeout interval, if `nil` 10 seconds timeout is used
+	@discardableResult
+	public func location(fromCoordinates coordinates: CLLocationCoordinate2D, locale: Locale? = nil,
+	                     using service: GeocoderService? = nil, timeout: TimeInterval? = nil,
+	                     onSuccess: @escaping GeocoderRequest_Success, onFail: @escaping GeocoderRequest_Failure) -> GeocoderRequest {
+		var request = (service ?? .apple).newRequest(operation: .getPlace(coordinates: coordinates, locale: locale), timeout: timeout)
+		request.success = onSuccess
+		request.failure = onFail
 		request.execute()
 		return request
 	}

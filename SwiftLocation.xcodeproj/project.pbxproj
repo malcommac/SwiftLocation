@@ -17,6 +17,7 @@
 		6459B1291FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */; };
 		6459B12A1FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */; };
 		6459B12B1FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */; };
+		6459B1321FA4D67700E0CD53 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6459B1311FA4D67700E0CD53 /* Contacts.framework */; };
 		64880FD71FA3685400AC0639 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64880FD61FA3685400AC0639 /* AppDelegate.swift */; };
 		64880FD91FA3685400AC0639 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64880FD81FA3685400AC0639 /* ViewController.swift */; };
 		64880FDC1FA3685400AC0639 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64880FDA1FA3685400AC0639 /* Main.storyboard */; };
@@ -115,6 +116,7 @@
 		53B449FAA014A1D936DCB05E /* Pods-SwiftLocation-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftLocation-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftLocation-iOS/Pods-SwiftLocation-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		640E5B361FA492F7006CFB2E /* HeadingRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadingRequest.swift; sourceTree = "<group>"; };
 		6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderRequest.swift; sourceTree = "<group>"; };
+		6459B1311FA4D67700E0CD53 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		64880FD41FA3685400AC0639 /* TestApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64880FD61FA3685400AC0639 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64880FD81FA3685400AC0639 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6459B1321FA4D67700E0CD53 /* Contacts.framework in Frameworks */,
 				64880FF41FA369A900AC0639 /* MapKit.framework in Frameworks */,
 				64880FF21FA3698B00AC0639 /* CoreLocation.framework in Frameworks */,
 				EFB8513D7818057CB4F37B3F /* Pods_SwiftLocation_iOS.framework in Frameworks */,
@@ -290,6 +293,7 @@
 		64880FE81FA3686400AC0639 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6459B1311FA4D67700E0CD53 /* Contacts.framework */,
 				64880FFF1FA369CE00AC0639 /* MapKit.framework */,
 				64880FFD1FA369CA00AC0639 /* CoreLocation.framework */,
 				64880FFB1FA369C500AC0639 /* MapKit.framework */,

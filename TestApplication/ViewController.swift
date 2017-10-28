@@ -37,9 +37,9 @@ class ViewController: UIViewController {
 		}*/
 		
 		let c = CLLocationCoordinate2DMake(41.890395, 12.493083)
-		Locator.location(fromCoordinates: c, using: .openStreetMap).onSuccess { places in
+		Locator.location(fromCoordinates: c, onSuccess: { places in
 			print(places)
-		}.onFailure { err in
+		}) { err in
 			print(err)
 		}
 		

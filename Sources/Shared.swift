@@ -37,11 +37,11 @@ import SwiftyJSON
 
 /// Type of operation to perform
 ///
-/// - getLocation: get location from address string
-/// - getPlace: get place info from location coordinates
+/// - getLocation: get location from address string (region is used only if service is Apple, otherwise it will be ignored)
+/// - getPlace: get place info from location coordinates (preferred locale is used only if service is Apple, otherwise it will be ignored)
 public enum GeocoderOperation {
-	case getLocation(address: String)
-	case getPlace(coordinates: CLLocationCoordinate2D)
+	case getLocation(address: String, region: CLRegion?)
+	case getPlace(coordinates: CLLocationCoordinate2D, locale: Locale?)
 }
 
 /// Supported geocoder services
@@ -67,7 +67,10 @@ public enum GeocoderService {
 	}
 }
 
+/// Typealias for geocoder success
 public typealias GeocoderRequest_Success = (([Place]) -> (Void))
+
+/// Typealias for geocoder failure
 public typealias GeocoderRequest_Failure = ((LocationError) -> (Void))
 
 /// Protocol for geocoder request instance
@@ -78,10 +81,6 @@ public protocol GeocoderRequest {
 	
 	/// Failure handler
 	var failure: GeocoderRequest_Failure? { get set }
-	
-	func onSuccess(_ success: @escaping GeocoderRequest_Success) -> Self
-	
-	func onFailure(_ failure: @escaping GeocoderRequest_Failure) -> Self
 
 	/// Initialization of the geocoder request
 	///
@@ -546,5 +545,52 @@ public class JSONOperation {
 		self.task?.cancel()
 	}
 	
+}
+
+public class Place: CustomStringConvertible {
+	public internal(set) var placemark: CLPlacemark?
+	public internal(set) var coordinates: CLLocationCoordinate2D?
+	public internal(set) var countryCode: String?
+	public internal(set) var country: String?
+	public internal(set) var state: String?
+	public internal(set) var county: String?
+	public internal(set) var postcode: String?
+	public internal(set) var city: String?
+	public internal(set) var cityDistrict: String?
+	public internal(set) var road: String?
+	public internal(set) var houseNumber: String?
+	public internal(set) var name: String?
+	
+	internal init() { }
+	
+	internal init?(placemark: CLPlacemark?) {
+		guard let p = placemark else { return nil }
+		self.placemark = p
+		
+		self.name = p.name
+		self.coordinates = p.location?.coordinate
+		self.countryCode = p.isoCountryCode
+		self.country = p.country
+		self.postcode = p.postalCode
+		self.cityDistrict = p.administrativeArea
+		self.road = p.thoroughfare
+		self.houseNumber = p.subAdministrativeArea
+		
+		if #available(iOS 11.0, *) {
+			if let address = p.postalAddress {
+				self.city = address.city
+			}
+		} else {
+			self.city = p.locality
+		}
+	}
+	
+	internal static func load(placemarks: [CLPlacemark]) -> [Place] {
+		return placemarks.flatMap { Place(placemark: $0) }
+	}
+	
+	public var description: String {
+		return self.name ?? "Unknown Place"
+	}
 }
 

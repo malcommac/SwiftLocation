@@ -9,7 +9,10 @@
 import Foundation
 import CoreLocation
 import MapKit
+import Contacts
 import SwiftyJSON
+
+//MARK: Geocoder OpenStreetMap
 
 public final class Geocoder_OpenStreet: GeocoderRequest {
 
@@ -38,9 +41,9 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 	
 	public func execute() {
 		switch self.operation {
-		case .getLocation(let a):
+		case .getLocation(let a,_):
 			self.execute_getLocation(a)
-		case .getPlace(let l):
+		case .getPlace(let l,_):
 			self.execute_getPlace(l)
 		}
 	}
@@ -91,18 +94,10 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 		place.name = json["display_name"].string
 		return place
 	}
-	
-	public func onSuccess(_ success: @escaping GeocoderRequest_Success) -> Self {
-		self.success = success
-		return self
-	}
-	
-	public func onFailure(_ failure: @escaping GeocoderRequest_Failure) -> Self {
-		self.failure = failure
-		return self
-	}
 
 }
+
+//MARK: Geocoder Apple
 
 public final class Geocoder_Apple: GeocoderRequest {
 	
@@ -115,10 +110,14 @@ public final class Geocoder_Apple: GeocoderRequest {
 	/// Failure Handler
 	public var failure: GeocoderRequest_Failure?
 	
+	/// Timeout interval
 	public var timeout: TimeInterval?
 
-	private var task: JSONOperation? = nil
-
+	/// Task
+	private var task: CLGeocoder?
+	
+	private var isFinished: Bool = false
+	
 	/// Initialize a new geocoder operation
 	///
 	/// - Parameter operation: operation
@@ -128,11 +127,42 @@ public final class Geocoder_Apple: GeocoderRequest {
 	}
 	
 	public func execute() {
-		
+		guard self.isFinished == false else { return }
+	
+		let geocoder = CLGeocoder()
+		self.task = geocoder
+		switch self.operation {
+		case .getLocation(let address, let region):
+			geocoder.geocodeAddressString(address, in: region, completionHandler: { (placemarks, error) in
+				self.isFinished = true
+			})
+		case .getPlace(let coordinates, let locale):
+			let loc = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+			if #available(iOSApplicationExtension 11.0, *) {
+				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: { (placemarks, error) in
+					self.isFinished = true
+					if let err = error {
+						self.failure?(LocationError.other(err.localizedDescription))
+						return
+					}
+					self.success?(Place.load(placemarks: placemarks ?? []))
+				})
+			} else {
+				// Fallback on earlier versions
+				geocoder.reverseGeocodeLocation(loc, completionHandler: { (placemarks, error) in
+					self.isFinished = true
+					if let err = error {
+						self.failure?(LocationError.other(err.localizedDescription))
+						return
+					}
+					self.success?(Place.load(placemarks: placemarks ?? []))
+				})
+			}
+		}
 	}
 	
 	public func cancel() {
-		self.task?.cancel()
+		self.task?.cancelGeocode()
 	}
 	
 	public func onSuccess(_ success: @escaping GeocoderRequest_Success) -> Self {
@@ -143,24 +173,5 @@ public final class Geocoder_Apple: GeocoderRequest {
 	public func onFailure(_ failure: @escaping GeocoderRequest_Failure) -> Self {
 		self.failure = failure
 		return self
-	}
-}
-
-
-public class Place: CustomStringConvertible {
-	public internal(set) var coordinates: CLLocationCoordinate2D?
-	public internal(set) var countryCode: String?
-	public internal(set) var country: String?
-	public internal(set) var state: String?
-	public internal(set) var county: String?
-	public internal(set) var postcode: String?
-	public internal(set) var city: String?
-	public internal(set) var cityDistrict: String?
-	public internal(set) var road: String?
-	public internal(set) var houseNumber: String?
-	public internal(set) var name: String?
-	
-	public var description: String {
-		return self.name ?? "Unknown Place"
 	}
 }
