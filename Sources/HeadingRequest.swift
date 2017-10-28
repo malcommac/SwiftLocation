@@ -88,24 +88,6 @@ public class HeadingRequest: Request, Equatable, Hashable {
 		Locator.stopRequest(self)
 	}
 	
-	/// Callback called on success
-	///
-	/// - Parameter success: success handler
-	/// - Returns: self
-	public func onSuccess(_ success: @escaping Success) -> Self {
-		self.success = success
-		return self
-	}
-	
-	/// Callback called on failure
-	///
-	/// - Parameter failure: failure handler
-	/// - Returns: self
-	public func onFailure(_ failure: @escaping Failure) -> Self {
-		self.failure = failure
-		return self
-	}
-	
 	/// Last error
 	internal var error: HeadingServiceState? {
 		let err = Locator.manager.headingState

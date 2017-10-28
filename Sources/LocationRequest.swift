@@ -109,26 +109,6 @@ public class LocationRequest: Request, Equatable, Hashable {
 		return self
 	}
 	
-	/// Set the success callback
-	///
-	/// - Parameter handler: handler
-	/// - Returns: self
-	@discardableResult
-	public func onSuccess(_ handler: @escaping Success) -> Self {
-		self.success = handler
-		return self
-	}
-	
-	/// Set the failure handler
-	///
-	/// - Parameter handler: handler
-	/// - Returns: self
-	@discardableResult
-	public func onFailure(_ handler: @escaping Failure) -> Self {
-		self.failure = handler
-		return self
-	}
-	
 	/// Stop running request
 	public func stop() {
 		Locator.stopRequest(self)

@@ -142,18 +142,23 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// - Parameters:
 	///   - accuracy: The accuracy level desired (refers to the accuracy and recency of the location).
 	///   - timeout: the amount of time to wait for a location with the desired accuracy before completing.
+	///   - onUpdate: update callback
+	///   - onFail: failure callback
 	/// - Returns: request
 	@discardableResult
-	public func currentPosition(accuracy: Accuracy, timeout: Timeout? = nil) -> LocationRequest {
+	public func currentPosition(accuracy: Accuracy, timeout: Timeout? = nil,
+	                            onSuccess: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 		assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .oneshot, accuracy: accuracy.validateForGPSRequest, timeout: timeout)
+		request.success = onSuccess
+		request.failure = onFail
 		// Start timer if needs to be started (not delayed and valid timer)
 		request.timeout?.startTimeout(force: false)
 		// Append to the queue
 		self.addLocation(request)
 		return request
 	}
-	
+
 	/// Creates a subscription for location updates that will execute the block once per update
 	/// indefinitely (until canceled), regardless of the accuracy of each location.
 	/// This method instructs location services to use the highest accuracy available
@@ -163,11 +168,16 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///
 	/// - Parameters:
 	///   - accuracy: The accuracy level desired (refers to the accuracy and recency of the location).
+	///   - onUpdate: update callback
+	///   - onFail: failure callback
 	/// - Returns: request
 	@discardableResult
-	public func subscribePosition(accuracy: Accuracy) -> LocationRequest {
+	public func subscribePosition(accuracy: Accuracy,
+	                              onUpdate: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 		assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .continous, accuracy: accuracy.validateForGPSRequest, timeout: nil)
+		request.success = onUpdate
+		request.failure = onFail
 		// Append to the queue
 		self.addLocation(request)
 		return request
@@ -178,11 +188,16 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// If an error occurs, the block will execute with a status other than INTULocationStatusSuccess,
 	/// and the subscription will be canceled automatically.
 	///
+	/// - Parameters:
+	///   - onUpdate: update callback
+	///   - onFail: failure callback
 	/// - Returns: request
 	@discardableResult
-	public func subscribeSignificantLocations() -> LocationRequest {
+	public func subscribeSignificantLocations(onUpdate: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 		assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .significant, accuracy: .any, timeout: nil)
+		request.success = onUpdate
+		request.failure = onFail
 		// Append to the queue
 		self.addLocation(request)
 		return request
@@ -258,7 +273,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	// MARK: DEVICE HEADING FUNCTIONS
-
+	
 	/// Asynchronously requests the current heading of the device using location services.
 	/// The current heading (the most recent one acquired, regardless of accuracy level),
 	/// or nil if no valid heading was acquired
@@ -266,11 +281,16 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// - Parameters:
 	///   - accuracy: minimum accuracy you want to receive
 	///   - minInterval: minimum interval between each request
+	///   - onUpdate: update succeded callback
+	///   - onFail: failure callback
 	/// - Returns: request
 	@discardableResult
-	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree, minInterval: TimeInterval? = nil) -> HeadingRequest {
+	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree, minInterval: TimeInterval? = nil,
+	                                    onUpdate: @escaping HeadingRequest.Success, onFail: @escaping HeadingRequest.Failure) -> HeadingRequest {
 		// Create request
 		let request = HeadingRequest(accuracy: accuracy, minInterval: minInterval)
+		request.success = onUpdate
+		request.failure = onFail
 		// Append it
 		self.addHeadingRequest(request)
 		return request
