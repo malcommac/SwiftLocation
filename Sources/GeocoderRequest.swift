@@ -12,6 +12,118 @@ import MapKit
 import Contacts
 import SwiftyJSON
 
+//MARK: Geocoder Google
+
+public final class Geocoder_Google: GeocoderRequest {
+	
+	/// Operation of the request
+	public private(set) var operation: GeocoderOperation
+	
+	/// Success Handler
+	public var success: GeocoderRequest_Success?
+	
+	/// Failure Handler
+	public var failure: GeocoderRequest_Failure?
+	
+	/// session task
+	private var task: JSONOperation? = nil
+	
+	/// Timeout interval in seconds, `nil` means default timeout (10 seconds)
+	public var timeout: TimeInterval?
+	
+	/// Initialize a new geocoder operation
+	///
+	/// - Parameter operation: operation
+	public required init(operation: GeocoderOperation, timeout: TimeInterval) {
+		self.operation = operation
+		self.timeout = timeout
+	}
+	
+	public func execute() {
+		switch self.operation {
+		case .getLocation(let a,_):
+			self.execute_getLocation(a)
+		case .getPlace(let l,_):
+			self.execute_getPlace(l)
+		}
+	}
+	
+	/// Cancel any currently running task
+	public func cancel() {
+		self.task?.cancel()
+	}
+	
+	private func execute_getPlace(_ c: CLLocationCoordinate2D) {
+		guard let APIKey = Locator.api.googleAPIKey else {
+			self.failure?(LocationError.missingAPIKey(forService: "google"))
+			return
+		}
+		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(c.latitude),\(c.longitude)&key=\(APIKey)")!
+		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task?.onFailure = { err in
+			self.failure?(err)
+		}
+		self.task?.onSuccess = { json in
+			let places = json["results"].arrayValue.map { self.parseResultPlace($0) }
+			self.success?(places)
+		}
+		self.task?.execute()
+	}
+	
+	private func execute_getLocation(_ address: String) {
+		guard let APIKey = Locator.api.googleAPIKey else {
+			self.failure?(LocationError.missingAPIKey(forService: "google"))
+			return
+		}
+		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(address.urlEncoded)&key=\(APIKey)")!
+		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task?.onFailure = { err in
+			self.failure?(err)
+		}
+		self.task?.onSuccess = { json in
+			let places = json["results"].arrayValue.map { self.parseResultPlace($0) }
+			self.success?(places)
+		}
+		self.task?.execute()
+	}
+
+	private func parseResultPlace(_ json: JSON) -> Place {
+		
+		func ab(forType type: String) -> JSON? {
+			return json["address_components"].arrayValue.first(where: { data in
+				return data["types"].arrayValue.contains(where: { entry in
+					return entry.stringValue == type
+				})
+			})
+		}
+		
+		let place = Place()
+		if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
+			place.coordinates = CLLocationCoordinate2DMake(lat, lon)
+		}
+		place.name = ab(forType: "establishment")?["short_name"].string
+		if let countryData = ab(forType: "country") {
+			place.countryCode = countryData["short_name"].string
+			place.country = countryData["long_name"].string
+		}
+		place.postcode = ab(forType: "postal_code")?["short_name"].string
+		place.state = ab(forType: "administrative_area_level_1")?["short_name"].string
+		place.city = ab(forType: "locality")?["short_name"].string
+		place.cityDistrict = ab(forType: "administrative_area_level_2")?["short_name"].string
+		place.road = ab(forType: "route")?["short_name"].string
+		if place.road == nil {
+			place.road = ab(forType: "neighborhood")?["short_name"].string
+		}
+		place.houseNumber = ab(forType: "street_number")?["short_name"].string
+		place.POI = ab(forType: "point_of_interest")?["short_name"].string
+		place.rawDictionary = json.dictionaryObject
+		return place
+	}
+	
+
+	
+}
+
 //MARK: Geocoder OpenStreetMap
 
 public final class Geocoder_OpenStreet: GeocoderRequest {
@@ -92,6 +204,7 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 		place.road = json["address"]["road"].string
 		place.houseNumber = json["address"]["house_number"].string
 		place.name = json["display_name"].string
+		place.rawDictionary = json.dictionaryObject
 		return place
 	}
 

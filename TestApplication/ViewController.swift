@@ -36,8 +36,9 @@ class ViewController: UIViewController {
 			print("err")
 		}*/
 		
+		Locator.api.googleAPIKey = ""
 		let c = CLLocationCoordinate2DMake(41.890395, 12.493083)
-		Locator.location(fromCoordinates: c, onSuccess: { places in
+		Locator.location(fromCoordinates: c, using: .google, onSuccess: { places in
 			print(places)
 		}) { err in
 			print(err)

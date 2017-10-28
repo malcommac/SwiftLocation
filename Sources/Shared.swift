@@ -48,9 +48,11 @@ public enum GeocoderOperation {
 ///
 /// - apple: apple built-in service
 /// - openStreetMap: open street map service (nominatim.openstreetmap.org)
+/// - google: google maps (require API key)
 public enum GeocoderService {
 	case apple
 	case openStreetMap
+	case google
 	
 	/// Create new request for given operation
 	///
@@ -63,6 +65,8 @@ public enum GeocoderService {
 			return Geocoder_OpenStreet(operation: operation, timeout: t)
 		case .apple:
 			return Geocoder_Apple(operation: operation, timeout: t)
+		case .google:
+			return Geocoder_Google(operation: operation, timeout: t)
 		}
 	}
 }
@@ -469,6 +473,7 @@ public enum AuthorizationLevel {
 /// - restricted: nil location. User does not have ability to enable location services (e.g. parental controls, corporate policy, etc)
 /// - disabled: nil location. User has turned off location services device-wide (for all apps) from the system Settings app.
 /// - error: nil location. An error occurred while using the system location services
+/// - missingAPIKey: You must set the API key in `api` property of the Locator object
 public enum LocationError: Error {
 	case timedout
 	case notDetermined
@@ -478,6 +483,7 @@ public enum LocationError: Error {
 	case error
 	case other(_: String)
 	case dataParserError
+	case missingAPIKey(forService: String)
 }
 
 /// The possible states that heading services can be in
@@ -560,6 +566,8 @@ public class Place: CustomStringConvertible {
 	public internal(set) var road: String?
 	public internal(set) var houseNumber: String?
 	public internal(set) var name: String?
+	public internal(set) var POI: String?
+	public internal(set) var rawDictionary: [String:Any]?
 	
 	internal init() { }
 	
@@ -591,6 +599,13 @@ public class Place: CustomStringConvertible {
 	
 	public var description: String {
 		return self.name ?? "Unknown Place"
+	}
+}
+
+internal extension String {
+	
+	var urlEncoded: String {
+		return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 	}
 }
 

@@ -42,6 +42,16 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	
 	// MARK: PROPERTIES
 
+	public class APIs {
+		
+		/// Google API key
+		public var googleAPIKey: String?
+		
+	}
+	
+	/// Api key for helper services
+	public private(set) var api = APIs()
+	
 	/// Shared instance of the location manager
 	internal static let shared = LocatorManager()
 	
