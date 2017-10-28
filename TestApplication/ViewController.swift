@@ -37,9 +37,19 @@ class ViewController: UIViewController {
 		}*/
 		
 		Locator.api.googleAPIKey = ""
-		let c = CLLocationCoordinate2DMake(41.890395, 12.493083)
+		
+		/*let c = CLLocationCoordinate2DMake(41.890395, 12.493083)
 		Locator.location(fromCoordinates: c, using: .google, onSuccess: { places in
 			print(places)
+		}) { err in
+			print(err)
+		}*/
+		
+		Locator.autocompletePlaces(with: "123 main street", onSuccess: { f in
+			print("")
+			f.first?.detail(onSuccess: { place in
+				print("")
+			})
 		}) { err in
 			print(err)
 		}
