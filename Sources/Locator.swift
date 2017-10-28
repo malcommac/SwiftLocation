@@ -236,6 +236,24 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		return request
 	}
 
+	// MARK: AUTOCOMPLETE PLACES & DETAILS
+	
+	/// Autocomplete places from input string. It uses Google Places API for Autocomplete.
+	/// In order to use it you must obtain a free api key and set it to `Locator.apis.googleApiKey` property
+	///
+	/// - Parameters:
+	///   - text: text to search
+	///   - timeout: timeout, `nil` uses default 10-seconds timeout interval
+	///   - onSuccess: success callback
+	///   - onFail: failure callback
+	/// - Returns: request
+	@discardableResult
+	public func autocompletePlaces(with text: String, timeout: TimeInterval? = nil,
+	                         onSuccess: @escaping FindPlaceRequest_Success, onFail: @escaping FindPlaceRequest_Failure) -> FindPlaceRequest {
+		let request = FindPlaceRequest_Google(operation: .autocompletePlaces(input: text), timeout: timeout)
+		request.execute()
+		return request
+	}
 	
 	// MARK: DEVICE HEADING FUNCTIONS
 
@@ -247,6 +265,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///   - accuracy: minimum accuracy you want to receive
 	///   - minInterval: minimum interval between each request
 	/// - Returns: request
+	@discardableResult
 	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree, minInterval: TimeInterval? = nil) -> HeadingRequest {
 		// Create request
 		let request = HeadingRequest(accuracy: accuracy, minInterval: minInterval)
