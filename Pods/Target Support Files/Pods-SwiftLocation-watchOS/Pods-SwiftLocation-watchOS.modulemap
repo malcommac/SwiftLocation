@@ -1,0 +1,6 @@
+framework module Pods_SwiftLocation_watchOS {
+  umbrella header "Pods-SwiftLocation-watchOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
