@@ -13,6 +13,8 @@ import CoreLocation
 
 class ViewController: UIViewController {
 
+	private var loc: IPLocationRequest?
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
@@ -45,13 +47,19 @@ class ViewController: UIViewController {
 			print(err)
 		}*/
 		
-		Locator.autocompletePlaces(with: "123 main street", onSuccess: { f in
+		/*Locator.autocompletePlaces(with: "123 main street", onSuccess: { f in
 			print("")
 			f.first?.detail(onSuccess: { place in
 				print("")
 			})
 		}) { err in
 			print(err)
+		}*/
+		
+		Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
+			print("Find location \(loc)")
+		}) { err, _ in
+			print("\(err)")
 		}
 		
 	}

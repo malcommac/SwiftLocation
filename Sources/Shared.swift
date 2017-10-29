@@ -35,6 +35,24 @@ import CoreLocation
 import MapKit
 import SwiftyJSON
 
+public enum IPService {
+	case freeGeoIP
+	case petabyet
+	case smartIP
+	case ipApi
+	
+	internal var url: URL {
+		var url: String = ""
+		switch self {
+		case .freeGeoIP:	url = "http://freegeoip.net/json/"
+		case .petabyet:		url = "http://api.petabyet.com/geoip/"
+		case .smartIP:		url = "http://smart-ip.net/geoip-json/"
+		case .ipApi:		url = "http://ip-api.com/json"
+		}
+		return URL(string: url)!
+	}
+}
+
 /// Type of operation to perform
 ///
 /// - getLocation: get location from address string (region is used only if service is Apple, otherwise it will be ignored)
@@ -317,7 +335,6 @@ public extension CLLocationManager {
 /// `room` is the highest level of accuracy/recency; `ip` is the lowest level
 ///
 /// - any: inaccurate (>5000 meters, and/or received >10 minutes ago)
-/// - ip: IP based location. It does not require authorizations from the user but its less precise.
 /// - city: 5000 meters or better, and received within the last 10 minutes. Lowest accuracy
 /// - neighborhood: 1000 meters or better, and received within the last 5 minutes
 /// - block: 15 meters or better, and received within the last 15 seconds
@@ -326,7 +343,6 @@ public extension CLLocationManager {
 public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	
 	case any = 0
-	case ip
 	case city
 	case neighborhood
 	case block
@@ -340,7 +356,6 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	public init(_ accuracy: CLLocationAccuracy) {
 		switch accuracy {
 		case Accuracy.any.threshold:			self = .any
-		case Accuracy.ip.threshold:				self = .ip
 		case Accuracy.neighborhood.threshold:	self = .neighborhood
 		case Accuracy.block.threshold:			self = .block
 		case Accuracy.house.threshold:			self = .house
@@ -349,7 +364,6 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 			// find the closest match
 			let values: [CLLocationAccuracy:Accuracy] = [
 				Accuracy.any.threshold 			: .any,
-				Accuracy.ip.threshold 			: .ip,
 				Accuracy.neighborhood.threshold : .neighborhood,
 				Accuracy.block.threshold		: .block,
 				Accuracy.house.threshold 		: .house,
@@ -373,7 +387,6 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	public var threshold: CLLocationAccuracy {
 		switch self {
 		case .any:				return Double.infinity
-		case .ip:				return Double.infinity
 		case .city:				return 5000.0
 		case .neighborhood:		return 1000.0
 		case .block:			return 100.0
@@ -387,7 +400,6 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	public var timeStaleThreshold: TimeInterval {
 		switch self {
 		case .any:				return 1.0
-		case .ip:				return 1.0
 		case .city:				return 600.0
 		case .neighborhood:		return 300.0
 		case .block:			return 60.0
@@ -399,7 +411,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	/// Validate provided request for location request object.
 	/// If not valid the default fallback is returned along side a message.
 	internal var validateForGPSRequest: Accuracy {
-		guard self != .any && self != .ip else {
+		guard self != .any else {
 			debugPrint("Accuracy \(self) is not acceptable for GPS location request. Using .city instead")
 			return .city
 		}
@@ -409,7 +421,6 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 	public var description: String {
 		switch self {
 		case .any:				return "any"
-		case .ip:				return "ip"
 		case .city:				return "city"
 		case .neighborhood:		return "neighborhood"
 		case .block:			return "block"
@@ -484,6 +495,7 @@ public enum LocationError: Error {
 	case other(_: String)
 	case dataParserError
 	case missingAPIKey(forService: String)
+	case failedToObtainData
 }
 
 /// The possible states that heading services can be in

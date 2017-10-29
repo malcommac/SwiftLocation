@@ -22,6 +22,10 @@
 		6459B1351FA4E5CA00E0CD53 /* FindPlaceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1331FA4E5CA00E0CD53 /* FindPlaceRequest.swift */; };
 		6459B1361FA4E5CA00E0CD53 /* FindPlaceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1331FA4E5CA00E0CD53 /* FindPlaceRequest.swift */; };
 		6459B1371FA4E5CA00E0CD53 /* FindPlaceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1331FA4E5CA00E0CD53 /* FindPlaceRequest.swift */; };
+		6459B1391FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */; };
+		6459B13A1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */; };
+		6459B13B1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */; };
+		6459B13C1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */; };
 		64880FD71FA3685400AC0639 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64880FD61FA3685400AC0639 /* AppDelegate.swift */; };
 		64880FD91FA3685400AC0639 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64880FD81FA3685400AC0639 /* ViewController.swift */; };
 		64880FDC1FA3685400AC0639 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64880FDA1FA3685400AC0639 /* Main.storyboard */; };
@@ -122,6 +126,7 @@
 		6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderRequest.swift; sourceTree = "<group>"; };
 		6459B1311FA4D67700E0CD53 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		6459B1331FA4E5CA00E0CD53 /* FindPlaceRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindPlaceRequest.swift; sourceTree = "<group>"; };
+		6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPLocationRequest.swift; sourceTree = "<group>"; };
 		64880FD41FA3685400AC0639 /* TestApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64880FD61FA3685400AC0639 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64880FD81FA3685400AC0639 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -347,6 +352,7 @@
 			children = (
 				64880FEC1FA3695500AC0639 /* Locator.swift */,
 				648810061FA36C9300AC0639 /* LocationRequest.swift */,
+				6459B1381FA5B68900E0CD53 /* IPLocationRequest.swift */,
 				640E5B361FA492F7006CFB2E /* HeadingRequest.swift */,
 				6459B1271FA4B8B800E0CD53 /* GeocoderRequest.swift */,
 				6459B1331FA4E5CA00E0CD53 /* FindPlaceRequest.swift */,
@@ -1057,6 +1063,7 @@
 			files = (
 				6459B1281FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */,
 				648810021FA36B3600AC0639 /* Shared.swift in Sources */,
+				6459B1391FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */,
 				64880FED1FA3695500AC0639 /* Locator.swift in Sources */,
 				6459B1341FA4E5CA00E0CD53 /* FindPlaceRequest.swift in Sources */,
 				648810071FA36C9300AC0639 /* LocationRequest.swift in Sources */,
@@ -1081,6 +1088,7 @@
 				6459B12A1FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */,
 				64880FEF1FA3695500AC0639 /* Locator.swift in Sources */,
 				648810091FA36C9300AC0639 /* LocationRequest.swift in Sources */,
+				6459B13B1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1093,6 +1101,7 @@
 				6459B12B1FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */,
 				64880FF01FA3695500AC0639 /* Locator.swift in Sources */,
 				6488100A1FA36C9300AC0639 /* LocationRequest.swift in Sources */,
+				6459B13C1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1105,6 +1114,7 @@
 				6459B1291FA4B8B800E0CD53 /* GeocoderRequest.swift in Sources */,
 				64880FEE1FA3695500AC0639 /* Locator.swift in Sources */,
 				648810081FA36C9300AC0639 /* LocationRequest.swift in Sources */,
+				6459B13A1FA5B68900E0CD53 /* IPLocationRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

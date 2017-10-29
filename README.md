@@ -26,7 +26,7 @@ It provides a block based asynchronous API to request current location, either o
 | **Device Heading**                            | Subscribe and receive continous device's heading updates                                                                                                                               |
 | **Reverse Geocoder**                          | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
 | **Autocomplete Places**                       | Implement your places autocomplete search with just one call, including place's details (it uses Google API)                                                                           |
-| **IP Address Location**                       | Fetch current location without user authorization using device's IP address (4 services supported: freeGeoIP, petabyet, smartIPor telize)                                              |
+| **IP Address Location**                       | Fetch current location without user authorization using device's IP address (4 services supported: freegeoip.net, api.petabyet.com, smart-ip.net, ip-api.com)                                              |
 | **Background Location Monitoring**            | Easily monitor location with significant location in background.                                                                                                                       |
 | **Background Monitor with Region Monitoring** | No yet supported                                                                                                                                                                       |
 

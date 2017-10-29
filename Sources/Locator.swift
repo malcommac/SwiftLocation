@@ -158,6 +158,26 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		self.addLocation(request)
 		return request
 	}
+	
+	/// Get the current position using the IP address of the device (one shot).
+	/// Location is not very accurate but it does not require user authorizations.
+	///
+	/// - Parameters:
+	///   - usingIP: IP address
+	///   - timeout: timeout interval
+	///   - onSuccess: success callback
+	///   - onFail: failure callback
+	/// - Returns: request
+	@discardableResult
+	public func currentPosition(usingIP service: IPService, timeout: TimeInterval? = nil,
+	                            onSuccess: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> IPLocationRequest {
+		let request = IPLocationRequest(service, timeout: timeout)
+		request.success = onSuccess
+		request.failure = onFail
+		// execute
+		request.execute()
+		return request
+	}
 
 	/// Creates a subscription for location updates that will execute the block once per update
 	/// indefinitely (until canceled), regardless of the accuracy of each location.
