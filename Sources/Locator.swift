@@ -699,14 +699,14 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		let h = self.currentHeading
 		DispatchQueue.main.async {
 			self.headingRequests.forEach { r in
+				if r.isValidHeadingForRequest(h) {
+					r.heading = h
+				}
 				if let err = r.error {
 					r.failure?(err)
 					self.stopHeadingRequest(r)
 				} else {
-					if r.isValidHeadingForRequest(h) {
-						r.heading = h
-						r.success?(r.heading!)
-					}
+					r.success?(r.heading!)
 				}
 			}
 		}
