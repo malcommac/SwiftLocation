@@ -318,13 +318,13 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// or nil if no valid heading was acquired
 	///
 	/// - Parameters:
-	///   - accuracy: minimum accuracy you want to receive
-	///   - minInterval: minimum interval between each request
+	///   - accuracy: minimum accuracy you want to receive. `nil` to receive all events
+	///   - minInterval: minimum interval between each request. `nil` to receive all events regardless the interval.
 	///   - onUpdate: update succeded callback
 	///   - onFail: failure callback
 	/// - Returns: request
 	@discardableResult
-	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree, minInterval: TimeInterval? = nil,
+	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree?, minInterval: TimeInterval? = nil,
 	                                    onUpdate: @escaping HeadingRequest.Success, onFail: @escaping HeadingRequest.Failure) -> HeadingRequest {
 		// Create request
 		let request = HeadingRequest(accuracy: accuracy, minInterval: minInterval)
@@ -553,7 +553,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// Immediately completes all active location requests.
 	/// Used in cases such as when the location services authorization
 	/// status changes to `.denied` or `.restricted`.
-	private func completeAllLocationRequests() {
+	public func completeAllLocationRequests() {
 		let activeRequests = self.locationRequests
 		activeRequests.forEach {
 			self.completeLocationRequest($0)
@@ -563,7 +563,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// Complete passed location request and remove from queue if possible.
 	///
 	/// - Parameter request: request
-	private func completeLocationRequest(_ request: LocationRequest?) {
+	public func completeLocationRequest(_ request: LocationRequest?) {
 		guard let r = request else { return }
 		
 		r.timeout?.abort() // stop any running timer

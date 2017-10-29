@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,8 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?
 
 
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-		// Override point for customization after application launch.
+	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool { 		// If you start monitoring significant location changes and your app is subsequently terminated,
+		/// the system automatically relaunches the app into the background if a new event arrives.
+		// Upon relaunch, you must still subscribe to significant location changes to continue receiving location events.
+		if let _ = launchOptions?[UIApplicationLaunchOptionsKey.location] {
+			Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+				// This block will be executed with the details of the significant location change that triggered the background app launch,
+				// and will continue to execute for any future significant location change events as well (unless canceled).
+			}, onFail: { (err, lastLocation) in
+				// Something bad has occurred
+			})
+		}
+		// the rest of the init...
 		return true
 	}
 

@@ -21,17 +21,29 @@ class ViewController: UIViewController {
 		
 		
 		
-		Locator.currentPosition(accuracy: .city).onSuccess { location in
+		/*Locator.currentPosition(accuracy: .city).onSuccess { location in
 			print("Find location \(location)")
 		}.onFailure { err, last in
 			print("Failed: \(err)")
-		}
+		}*/
+		
+		/*Locator.subscribeHeadingUpdates(accuracy: 2, onUpdate: { newHeading in
+			print("New heading \(newHeading)")
+		}) { err in
+			print("Failed")
+		}*/
 
 		
 		/*Locator.subscribePosition(accuracy: .city).onSuccess { loc in
 			print("New: \(loc)")
 		}.onFailure { err, last in
 			print("Failed: \(err)")
+		}*/
+		
+		/*Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+			print("New location \(newLocation)")
+		}) { (err, lastLocation) -> (Void) in
+			print("Failed with err: \(err)")
 		}*/
 		
 		/*Locator.location(fromAddress: "Via Veneto 12, Rieti", using: .openStreetMap).onSuccess { places in

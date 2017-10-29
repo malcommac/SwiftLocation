@@ -59,6 +59,19 @@ Locator.requestAuthorizationIfNeeded(.always)
 #### iOS 11+
 Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
 
+#### Observe Authorization Status Changes
+
+You can also observe for changes in authorization status by subscribing auth changes events:
+
+```swift
+Locator.events.listen { newStatus in
+print("Authorization status changed to \(newStatus)")
+}
+```
+
+
+
+
 ### Getting Current Location (one shot)
 
 To get the device's current location, use the method `Locator.currentPosition`.
@@ -69,8 +82,9 @@ This function require two parameters:
 
 Accuracy levels are:
 
-| `city`         | (lowest accuracy) 5000 meters or better, received within the last 10 minutes |
+| Accuracy         | Description |
 |----------------|------------------------------------------------------------------------------|
+| `city`         | (lowest accuracy) 5000 meters or better, received within the last 10 minutes |
 | `neighborhood` | 1000 meters or better, received within the last 5 minutes                    |
 | `block`        | 100 meters or better, received within the last 1 minute                      |
 | `house`        | 15 meters or better, received within the last 15 seconds                     |
@@ -93,15 +107,127 @@ Locator.currentPosition(accuracy: .city).onSuccess { location in
 }
 ```
 
-#### Observe Authorization Status Changes
+### Getting Current Location Without User Authorization (IP based)
 
-You can also observe for changes in authorization status by subscribing auth changes events:
+If you don't want to require user authorization and you don't need of an accurate location you can use `Locator.currentPosition(usingIP:onSuccess:onFail)` function.
+It uses host's device IP address to retrive the nearest location of the device (remember it may be inaccurate).
+Location is retrived in one shot mode.
+
+Currently four different services are supported:
+
+* `freeGeoIP`: Free GeoIP service [http://freegeoip.net](http://freegeoip.net)
+* `petabyet`: Petabyet service [http://api.petabyet.com/](http://api.petabyet.com/)
+* `smartIP`: SmartIP service [http://smart-ip.net](http://smart-ip.net)
+* `ipApi`: IPApi service [http://ip-api.com](http://ip-api.com)
+
+Example:
 
 ```swift
-Locator.events.listen { newStatus in
-	print("Authorization status changed to \(newStatus)")
+Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
+	print("Find location \(loc)")
+}) { err, _ in
+	print("\(err)")
 }
 ```
+
+### Subscribing to continuous location updates
+
+To subscribe to continuous location updates, use the method `Locator.subscribePosition`.
+The block will execute indefinitely (even across errors, until canceled), once for every new updated location regardless of its accuracy.
+
+Example:
+
+```swift
+Locator.subscribePosition(accuracy: .city).onSuccess { loc in
+	print("New location received: \(loc)")
+}.onFailure { err, last in
+	print("Failed with error: \(err)")
+}
+```
+
+### Subscribing to Significant Location Changes
+
+To subscribe to significant location changes, use the method `Locator.subscribeSignificantLocations`.
+This instructs location services to begin monitoring for significant location changes, which is very power efficient.
+The block will execute indefinitely (until canceled), once for every new updated location regardless of its accuracy.
+
+Note:
+If there are other simultaneously active location requests or subscriptions, the block will execute for every location update (not just for significant location changes).
+
+```swift
+Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+	print("New location \(newLocation)")
+}) { (err, lastLocation) -> (Void) in
+	print("Failed with err: \(err)")
+}
+```
+
+### Background Monitoring (using Significant Locations)
+
+If your app has acquired the `always` location services authorization and your app is terminated with at least one active significant location change subscription (see above), your app may be launched in the background when the system detects a significant location change.
+
+**Please note**:  when the app terminates, all of your active location requests and subscriptions with SwiftLocation are canceled automatically.
+Therefore, when the app launches due to a significant location change, you should immediately use SwiftLocation to set up a new subscription for significant location changes in order to receive the location information.
+
+A good point to do it is the application's `AppDelegate`:
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+	/// If you start monitoring significant location changes and your app is subsequently terminated,
+	/// the system automatically relaunches the app into the background if a new event arrives.
+	// Upon relaunch, you must still subscribe to significant location changes to continue receiving location events.
+	if let _ = launchOptions?[UIApplicationLaunchOptionsKey.location] {
+		Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+			// This block will be executed with the details of the significant location change that triggered the background app launch,
+			// and will continue to execute for any future significant location change events as well (unless canceled).
+		}, onFail: { (err, lastLocation) in
+			// Something bad has occurred
+		})
+	}
+	// the rest of the init...
+	return true
+}
+```
+
+
+### Managing Requests or Subscriptions Lifecycle
+
+Each request you have created via `Locator` function return a `Request` object. You can keep it to manage the lifecycle of the request.
+
+Using `Locator` functions:
+
+* `stopRequest()` to stop a request (both one shot or recurring). It won't execute the block. It's valid both for heading and location requests.
+* `completeLocationRequest()` force the request to complete early, like a manual timeout. It will execute the block (valid only for location requests).
+* `completeAllLocationRequests()` Immediately completes all active location requests and execute associated blocks.
+
+### Subscribing to Continuous Heading Updates
+
+To subscribe to continuous heading updates, use the method `Locator.subscribeHeadingUpdates` function.
+It requires the following parameters:
+
+* `accuracy`: minimum accuracy (expressed in degrees) you want to receive. `nil` to receive all events.
+* `minInterval`: minimum interval between each request. `nil` to receive all events regardless the interval.
+
+The block will execute indefinitely (until canceled), once for every new updated heading regardless of its accuracy.
+Note that if heading requests are removed or canceled, the manager will automatically stop updating the device heading in order to preserve battery life.
+
+If an error occurs, the block will execute with a status other than `succeded` (error callback), and the subscription will only be automatically canceled if the device doesn't have heading support (i.e. for error `unavailable`).
+
+Example:
+
+```swift
+Locator.subscribeHeadingUpdates(accuracy: 2, onUpdate: { newHeading in
+	print("New heading \(newHeading)")
+}) { err in
+	print("Failed with error: \(err)")
+}
+```
+
+### Issues & Contributions
+
+Please [open an issue here on GitHub](https://github.com/malcommac/SwiftLocation/issues/new) if you have a problem, suggestion, or other comment.
+Pull requests are welcome and encouraged.
+
 
 ### Requirements
 Current supported version of SwiftLocation require:
