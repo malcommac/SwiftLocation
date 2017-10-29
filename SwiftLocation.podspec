@@ -8,8 +8,8 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/malcommac/SwiftLocation.git"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "Daniele Margutti" => "me@danielemargutti.com" }
-  s.social_media_url   = ""
-  s.ios.deployment_target = "8.0"
+  s.social_media_url   = "http://twitter.com/danielemargutti"
+  s.ios.deployment_target = "9.0"
   s.source       = { :git => "https://github.com/malcommac/SwiftLocation.git", :tag => s.version.to_s }
   s.source_files  = "Sources/**/*"
   s.frameworks  = "Foundation","CoreLocation","MapKit"
