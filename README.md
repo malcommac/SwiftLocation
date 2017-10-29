@@ -384,7 +384,7 @@ github "malcommac/SwiftLocation"
 ```
 
 1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
-1. Import the SwiftLocation framework/module via `import INTULocationManager`
+1. Import the SwiftLocation framework/module via `import SwiftLocation`
 
 
 
