@@ -17,16 +17,16 @@ Stop struggling with CoreLocation services settings and delegate, try now a new 
 
 It provides a block based asynchronous API to request current location, either once (oneshot) or continously (subscription). It internally manages multiple simultaneous location and heading requests and efficently manage battery usage of the host device based upon running requests.
 
-Main features of the library includes:
+### Main Features
 
-| Feature                     | Description                                                                                                                                                                            |
-|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Efficient Power Manager** | SwiftLocation automatically manage power consumption based upon currently running requests. It 1turns off hardware when not used, automatically.                                       |
-| **Location Monitoring**     | Easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations). |
-| **Device Heading**          | Subscribe and receive continous device's heading updates                                                                                                                               |
-| **Reverse Geocoder**        | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
-| **Autocomplete Places**     | Implement your places autocomplete search with just one call, including place's details (it uses Google API)                                                                           |
-| **IP Address Location**     | Fetch current location without user authorization using device's IP address (4 services supported: freeGeoIP, petabyet, smartIPor telize)                                              |
-
-
+| Feature                                       | Description                                                                                                                                                                            |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It 1turns off hardware when not used, automatically.                                       |
+| **Location Monitoring**                       | Easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations). |
+| **Device Heading**                            | Subscribe and receive continous device's heading updates                                                                                                                               |
+| **Reverse Geocoder**                          | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
+| **Autocomplete Places**                       | Implement your places autocomplete search with just one call, including place's details (it uses Google API)                                                                           |
+| **IP Address Location**                       | Fetch current location without user authorization using device's IP address (4 services supported: freeGeoIP, petabyet, smartIPor telize)                                              |
+| **Background Location Monitoring**            | Easily monitor location with significant location in background.                                                                                                                       |
+| **Background Monitor with Region Monitoring** | No yet supported                                                                                                                                                                       |
 
