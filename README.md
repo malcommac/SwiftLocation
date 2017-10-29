@@ -5,7 +5,8 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![CI Status](https://travis-ci.org/malcommac/Swiftlocation.svg)](https://travis-ci.org/malcommac/Swiftlocation) [![Version](https://img.shields.io/cocoapods/v/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![License](https://img.shields.io/cocoapods/l/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![Platform](https://img.shields.io/cocoapods/p/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation)
 
 <p align="center" >Easy & Efficient Location Tracking for iOS<br/>
-Made with ♥ for Swift 4
+🛰<br/>
+Made with ♥ for Swift
 <p/>
 <p align="center" >★★ <b>Star our github repository to help us!</b> ★★</p>
 <p align="center" >Created by <a href="http://www.danielemargutti.com">Daniele Margutti</a> (<a href="http://www.twitter.com/danielemargutti">@danielemargutti</a>)</p>
@@ -89,7 +90,7 @@ You can also observe for changes in authorization status by subscribing auth cha
 
 ```swift
 Locator.events.listen { newStatus in
-print("Authorization status changed to \(newStatus)")
+	print("Authorization status changed to \(newStatus)")
 }
 ```
 
