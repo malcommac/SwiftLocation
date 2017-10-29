@@ -223,6 +223,72 @@ Locator.subscribeHeadingUpdates(accuracy: 2, onUpdate: { newHeading in
 }
 ```
 
+### Reverse Geocoding
+
+SwiftLocation supports reverse geocoding for:
+
+* **From Address String to Location**: convert a readable address string to a valid `CLLocation` object with the associated coordinates
+* **From Coordinates to Place**: convert a coordinate expressed place to one or more `Place` object (with `CLPlacemarks` associated when using Apple service)
+
+Currently the following services are supported for reverse geocoding:
+
+* **Apple Built-In Service**: Using built-in iOS services  (`CLGeocoder` and `CLPlacemark`)
+* **Google API**: Using Google Maps Services. It requires API Key you can [obtain for free here](https://developers.google.com/maps/documentation/javascript/get-api-key)
+* **OpenStreetMap**: Using OpenStreetMap ([nominatim](https://nominatim.openstreetmap.org))
+
+**Note** If you are using Google API service be sure to set the API by calling `Locator.api.googleAPIKey = "<API KEY VALUE>"` before doing any request.
+
+#### From Address String to Location
+This function get a readable address and convert it in an array of `Place` objects.
+`Place` is and object created to group common properties (`city,country,road,postalcode` and so on) between all supported services.
+If you need of raw data of an object you can get the `rawDictionary` property.
+If you are using Apple services you can get `placemark` to retrive the associated `CLPlacemark` instance.
+
+Example
+
+```swift
+Locator.location(fromAddress: "1 Infinite Loop", using: .openStreetMap).onSuccess { places in
+	print(places)
+}.onFailure { err in
+	print("err")
+}
+```
+
+#### From Location to Places
+This function get the location via `CLLocationCoordinate2D` and return a list of found `Place` objects.
+
+Example:
+
+```swift
+Locator.api.googleAPIKey = ...
+let coordinates = CLLocationCoordinate2DMake(41.890395, 12.493083)
+Locator.location(fromCoordinates: coordinates, using: .google, onSuccess: { places in
+	print(places)
+}) { err in
+	print(err)
+}
+```
+
+### Autocomplete Places (require Google API Key)
+
+SwiftLocation allows to use the Google's Places APIs to get a list of candidate places for a given input string.
+It returns a list of `PlaceMatch` object with the main informations about the candidate place.
+You can retrive details about a place by calling `place.details(onSuccess: { placeInfo in .... })`.
+
+Example:
+
+```swift
+Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
+	print("Found \(candidates.count) candidates for this search")
+	// get the detail of the first candidate - return a Place object.
+	candidates.first?.detail(onSuccess: { placeDetail in
+		print("Found detail about this place!")
+	})
+}) { err in
+	print(err)
+}
+```
+
 ### Issues & Contributions
 
 Please [open an issue here on GitHub](https://github.com/malcommac/SwiftLocation/issues/new) if you have a problem, suggestion, or other comment.
