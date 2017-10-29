@@ -32,6 +32,24 @@ It provides a block based asynchronous API to request current location, either o
 | **Background Monitor with Region Monitoring** | No yet supported                                                                                                                                                                       |
 
 
+### Other Libraries you may like
+
+I'm also working on several other projects you may like.
+Take a look below:
+
+<p align="center" >
+
+| Library         | Description                                      |
+|-----------------|--------------------------------------------------|
+| [**SwiftDate**](https://github.com/malcommac/SwiftDate)       | The best way to manage date/timezones in Swift   |
+| [**Hydra**](https://github.com/malcommac/Hydra)           | Write better async code: async/await & promises  |
+| [**Flow**](https://github.com/malcommac/Flow) | A new declarative approach to table managment. Forget datasource & delegates. |
+| [**SwiftRichString**](https://github.com/malcommac/SwiftRichString) | Elegant & Painless NSAttributedString in Swift   |
+| [**SwiftLocation**](https://github.com/malcommac/SwiftLocation)   | Efficient location manager                       |
+| [**SwiftMsgPack**](https://github.com/malcommac/SwiftMsgPack)    | Fast/efficient msgPack encoder/decoder           |
+</p>
+
+
 ### Current Version
 Latest version of SwiftLocation is: 3.0.0-beta for Swift 4.
 
