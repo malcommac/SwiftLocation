@@ -36,7 +36,29 @@ Latest version of SwiftLocation is: 3.0.0-beta for Swift 4.
 
 ### Documentation
 
-### Requesting Permission
+Table of Contents:
+
+* [Requesting Authorizations](#authorizations)
+* [Observe Authorization Status Changes](#observe_authorizations)
+* [Getting Current Location (one shot)](#current_location)
+* [Getting Current Location Without User Authorization (IP based)](#current_location_ip)
+* [Subscribing to continuous location updates](#continuous)
+* [Subscribing to Significant Location Changes](#significant)
+* [Background Monitoring (using Significant Locations)](#background)
+* [Managing Requests or Subscriptions Lifecycle](#manage)
+* [Subscribing to Continuous Heading Updates](#heading)
+* [Reverse Geocoding (from address to location / from coordinates to place)](#reverse)
+* [Autocomplete Places (require Google API Key)](#autocomplete)
+
+Other:
+
+* [Issues & Contributions](#issues)
+* [Requirements](#requirements)
+* [Installation via CocoaPods/Chartage](#installation)
+
+<a name="authorizations"/>
+
+### Requesting Authorizations
 
 SwiftLocation automatically handles obtaining permission to access location services of the host machine when you issue a location request and user has not granted your app permissions yet.
 
@@ -59,6 +81,8 @@ Locator.requestAuthorizationIfNeeded(.always)
 #### iOS 11+
 Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
 
+<a name="observe_authorizations"/>
+
 #### Observe Authorization Status Changes
 
 You can also observe for changes in authorization status by subscribing auth changes events:
@@ -70,7 +94,7 @@ print("Authorization status changed to \(newStatus)")
 ```
 
 
-
+<a name="current_location"/>
 
 ### Getting Current Location (one shot)
 
@@ -107,6 +131,8 @@ Locator.currentPosition(accuracy: .city).onSuccess { location in
 }
 ```
 
+<a name="current_location_ip"/>
+
 ### Getting Current Location Without User Authorization (IP based)
 
 If you don't want to require user authorization and you don't need of an accurate location you can use `Locator.currentPosition(usingIP:onSuccess:onFail)` function.
@@ -130,6 +156,8 @@ Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
 }
 ```
 
+<a name="continuous"/>
+
 ### Subscribing to continuous location updates
 
 To subscribe to continuous location updates, use the method `Locator.subscribePosition`.
@@ -144,6 +172,8 @@ Locator.subscribePosition(accuracy: .city).onSuccess { loc in
 	print("Failed with error: \(err)")
 }
 ```
+
+<a name="significant"/>
 
 ### Subscribing to Significant Location Changes
 
@@ -161,6 +191,8 @@ Locator.subscribeSignificantLocations(onUpdate: { newLocation in
 	print("Failed with err: \(err)")
 }
 ```
+
+<a name="background"/>
 
 ### Background Monitoring (using Significant Locations)
 
@@ -189,6 +221,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
+<a name="manage"/>
 
 ### Managing Requests or Subscriptions Lifecycle
 
@@ -199,6 +232,8 @@ Using `Locator` functions:
 * `stopRequest()` to stop a request (both one shot or recurring). It won't execute the block. It's valid both for heading and location requests.
 * `completeLocationRequest()` force the request to complete early, like a manual timeout. It will execute the block (valid only for location requests).
 * `completeAllLocationRequests()` Immediately completes all active location requests and execute associated blocks.
+
+<a name="heading"/>
 
 ### Subscribing to Continuous Heading Updates
 
@@ -222,8 +257,9 @@ Locator.subscribeHeadingUpdates(accuracy: 2, onUpdate: { newHeading in
 	print("Failed with error: \(err)")
 }
 ```
+<a name="reverse"/>
 
-### Reverse Geocoding
+### Reverse Geocoding (from address to location / from coordinates to place)
 
 SwiftLocation supports reverse geocoding for:
 
@@ -268,6 +304,7 @@ Locator.location(fromCoordinates: coordinates, using: .google, onSuccess: { plac
 	print(err)
 }
 ```
+<a name="autocomplete"/>
 
 ### Autocomplete Places (require Google API Key)
 
@@ -289,17 +326,22 @@ Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
 }
 ```
 
+<a name="issues"/>
+
 ### Issues & Contributions
 
 Please [open an issue here on GitHub](https://github.com/malcommac/SwiftLocation/issues/new) if you have a problem, suggestion, or other comment.
 Pull requests are welcome and encouraged.
 
+<a name="requirements"/>
 
 ### Requirements
 Current supported version of SwiftLocation require:
 
 * **Minimum OS**: iOS 9, macOS 10.10 or watchOS 3.0
 * **Swift**: Swift 4 (see swift-3 branch for an old unsupported version)
+
+<a name="installation"/>
 
 ### Installation
 
