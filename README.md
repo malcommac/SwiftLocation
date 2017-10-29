@@ -30,3 +30,41 @@ It provides a block based asynchronous API to request current location, either o
 | **Background Location Monitoring**            | Easily monitor location with significant location in background.                                                                                                                       |
 | **Background Monitor with Region Monitoring** | No yet supported                                                                                                                                                                       |
 
+
+### Current Version
+Latest version of SwiftLocation is: 3.0.0-beta
+
+### Requirements
+Current supported version of SwiftLocation require:
+
+* **Minimum OS**: iOS 9, macOS 10.10 or watchOS 3.0
+* **Swift**: Swift 4 (see swift-3 branch for an old unsupported version)
+
+### Installation
+
+#### CocoaPods
+
+### Using [CocoaPods](http://cocoapods.org)
+
+1.	Add the pod `SwiftLocation` to your [Podfile](http://guides.cocoapods.org/using/the-podfile.html).
+
+```ruby
+pod 'SwiftLocation'
+```
+Run `pod install` from Terminal, then open your app's `.xcworkspace` file to launch Xcode.
+
+### Using [Carthage](https://github.com/Carthage/Carthage)
+
+1. Add the `malcommac/SwiftLocation` project to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile).
+
+```ogdl
+github "malcommac/SwiftLocation"
+```
+
+1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
+1. Import the SwiftLocation framework/module via `import INTULocationManager`
+
+### Documentation
+
+
+
