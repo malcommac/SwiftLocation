@@ -49,6 +49,25 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		
 	}
 	
+	public class Events {
+		
+		/// Did Change Auth Closure type
+		public typealias AuthorizationDidChangeEvent = ((CLAuthorizationStatus) -> (Void))
+		
+		/// Listeners of auth status change
+		internal var authorizationsStatus: [AuthorizationDidChangeEvent] = []
+		
+		/// Add a listener for authorization change status
+		///
+		/// - Parameter callback: callback to call
+		public func listen(forAuthChanges callback: @escaping AuthorizationDidChangeEvent) {
+			self.authorizationsStatus.append(callback)
+		}
+	}
+	
+	/// Events listener
+	public private(set) var events: Events = Events()
+	
 	/// Api key for helper services
 	public private(set) var api = APIs()
 	
@@ -653,6 +672,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	
 	public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
 		guard status != .denied && status != .restricted else {
+			// Alert any listener
+			self.events.authorizationsStatus.forEach { $0(status) }
 			// Clear out any active location requests (which will execute the blocks
 			// with a status that reflects
 			// the unavailability of location services) since we now no longer have

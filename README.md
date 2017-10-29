@@ -32,7 +32,76 @@ It provides a block based asynchronous API to request current location, either o
 
 
 ### Current Version
-Latest version of SwiftLocation is: 3.0.0-beta
+Latest version of SwiftLocation is: 3.0.0-beta for Swift 4.
+
+### Documentation
+
+### Requesting Permission
+
+SwiftLocation automatically handles obtaining permission to access location services of the host machine when you issue a location request and user has not granted your app permissions yet.
+
+#### iOS 9 and iOS 10
+Starting with iOS 8, you must provide a description for how your app uses location services by setting a string for the key `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysUsageDescription` in your app's `Info.plist` file.
+
+SwiftLocation determines which level of permissions to request based on which description key is present. You should only request the minimum permission level that your app requires, therefore it is recommended that you use the `"When In Use"` level unless you require more access.
+If you provide values for both description keys, the more permissive `"Always"` level is requested.
+
+#### Manual Request
+Sometimes you want to get the authorization manually.
+In this case you need to call `Locator.requestAuthorizationIfNeeded` by passing the auth level (`always` or `whenInUse`).
+
+Example:
+
+```swift
+Locator.requestAuthorizationIfNeeded(.always)
+```
+
+#### iOS 11+
+Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
+
+### Getting Current Location (one shot)
+
+To get the device's current location, use the method `Locator.currentPosition`.
+This function require two parameters:
+
+* `accuracy`: The accuracy level desired (refers to the accuracy and recency of the location).
+* `timeout`: The amount of time to wait for a location with the desired accuracy before completing
+
+Accuracy levels are:
+
+| `city`         | (lowest accuracy) 5000 meters or better, received within the last 10 minutes |
+|----------------|------------------------------------------------------------------------------|
+| `neighborhood` | 1000 meters or better, received within the last 5 minutes                    |
+| `block`        | 100 meters or better, received within the last 1 minute                      |
+| `house`        | 15 meters or better, received within the last 15 seconds                     |
+| `room`         | (highest accuracy) 5 meters or better, received within the last 5 seconds    |
+
+The timeout parameter specifies how long you are willing to wait for a location with the accuracy you requested. The timeout guarantees that your block will execute within this period of time, either with a location of at least the accuracy you requested (`succeded`), or with whatever location could be determined before the timeout interval was up (`timedout`).
+
+Timeout can be specified as:
+
+* `after(_: TimeInterval)`: timeout occours after specified interval regardeless the needs of authorizations from the user.
+* `delayed(_: TimeInterval)`: delay the start of the timeout countdown until the user has responded to the system location services permissions prompt (if the user hasn't allowed or denied the app access yet).
+
+This is an example of the call:
+
+```swift
+Locator.currentPosition(accuracy: .city).onSuccess { location in
+	print("Location found: \(location)")
+}.onFailure { err, last in
+	print("Failed to get location: \(err)")
+}
+```
+
+#### Observe Authorization Status Changes
+
+You can also observe for changes in authorization status by subscribing auth changes events:
+
+```swift
+Locator.events.listen { newStatus in
+	print("Authorization status changed to \(newStatus)")
+}
+```
 
 ### Requirements
 Current supported version of SwiftLocation require:
@@ -63,8 +132,6 @@ github "malcommac/SwiftLocation"
 
 1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
 1. Import the SwiftLocation framework/module via `import INTULocationManager`
-
-### Documentation
 
 
 

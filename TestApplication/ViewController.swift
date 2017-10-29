@@ -19,12 +19,14 @@ class ViewController: UIViewController {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view, typically from a nib.
 		
-	/*	Locator.currentPosition(accuracy: .city).onSuccess { location in
+		
+		
+		Locator.currentPosition(accuracy: .city).onSuccess { location in
 			print("Find location \(location)")
 		}.onFailure { err, last in
 			print("Failed: \(err)")
 		}
-	*/
+
 		
 		/*Locator.subscribePosition(accuracy: .city).onSuccess { loc in
 			print("New: \(loc)")
@@ -56,11 +58,17 @@ class ViewController: UIViewController {
 			print(err)
 		}*/
 		
-		Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
+	/*	Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
 			print("Find location \(loc)")
 		}) { err, _ in
 			print("\(err)")
+		}*/
+		
+		Locator.events.listen { newStatus in
+			print("Authorization status changed to \(newStatus)")
 		}
+		
+		Locator.requestAuthorizationIfNeeded(.always)
 		
 	}
 
