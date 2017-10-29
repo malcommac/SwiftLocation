@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name         = "SwiftLocation"
-  s.version      = "0.1"
-  s.summary      = ""
+  s.version      = "3.0.0-beta"
+  s.summary      = "Easy and Efficient Location Tracking for iOS"
   s.description  = <<-DESC
-    Your description here.
+    Efficient location tracking for iOS with support for oneshot/continuous/background tracking, reverse geocoding and more!
   DESC
   s.homepage     = "https://github.com/malcommac/SwiftLocation.git"
   s.license      = { :type => "MIT", :file => "LICENSE" }
