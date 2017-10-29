@@ -1,0 +1,6 @@
+framework module Pods_SwiftLocation_tvOS_Tests {
+  umbrella header "Pods-SwiftLocation-tvOS Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

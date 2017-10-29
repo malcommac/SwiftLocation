@@ -1,27 +1,38 @@
 <p align="center" >
-  <img src="https://raw.githubusercontent.com/malcommac/SwiftLocation/master/logo.png" width=200px height=207px alt="SwiftLocation" title="SwiftLocation">
+<img src="https://raw.githubusercontent.com/malcommac/SwiftLocation/3.0.0/logo.png" width=530px alt="SwiftLocation" title="SwiftLocation">
 </p>
 
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![CI Status](https://travis-ci.org/malcommac/Swiftlocation.svg)](https://travis-ci.org/malcommac/Swiftlocation) [![Version](https://img.shields.io/cocoapods/v/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![License](https://img.shields.io/cocoapods/l/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation) [![Platform](https://img.shields.io/cocoapods/p/Swiftlocation.svg?style=flat)](http://cocoadocs.org/docsets/Swiftlocation)
 
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/SwiftLocation.svg)](https://img.shields.io/cocoapods/v/SwiftLocation.svg)
-[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![Platform](https://img.shields.io/cocoapods/p/SwiftLocation.svg?style=flat)](http://cocoadocs.org/docsets/SwiftLocation)
-[![Twitter](https://img.shields.io/badge/twitter-@danielemargutti-blue.svg?style=flat)](http://twitter.com/danielemargutti)
-<a href="https://developer.apple.com/swift"><img src="https://img.shields.io/badge/swift3-compatible-orange.svg?style=flat" alt="Swift 3 compatible" /></a>
-
+<p align="center" >Easy & Efficient Location Tracking for iOS<br/>
+🛰<br/>
+Made with ♥ for Swift
+<p/>
 <p align="center" >★★ <b>Star our github repository to help us!</b> ★★</p>
 <p align="center" >Created by <a href="http://www.danielemargutti.com">Daniele Margutti</a> (<a href="http://www.twitter.com/danielemargutti">@danielemargutti</a>)</p>
 
-SwiftLocation is the right choice to work easily and efficiently with Location Manager.
-Main features includes:
-- **Efficient Hardware Management**: it turns off hardware when not used. Don't worry, we take care of your user's battery usage!
-- **Location monitoring**: easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations).
-- **Device Heading**: get current device's heading easily
-- **Reverse geocoding**: (from address string/coordinates to placemark) using both Apple and Google services (with support for API key)
-- **GPS-less location**: fetching using network IP address with 4 different providers (`freeGeoIP`, `petabyet`, `smartIP` or `telize`)
-- **Geographic region monitoring**: monitor background location enter/exit
+### What's SwiftLocation
 
-## OTHER LIBRARIES YOU MAY LIKE
+SwiftLocation is a lightweight library to work with location tracking in iOS.
+Stop struggling with CoreLocation services settings and delegate, try now a new simple and effective way to play with location.
+
+It provides a block based asynchronous API to request current location, either once (oneshot) or continously (subscription). It internally manages multiple simultaneous location and heading requests and efficently manage battery usage of the host device based upon running requests.
+
+### Main Features
+
+| Feature                                       | Description                                                                                                                                                                            |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It 1turns off hardware when not used, automatically.                                       |
+| **Location Monitoring**                       | Easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations). |
+| **Device Heading**                            | Subscribe and receive continous device's heading updates                                                                                                                               |
+| **Reverse Geocoder**                          | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
+| **Autocomplete Places**                       | Implement your places autocomplete search with just one call, including place's details (it uses Google API)                                                                           |
+| **IP Address Location**                       | Fetch current location without user authorization using device's IP address (4 services supported: freegeoip.net, api.petabyet.com, smart-ip.net, ip-api.com)                                              |
+| **Background Location Monitoring**            | Easily monitor location with significant location in background.                                                                                                                       |
+| **Background Monitor with Region Monitoring** | No yet supported                                                                                                                                                                       |
+
+
+### Other Libraries you may like
 
 I'm also working on several other projects you may like.
 Take a look below:
@@ -38,473 +49,342 @@ Take a look below:
 | [**SwiftMsgPack**](https://github.com/malcommac/SwiftMsgPack)    | Fast/efficient msgPack encoder/decoder           |
 </p>
 
-## Releases History
-- [1.1.1](https://github.com/malcommac/SwiftLocation/releases/tag/1.1.1) is the last version with Beacon Monitoring active (actually we have a plan to add it as subspec but right now is temporary disabled).
-- [1.0.5](https://github.com/malcommac/SwiftLocation/releases/tag/1.0.5) Is the last version compatible with Swift 2.3 (not supported anymore)
-- [0.1.4](https://github.com/malcommac/SwiftLocation/releases/tag/0.1.4) Is the last version compatible with Swift 2.0 (not supported anymore)
 
-<a name="index" />
+### Current Version
+Latest version of SwiftLocation is: 3.0.0-beta for Swift 4.
 
-## Index
-* **[Differences with 1.x](#migration)**
-* **[Introduction](#introduction)**
-* **[APIs Index](#api)**
-	* [Location Monitoring](#location)
-	* [Reverse Geocoding](#reverse)
-	* [Heading Monitoring](#heading)
-	* [Region Monitoring](#region)
-	* [Visits Monitoring](#visits)
-* **[Prerequisites](#prerequisites)**
-* **[Get Current Location](#getcurrentlocation)**
-	* [Manage `LocationRequest`](#locationrequest)
-	* [Examples](#examples_location)
-* **[Reverse geocoding from address string](#reverse_string)**
-	* [Examples](#examples_reverse)
-* **[Reverse geocoding from a `CLLocation`](#reverse_location)**
-	* [Examples](#example_reverse_location)
-* **[Get continous device's heading (`CLHeading`)](#get_heading)**
-	* [Examples](#examples_heading)
-* **[Monitor geographic region](#monitor_region)**
-	* [Examples](#examples_monitor)**
-* **[Monitor Visits (`CLVisits`)](#monitor_visits)**
-	* [Examples](#examples_visits)
-* **[Background Updates](#background)**
-* **[More on `LocationTracker`](#locationtracker)**
+### Documentation
+
+Table of Contents:
+
+* [Requesting Authorizations](#authorizations)
+* [Observe Authorization Status Changes](#observe_authorizations)
+* [Getting Current Location (one shot)](#current_location)
+* [Getting Current Location Without User Authorization (IP based)](#current_location_ip)
+* [Subscribing to continuous location updates](#continuous)
+* [Subscribing to Significant Location Changes](#significant)
+* [Background Monitoring (using Significant Locations)](#background)
+* [Managing Requests or Subscriptions Lifecycle](#manage)
+* [Subscribing to Continuous Heading Updates](#heading)
+* [Reverse Geocoding (from address to location / from coordinates to place)](#reverse)
+* [Autocomplete Places (require Google API Key)](#autocomplete)
 
 Other:
 
-* **[Installation](#installation)**
-* **[Requirements](#requirements)**
-* **[Credits](#credits)**
+* [Issues & Contributions](#issues)
+* [Requirements](#requirements)
+* [Installation via CocoaPods/Chartage](#installation)
 
-<a name="migration" />
+<a name="authorizations"/>
 
-## Differences with 1.x
+### Requesting Authorizations
 
-SwiftLocation 2.x is a complete rewrite of the library. However, while some calls may appears different it's pretty much the same. If you are in dubt fell free to ask support via issue tracking. I'll try to reply fast as I can.
+SwiftLocation automatically handles obtaining permission to access location services of the host machine when you issue a location request and user has not granted your app permissions yet.
 
-<a name="introduction" />
+#### iOS 9 and iOS 10
+Starting with iOS 8, you must provide a description for how your app uses location services by setting a string for the key `NSLocationWhenInUseUsageDescription` or `NSLocationAlwaysUsageDescription` in your app's `Info.plist` file.
 
-## Introduction
+SwiftLocation determines which level of permissions to request based on which description key is present. You should only request the minimum permission level that your app requires, therefore it is recommended that you use the `"When In Use"` level unless you require more access.
+If you provide values for both description keys, the more permissive `"Always"` level is requested.
 
-The main concept behind SwiftLocation is a central Location Manager class called `LocationTracker`. It automatically manages hardware resources by turning on/off and change filters level according to currently running requests: you just don't need to worry about battery usage, SwiftLocation takes care of it.
+#### Manual Request
+Sometimes you want to get the authorization manually.
+In this case you need to call `Locator.requestAuthorizationIfNeeded` by passing the auth level (`always` or `whenInUse`).
 
-([Index ↑](#index))
-
-<a name="api" />
-
-## APIs Index
-
-When you need to perform a location operation you can call one of the available `LocationTracker` functions:
-
-<a name="location" />
-
-#### Location Monitoring (`LocationRequest`)
-- `getLocation(accuracy:frequency:timeout:success:failure:)` to get the current device location
-- `getLocation(forAddress:inRegion:timeout:success:failure)` to perform a reverse geocoding from an address string
-- `getLocation(forABDictionary:timeout:success:failure:)` to get the location from a given Address Book record
-
-<a name="reverse" />
-
-#### Reverse Geocoding (`GeocoderRequest`)
-- `getPlacemark(forLocation:timeout:success:failure:)` to get placemarks from a specified location
-
-<a name="heading" />
-
-#### Heading Monitoring (`HeadingRequest`)
-- `getContinousHeading(filter:success:failure)` to get continous device's heading
-
-<a name="region" />
-
-#### Region Monitoring (`RegionRequest`)
-- `monitor(regionAt:radius:enter:exit:error:)` to get notified when user enter/exit from a region defined by given coordinates and radius
-- `monitor(region:enter:exit:error:)` to get notified when user enter/exit from a given region
-
-<a name="visits" />
-
-#### Visit Monitoring (`VisitsRequest`)
-- `monitorVisit(event:error)` to get notified when user visit an 'important' region (ie. home, or work)
-
-Each of this method create a `Request` instance which will be added to the `LocationTracker`'s pool and started automatically.
-You can manage each `Request` at any time to abort (`cancel()`), pause (`pause()`) or start/resume (`resume()`) it.
-Each request implements at least two callbacks called when a new data is received or an error has occurred.
-
-<a name="prerequisites" />
-
-### Important Prerequisites
-Before using SwiftLocation you must configure your project to use location services.
-First of all you need to specify a value for `NSLocationAlwaysUsageDescription` or `NSLocationWhenInUseUsageDescription` (or both) into your application's `Info.plist` file.
-The string value you add will be shown along with the authorization request the first time your app will try to use location services hardware.
-
-If you need background monitoring you should specify `NSLocationAlwaysUsageDescription` and specify the correct value in `UIBackgroundModes` key (you can learn more here).
-
-([Index ↑](#index))
-
-<a name="getcurrentlocation" />
-
-### Get Current Location
-The most common request is to get the current user location.
-`getLocation(accuracy:frequency:timeout:success:error:)` defines the following parameters:
-- `accuracy`:  the minimum accuracy of location you want to accept. It defines an enum with the following options: 
-  - `IPScan`: uses geolocation via IP; It's not particularly accurate but it's the only option Which does not require user authorization and not involve the GPS module.
-  You can specify one of the following IP services: `freeGeoIP`, `petabyet`, `smartIP` or `telize`.
-  - `any`: the lowest accuracy (< 1000km is accepted)
-  - `country`: lower accuracy (< 100km is accepted)
-  - `city`: city level accuracy (< 3km is accepted)
-  - `neighborhood`: neighborhood accuracy (less than a kilometer is accepted)
-  - `block`: block accuracy (hundred meters)
-  - `house`: house accuracy (nearest ten meters are accepted)
-  - `room`: best accuracy
-  - `navigation`: best accuracy for a navigation based purpose
-- `frequency`: specify the frequency of updates you want to receive from the location manager. It defines an enum with the following options:
-  - `continous`: continous location updating; you will receive new location updates (or errors) until you manually remove (`cancel()`) or pause (`pause()`) the request itself.
-  - `oneShot`: the first valid result for given settings is reported, then the request itself is aborted automatically.
-  - `significant`: only significant location changes are reported. It's used to preserve battery energy and also work on `background`.
-  - `deferredUntil`: defer location updating until passed `distance` (in meters) or time `timeout` (in seconds) is reached. **iOS 10 users**: Seems there is a bug in iOS 10 with deferred location updating which return kLocationError 0 when you start a new monitoring (see [this](http://stackoverflow.com/questions/39498899/deferredlocationupdatesavailable-returns-no-in-ios-10), [this](https://github.com/zakishaheen/deferred-location-implementation) and [this](https://github.com/lionheart/openradar-mirror/issues/15939); a radar is opened but actually we have not any news)
-- `timeout`: define a maximum time interval (in seconds). If no updates are delivered to the request until that time the request itself generate a `LocationError.timeout` error in error callback. By passing `nil` timeout timer is disabled.
-- `success`: define a callback which is called when a new location is received. Received parameter is a `CLLocation` object.
-- `failure`: define a callback which is called when a new error (of type `Error`) is received. By default the request still running after an error; if you want to kill it automatically on error set the `cancelOnError` property to `true`.
-
-([Index ↑](#index))
-
-<a name="locationrequest" />
-
-#### Manage `LocationRequest`
-There are a number of interesting properties you may want to set for a `LocationRequest` request, especially:
-
-- `.activity` (`CLActivityType`): It indicate the type of activity associated with location updates and helps the system to set best value for energy efficency. By default its set to `.other` but can be `automotiveNavigation` (for navigation sw), `fitness` (includes any pedestrian activities) or `.otherNavigation` (for other navigation cases (excluding pedestrian navigation), e.g. navigation for boats, trains, or planes).
-- `.minimumDistance` (`CLLocationDistance`): The minimum distance (measured in meters) a device must move horizontally before an update event is generated. This value is ignored when request is has `significant` frequency set. Set it to `nil` to report all movements (default is `nil`).
-
-Other read-only properties are:
-
-- `lastLocation` (`CLLocation`): last valid measured location for valid for the request (maybe `nil`)
-- `lastError` (`Error`): last received error (maybe `nil`)
-
-You may also register request in order to receive changes in global location manager authorization.
-Just use:
+Example:
 
 ```swift
-let request = Location.getLocation...
-// callback is called on main thread by reporting previous and current authorization status
-request.register(observer: LocObserver.onAuthDidChange(.main, { (request, oldAuth, newAuth) in
-	print("Authorization moved from \(oldAuth) to \(newAuth)")
-}))
+Locator.requestAuthorizationIfNeeded(.always)
 ```
 
-<a name="examples_location" />
+#### iOS 11+
+Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
 
-#### Examples
+<a name="observe_authorizations"/>
 
-##### 1. Getting current location via IP Scan.
+#### Observe Authorization Status Changes
+
+You can also observe for changes in authorization status by subscribing auth changes events:
 
 ```swift
-// Accuracy is set to IP Scan (using freeGEOIP service), no user auth is required but given location maybe inaccurate
-// Frequency is one shot, so after a valid location is obtained (or error has occurred) the request itself will be
-// automatically removed from main queue.
-Location.getLocation(accuracy: .IPScan(IPService(.freeGeoIP)), frequency: .oneShot, success: { _,location in
-  print("Found location \(location)")
-}) { (_, last, error) in
-	print("Something bad has occurred \(error)")
+Locator.events.listen { newStatus in
+	print("Authorization status changed to \(newStatus)")
 }
 ```
+
+
+<a name="current_location"/>
+
+### Getting Current Location (one shot)
+
+To get the device's current location, use the method `Locator.currentPosition`.
+This function require two parameters:
+
+* `accuracy`: The accuracy level desired (refers to the accuracy and recency of the location).
+* `timeout`: The amount of time to wait for a location with the desired accuracy before completing
+
+Accuracy levels are:
+
+| Accuracy         | Description |
+|----------------|------------------------------------------------------------------------------|
+| `city`         | (lowest accuracy) 5000 meters or better, received within the last 10 minutes |
+| `neighborhood` | 1000 meters or better, received within the last 5 minutes                    |
+| `block`        | 100 meters or better, received within the last 1 minute                      |
+| `house`        | 15 meters or better, received within the last 15 seconds                     |
+| `room`         | (highest accuracy) 5 meters or better, received within the last 5 seconds    |
+
+The timeout parameter specifies how long you are willing to wait for a location with the accuracy you requested. The timeout guarantees that your block will execute within this period of time, either with a location of at least the accuracy you requested (`succeded`), or with whatever location could be determined before the timeout interval was up (`timedout`).
+
+Timeout can be specified as:
+
+* `after(_: TimeInterval)`: timeout occours after specified interval regardeless the needs of authorizations from the user.
+* `delayed(_: TimeInterval)`: delay the start of the timeout countdown until the user has responded to the system location services permissions prompt (if the user hasn't allowed or denied the app access yet).
+
+This is an example of the call:
+
+```swift
+Locator.currentPosition(accuracy: .city).onSuccess { location in
+	print("Location found: \(location)")
+}.onFailure { err, last in
+	print("Failed to get location: \(err)")
+}
+```
+
+<a name="current_location_ip"/>
+
+### Getting Current Location Without User Authorization (IP based)
+
+If you don't want to require user authorization and you don't need of an accurate location you can use `Locator.currentPosition(usingIP:onSuccess:onFail)` function.
+It uses host's device IP address to retrive the nearest location of the device (remember it may be inaccurate).
+Location is retrived in one shot mode.
+
+Currently four different services are supported:
+
+* `freeGeoIP`: Free GeoIP service [http://freegeoip.net](http://freegeoip.net)
+* `petabyet`: Petabyet service [http://api.petabyet.com/](http://api.petabyet.com/)
+* `smartIP`: SmartIP service [http://smart-ip.net](http://smart-ip.net)
+* `ipApi`: IPApi service [http://ip-api.com](http://ip-api.com)
+
+Example:
+
+```swift
+Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
+	print("Find location \(loc)")
+}) { err, _ in
+	print("\(err)")
+}
+```
+
+<a name="continuous"/>
+
+### Subscribing to continuous location updates
+
+To subscribe to continuous location updates, use the method `Locator.subscribePosition`.
+The block will execute indefinitely (even across errors, until canceled), once for every new updated location regardless of its accuracy.
+
+Example:
+
+```swift
+Locator.subscribePosition(accuracy: .city).onSuccess { loc in
+	print("New location received: \(loc)")
+}.onFailure { err, last in
+	print("Failed with error: \(err)")
+}
+```
+
+<a name="significant"/>
+
+### Subscribing to Significant Location Changes
+
+To subscribe to significant location changes, use the method `Locator.subscribeSignificantLocations`.
+This instructs location services to begin monitoring for significant location changes, which is very power efficient.
+The block will execute indefinitely (until canceled), once for every new updated location regardless of its accuracy.
 
 Note:
-To be able to find user's location this way, you need to update your info.plist and add required security settings for it. (iOS 9+):
-
-```
-<dict>
-	<key>NSAllowsArbitraryLoads</key>
-        <false/>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>ip-api.com</key>
-      <dict>
-        <key>NSIncludesSubdomains</key>
-        <true/>
-        <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-        <true/>
-        <key>NSTemporaryExceptionMinimumTLSVersion</key>
-        <string>TLSv1.1</string>
-      </dict>
-        </dict>
-    </dict>
-```
-
-##### 2. Getting continous location (`CLLocation`)
+If there are other simultaneously active location requests or subscriptions, the block will execute for every location update (not just for significant location changes).
 
 ```swift
-// Here we want to get an higher accuracy and continous location update.
-// Once added to the pool, if needed, the app will ask to the user permission to obtain the location; if granted,
-// the request (along with the all the others in pending state) will be started.
-//
-// In case of error we want to cancel our request and report the error.
-// Each request's callback includes a reference to the request itself so you can manage easily the workflow.
-Location.getLocation(accuracy: .city, frequency: .continuous, success: { (_, location) in
-		print("A new update of location is available: \(location)")
-}) { (request, last, error) in
-		request.cancel() // stop continous location monitoring on error
-		print("Location monitoring failed due to an error \(error)")
+Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+	print("New location \(newLocation)")
+}) { (err, lastLocation) -> (Void) in
+	print("Failed with err: \(err)")
 }
 ```
 
-([Index ↑](#index))
+<a name="background"/>
 
-<a name="reverse_string" />
+### Background Monitoring (using Significant Locations)
 
-### Reverse geocoding from address string
-This function allows you to get a `CLPlacemark` object from a given address string.
-It's a one shot request so, once finished, it will be removed automatically from the queue.
-`getLocation(forAddress:inRegion:timeout:success:failure:)` defines the following parameters:
-- `address`: this is the input string with the address you want to reverse geocode
-- `region`: you may optionally pass a valid `CLRegion` to help the reverse geocoder engine to produce best results
-- `timeout`: when specified the timeout interval defines the max number of seconds can elapse before aborting the request using `LocationError.timeout`.
-- `success`: define a callback which will be executed if reverse geocoding succeded and a valid `CLPlacemark` instance is available
-- `failure`: define a callback which will be executed if reverse geocoding fails with an `Error`.
+If your app has acquired the `always` location services authorization and your app is terminated with at least one active significant location change subscription (see above), your app may be launched in the background when the system detects a significant location change.
 
-Very similar to the func described there is:
-`getLocation(forABDictionary:timeout:success:failure:)`
-which allows you to reverse a dictionary coming from the system Address Book.
+**Please note**:  when the app terminates, all of your active location requests and subscriptions with SwiftLocation are canceled automatically.
+Therefore, when the app launches due to a significant location change, you should immediately use SwiftLocation to set up a new subscription for significant location changes in order to receive the location information.
 
-<a name="example_reverse" />
-
-##### Example
+A good point to do it is the application's `AppDelegate`:
 
 ```swift
-Location.getLocation(forAddress: "1 Infinite Loop, Cupertino", success: { placemark in
-	print("Placemark found: \(placemark)")
-}) { error in
-	print("Cannot reverse geocoding due to an error \(error)")
-}
-```
-
-([Index ↑](#index))
-
-<a name="reverse_location" />
-
-### Reverse geocoding from a `CLLocation`
-Another reverse geocoding func allows you to get one or more `CLPlacemark` instances by passing a `CLLocation` as input.
-`getPlacemark(forLocation:timeout:success:failure:)` defines the following parameters:
-- `location`: a valid `CLLocation` instance you want to analyze
-- `timeout`: if not `nil` defines a max amount of seconds to execute the geocoding operation; if reached a `LocationError.timeout` is thrown.
-- `success`: define a callback which will be executed if reverse geocoding succeded and a valid `CLPlacemark` instance is available.
-- `failure`: define a callback which will be executed if reverse geocoding fails with an `Error`. 
-
-<a name="example_reverse_location" />
-
-##### Example
-
-```swift
-let loc = CLLocation(latitude: 42.972474, longitude: 13.757332)
-Location.getPlacemark(forLocation: loc, success: { placemarks in
-	// Found Contrada San Rustico, Contrada San Rustico, 63065 Ripatransone, Ascoli Piceno, Italia
-	// @ <+42.97264130,+13.75787860> +/- 100.00m, region CLCircularRegion
-	print("Found \(placemarks.first!)")
-}) { error in
-	print("Cannot retrive placemark due to an error \(error)")
-}
-```
-<a name="get_heading" />
-
-### Get continous device's heading (`CLHeading`)
-This func allows you to get update about device's heading.
-`getContinousHeading(filter:success:failure)` defines the following parameters:
-- `filter`: define the minimum angular change (measured in degrees) required to generate new heading events
-- `success`: define a callback where new heading updates are delivered (input params include a reference to `HeadingRequest` request and the new `CLHeading` object)
-- `failure`: define a callback where errors from request are delivered (input params include a refere to `HeadingRequest` and occurred `Error`)
-
-<a name="examples_heading" />
-
-#### Examples
-
-```swift
-do {
-	try Location.getContinousHeading(filter: 0.2, success: { heading in
-		print("New heading value \(heading)")
-	}) { error in
-		print("Failed to update heading \(error)")
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+	/// If you start monitoring significant location changes and your app is subsequently terminated,
+	/// the system automatically relaunches the app into the background if a new event arrives.
+	// Upon relaunch, you must still subscribe to significant location changes to continue receiving location events.
+	if let _ = launchOptions?[UIApplicationLaunchOptionsKey.location] {
+		Locator.subscribeSignificantLocations(onUpdate: { newLocation in
+			// This block will be executed with the details of the significant location change that triggered the background app launch,
+			// and will continue to execute for any future significant location change events as well (unless canceled).
+		}, onFail: { (err, lastLocation) in
+			// Something bad has occurred
+		})
 	}
-} catch {
-	print("Cannot start heading updates: \(error)")
+	// the rest of the init...
+	return true
 }
 ```
 
-([Index ↑](#index))
+<a name="manage"/>
 
-<a name="monitor_region" />
+### Managing Requests or Subscriptions Lifecycle
 
-### Monitor geographic region
-Region monitoring allows you to stay informed when device enter/exit from a specified region.
-Region monitoring also works in background; however in order to support it when the app is killed you should re-add it to the queue on `AppDelegate`'s launch func.
-Region may be defined by a `CLRegion` instance or directly by passing `CLLocationCoordinate2D` and a given radius.
+Each request you have created via `Locator` function return a `Request` object. You can keep it to manage the lifecycle of the request.
 
-First option is:
-`monitor(regionAt:radius:enter:exit:error:)` define the following parameters:
-- `center`: center coordinate of the region you want to monitor (`CLLocationCoordinate2D`)
-- `radius`: radius of the region from `center` point (expressed in meters)
-- `enter`: callback called once the device did entered into the region
-- `exit`: callback called once the device did exited from the region
-- `error`: callback called once an error has occurred
+Using `Locator` functions:
 
-Second options is:
-`monitor(region:enter:exit:error:` define the following parameters:
-- `region`: a `CLCircularRegion` which defines the region you want to monitor
-- `enter`: callback called once the device did entered into the region
-- `exit`: callback called once the device did exited from the region
-- `error`: callback called once an error has occurred
+* `stopRequest()` to stop a request (both one shot or recurring). It won't execute the block. It's valid both for heading and location requests.
+* `completeLocationRequest()` force the request to complete early, like a manual timeout. It will execute the block (valid only for location requests).
+* `completeAllLocationRequests()` Immediately completes all active location requests and execute associated blocks.
 
-<a name="examples_monitor" />
+<a name="heading"/>
 
-#### Example
+### Subscribing to Continuous Heading Updates
+
+To subscribe to continuous heading updates, use the method `Locator.subscribeHeadingUpdates` function.
+It requires the following parameters:
+
+* `accuracy`: minimum accuracy (expressed in degrees) you want to receive. `nil` to receive all events.
+* `minInterval`: minimum interval between each request. `nil` to receive all events regardless the interval.
+
+The block will execute indefinitely (until canceled), once for every new updated heading regardless of its accuracy.
+Note that if heading requests are removed or canceled, the manager will automatically stop updating the device heading in order to preserve battery life.
+
+If an error occurs, the block will execute with a status other than `succeded` (error callback), and the subscription will only be automatically canceled if the device doesn't have heading support (i.e. for error `unavailable`).
+
+Example:
 
 ```swift
-do {
-	let loc = CLLocationCoordinate2DMake( 42.972474, 13.757332)
-	let radius = 100.0
-	try Location.monitor(regionAt: loc, radius: radius, enter: { _ in
-		print("Entered in region!")
-	}, exit: { _ in
-		print("Exited from the region")
-	}, error: { req, error in
-		print("An error has occurred \(error)")
-		req.cancel() // abort the request (you can also use `cancelOnError=true` to perform it automatically
+Locator.subscribeHeadingUpdates(accuracy: 2, onUpdate: { newHeading in
+	print("New heading \(newHeading)")
+}) { err in
+	print("Failed with error: \(err)")
+}
+```
+<a name="reverse"/>
+
+### Reverse Geocoding (from address to location / from coordinates to place)
+
+SwiftLocation supports reverse geocoding for:
+
+* **From Address String to Location**: convert a readable address string to a valid `CLLocation` object with the associated coordinates
+* **From Coordinates to Place**: convert a coordinate expressed place to one or more `Place` object (with `CLPlacemarks` associated when using Apple service)
+
+Currently the following services are supported for reverse geocoding:
+
+* **Apple Built-In Service**: Using built-in iOS services  (`CLGeocoder` and `CLPlacemark`)
+* **Google API**: Using Google Maps Services. It requires API Key you can [obtain for free here](https://developers.google.com/maps/documentation/javascript/get-api-key)
+* **OpenStreetMap**: Using OpenStreetMap ([nominatim](https://nominatim.openstreetmap.org))
+
+**Note** If you are using Google API service be sure to set the API by calling `Locator.api.googleAPIKey = "<API KEY VALUE>"` before doing any request.
+
+#### From Address String to Location
+This function get a readable address and convert it in an array of `Place` objects.
+`Place` is and object created to group common properties (`city,country,road,postalcode` and so on) between all supported services.
+If you need of raw data of an object you can get the `rawDictionary` property.
+If you are using Apple services you can get `placemark` to retrive the associated `CLPlacemark` instance.
+
+Example
+
+```swift
+Locator.location(fromAddress: "1 Infinite Loop", using: .openStreetMap).onSuccess { places in
+	print(places)
+}.onFailure { err in
+	print("err")
+}
+```
+
+#### From Location to Places
+This function get the location via `CLLocationCoordinate2D` and return a list of found `Place` objects.
+
+Example:
+
+```swift
+Locator.api.googleAPIKey = ...
+let coordinates = CLLocationCoordinate2DMake(41.890395, 12.493083)
+Locator.location(fromCoordinates: coordinates, using: .google, onSuccess: { places in
+	print(places)
+}) { err in
+	print(err)
+}
+```
+<a name="autocomplete"/>
+
+### Autocomplete Places (require Google API Key)
+
+SwiftLocation allows to use the Google's Places APIs to get a list of candidate places for a given input string.
+It returns a list of `PlaceMatch` object with the main informations about the candidate place.
+You can retrive details about a place by calling `place.details(onSuccess: { placeInfo in .... })`.
+
+Example:
+
+```swift
+Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
+	print("Found \(candidates.count) candidates for this search")
+	// get the detail of the first candidate - return a Place object.
+	candidates.first?.detail(onSuccess: { placeDetail in
+		print("Found detail about this place!")
 	})
-} catch {
-	print("Cannot start heading updates: \(error)")
+}) { err in
+	print(err)
 }
 ```
 
-([Index ↑](#index))
+<a name="issues"/>
 
-<a name="monitor_visits" />
+### Issues & Contributions
 
-### Monitor Visits (`CLVisits`)
-A `CLVisit` object encapsulates information about interesting places that the user has been. Visit objects are created by the system and delivered. The visit includes the location where the visit occurred and information about the arrival and departure times as relevant. You do not create visit objects directly, nor should you subclass `CLVisit`.
-In order to monitor visits you can use this function:
-`monitorVisit(event:error)` which defines the following parameters:
-- `event`: callback called when a new visit has occurred
-- `error`: callback called on `Error`.
+Please [open an issue here on GitHub](https://github.com/malcommac/SwiftLocation/issues/new) if you have a problem, suggestion, or other comment.
+Pull requests are welcome and encouraged.
 
-<a name="examples_visits" />
+<a name="requirements"/>
 
-#### Example
+### Requirements
+Current supported version of SwiftLocation require:
 
-```swift
-do {
-  try Location.monitorVisit(event: { visit in
-	  print("A new visit to \(visit)")
-	}, error: { error in
-		print("Error occurred \(error)")
-	})
-} catch {
-	print("Cannot start visit updates: \(error)")
-}
+* **Minimum OS**: iOS 9, macOS 10.10 or watchOS 3.0
+* **Swift**: Swift 4 (see swift-3 branch for an old unsupported version)
+
+<a name="installation"/>
+
+### Installation
+
+#### CocoaPods
+
+### Using [CocoaPods](http://cocoapods.org)
+
+1.	Add the pod `SwiftLocation` to your [Podfile](http://guides.cocoapods.org/using/the-podfile.html).
+
+```ruby
+pod 'SwiftLocation'
+```
+Run `pod install` from Terminal, then open your app's `.xcworkspace` file to launch Xcode.
+
+### Using [Carthage](https://github.com/Carthage/Carthage)
+
+1. Add the `malcommac/SwiftLocation` project to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile).
+
+```ogdl
+github "malcommac/SwiftLocation"
 ```
 
-([Index ↑](#index))
-
-<a name="background" />
-
-### Background Updates
-
-Background monitoring is a sensitive topic; efficent use of device's battery is one of hit point for Apple.
-
-#### Significant Locations
-At this time the only way to get continous update even if the app is in background is to use `significant` location monitoring.
-Basically you need to:
-- Add the `NSLocationAlwaysUsageDescription` description in your app's `Info.plist`
-- Turn on `Background Fetch` and `Location Updates` checkbox in `Project Settings > Capabilities > Background Modes`
-- Register a `significant` location request in your `AppDelegate`'s `application(application:didFinishLaunchingWithOptions:)`
-
-You will receive only significant updates from location manager. What it does mean?
-The significant location change is the least accurate of all the location monitoring types. It only gets its updates when there is a cell tower transition or change. This can mean a varying level of accuracy and updates based on where the user is. City area, more updates with more towers. Out of town, interstate, fewer towers and changes.
-
-### Using Background Task
-
-You can also register a background task to get the most accurated result for a limited period of time.
-In your background task you can define a region monitoring request; as soon as the device crosses the region you will create another region from the current coordinates while entering and exiting from regions, did update location delegate gets called and you get the updated coordinate while application is in terminated mode.
-
-([Index ↑](#index))
-
-<a name="locationtracker" />
-
-### More on `LocationTracker`
-At any time you can also monitor the `LocationTracker` status.
-There are a number of properties you can set:
-
-- `.onAddNewRequest`: allows you to set a callback which is called when a new `Request` is added to the queue
-- `.onRemoveRequest`: allows you to set a callback which is called when a queued `Request` is removed from the queue
-
-```swift
-Location.onAddNewRequest = { req in
-  print("A new request is added to the queue \(req)")
-}
-Location.onRemoveRequest = { req in
-	print("An existing request was removed from the queue \(req)")
-}
-```
-
-- `.displayHeadingCalibration`: Asks whether the heading calibration alert should be displayed. This method is called in an effort to calibrate the onboard hardware used to determine heading values. By default is `true`.
-- `.headingOrientation`: The device orientation to use when computing heading values.
-- `.autoPauseUpdates`: This function also scan for any running Request's `activityType` and see if location data is unlikely to change. If `true` (for example when user stops for food while using a navigation app) the location manager might pause updates for a period of time. (by default is `false`).
-
-- `lastLocation` last location get the last valid `CLLocation` obtained from the location manager.
-- `locationSettings` return the current settings for Location Tracker instance by returning a `TrackerSettings` struct with the following global `CLLocationManager` properties: `accuracy`, `frequency`, `activity`, `distanceFilter`. Values are evaluated continously based upon running requests.
-
-([Index ↑](#index))
-
-<a name="installation" />
-
-## Installation
-You can install Swiftline using CocoaPods, carthage and Swift package manager
-
-### CocoaPods
-    use_frameworks!
-    pod 'SwiftLocation'
-
-### Carthage
-    github 'malcommac/SwiftLocation'
-
-### Swift Package Manager
-Add swiftline as dependency in your `Package.swift`
-
-```
-  import PackageDescription
-
-  let package = Package(name: "YourPackage",
-    dependencies: [
-      .Package(url: "https://github.com/malcommac/SwiftLocation.git", majorVersion: 0),
-    ]
-  )
-```
-
-([Index ↑](#index))
+1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
+1. Import the SwiftLocation framework/module via `import INTULocationManager`
 
 
-<a name="requirements" />
 
-## Requirements
-
-Current version is compatible with:
-
-* Swift 3.0+
-* iOS 9.0 or later
-
-([Index ↑](#index))
-
-<a name="credits" />
-
-## Credits & License
-SwiftLocation is owned and maintained by [Daniele Margutti](http://www.danielemargutti.com/).
-
-As open source creation any help is welcome!
-
-The code of this library is licensed under MIT License; you can use it in commercial products without any limitation.
-
-The only requirement is to add a line in your Credits/About section with the text below:
-
-```
-This software uses open source SwiftLocation's library to manage location updates.
-Web: http://github.com/malcommac/SwiftLocation
-Created by Daniele Margutti and licensed under MIT License.
-```
-([Index ↑](#index))
