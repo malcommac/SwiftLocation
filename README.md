@@ -51,7 +51,7 @@ Take a look below:
 
 
 ### Current Version
-Latest version of SwiftLocation is: 3.0.0-beta for Swift 4.
+Latest version of SwiftLocation is: 3.0.1-beta for Swift 4.
 
 ### Documentation
 
