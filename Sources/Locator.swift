@@ -578,8 +578,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		DispatchQueue.main.async {
 			if let error = r.error { // failed for some sort of error
 				r.failure?(error,r.location)
-			} else { // succeded
-				r.success?(r.location!)
+			} else if let loc = r.location { // succeded
+				r.success?(loc)
 			}
 		}
 	}
@@ -593,8 +593,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		DispatchQueue.main.async {
 			if let error = r.error {
 				r.failure?(error,r.location)
-			} else {
-				r.success?(r.location!)
+			} else if let loc = r.location {
+				r.success?(loc)
 			}
 		}
 	}
