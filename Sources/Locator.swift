@@ -671,9 +671,10 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+
+		// Alert any listener
+		self.events.authorizationsStatus.forEach { $0(status) }
 		guard status != .denied && status != .restricted else {
-			// Alert any listener
-			self.events.authorizationsStatus.forEach { $0(status) }
 			// Clear out any active location requests (which will execute the blocks
 			// with a status that reflects
 			// the unavailability of location services) since we now no longer have
