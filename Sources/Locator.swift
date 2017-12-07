@@ -75,7 +75,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	internal static let shared = LocatorManager()
 	
 	/// Core location internal manager
-	internal var manager: CLLocationManager = CLLocationManager()
+	internal var manager: CLLocationManager
 	
 	/// Current queued location requests
 	private var locationRequests: [LocationRequest] = []
@@ -96,6 +96,11 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	public var backgroundLocationUpdates: Bool {
 		set { self.manager.allowsBackgroundLocationUpdates = true }
 		get { return self.manager.allowsBackgroundLocationUpdates }
+	}
+	
+	/// Current authorization status of the location manager
+	public var authorizationStatus: CLAuthorizationStatus {
+		return CLLocationManager.authorizationStatus()
 	}
 	
 	/// Returns the most recent current location, or nil if the current
@@ -138,6 +143,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	private override init() {
+		self.manager = CLLocationManager()
 		super.init()
 		self.manager.delegate = self
 		
@@ -167,7 +173,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	@discardableResult
 	public func currentPosition(accuracy: Accuracy, timeout: Timeout? = nil,
 	                            onSuccess: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
-		assert(Thread.isMainThread, "Locator functions should be called from main thread")
+	//	assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .oneshot, accuracy: accuracy.validateForGPSRequest, timeout: timeout)
 		request.success = onSuccess
 		request.failure = onFail
@@ -578,8 +584,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		DispatchQueue.main.async {
 			if let error = r.error { // failed for some sort of error
 				r.failure?(error,r.location)
-			} else { // succeded
-				r.success?(r.location!)
+			} else if let loc = r.location { // succeded
+				r.success?(loc)
 			}
 		}
 	}
@@ -593,8 +599,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		DispatchQueue.main.async {
 			if let error = r.error {
 				r.failure?(error,r.location)
-			} else {
-				r.success?(r.location!)
+			} else if let loc = r.location {
+				r.success?(loc)
 			}
 		}
 	}
@@ -671,9 +677,10 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+
+		// Alert any listener
+		self.events.authorizationsStatus.forEach { $0(status) }
 		guard status != .denied && status != .restricted else {
-			// Alert any listener
-			self.events.authorizationsStatus.forEach { $0(status) }
 			// Clear out any active location requests (which will execute the blocks
 			// with a status that reflects
 			// the unavailability of location services) since we now no longer have

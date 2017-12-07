@@ -152,14 +152,12 @@ public class TimeoutManager {
 	/// Return the remaining time from timeout session
 	public var aliveTime: TimeInterval? {
 		guard let s = self.start else { return nil }
+		guard self.hasTimedout == false else { return 0 }
 		return fabs(s.timeIntervalSinceNow)
 	}
 	
 	/// Return `true` if timer has expired
-	public var hasTimedout: Bool {
-		guard let a = self.aliveTime else { return false }
-		return (a > 0)
-	}
+	public var hasTimedout: Bool = false
 	
 	/// Initialize a new manager with given timeout interval
 	///
@@ -177,6 +175,7 @@ public class TimeoutManager {
 	@discardableResult
 	internal func startTimeout(force: Bool = false) -> Bool {
 		if force == true || self.interval.shouldBeDelayed == false {
+			self.hasTimedout = false
 			self.reset()
 			self.timer = Timer.scheduledTimer(timeInterval: self.value, target: self, selector: #selector(timerFired), userInfo: nil, repeats: false)
 			return true
@@ -195,8 +194,9 @@ public class TimeoutManager {
 	
 	/// Objc function received on timer's fire event
 	@objc func timerFired() {
-		self.reset()
+		self.hasTimedout = true
 		self.fireCallback?()
+		self.reset()
 	}
 	
 	/// Reset timer session and stop any other session
@@ -204,7 +204,6 @@ public class TimeoutManager {
 		self.timer?.invalidate()
 		self.timer = nil
 		self.start = Date()
-		self.fireCallback = nil
 	}
 }
 
