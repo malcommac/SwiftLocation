@@ -75,7 +75,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	internal static let shared = LocatorManager()
 	
 	/// Core location internal manager
-	internal var manager: CLLocationManager = CLLocationManager()
+	internal var manager: CLLocationManager
 	
 	/// Current queued location requests
 	private var locationRequests: [LocationRequest] = []
@@ -96,6 +96,11 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	public var backgroundLocationUpdates: Bool {
 		set { self.manager.allowsBackgroundLocationUpdates = true }
 		get { return self.manager.allowsBackgroundLocationUpdates }
+	}
+	
+	/// Current authorization status of the location manager
+	public var authorizationStatus: CLAuthorizationStatus {
+		return CLLocationManager.authorizationStatus()
 	}
 	
 	/// Returns the most recent current location, or nil if the current
@@ -138,6 +143,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	private override init() {
+		self.manager = CLLocationManager()
 		super.init()
 		self.manager.delegate = self
 		
@@ -167,7 +173,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	@discardableResult
 	public func currentPosition(accuracy: Accuracy, timeout: Timeout? = nil,
 	                            onSuccess: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
-		assert(Thread.isMainThread, "Locator functions should be called from main thread")
+	//	assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .oneshot, accuracy: accuracy.validateForGPSRequest, timeout: timeout)
 		request.success = onSuccess
 		request.failure = onFail
