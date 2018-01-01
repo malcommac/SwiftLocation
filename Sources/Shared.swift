@@ -271,10 +271,10 @@ public extension CLLocationManager {
 						hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription"))
 				
 			}
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription") &&
+                   hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		case .whenInUse:
-			if osVersion < 11 { return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription") }
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		}
 	}
 	
