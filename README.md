@@ -344,7 +344,16 @@ Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
 	print(err)
 }
 ```
+You can specify the language in which the Google Places APIs should return the results by passing a `language` argument.
 
+Example:
+```swift
+Locator.autocompletePlaces(with: "123 main street", language: .french, onSuccess: { candidates in
+	print("Found \(candidates.count) candidates for this search")
+}) { err in
+	print(err)
+}
+```
 <a name="issues"/>
 
 ### Issues & Contributions

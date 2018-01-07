@@ -48,15 +48,19 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 	
 	/// Input to search
 	public private(set) var input: String
+
+    /// Language in which the results are displayed
+    public private(set) var language: FindPlaceRequest_Google_Language?
 	
 	/// Init new find place operation
 	///
 	/// - Parameters:
 	///   - operation: operation to execute
 	///   - timeout: timeout, `nil` uses default timeout of 10 seconds
-	public init(input: String, timeout: TimeInterval? = nil) {
+    public init(input: String, timeout: TimeInterval? = nil, language: FindPlaceRequest_Google_Language? = nil) {
 		self.input = input
 		self.timeout = timeout ?? 10
+        self.language = language ?? FindPlaceRequest_Google_Language.english
 	}
 	
 	public func execute() {
@@ -64,8 +68,8 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 			self.failure?(LocationError.missingAPIKey(forService: "google"))
 			return
 		}
-		
-		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&key=\(APIKey)")!
+
+		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(language?.rawValue)&key=\(APIKey)")!
 		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { err in
 			self.failure?(err)
@@ -85,6 +89,117 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 		self.task?.cancel()
 	}
 	
+}
+
+/// Google Autocomplete supported languages
+///
+/// - arabic: Arabic
+/// - bulgarian: Bulgarian
+/// - bengali: Bengali
+/// - catalan: Catalan
+/// - czech: Czech
+/// - danish: Danish
+/// - dutch: Dutch
+/// - german: German
+/// - greek: Greek
+/// - english: English
+/// - english_AU: English (Australia)
+/// - english_GB: English (Great Britain)
+/// - spanish: Spanish
+/// - basque: Basque
+/// - chinese_simplified: Chinese (Simplified)
+/// - chinese_traditional: Chinese (Traditional)
+/// - farsi: Farsi
+/// - finnish: Finnish
+/// - filipino: Filipino
+/// - french: French
+/// - galician: Galician
+/// - gujarati: Gujarati
+/// - hindi: Hindi
+/// - croatian: Croatian
+/// - hungarian: Hungarian
+/// - indonesian: Indonesian
+/// - italian: Italian
+/// - hebrew: Hebrew
+/// - japanese: Japanese
+/// - kannada: Kannada
+/// - korean: Korean
+/// - lithuanian: Lithuanian
+/// - latvian: Latvian
+/// - malayalam: Malayalam
+/// - marathi: Marathi
+/// - norwegian: Norwegian
+/// - polish: Polish
+/// - portuguese: Portuguese
+/// - portuguese_BR: Portuguese (Brasil)
+/// - portuguese_PT: portuguese (Portugal)
+/// - romanian: Romanian
+/// - russian: Russian
+/// - slovak: Slovak
+/// - slovenian: Slovenian
+/// - serbian: Serbian
+/// - swedish: Swedish
+/// - tamil: Tamil
+/// - telugu: Telugu
+/// - thai: Hhai
+/// - tagalog: Tagalog
+/// - turkish: Turkish
+/// - ukrainian: Ukrainian
+/// - vietnamese: Vietnamese
+public enum FindPlaceRequest_Google_Language: String {
+    case arabic = "ar"
+    case bulgarian = "bg"    
+    case bengali = "bn"
+    case catalan    = "ca"
+    case czech = "cs"
+    case danish = "da"
+    case dutch = "nl"
+    case german = "de"
+    case greek = "el"    
+    case english = "en"    
+    case english_AU = "en-AU"
+    case english_GB = "en-GB"
+    case spanish = "es"
+    case basque = "eu"    
+    case chinese_simplified = "zh-CN"
+    case chinese_traditional = "zh-TW"
+    case farsi = "fa"
+    case finnish = "fi"
+    case filipino = "fil"
+    case french = "fr"
+    case galician    = "gl"
+    case gujarati = "gu"
+    case hindi = "hi"
+    case croatian = "hr"
+    case hungarian = "hu"
+    case indonesian = "id"
+    case italian = "it"
+    case hebrew = "iw"
+    case japanese = "ja"
+    case kannada = "kn"
+    case korean = "ko"
+    case lithuanian = "lt"
+    case latvian = "lv"
+    case malayalam = "ml"
+    case marathi = "mr"
+    case norwegian = "no"
+    case polish = "pl"
+    case portuguese = "pt"
+    case portuguese_BR = "pt-BR"
+    case portuguese_PT = "pt-PT"
+    case romanian = "ro"
+    case russian = "ru"
+    case slovak = "sk"
+    case slovenian = "sl"
+    case serbian = "sr"
+    case swedish = "sv"
+    case tamil = "ta"
+    case telugu = "te"
+    case thai = "th"
+    case tagalog = "tl"
+    case turkish = "tr"
+    case ukrainian = "uk"
+    case vietnamese = "vi"
 }
 
 /// Identify a single match entry for a place search
