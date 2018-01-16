@@ -210,7 +210,7 @@ public final class Geocoder_Apple: GeocoderRequest {
 		let geocoder = CLGeocoder()
 		self.task = geocoder
 
-        let feocodeCompletionHandler: CoreLocation.CLGeocodeCompletionHandler = { [weak self] (placemarks, error) in
+        let geocodeCompletionHandler: CoreLocation.CLGeocodeCompletionHandler = { [weak self] (placemarks, error) in
             guard let this = self else { return }
 
             this.isFinished = true
@@ -225,15 +225,15 @@ public final class Geocoder_Apple: GeocoderRequest {
 
 		switch self.operation {
 		case .getLocation(let address, let region):
-			geocoder.geocodeAddressString(address, in: region, completionHandler: feocodeCompletionHandler)
+			geocoder.geocodeAddressString(address, in: region, completionHandler: geocodeCompletionHandler)
 		case .getPlace(let coordinates, let locale):
 			let loc = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
 
 			if #available(iOS 11, *) {
-				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: feocodeCompletionHandler)
+				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: geocodeCompletionHandler)
 			} else {
 				// Fallback on earlier versions
-				geocoder.reverseGeocodeLocation(loc, completionHandler: feocodeCompletionHandler)
+				geocoder.reverseGeocodeLocation(loc, completionHandler: geocodeCompletionHandler)
 			}
 		}
 	}
