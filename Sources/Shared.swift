@@ -243,13 +243,16 @@ public extension CLLocationManager {
 			}
 		} else {
 			// In iOS11 stuff are changed again
-			let hasAlwaysAndInUseKey = hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
-			if hasAlwaysAndInUseKey {
+            let hasAlwaysAndWhenInUse = hasPlistValue(forKey:"NSLocationAlwaysAndWhenInUseUsageDescription")
+            let hasWhenInUse = hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
+			if hasAlwaysAndWhenInUse && hasWhenInUse {
 				return .always
+            } else if hasWhenInUse {
+                return .whenInUse
 			} else {
-				// Key NSLocationAlwaysAndWhenInUseUsageDescription MUST be present in the Info.plist
-				// file to use location services on iOS 11+.
-				fatalError("To use location services in iOS 11+, your Info.plist must provide a value for NSLocationAlwaysAndWhenInUseUsageDescription.")
+				// Key NSLocationWhenInUseUsageDescription MUST be present in the Info.plist file to use location services on iOS 11
+                // For Always access NSLocationAlwaysAndWhenInUseUsageDescription must also be present.
+				fatalError("To use location services in iOS 11+, your Info.plist must provide a value for NSLocationAlwaysUsageDescription and if requesting always access you must provide a value for  NSLocationAlwaysAndWhenInUseUsageDescription as well.")
 			}
 		}
 	}
@@ -268,10 +271,10 @@ public extension CLLocationManager {
 						hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription"))
 				
 			}
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription") &&
+                   hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		case .whenInUse:
-			if osVersion < 11 { return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription") }
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		}
 	}
 	
