@@ -53,6 +53,9 @@ Take a look below:
 ### Current Version
 Latest version of SwiftLocation is: 3.2.0 for Swift 4.
 
+### Changelog
+Changelog is available on [CHANGELOG.md](CHANGELOG.md) file.
+
 ### Documentation
 
 Table of Contents:
