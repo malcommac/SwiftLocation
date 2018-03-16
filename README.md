@@ -22,7 +22,7 @@ It provides a block based asynchronous API to request current location, either o
 
 | Feature                                       | Description                                                                                                                                                                            |
 |-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It 1turns off hardware when not used, automatically.                                       |
+| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It turns off hardware when not used, automatically.                                       |
 | **Location Monitoring**                       | Easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations). |
 | **Device Heading**                            | Subscribe and receive continous device's heading updates                                                                                                                               |
 | **Reverse Geocoder**                          | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
