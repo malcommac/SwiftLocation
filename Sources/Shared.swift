@@ -35,6 +35,59 @@ import CoreLocation
 import MapKit
 import SwiftyJSON
 
+/// Thread-safe list
+/// All functions and proprierties are thread-safe.
+internal class SafeList<Value: Equatable> {
+	
+	/// Items
+	private var _list: Array<Value> = []
+	
+	/// Lock
+	private var mutex: Mutex = Mutex()
+	
+	/// Safe items
+	public var list: [Value] {
+		get { return self.mutex.sync(execute: { _list }) }
+	}
+	
+	/// Append new item
+	///
+	/// - Parameter item: append new item
+	public func add(_ item: Value) {
+		self.mutex.sync { _list.append(item) }
+	}
+	
+	/// Remove existing item
+	///
+	/// - Parameter item: item to remove
+	/// - Returns: `true` if exist and it was removed, `false` otherwise
+	@discardableResult
+	public func remove(_ item: Value) -> Bool {
+		return self.mutex.sync {
+			guard let idx = self._list.index(of: item) else { return false }
+			self._list.remove(at: idx)
+			return true
+		}
+	}
+	
+	/// Index of item.
+	///
+	/// - Parameter item: item
+	/// - Returns: valid `Int` if item is in the list, `nil` if does not exists.
+	public func index(of item: Value) -> Int? {
+		return self.mutex.sync {
+			guard let idx = self._list.index(of: item) else { return nil }
+			return idx
+		}
+	}
+	
+	/// Number of items
+	public var count: Int {
+		return self.mutex.sync(execute: { _list.count })
+	}
+}
+
+/// IP Service
 public enum IPService {
 	case freeGeoIP
 	case petabyet
@@ -44,7 +97,7 @@ public enum IPService {
 	internal var url: URL {
 		var url: String = ""
 		switch self {
-		case .freeGeoIP:	url = "http://freegeoip.net/json/"
+		case .freeGeoIP:	url = "https://freegeoip.net/json/"
 		case .petabyet:		url = "http://api.petabyet.com/geoip/"
 		case .smartIP:		url = "http://smart-ip.net/geoip-json/"
 		case .ipApi:		url = "http://ip-api.com/json"
@@ -96,27 +149,54 @@ public typealias GeocoderRequest_Success = (([Place]) -> (Void))
 public typealias GeocoderRequest_Failure = ((LocationError) -> (Void))
 
 /// Protocol for geocoder request instance
-public protocol GeocoderRequest {
+public class GeocoderRequest: Equatable {
+	
+	/// Identifier of the operation
+	public let identifier: String
 	
 	/// Success handler
-	var success: GeocoderRequest_Success? { get set }
+	public var success: GeocoderRequest_Success?
 	
 	/// Failure handler
-	var failure: GeocoderRequest_Failure? { get set }
+	public var failure: GeocoderRequest_Failure?
 
+	/// Timeout interval
+	public var timeout: TimeInterval?
+	
+	/// Operation of the request
+	public let operation: GeocoderOperation
+	
+	/// Called when operation is finished
+	internal var isFinished: Bool = false {
+		didSet {
+			if isFinished == true {
+				Locator.geocoderRequests.remove(self)
+			}
+		}
+	}
+	
 	/// Initialization of the geocoder request
 	///
 	/// - Parameter operation: operation to perform
-	init(operation: GeocoderOperation, timeout: TimeInterval)
-
-	/// Timeout interval
-	var timeout: TimeInterval? { get set }
+	init(operation: GeocoderOperation, timeout: TimeInterval) {
+		self.identifier = UUID().uuidString
+		self.operation = operation
+		self.timeout = timeout
+	}
 	
 	/// Execute operation
-	func execute()
+	func execute() {
+		// nop
+	}
 	
 	/// Cancel current execution (if any)
-	func cancel()
+	func cancel() {
+		self.isFinished = true
+	}
+	
+	public static func ==(lhs: GeocoderRequest, rhs: GeocoderRequest) -> Bool {
+		return (lhs.identifier == rhs.identifier)
+	}
 }
 
 /// Identifier type of the request
@@ -243,13 +323,16 @@ public extension CLLocationManager {
 			}
 		} else {
 			// In iOS11 stuff are changed again
-			let hasAlwaysAndInUseKey = hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
-			if hasAlwaysAndInUseKey {
+            let hasAlwaysAndWhenInUse = hasPlistValue(forKey:"NSLocationAlwaysAndWhenInUseUsageDescription")
+            let hasWhenInUse = hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
+			if hasAlwaysAndWhenInUse && hasWhenInUse {
 				return .always
+            } else if hasWhenInUse {
+                return .whenInUse
 			} else {
-				// Key NSLocationAlwaysAndWhenInUseUsageDescription MUST be present in the Info.plist
-				// file to use location services on iOS 11+.
-				fatalError("To use location services in iOS 11+, your Info.plist must provide a value for NSLocationAlwaysAndWhenInUseUsageDescription.")
+				// Key NSLocationWhenInUseUsageDescription MUST be present in the Info.plist file to use location services on iOS 11
+                // For Always access NSLocationAlwaysAndWhenInUseUsageDescription must also be present.
+				fatalError("To use location services in iOS 11+, your Info.plist must provide a value for NSLocationAlwaysUsageDescription and if requesting always access you must provide a value for  NSLocationAlwaysAndWhenInUseUsageDescription as well.")
 			}
 		}
 	}
@@ -268,10 +351,10 @@ public extension CLLocationManager {
 						hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription"))
 				
 			}
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription") &&
+                   hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		case .whenInUse:
-			if osVersion < 11 { return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription") }
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		}
 	}
 	
@@ -578,6 +661,8 @@ public class Place: CustomStringConvertible {
 	public internal(set) var houseNumber: String?
 	public internal(set) var name: String?
 	public internal(set) var POI: String?
+	public internal(set) var formattedAddress: String?
+	public internal(set) var neighborhood: String?
 	public internal(set) var rawDictionary: [String:Any]?
 	
 	internal init() { }
@@ -594,21 +679,24 @@ public class Place: CustomStringConvertible {
 		if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
 			self.coordinates = CLLocationCoordinate2DMake(lat, lon)
 		}
-		self.name = ab(forType: "establishment")?["short_name"].string
+		self.name = ab(forType: "establishment")?["long_name"].string
 		if let countryData = ab(forType: "country") {
 			self.countryCode = countryData["short_name"].string
 			self.country = countryData["long_name"].string
 		}
-		self.postcode = ab(forType: "postal_code")?["short_name"].string
-		self.state = ab(forType: "administrative_area_level_1")?["short_name"].string
-		self.city = ab(forType: "locality")?["short_name"].string
-		self.cityDistrict = ab(forType: "administrative_area_level_2")?["short_name"].string
-		self.road = ab(forType: "route")?["short_name"].string
+		self.postcode = ab(forType: "postal_code")?["long_name"].string
+		self.state = ab(forType: "administrative_area_level_1")?["long_name"].string
+		self.county = ab(forType: "administrative_area_level_2")?["long_name"].string
+		self.city = ab(forType: "locality")?["long_name"].string
+		self.cityDistrict = ab(forType: "administrative_area_level_2")?["long_name"].string
+		self.road = ab(forType: "route")?["long_name"].string
+		self.formattedAddress = json["formatted_address"].string
 		if self.road == nil {
 			self.road = ab(forType: "neighborhood")?["short_name"].string
 		}
-		self.houseNumber = ab(forType: "street_number")?["short_name"].string
-		self.POI = ab(forType: "point_of_interest")?["short_name"].string
+		self.neighborhood = ab(forType: "neighborhood")?["long_name"].string ?? ab(forType: "sublocality_level_1")?["long_name"].string
+		self.houseNumber = ab(forType: "street_number")?["long_name"].string
+		self.POI = ab(forType: "point_of_interest")?["long_name"].string
 		self.rawDictionary = json.dictionaryObject
 	}
 	
@@ -620,6 +708,8 @@ public class Place: CustomStringConvertible {
 		self.coordinates = p.location?.coordinate
 		self.countryCode = p.isoCountryCode
 		self.country = p.country
+		self.county = p.locality
+		self.neighborhood = p.subLocality
 		self.postcode = p.postalCode
 		self.cityDistrict = p.administrativeArea
 		self.road = p.thoroughfare
@@ -649,4 +739,3 @@ internal extension String {
 		return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 	}
 }
-

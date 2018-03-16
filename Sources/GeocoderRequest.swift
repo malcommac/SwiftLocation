@@ -16,30 +16,11 @@ import SwiftyJSON
 
 public final class Geocoder_Google: GeocoderRequest {
 	
-	/// Operation of the request
-	public private(set) var operation: GeocoderOperation
-	
-	/// Success Handler
-	public var success: GeocoderRequest_Success?
-	
-	/// Failure Handler
-	public var failure: GeocoderRequest_Failure?
-	
 	/// session task
 	private var task: JSONOperation? = nil
 	
-	/// Timeout interval in seconds, `nil` means default timeout (10 seconds)
-	public var timeout: TimeInterval?
-	
-	/// Initialize a new geocoder operation
-	///
-	/// - Parameter operation: operation
-	public required init(operation: GeocoderOperation, timeout: TimeInterval) {
-		self.operation = operation
-		self.timeout = timeout
-	}
-	
-	public func execute() {
+	public override func execute() {
+		guard self.isFinished == false else { return }
 		switch self.operation {
 		case .getLocation(let a,_):
 			self.execute_getLocation(a)
@@ -49,8 +30,9 @@ public final class Geocoder_Google: GeocoderRequest {
 	}
 	
 	/// Cancel any currently running task
-	public func cancel() {
+	public override func cancel() {
 		self.task?.cancel()
+		super.cancel()
 	}
 	
 	private func execute_getPlace(_ c: CLLocationCoordinate2D) {
@@ -62,10 +44,12 @@ public final class Geocoder_Google: GeocoderRequest {
 		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { err in
 			self.failure?(err)
+			self.isFinished = true
 		}
 		self.task?.onSuccess = { json in
 			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
 			self.success?(places)
+			self.isFinished = true
 		}
 		self.task?.execute()
 	}
@@ -79,10 +63,12 @@ public final class Geocoder_Google: GeocoderRequest {
 		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { err in
 			self.failure?(err)
+			self.isFinished = true
 		}
 		self.task?.onSuccess = { json in
 			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
 			self.success?(places)
+			self.isFinished = true
 		}
 		self.task?.execute()
 	}
@@ -92,31 +78,12 @@ public final class Geocoder_Google: GeocoderRequest {
 //MARK: Geocoder OpenStreetMap
 
 public final class Geocoder_OpenStreet: GeocoderRequest {
-
-	/// Operation of the request
-	public private(set) var operation: GeocoderOperation
-	
-	/// Success Handler
-	public var success: GeocoderRequest_Success?
-	
-	/// Failure Handler
-	public var failure: GeocoderRequest_Failure?
 	
 	/// session task
 	private var task: JSONOperation? = nil
 	
-	/// Timeout interval in seconds, `nil` means default timeout (10 seconds)
-	public var timeout: TimeInterval?
-	
-	/// Initialize a new geocoder operation
-	///
-	/// - Parameter operation: operation
-	public required init(operation: GeocoderOperation, timeout: TimeInterval) {
-		self.operation = operation
-		self.timeout = timeout
-	}
-	
-	public func execute() {
+	public override func execute() {
+		guard self.isFinished == false else { return }
 		switch self.operation {
 		case .getLocation(let a,_):
 			self.execute_getLocation(a)
@@ -126,8 +93,9 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 	}
 	
 	/// Cancel any currently running task
-	public func cancel() {
+	public override func cancel() {
 		self.task?.cancel()
+		super.cancel()
 	}
 
 	private func execute_getPlace(_ coordinates: CLLocationCoordinate2D) {
@@ -135,9 +103,11 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { err in
 			self.failure?(err)
+			self.isFinished = true
 		}
 		self.task?.onSuccess = { json in
 			self.success?([self.parseResultPlace(json)])
+			self.isFinished = true
 		}
 		self.task?.execute()
 	}
@@ -148,10 +118,12 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { err in
 			self.failure?(err)
+			self.isFinished = true
 		}
 		self.task?.onSuccess = { json in
 			let places = json.arrayValue.map { self.parseResultPlace($0) }
 			self.success?(places)
+			self.isFinished = true
 		}
 		self.task?.execute()
 	}
@@ -178,69 +150,46 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 //MARK: Geocoder Apple
 
 public final class Geocoder_Apple: GeocoderRequest {
-	
-	/// Operation of the request
-	public private(set) var operation: GeocoderOperation
-	
-	/// Success Handler
-	public var success: GeocoderRequest_Success?
-	
-	/// Failure Handler
-	public var failure: GeocoderRequest_Failure?
-	
-	/// Timeout interval
-	public var timeout: TimeInterval?
 
 	/// Task
 	private var task: CLGeocoder?
-	
-	private var isFinished: Bool = false
-	
-	/// Initialize a new geocoder operation
-	///
-	/// - Parameter operation: operation
-	public required init(operation: GeocoderOperation, timeout: TimeInterval) {
-		self.operation = operation
-		self.timeout = timeout
-	}
-	
-	public func execute() {
+
+	public override func execute() {
 		guard self.isFinished == false else { return }
 	
 		let geocoder = CLGeocoder()
 		self.task = geocoder
+
+        let geocodeCompletionHandler: CoreLocation.CLGeocodeCompletionHandler = { [weak self] (placemarks, error) in
+            if let err = error {
+                self?.failure?(LocationError.other(err.localizedDescription))
+				self?.isFinished = true
+                return
+            }
+
+			let place = Place.load(placemarks: placemarks ?? [])
+            self?.success?(place)
+			self?.isFinished = true
+        }
+
 		switch self.operation {
 		case .getLocation(let address, let region):
-			geocoder.geocodeAddressString(address, in: region, completionHandler: { (placemarks, error) in
-				self.isFinished = true
-			})
+			geocoder.geocodeAddressString(address, in: region, completionHandler: geocodeCompletionHandler)
 		case .getPlace(let coordinates, let locale):
 			let loc = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+
 			if #available(iOS 11, *) {
-				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: { (placemarks, error) in
-					self.isFinished = true
-					if let err = error {
-						self.failure?(LocationError.other(err.localizedDescription))
-						return
-					}
-					self.success?(Place.load(placemarks: placemarks ?? []))
-				})
+				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: geocodeCompletionHandler)
 			} else {
 				// Fallback on earlier versions
-				geocoder.reverseGeocodeLocation(loc, completionHandler: { (placemarks, error) in
-					self.isFinished = true
-					if let err = error {
-						self.failure?(LocationError.other(err.localizedDescription))
-						return
-					}
-					self.success?(Place.load(placemarks: placemarks ?? []))
-				})
+				geocoder.reverseGeocodeLocation(loc, completionHandler: geocodeCompletionHandler)
 			}
 		}
 	}
 	
-	public func cancel() {
+	public override func cancel() {
 		self.task?.cancelGeocode()
+		super.cancel()
 	}
 	
 	public func onSuccess(_ success: @escaping GeocoderRequest_Success) -> Self {

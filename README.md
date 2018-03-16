@@ -22,7 +22,7 @@ It provides a block based asynchronous API to request current location, either o
 
 | Feature                                       | Description                                                                                                                                                                            |
 |-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It 1turns off hardware when not used, automatically.                                       |
+| **Efficient Power Manager**                   | SwiftLocation automatically manage power consumption based upon currently running requests. It turns off hardware when not used, automatically.                                       |
 | **Location Monitoring**                       | Easily monitor for your with desired accuracy and frequency (continous monitoring, background monitoring, monitor by distance intervals, interesting places or significant locations). |
 | **Device Heading**                            | Subscribe and receive continous device's heading updates                                                                                                                               |
 | **Reverse Geocoder**                          | Get location from address string or coordinates using three different services: Apple (built-in), Google (require API Key) and OpenStreetMap.                                          |
@@ -51,7 +51,10 @@ Take a look below:
 
 
 ### Current Version
-Latest version of SwiftLocation is: 3.1.0 for Swift 4.
+Latest version of SwiftLocation is: 3.2.0 for Swift 4.
+
+### Changelog
+Changelog is available on [CHANGELOG.md](CHANGELOG.md) file.
 
 ### Documentation
 
@@ -98,7 +101,7 @@ Locator.requestAuthorizationIfNeeded(.always)
 ```
 
 #### iOS 11+
-Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
+Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription`  as well as a key for `NSLocationWhenInUseUsageDescription` in your app's Info.plist file.
 
 <a name="observe_authorizations"/>
 
@@ -107,9 +110,13 @@ Starting with iOS 11, you must provide a description for how your app uses locat
 You can also observe for changes in authorization status by subscribing auth changes events:
 
 ```swift
-Locator.events.listen { newStatus in
+let token = Locator.events.listen { newStatus in
 	print("Authorization status changed to \(newStatus)")
 }
+// In a second time you may decide to remove it
+Locator.events.remove(token)
+// Or remove all listeners
+Locator.events.removeAll()
 ```
 
 
@@ -185,9 +192,9 @@ The block will execute indefinitely (even across errors, until canceled), once f
 Example:
 
 ```swift
-Locator.subscribePosition(accuracy: .city).onSuccess { loc in
+Locator.subscribePosition(accuracy: .city).onUpdate { loc in
 	print("New location received: \(loc)")
-}.onFailure { err, last in
+}.onFail { err, last in
 	print("Failed with error: \(err)")
 }
 ```
@@ -344,7 +351,16 @@ Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
 	print(err)
 }
 ```
+You can specify the language in which the Google Places APIs should return the results by passing a `language` argument.
 
+Example:
+```swift
+Locator.autocompletePlaces(with: "123 main street", language: .french, onSuccess: { candidates in
+	print("Found \(candidates.count) candidates for this search")
+}) { err in
+	print(err)
+}
+```
 <a name="issues"/>
 
 ### Issues & Contributions
@@ -371,7 +387,7 @@ Current supported version of SwiftLocation require:
 1.	Add the pod `SwiftLocation` to your [Podfile](http://guides.cocoapods.org/using/the-podfile.html).
 
 ```ruby
-pod 'SwiftLocation', '~> 3.1.0'
+pod 'SwiftLocation', '~> 3.2.0'
 ```
 Run `pod install` from Terminal, then open your app's `.xcworkspace` file to launch Xcode.
 
@@ -381,7 +397,10 @@ Run `pod install` from Terminal, then open your app's `.xcworkspace` file to lau
 
 ```ogdl
 github "malcommac/SwiftLocation"
+github "SwiftyJSON/SwiftyJSON"
 ```
+
+You need to add SwiftyJSON as dependency because Carthage currently does not support this feature in Cartfile (see [this issue](https://github.com/Carthage/Carthage/issues/1937) on GitHub's project page)
 
 1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
 1. Import the SwiftLocation framework/module via `import SwiftLocation`
