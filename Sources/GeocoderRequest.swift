@@ -209,32 +209,31 @@ public final class Geocoder_Apple: GeocoderRequest {
 	
 		let geocoder = CLGeocoder()
 		self.task = geocoder
+
+        let geocodeCompletionHandler: CoreLocation.CLGeocodeCompletionHandler = { [weak self] (placemarks, error) in
+            guard let this = self else { return }
+
+            this.isFinished = true
+
+            if let err = error {
+                this.failure?(LocationError.other(err.localizedDescription))
+                return
+            }
+
+            this.success?(Place.load(placemarks: placemarks ?? []))
+        }
+
 		switch self.operation {
 		case .getLocation(let address, let region):
-			geocoder.geocodeAddressString(address, in: region, completionHandler: { (placemarks, error) in
-				self.isFinished = true
-			})
+			geocoder.geocodeAddressString(address, in: region, completionHandler: geocodeCompletionHandler)
 		case .getPlace(let coordinates, let locale):
 			let loc = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+
 			if #available(iOS 11, *) {
-				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: { (placemarks, error) in
-					self.isFinished = true
-					if let err = error {
-						self.failure?(LocationError.other(err.localizedDescription))
-						return
-					}
-					self.success?(Place.load(placemarks: placemarks ?? []))
-				})
+				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: geocodeCompletionHandler)
 			} else {
 				// Fallback on earlier versions
-				geocoder.reverseGeocodeLocation(loc, completionHandler: { (placemarks, error) in
-					self.isFinished = true
-					if let err = error {
-						self.failure?(LocationError.other(err.localizedDescription))
-						return
-					}
-					self.success?(Place.load(placemarks: placemarks ?? []))
-				})
+				geocoder.reverseGeocodeLocation(loc, completionHandler: geocodeCompletionHandler)
 			}
 		}
 	}
