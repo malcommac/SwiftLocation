@@ -185,9 +185,9 @@ The block will execute indefinitely (even across errors, until canceled), once f
 Example:
 
 ```swift
-Locator.subscribePosition(accuracy: .city).onSuccess { loc in
+Locator.subscribePosition(accuracy: .city).onUpdate { loc in
 	print("New location received: \(loc)")
-}.onFailure { err, last in
+}.onFail { err, last in
 	print("Failed with error: \(err)")
 }
 ```
