@@ -98,7 +98,7 @@ Locator.requestAuthorizationIfNeeded(.always)
 ```
 
 #### iOS 11+
-Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` in your app's Info.plist file.
+Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription`  as well as a key for `NSLocationWhenInUseUsageDescription` in your app's Info.plist file.
 
 <a name="observe_authorizations"/>
 
@@ -344,7 +344,16 @@ Locator.autocompletePlaces(with: "123 main street", onSuccess: { candidates in
 	print(err)
 }
 ```
+You can specify the language in which the Google Places APIs should return the results by passing a `language` argument.
 
+Example:
+```swift
+Locator.autocompletePlaces(with: "123 main street", language: .french, onSuccess: { candidates in
+	print("Found \(candidates.count) candidates for this search")
+}) { err in
+	print(err)
+}
+```
 <a name="issues"/>
 
 ### Issues & Contributions

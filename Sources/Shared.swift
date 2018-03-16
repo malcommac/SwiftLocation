@@ -243,16 +243,16 @@ public extension CLLocationManager {
 			}
 		} else {
 			// In iOS11 stuff are changed again
-			let hasAlwaysAndInUseKey = hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+            let hasAlwaysAndWhenInUse = hasPlistValue(forKey:"NSLocationAlwaysAndWhenInUseUsageDescription")
             let hasWhenInUse = hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
-			if hasAlwaysAndInUseKey {
+			if hasAlwaysAndWhenInUse && hasWhenInUse {
 				return .always
             } else if hasWhenInUse {
                 return .whenInUse
-            } else {
-                // At least one of the keys NSLocationAlwaysAndWhenInUseUsageDescription or NSLocationWhenInUseUsageDescription MUST
-                // be present in the Info.plist file to use location services on iOS 11+.
-                fatalError("To use location services in iOS 11+, your Info.plist must provide a value for either NSLocationWhenInUseUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription.")
+			} else {
+				// Key NSLocationWhenInUseUsageDescription MUST be present in the Info.plist file to use location services on iOS 11
+                // For Always access NSLocationAlwaysAndWhenInUseUsageDescription must also be present.
+				fatalError("To use location services in iOS 11+, your Info.plist must provide a value for NSLocationAlwaysUsageDescription and if requesting always access you must provide a value for  NSLocationAlwaysAndWhenInUseUsageDescription as well.")
 			}
 		}
 	}
@@ -271,7 +271,8 @@ public extension CLLocationManager {
 						hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription"))
 				
 			}
-			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
+			return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription") &&
+                   hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		case .whenInUse:
 			return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		}
