@@ -44,7 +44,7 @@ public enum IPService {
 	internal var url: URL {
 		var url: String = ""
 		switch self {
-		case .freeGeoIP:	url = "http://freegeoip.net/json/"
+		case .freeGeoIP:	url = "https://freegeoip.net/json/"
 		case .petabyet:		url = "http://api.petabyet.com/geoip/"
 		case .smartIP:		url = "http://smart-ip.net/geoip-json/"
 		case .ipApi:		url = "http://ip-api.com/json"
