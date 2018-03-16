@@ -67,18 +67,22 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 			if let lat = json[latKey].double, let lng = json[lngKey].double {
 				let loc = CLLocation(latitude: lat, longitude: lng)
 				self.success?(loc)
+				Locator.ipLocationRequests.remove(self)
 				return
 			}
 			self.failure?(LocationError.failedToObtainData, nil)
+			Locator.ipLocationRequests.remove(self)
 		}
 		self.task?.onFailure = { err in
 			self.failure?(err,nil)
+			Locator.ipLocationRequests.remove(self)
 		}
 		self.task?.execute()
 	}
 	
 	public func cancel() {
 		self.task?.cancel()
+		Locator.ipLocationRequests.remove(self)
 	}
 	
 }

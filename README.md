@@ -107,9 +107,13 @@ Starting with iOS 11, you must provide a description for how your app uses locat
 You can also observe for changes in authorization status by subscribing auth changes events:
 
 ```swift
-Locator.events.listen { newStatus in
+let token = Locator.events.listen { newStatus in
 	print("Authorization status changed to \(newStatus)")
 }
+// In a second time you may decide to remove it
+Locator.events.remove(token)
+// Or remove all listeners
+Locator.events.removeAll()
 ```
 
 
@@ -390,7 +394,10 @@ Run `pod install` from Terminal, then open your app's `.xcworkspace` file to lau
 
 ```ogdl
 github "malcommac/SwiftLocation"
+github "SwiftyJSON/SwiftyJSON"
 ```
+
+You need to add SwiftyJSON as dependency because Carthage currently does not support this feature in Cartfile (see [this issue](https://github.com/Carthage/Carthage/issues/1937) on GitHub's project page)
 
 1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
 1. Import the SwiftLocation framework/module via `import SwiftLocation`
