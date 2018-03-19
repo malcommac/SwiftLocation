@@ -51,7 +51,7 @@ Take a look below:
 
 
 ### Current Version
-Latest version of SwiftLocation is: 3.2.0 for Swift 4.
+Latest version of SwiftLocation is: 3.2.1 for Swift 4+.
 
 ### Changelog
 Changelog is available on [CHANGELOG.md](CHANGELOG.md) file.
@@ -387,7 +387,7 @@ Current supported version of SwiftLocation require:
 1.	Add the pod `SwiftLocation` to your [Podfile](http://guides.cocoapods.org/using/the-podfile.html).
 
 ```ruby
-pod 'SwiftLocation', '~> 3.2.0'
+pod 'SwiftLocation', '~> 3.2.1'
 ```
 Run `pod install` from Terminal, then open your app's `.xcworkspace` file to launch Xcode.
 
