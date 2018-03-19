@@ -133,13 +133,13 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 		place.coordinates = CLLocationCoordinate2DMake(json["lat"].doubleValue, json["lon"].doubleValue)
 		place.countryCode = json["address"]["country_code"].string
 		place.country = json["address"]["country"].string
-		place.state = json["address"]["state"].string
-		place.county = json["address"]["county"].string
-		place.postcode = json["address"]["postcode"].string
+		place.administrativeArea = json["address"]["state"].string
+		place.subAdministrativeArea = json["address"]["county"].string
+		place.postalCode = json["address"]["postcode"].string
 		place.city = json["address"]["city"].string
-		place.cityDistrict = json["address"]["city_district"].string
-		place.road = json["address"]["road"].string
-		place.houseNumber = json["address"]["house_number"].string
+		place.locality = json["address"]["city_district"].string
+		place.thoroughfare = json["address"]["road"].string
+		place.subThoroughfare = json["address"]["house_number"].string
 		place.name = json["display_name"].string
 		place.rawDictionary = json.dictionaryObject
 		return place
