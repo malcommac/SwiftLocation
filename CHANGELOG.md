@@ -1,5 +1,11 @@
 ### CHANGELOG
 
+#### Version 3.2.1 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.1.0)
+
+Released on: March 19, 2018
+
+* [#192](https://github.com/malcommac/SwiftLocation/issues/192) Fixes for Place parser from Apple services. Unified shared properties terminology between services. The following properties of `Place` are now deprecated: `state` (use `administrativeArea`),`county` and `cityDistrict` (use `subAdministrativeArea`), `neighborhood` (use `locality`),`postcode` (use `postalCode`), `road` (use `thoroughfare`), `houseNumber` (use `subThoroughfare`)
+
 #### Version 3.2.0 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.1.0) 
 
 Released on: March 16, 2018
