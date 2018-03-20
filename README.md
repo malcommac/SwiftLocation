@@ -97,10 +97,21 @@ In this case you need to call `Locator.requestAuthorizationIfNeeded` by passing 
 Example:
 
 ```swift
+// Manually request given authorization
 Locator.requestAuthorizationIfNeeded(.always)
 ```
 
+You can also omit the authorization mode.
+In this case SwiftLocation determines which level of permissions to request based on which description key is present in your app's `Info.plist` (If you provide values for both description keys, the more permissive `Always` level is requested.).
+If you need to set the authorization manually be sure to call this function before adding any request.
+
+```swift
+// determine the best authorization mode based upon Info.plist file
+Locator.requestAuthorizationIfNeeded()
+```
+
 #### iOS 11+
+
 Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription`  as well as a key for `NSLocationWhenInUseUsageDescription` in your app's Info.plist file.
 
 <a name="observe_authorizations"/>
@@ -167,7 +178,7 @@ Location is retrived in one shot mode.
 
 Currently four different services are supported:
 
-* `freeGeoIP`: Free GeoIP service [http://freegeoip.net](http://freegeoip.net)
+* `freeGeoIP`: Free GeoIP service [https://freegeoip.net](https://freegeoip.net)
 * `petabyet`: Petabyet service [http://api.petabyet.com/](http://api.petabyet.com/)
 * `smartIP`: SmartIP service [http://smart-ip.net](http://smart-ip.net)
 * `ipApi`: IPApi service [http://ip-api.com](http://ip-api.com)
@@ -176,7 +187,7 @@ Example:
 
 ```swift
 Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
-	print("Find location \(loc)")
+	print("Found location: \(loc)")
 }) { err, _ in
 	print("\(err)")
 }
