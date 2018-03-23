@@ -42,19 +42,19 @@ internal class SafeList<Value: Equatable> {
 	/// Items
 	private var _list: Array<Value> = []
 	
-	/// Lock
-	private var mutex: Mutex = Mutex()
+	/// Serial DispatchQueue
+	private var dispatchQueue: DispatchQueue = DispatchQueue(label: "SwiftLocation.SafeList.DispatchQueue")
 	
 	/// Safe items
 	public var list: [Value] {
-		get { return self.mutex.sync(execute: { _list }) }
+		get { return self.dispatchQueue.sync { self._list } }
 	}
 	
 	/// Append new item
 	///
 	/// - Parameter item: append new item
 	public func add(_ item: Value) {
-		self.mutex.sync { _list.append(item) }
+		self.dispatchQueue.async { self._list.append(item) }
 	}
 	
 	/// Remove existing item
@@ -63,7 +63,7 @@ internal class SafeList<Value: Equatable> {
 	/// - Returns: `true` if exist and it was removed, `false` otherwise
 	@discardableResult
 	public func remove(_ item: Value) -> Bool {
-		return self.mutex.sync {
+		return self.dispatchQueue.sync {
 			guard let idx = self._list.index(of: item) else { return false }
 			self._list.remove(at: idx)
 			return true
@@ -75,7 +75,7 @@ internal class SafeList<Value: Equatable> {
 	/// - Parameter item: item
 	/// - Returns: valid `Int` if item is in the list, `nil` if does not exists.
 	public func index(of item: Value) -> Int? {
-		return self.mutex.sync {
+		return self.dispatchQueue.sync {
 			guard let idx = self._list.index(of: item) else { return nil }
 			return idx
 		}
@@ -83,7 +83,7 @@ internal class SafeList<Value: Equatable> {
 	
 	/// Number of items
 	public var count: Int {
-		return self.mutex.sync(execute: { _list.count })
+		return self.dispatchQueue.sync { self._list.count }
 	}
 }
 
