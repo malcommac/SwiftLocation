@@ -1,6 +1,11 @@
 ### CHANGELOG
 
-#### Version 3.2.1 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.1.0)
+#### Version 3.2.2 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.2.2)
+
+- [#202](https://github.com/malcommac/SwiftLocation/issues/202)  - Fix a deadlock while calling events (found on 32 bit machines)
+
+
+#### Version 3.2.1 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.2.1)
 
 Released on: March 19, 2018
 
