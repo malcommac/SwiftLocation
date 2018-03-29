@@ -609,7 +609,9 @@ public class JSONOperation {
 	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
 	public init(_ url: URL, timeout: TimeInterval? = nil) {
 		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
-		self.task = URLSession.shared.dataTask(with: request, completionHandler: self.onReceiveResponse)
+        self.task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
+            self?.onReceiveResponse(data, response, error)
+        })
 	}
 	
 	/// Response parser
