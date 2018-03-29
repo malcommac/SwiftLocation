@@ -71,10 +71,12 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
         let lang = language?.rawValue ?? "en"
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(lang)&key=\(APIKey)")!
 		self.task = JSONOperation(url, timeout: self.timeout)
-		self.task?.onFailure = { err in
+		self.task?.onFailure = { [weak self] err in
+            guard let `self` = self else { return }
 			self.failure?(err)
 		}
-		self.task?.onSuccess = { json in
+		self.task?.onSuccess = { [weak self] json in
+            guard let `self` = self else { return }
 			if json["status"].stringValue != "OK" {
 				self.failure?(LocationError.other("Wrong google response"))
 				return
@@ -249,7 +251,8 @@ public class PlaceMatch {
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
 		let task = JSONOperation(url, timeout: timeout ?? 10)
-		task.onSuccess = { json in
+		task.onSuccess = { [weak self] json in
+            guard let `self` = self else { return }
 			self.detail = Place(googleJSON: json["result"])
 			onSuccess(self.detail!)
 		}

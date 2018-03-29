@@ -1,5 +1,11 @@
 ### CHANGELOG
 
+#### Version 3.2.3 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.2.3)
+
+- [#204](https://github.com/malcommac/SwiftLocation/issues/204)  - Fixed memory leaks into task closures
+- [#203](https://github.com/malcommac/SwiftLocation/issues/203)  - `GeocoderRequest` `cancel()` function is now accessible
+
+
 #### Version 3.2.2 - [Download](https://github.com/malcommac/SwiftLocation/releases/tag/3.2.2)
 
 - [#202](https://github.com/malcommac/SwiftLocation/issues/202)  - Fix a deadlock while calling events (found on 32 bit machines)
