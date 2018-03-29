@@ -185,12 +185,12 @@ public class GeocoderRequest: Equatable {
 	}
 	
 	/// Execute operation
-	func execute() {
+	public func execute() {
 		// nop
 	}
 	
 	/// Cancel current execution (if any)
-	func cancel() {
+	public func cancel() {
 		self.isFinished = true
 	}
 	
