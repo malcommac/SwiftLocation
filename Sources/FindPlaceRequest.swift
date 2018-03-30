@@ -206,6 +206,9 @@ public enum FindPlaceRequest_Google_Language: String {
 
 /// Identify a single match entry for a place search
 public class PlaceMatch {
+
+    /// session task
+    private var task: JSONOperation? = nil
 	
 	/// Identifier of the place
 	public internal(set) var placeID: String
@@ -250,16 +253,16 @@ public class PlaceMatch {
 			return
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
-		let task = JSONOperation(url, timeout: timeout ?? 10)
-		task.onSuccess = { [weak self] json in
+        self.task = JSONOperation(url, timeout: timeout ?? 10)
+		self.task?.onSuccess = { [weak self] json in
             guard let `self` = self else { return }
 			self.detail = Place(googleJSON: json["result"])
 			onSuccess(self.detail!)
 		}
-		task.onFailure = { err in
+		self.task?.onFailure = { err in
 			onFail?(err)
 		}
-		task.execute()
+		self.task?.execute()
 	}
 
 }
