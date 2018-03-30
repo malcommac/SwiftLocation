@@ -54,7 +54,8 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 	/// Execute the operation
 	internal func execute() {
 		self.task = JSONOperation(self.service.url, timeout: self.timeout)
-		self.task?.onSuccess = { json in
+		self.task?.onSuccess = { [weak self] json in
+            guard let `self` = self else { return }
 			var latKey = "latitude"
 			var lngKey = "longitude"
 			switch self.service {
@@ -67,18 +68,23 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 			if let lat = json[latKey].double, let lng = json[lngKey].double {
 				let loc = CLLocation(latitude: lat, longitude: lng)
 				self.success?(loc)
+				Locator.ipLocationRequests.remove(self)
 				return
 			}
 			self.failure?(LocationError.failedToObtainData, nil)
+			Locator.ipLocationRequests.remove(self)
 		}
-		self.task?.onFailure = { err in
+		self.task?.onFailure = { [weak self] err in
+            guard let `self` = self else { return }
 			self.failure?(err,nil)
+			Locator.ipLocationRequests.remove(self)
 		}
 		self.task?.execute()
 	}
 	
 	public func cancel() {
 		self.task?.cancel()
+		Locator.ipLocationRequests.remove(self)
 	}
 	
 }

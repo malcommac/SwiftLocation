@@ -51,7 +51,10 @@ Take a look below:
 
 
 ### Current Version
-Latest version of SwiftLocation is: 3.1.0 for Swift 4.
+Latest version of SwiftLocation is: 3.2.3 for Swift 4+.
+
+### Changelog
+Changelog is available on [CHANGELOG.md](CHANGELOG.md) file.
 
 ### Documentation
 
@@ -94,10 +97,21 @@ In this case you need to call `Locator.requestAuthorizationIfNeeded` by passing 
 Example:
 
 ```swift
+// Manually request given authorization
 Locator.requestAuthorizationIfNeeded(.always)
 ```
 
+You can also omit the authorization mode.
+In this case SwiftLocation determines which level of permissions to request based on which description key is present in your app's `Info.plist` (If you provide values for both description keys, the more permissive `Always` level is requested.).
+If you need to set the authorization manually be sure to call this function before adding any request.
+
+```swift
+// determine the best authorization mode based upon Info.plist file
+Locator.requestAuthorizationIfNeeded()
+```
+
 #### iOS 11+
+
 Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription`  as well as a key for `NSLocationWhenInUseUsageDescription` in your app's Info.plist file.
 
 <a name="observe_authorizations"/>
@@ -107,9 +121,13 @@ Starting with iOS 11, you must provide a description for how your app uses locat
 You can also observe for changes in authorization status by subscribing auth changes events:
 
 ```swift
-Locator.events.listen { newStatus in
+let token = Locator.events.listen { newStatus in
 	print("Authorization status changed to \(newStatus)")
 }
+// In a second time you may decide to remove it
+Locator.events.remove(token)
+// Or remove all listeners
+Locator.events.removeAll()
 ```
 
 
@@ -160,7 +178,7 @@ Location is retrived in one shot mode.
 
 Currently four different services are supported:
 
-* `freeGeoIP`: Free GeoIP service [http://freegeoip.net](http://freegeoip.net)
+* `freeGeoIP`: Free GeoIP service [https://freegeoip.net](https://freegeoip.net)
 * `petabyet`: Petabyet service [http://api.petabyet.com/](http://api.petabyet.com/)
 * `smartIP`: SmartIP service [http://smart-ip.net](http://smart-ip.net)
 * `ipApi`: IPApi service [http://ip-api.com](http://ip-api.com)
@@ -169,7 +187,7 @@ Example:
 
 ```swift
 Locator.currentPosition(usingIP: .smartIP, onSuccess: { loc in
-	print("Find location \(loc)")
+	print("Found location: \(loc)")
 }) { err, _ in
 	print("\(err)")
 }
@@ -380,7 +398,7 @@ Current supported version of SwiftLocation require:
 1.	Add the pod `SwiftLocation` to your [Podfile](http://guides.cocoapods.org/using/the-podfile.html).
 
 ```ruby
-pod 'SwiftLocation', '~> 3.1.0'
+pod 'SwiftLocation', '~> 3.2.3'
 ```
 Run `pod install` from Terminal, then open your app's `.xcworkspace` file to launch Xcode.
 
@@ -390,7 +408,10 @@ Run `pod install` from Terminal, then open your app's `.xcworkspace` file to lau
 
 ```ogdl
 github "malcommac/SwiftLocation"
+github "SwiftyJSON/SwiftyJSON"
 ```
+
+You need to add SwiftyJSON as dependency because Carthage currently does not support this feature in Cartfile (see [this issue](https://github.com/Carthage/Carthage/issues/1937) on GitHub's project page)
 
 1. Run `carthage update`, then follow the [additional steps required](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) to add the iOS and/or Mac frameworks into your project.
 1. Import the SwiftLocation framework/module via `import SwiftLocation`

@@ -35,6 +35,59 @@ import CoreLocation
 import MapKit
 import SwiftyJSON
 
+/// Thread-safe list
+/// All functions and proprierties are thread-safe.
+internal class SafeList<Value: Equatable> {
+	
+	/// Items
+	private var _list: Array<Value> = []
+	
+	/// Serial DispatchQueue
+	private var dispatchQueue: DispatchQueue = DispatchQueue(label: "SwiftLocation.SafeList.DispatchQueue")
+	
+	/// Safe items
+	public var list: [Value] {
+		get { return self.dispatchQueue.sync { self._list } }
+	}
+	
+	/// Append new item
+	///
+	/// - Parameter item: append new item
+	public func add(_ item: Value) {
+		self.dispatchQueue.async { self._list.append(item) }
+	}
+	
+	/// Remove existing item
+	///
+	/// - Parameter item: item to remove
+	/// - Returns: `true` if exist and it was removed, `false` otherwise
+	@discardableResult
+	public func remove(_ item: Value) -> Bool {
+		return self.dispatchQueue.sync {
+			guard let idx = self._list.index(of: item) else { return false }
+			self._list.remove(at: idx)
+			return true
+		}
+	}
+	
+	/// Index of item.
+	///
+	/// - Parameter item: item
+	/// - Returns: valid `Int` if item is in the list, `nil` if does not exists.
+	public func index(of item: Value) -> Int? {
+		return self.dispatchQueue.sync {
+			guard let idx = self._list.index(of: item) else { return nil }
+			return idx
+		}
+	}
+	
+	/// Number of items
+	public var count: Int {
+		return self.dispatchQueue.sync { self._list.count }
+	}
+}
+
+/// IP Service
 public enum IPService {
 	case freeGeoIP
 	case petabyet
@@ -96,27 +149,54 @@ public typealias GeocoderRequest_Success = (([Place]) -> (Void))
 public typealias GeocoderRequest_Failure = ((LocationError) -> (Void))
 
 /// Protocol for geocoder request instance
-public protocol GeocoderRequest {
+public class GeocoderRequest: Equatable {
+	
+	/// Identifier of the operation
+	public let identifier: String
 	
 	/// Success handler
-	var success: GeocoderRequest_Success? { get set }
+	public var success: GeocoderRequest_Success?
 	
 	/// Failure handler
-	var failure: GeocoderRequest_Failure? { get set }
+	public var failure: GeocoderRequest_Failure?
 
+	/// Timeout interval
+	public var timeout: TimeInterval?
+	
+	/// Operation of the request
+	public let operation: GeocoderOperation
+	
+	/// Called when operation is finished
+	internal var isFinished: Bool = false {
+		didSet {
+			if isFinished == true {
+				Locator.geocoderRequests.remove(self)
+			}
+		}
+	}
+	
 	/// Initialization of the geocoder request
 	///
 	/// - Parameter operation: operation to perform
-	init(operation: GeocoderOperation, timeout: TimeInterval)
-
-	/// Timeout interval
-	var timeout: TimeInterval? { get set }
+	init(operation: GeocoderOperation, timeout: TimeInterval) {
+		self.identifier = UUID().uuidString
+		self.operation = operation
+		self.timeout = timeout
+	}
 	
 	/// Execute operation
-	func execute()
+	public func execute() {
+		// nop
+	}
 	
 	/// Cancel current execution (if any)
-	func cancel()
+	public func cancel() {
+		self.isFinished = true
+	}
+	
+	public static func ==(lhs: GeocoderRequest, rhs: GeocoderRequest) -> Bool {
+		return (lhs.identifier == rhs.identifier)
+	}
 }
 
 /// Identifier type of the request
@@ -529,7 +609,9 @@ public class JSONOperation {
 	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
 	public init(_ url: URL, timeout: TimeInterval? = nil) {
 		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
-		self.task = URLSession.shared.dataTask(with: request, completionHandler: self.onReceiveResponse)
+        self.task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
+            self?.onReceiveResponse(data, response, error)
+        })
 	}
 	
 	/// Response parser
@@ -567,24 +649,117 @@ public class JSONOperation {
 	
 }
 
+/// This is a generic object used to represent a Place; its shared along all geocoding services as common base.
 public class Place: CustomStringConvertible {
+	
+	/// A user-friendly description of a geographic coordinate, often containing the name of the place,
+	/// its address, and other relevant information.
+	/// This is returned only from reverse geocoding using Apple's service, otherwise it will be `nil`.
 	public internal(set) var placemark: CLPlacemark?
+	
+	/// Coordinates of the place
 	public internal(set) var coordinates: CLLocationCoordinate2D?
+	
+	/// This string is the standard abbreviation used to refer to the country.
+	/// For example, if the placemark location is Apple’s headquarters,
+	/// the value for this property would be the string “US”.
 	public internal(set) var countryCode: String?
+	
+	/// If the placemark location is Apple’s headquarters, for example,
+	/// the value for this property would be the string “United States”.
 	public internal(set) var country: String?
-	public internal(set) var state: String?
-	public internal(set) var county: String?
-	public internal(set) var postcode: String?
+	
+	
+	@available(*, deprecated: 3.2.1, message: "Use administrativeArea property instead")
+	public var state: String? {
+		return self.administrativeArea
+	}
+	
+	/// The string in this property can be either the spelled out name of the administrative
+	/// area or its designated abbreviation, if one exists.
+	/// If the placemark location is Apple’s headquarters, for example,
+	/// the value for this property would be the string “CA” or “California”.
+	public internal(set) var administrativeArea: String?
+	
+	@available(*, deprecated: 3.2.1, message: "Use subAdministrativeArea property instead")
+	public var county: String? {
+		return self.subAdministrativeArea
+	}
+	
+	/// Subadministrative areas typically correspond to counties or other regions that
+	/// are then organized into a larger administrative area or state.
+	/// For example, if the placemark location is Apple’s headquarters,
+	/// the value for this property would be the string “Santa Clara”,
+	/// which is the county in California that contains the city of Cupertino.
+	public internal(set) var subAdministrativeArea: String?
+
+	@available(*, deprecated: 3.2.1, message: "Use locality property instead")
+	public var neighborhood: String? {
+		return self.locality
+	}
+	
+	/// If the placemark location is Apple’s headquarters, for example,
+	/// the value for this property would be the string “Cupertino”.
+	public internal(set) var locality: String?
+
+	/// This property contains additional information, such as the name of the neighborhood
+	/// or landmark associated with the placemark. It might also refer to a common name
+	/// that is associated with the location.
+	public internal(set) var subLocality: String?
+	
+	@available(*, deprecated: 3.2.1, message: "Use postalCode property instead")
+	public var postcode: String? {
+		return self.postalCode
+	}
+	
+	/// If the placemark location is Apple’s headquarters, for example, the value for this property would be the string “95014”.
+	public internal(set) var postalCode: String?
+
+	/// City
 	public internal(set) var city: String?
-	public internal(set) var cityDistrict: String?
-	public internal(set) var road: String?
-	public internal(set) var houseNumber: String?
+	
+	@available(*, deprecated: 3.2.1, message: "Use subAdministrativeArea property instead")
+	public var cityDistrict: String? {
+		return self.subAdministrativeArea
+	}
+	
+	@available(*, deprecated: 3.2.1, message: "Use thoroughfare property instead")
+	public var road: String? {
+		return self.thoroughfare
+	}
+	
+	/// The street address contains the street name.
+	/// For example, if the placemark location is Apple’s headquarters,
+	/// the value for this property would be the string “Infinite Loop”.
+	public internal(set) var thoroughfare: String?
+
+	@available(*, deprecated: 3.2.1, message: "Use subThoroughfare property instead")
+	public var houseNumber: String? {
+		return self.subThoroughfare
+	}
+	
+	/// Subthroughfares provide information such as the street number for the location.
+	/// For example, if the placemark location is Apple’s headquarters (1 Infinite Loop),
+	/// the value for this property would be the string “1”.
+	public internal(set) var subThoroughfare: String?
+
+	/// The name of the placemark.
 	public internal(set) var name: String?
+	
+	/// The relevant areas of interest associated with the placemark.
 	public internal(set) var POI: String?
+	
+	/// Full address string
+	public internal(set) var formattedAddress: String?
+	
+	/// Raw dictionary created from service
 	public internal(set) var rawDictionary: [String:Any]?
 	
 	internal init() { }
 	
+	/// Initialize with Google raw service data
+	///
+	/// - Parameter json: input json
 	internal init(googleJSON json: JSON) {
 		func ab(forType type: String) -> JSON? {
 			return json["address_components"].arrayValue.first(where: { data in
@@ -597,36 +772,52 @@ public class Place: CustomStringConvertible {
 		if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
 			self.coordinates = CLLocationCoordinate2DMake(lat, lon)
 		}
-		self.name = ab(forType: "establishment")?["short_name"].string
+		self.name = ab(forType: "establishment")?["long_name"].string
 		if let countryData = ab(forType: "country") {
 			self.countryCode = countryData["short_name"].string
 			self.country = countryData["long_name"].string
 		}
-		self.postcode = ab(forType: "postal_code")?["short_name"].string
-		self.state = ab(forType: "administrative_area_level_1")?["short_name"].string
-		self.city = ab(forType: "locality")?["short_name"].string
-		self.cityDistrict = ab(forType: "administrative_area_level_2")?["short_name"].string
-		self.road = ab(forType: "route")?["short_name"].string
-		if self.road == nil {
-			self.road = ab(forType: "neighborhood")?["short_name"].string
+		self.postalCode = ab(forType: "postal_code")?["long_name"].string
+		self.administrativeArea = ab(forType: "administrative_area_level_1")?["long_name"].string
+		self.subAdministrativeArea = ab(forType: "administrative_area_level_2")?["long_name"].string
+		self.city = ab(forType: "locality")?["long_name"].string
+		self.formattedAddress = json["formatted_address"].string
+		
+		self.locality = ab(forType: "neighborhood")?["long_name"].string ?? ab(forType: "sublocality_level_1")?["long_name"].string
+		self.subLocality = ab(forType: "sublocality_level_2")?["long_name"].string
+		self.thoroughfare = ab(forType: "route")?["long_name"].string
+		if self.thoroughfare == nil {
+			self.thoroughfare = ab(forType: "neighborhood")?["short_name"].string
 		}
-		self.houseNumber = ab(forType: "street_number")?["short_name"].string
-		self.POI = ab(forType: "point_of_interest")?["short_name"].string
+		self.subThoroughfare = ab(forType: "street_number")?["long_name"].string
+		
+		self.POI = ab(forType: "point_of_interest")?["long_name"].string
 		self.rawDictionary = json.dictionaryObject
 	}
 	
+	
+	/// Initialize from Apple's raw service data
+	///
+	/// - Parameter placemark: data
 	internal init?(placemark: CLPlacemark?) {
 		guard let p = placemark else { return nil }
 		self.placemark = p
 		
 		self.name = p.name
 		self.coordinates = p.location?.coordinate
+		self.rawDictionary = p.addressDictionary as? [String: Any]
+
 		self.countryCode = p.isoCountryCode
 		self.country = p.country
-		self.postcode = p.postalCode
-		self.cityDistrict = p.administrativeArea
-		self.road = p.thoroughfare
-		self.houseNumber = p.subAdministrativeArea
+		
+		self.administrativeArea = p.administrativeArea
+		self.subAdministrativeArea = p.subAdministrativeArea
+		self.locality = p.locality
+		self.subLocality = p.subLocality
+
+		self.postalCode = p.postalCode
+		self.thoroughfare = p.thoroughfare
+		self.subAdministrativeArea = p.subThoroughfare
 		
 		if #available(iOS 11.0, *) {
 			if let address = p.postalAddress {
@@ -652,4 +843,3 @@ internal extension String {
 		return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 	}
 }
-

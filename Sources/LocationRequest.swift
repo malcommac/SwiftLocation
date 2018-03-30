@@ -93,7 +93,8 @@ public class LocationRequest: Request, Equatable, Hashable {
 	internal init(mode: Mode, accuracy: Accuracy, timeout: Timeout?) {
 		self.mode = mode
 		self.accuracy = accuracy
-		self.timeout = TimeoutManager(timeout, callback: {
+		self.timeout = TimeoutManager(timeout, callback: { [weak self] in
+            guard let `self` = self else { return }
 			Locator.locationRequestDidTimedOut(self)
 		})
 	}
@@ -103,7 +104,8 @@ public class LocationRequest: Request, Equatable, Hashable {
 	/// - Parameter timeout: timeout, `nil` to ignore timeout (manual stop is required)
 	/// - Returns: self
 	public func timeout(_ timeout: Timeout?) -> Self {
-		self.timeout = TimeoutManager(timeout, callback: {
+		self.timeout = TimeoutManager(timeout, callback: { [weak self] in
+            guard let `self` = self else { return }
 			Locator.locationRequestDidTimedOut(self)
 		})
 		return self
