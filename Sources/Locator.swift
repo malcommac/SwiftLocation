@@ -67,11 +67,10 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		/// - Parameter callback: callback to call
 		/// - Returns: token used to remove the listener in a second time.
 		public func listen(forAuthChanges callback: @escaping AuthorizationDidChangeEvent) -> Token {
-			var (next,overflow) = self.nextTokenID.addingReportingOverflow(1)
-			if overflow {
-				next = 0
-			}
-			self.callbacks[next] = callback
+            let isNotOverflowed = nextTokenID < Int.max
+            let next = isNotOverflowed ? nextTokenID + 1 : 0
+			callbacks[next] = callback
+            nextTokenID = next
 			return next
 		}
 		
