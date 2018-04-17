@@ -829,7 +829,7 @@ public class Place: CustomStringConvertible {
 	}
 	
 	internal static func load(placemarks: [CLPlacemark]) -> [Place] {
-		return placemarks.flatMap { Place(placemark: $0) }
+        return placemarks.compactMap { Place(placemark: $0) }
 	}
 	
 	public var description: String {
