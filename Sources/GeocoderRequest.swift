@@ -186,7 +186,7 @@ public final class Geocoder_Apple: GeocoderRequest {
 		case .getPlace(let coordinates, let locale):
 			let loc = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
 
-			if #available(iOS 11, *) {
+            if #available(iOS 11, watchOSApplicationExtension 4.0, *) {
 				geocoder.reverseGeocodeLocation(loc, preferredLocale: locale, completionHandler: geocodeCompletionHandler)
 			} else {
 				// Fallback on earlier versions

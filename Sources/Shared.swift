@@ -291,6 +291,7 @@ public class TimeoutManager {
 public extension CLLocationManager {
 	
 	/// Returns the current state of heading services for this device.
+    @available(watchOS, unavailable)
 	public var headingState: HeadingServiceState {
 		return (CLLocationManager.headingAvailable() ? .available : .unavailable)
 	}
@@ -305,8 +306,11 @@ public extension CLLocationManager {
 	
 	/// Return the highest authorization level based upon the value added info applications'
 	/// Info.plist file.
+    #if os(iOS)
 	public static var authorizationLevelFromInfoPlist: AuthorizationLevel {
-		let osVersion = (UIDevice.current.systemVersion as NSString).floatValue
+        var osVersion: Float
+
+        osVersion = (UIDevice.current.systemVersion as NSString).floatValue
 
 		if osVersion < 11 {
 			let hasAlwaysKey = 	hasPlistValue(forKey: "NSLocationAlwaysUsageDescription") &&
@@ -336,12 +340,14 @@ public extension CLLocationManager {
 			}
 		}
 	}
+    #endif
 	
 	
 	/// Check if application's Info.plist key has valid values for privacy settings for the required authorization level
 	///
 	/// - Parameter level: level you want to set
 	/// - Returns: `true` if valid
+    #if os(iOS)
 	public static func validateInfoPlistRequiredKeys(forLevel level: AuthorizationLevel) -> Bool {
 		let osVersion = (UIDevice.current.systemVersion as NSString).floatValue
 		switch level {
@@ -357,16 +363,18 @@ public extension CLLocationManager {
 			return hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
 		}
 	}
-	
+	#endif
 	
 	/// Validate and request authorization level
 	///
 	/// - Parameter level: level to require
 	public func requestAuthorization(level: AuthorizationLevel) {
 		// Validate the level you want to set before doing a request
+        #if os(iOS)
 		if CLLocationManager.validateInfoPlistRequiredKeys(forLevel: level) == false {
 			fatalError("Missing Info.plist entries for required authorization level")
 		}
+        #endif
 		switch level {
 		case .always:
 			self.requestAlwaysAuthorization()
@@ -819,7 +827,7 @@ public class Place: CustomStringConvertible {
 		self.thoroughfare = p.thoroughfare
 		self.subAdministrativeArea = p.subThoroughfare
 		
-		if #available(iOS 11.0, *) {
+		if #available(iOS 11.0, watchOSApplicationExtension 4.0, *) {
 			if let address = p.postalAddress {
 				self.city = address.city
 			}
