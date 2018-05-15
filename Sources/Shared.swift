@@ -600,7 +600,13 @@ public enum HeadingServiceState {
 
 /// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
 public class JSONOperation {
-	
+
+    // The session configuration
+    static var sessionConfiguration: URLSessionConfiguration = .default
+
+    // The session executing the task
+    private var session: URLSession
+
 	/// Task of the operation
 	private var task: URLSessionDataTask?
 	
@@ -617,7 +623,8 @@ public class JSONOperation {
 	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
 	public init(_ url: URL, timeout: TimeInterval? = nil) {
 		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
-        self.task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
+        self.session = URLSession(configuration: JSONOperation.sessionConfiguration)
+        self.task = self.session.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
             self?.onReceiveResponse(data, response, error)
         })
 	}
