@@ -601,8 +601,13 @@ public enum HeadingServiceState {
 /// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
 public class JSONOperation {
 
+    private struct ConfigStruct { static var staticVariable: URLSessionConfiguration = .default }
     // The session configuration
-    static var sessionConfiguration: URLSessionConfiguration = .default
+    class var configuration: URLSessionConfiguration
+    {
+        get { return ConfigStruct.staticVariable }
+        set { ConfigStruct.staticVariable = newValue }
+    }
 
     // The session executing the task
     private var session: URLSession
