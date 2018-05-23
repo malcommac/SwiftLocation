@@ -817,7 +817,7 @@ public class Place: CustomStringConvertible {
 
 		self.postalCode = p.postalCode
 		self.thoroughfare = p.thoroughfare
-		self.subAdministrativeArea = p.subThoroughfare
+		self.subThoroughfare = p.subThoroughfare
 		
 		if #available(iOS 11.0, *) {
 			if let address = p.postalAddress {
