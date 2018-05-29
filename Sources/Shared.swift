@@ -599,7 +599,7 @@ public enum HeadingServiceState {
 }
 
 /// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
-public class JSONOperation {
+public class JSONOperation: NSObject {
 
     private struct ConfigStruct { static var staticVariable: URLSessionConfiguration = .default }
     // The session configuration
@@ -609,8 +609,10 @@ public class JSONOperation {
         set { ConfigStruct.staticVariable = newValue }
     }
 
+    public typealias JSONOperationCompletionBlock = () -> Void
+    public static var completionBlock: JSONOperationCompletionBlock?
     // The session executing the task
-    private var session: URLSession
+    private var session: URLSession!
 
     /// Task of the operation
     private var task: URLSessionDataTask?
@@ -621,6 +623,12 @@ public class JSONOperation {
     /// Callack called on failure
     public var onFailure: ((LocationError) -> (Void))? = nil
 
+    public var error: Error?
+
+    public var response: URLResponse?
+
+    public var data: Data?
+
     /// Initialize a new download operation with given url
     ///
     /// - Parameters:
@@ -628,10 +636,28 @@ public class JSONOperation {
     ///   - timeout: timeout, `nil` uses default timeout (10 seconds)
     public init(_ url: URL, timeout: TimeInterval? = nil) {
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
-        self.session = URLSession(configuration: JSONOperation.configuration)
-        self.task = self.session.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
+        super.init()
+
+        if JSONOperation.configuration == URLSessionConfiguration.default {
+            self.session = URLSession(configuration: JSONOperation.configuration)
+            self.task = dataTaskWithCompletionBlock(using: request)
+        } else {
+            self.session = URLSession(configuration: JSONOperation.configuration,
+                                      delegate: self,
+                                      delegateQueue: nil)
+            self.task = dataTaskWithDelegate(using: request)
+        }
+    }
+
+    private func dataTaskWithCompletionBlock(using request: URLRequest) -> URLSessionDataTask {
+        return self.session.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
             self?.onReceiveResponse(data, response, error)
         })
+    }
+
+    private func dataTaskWithDelegate(using request: URLRequest) -> URLSessionDataTask {
+        let task = self.session.dataTask(with: request)
+        return task
     }
 
     /// Response parser
@@ -667,6 +693,49 @@ public class JSONOperation {
         self.task?.cancel()
     }
 
+}
+
+extension JSONOperation: URLSessionDelegate {
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        DispatchQueue.main.async {
+            JSONOperation.completionBlock?()
+            JSONOperation.completionBlock = nil
+        }
+    }
+}
+
+extension JSONOperation: URLSessionTaskDelegate {
+    public func urlSession(_ session: URLSession,
+                           task: URLSessionTask,
+                           didCompleteWithError error: Error?) {
+        self.onReceiveResponse(nil, nil, error)
+    }
+}
+
+extension JSONOperation: URLSessionDataDelegate {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
+        self.response = response
+    }
+
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        self.data = data
+        self.onReceiveResponse(self.data,
+                               self.response,
+                               nil)
+    }
+}
+
+extension JSONOperation: URLSessionDownloadDelegate {
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        do {
+            self.data = try Data(contentsOf: location)
+            self.onReceiveResponse(self.data,
+                                   self.response,
+                                   nil)
+        } catch {
+            self.onReceiveResponse(nil, nil, error)
+        }
+    }
 }
 
 /// This is a generic object used to represent a Place; its shared along all geocoding services as common base.
@@ -849,7 +918,7 @@ public class Place: CustomStringConvertible {
     }
 
     internal static func load(placemarks: [CLPlacemark]) -> [Place] {
-        return placemarks.flatMap { Place(placemark: $0) }
+        return placemarks.compactMap { Place(placemark: $0) }
     }
 
     public var description: String {
