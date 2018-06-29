@@ -38,25 +38,25 @@ import SwiftyJSON
 /// Thread-safe list
 /// All functions and proprierties are thread-safe.
 internal class SafeList<Value: Equatable> {
-
+    
     /// Items
     private var _list: Array<Value> = []
-
+    
     /// Serial DispatchQueue
     private var dispatchQueue: DispatchQueue = DispatchQueue(label: "SwiftLocation.SafeList.DispatchQueue")
-
+    
     /// Safe items
     public var list: [Value] {
         get { return self.dispatchQueue.sync { self._list } }
     }
-
+    
     /// Append new item
     ///
     /// - Parameter item: append new item
     public func add(_ item: Value) {
         self.dispatchQueue.async { self._list.append(item) }
     }
-
+    
     /// Remove existing item
     ///
     /// - Parameter item: item to remove
@@ -69,7 +69,7 @@ internal class SafeList<Value: Equatable> {
             return true
         }
     }
-
+    
     /// Index of item.
     ///
     /// - Parameter item: item
@@ -80,7 +80,7 @@ internal class SafeList<Value: Equatable> {
             return idx
         }
     }
-
+    
     /// Number of items
     public var count: Int {
         return self.dispatchQueue.sync { self._list.count }
@@ -93,7 +93,7 @@ public enum IPService {
     case petabyet
     case smartIP
     case ipApi
-
+    
     internal var url: URL {
         var url: String = ""
         switch self {
@@ -124,7 +124,7 @@ public enum GeocoderService {
     case apple
     case openStreetMap
     case google
-
+    
     /// Create new request for given operation
     ///
     /// - Parameter operation: operation to perform
@@ -150,22 +150,22 @@ public typealias GeocoderRequest_Failure = ((LocationError) -> (Void))
 
 /// Protocol for geocoder request instance
 public class GeocoderRequest: Equatable {
-
+    
     /// Identifier of the operation
     public let identifier: String
-
+    
     /// Success handler
     public var success: GeocoderRequest_Success?
-
+    
     /// Failure handler
     public var failure: GeocoderRequest_Failure?
-
+    
     /// Timeout interval
     public var timeout: TimeInterval?
-
+    
     /// Operation of the request
     public let operation: GeocoderOperation
-
+    
     /// Called when operation is finished
     internal var isFinished: Bool = false {
         didSet {
@@ -174,7 +174,7 @@ public class GeocoderRequest: Equatable {
             }
         }
     }
-
+    
     /// Initialization of the geocoder request
     ///
     /// - Parameter operation: operation to perform
@@ -183,17 +183,17 @@ public class GeocoderRequest: Equatable {
         self.operation = operation
         self.timeout = timeout
     }
-
+    
     /// Execute operation
     public func execute() {
         // nop
     }
-
+    
     /// Cancel current execution (if any)
     public func cancel() {
         self.isFinished = true
     }
-
+    
     public static func ==(lhs: GeocoderRequest, rhs: GeocoderRequest) -> Bool {
         return (lhs.identifier == rhs.identifier)
     }
@@ -206,21 +206,21 @@ public typealias RequestID = String
 public protocol Request { }
 
 public class TimeoutManager {
-
+    
     typealias Callback = (() -> (Void))
-
+    
     /// This is the timeout interval
     public private(set) var interval: Timeout
-
+    
     /// This is the start moment of the timeout
     public private(set) var start: Date? = nil
-
+    
     /// Callback fired at the end of the timeout interval
     private var fireCallback: Callback? = nil
-
+    
     /// Timer object
     private var timer: Timer? = nil
-
+    
     /// Interval in seconds of the timeout
     var value: TimeInterval {
         switch self.interval {
@@ -228,17 +228,17 @@ public class TimeoutManager {
         case .delayed(let t): return t
         }
     }
-
+    
     /// Return the remaining time from timeout session
     public var aliveTime: TimeInterval? {
         guard let s = self.start else { return nil }
         guard self.hasTimedout == false else { return 0 }
         return fabs(s.timeIntervalSinceNow)
     }
-
+    
     /// Return `true` if timer has expired
     public var hasTimedout: Bool = false
-
+    
     /// Initialize a new manager with given timeout interval
     ///
     /// - Parameter timeout: interval
@@ -247,7 +247,7 @@ public class TimeoutManager {
         self.fireCallback = callback
         self.interval = t
     }
-
+    
     /// Start timer. At the end of the timer callback handler will be called
     ///
     /// - Parameter force: `true` to start timer regardeless the status of the request
@@ -262,23 +262,23 @@ public class TimeoutManager {
         }
         return false
     }
-
+    
     internal func forceTimeout() {
         self.abort()
     }
-
+    
     /// Stop current timer
     internal func abort() {
         self.reset()
     }
-
+    
     /// Objc function received on timer's fire event
     @objc func timerFired() {
         self.hasTimedout = true
         self.fireCallback?()
         self.reset()
     }
-
+    
     /// Reset timer session and stop any other session
     private func reset() {
         self.timer?.invalidate()
@@ -289,13 +289,13 @@ public class TimeoutManager {
 
 
 public extension CLLocationManager {
-
+    
     /// Returns the current state of heading services for this device.
     @available(watchOS, unavailable)
     public var headingState: HeadingServiceState {
         return (CLLocationManager.headingAvailable() ? .available : .unavailable)
     }
-
+    
     /// Return `true` if host application has background location capabilities enabled
     public static var hasBackgroundCapabilities: Bool {
         guard let capabilities = Bundle.main.infoDictionary?["UIBackgroundModes"] as? [String] else {
@@ -303,15 +303,15 @@ public extension CLLocationManager {
         }
         return capabilities.contains("location")
     }
-
+    
     /// Return the highest authorization level based upon the value added info applications'
     /// Info.plist file.
     #if os(iOS)
     public static var authorizationLevelFromInfoPlist: AuthorizationLevel {
         var osVersion: Float
-
+        
         osVersion = (UIDevice.current.systemVersion as NSString).floatValue
-
+        
         if osVersion < 11 {
             let hasAlwaysKey =     hasPlistValue(forKey: "NSLocationAlwaysUsageDescription") &&
                 hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription")
@@ -341,8 +341,8 @@ public extension CLLocationManager {
         }
     }
     #endif
-
-
+    
+    
     /// Check if application's Info.plist key has valid values for privacy settings for the required authorization level
     ///
     /// - Parameter level: level you want to set
@@ -355,7 +355,7 @@ public extension CLLocationManager {
             if osVersion < 11 {
                 return     (hasPlistValue(forKey: "NSLocationAlwaysUsageDescription") ||
                     hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription"))
-
+                
             }
             return hasPlistValue(forKey: "NSLocationAlwaysAndWhenInUseUsageDescription") &&
                 hasPlistValue(forKey: "NSLocationWhenInUseUsageDescription")
@@ -364,7 +364,7 @@ public extension CLLocationManager {
         }
     }
     #endif
-
+    
     /// Validate and request authorization level
     ///
     /// - Parameter level: level to require
@@ -382,7 +382,7 @@ public extension CLLocationManager {
             self.requestWhenInUseAuthorization()
         }
     }
-
+    
     /// Return is specified value is set in Info.plist of the host application
     ///
     /// - Parameter key: key to validate
@@ -391,7 +391,7 @@ public extension CLLocationManager {
         guard let dict = Bundle.main.infoDictionary else { return false }
         return ((dict[key] as? String)?.isEmpty ?? true == false)
     }
-
+    
     /// Current state of the authorization service
     public var serviceState: ServiceState {
         guard CLLocationManager.locationServicesEnabled() else {
@@ -408,7 +408,7 @@ public extension CLLocationManager {
             return .available
         }
     }
-
+    
     /// Are services available
     public var servicesAreAvailable: Bool {
         switch self.serviceState {
@@ -431,14 +431,14 @@ public extension CLLocationManager {
 /// - house: 100 meters or better, and received within the last 1 minute
 /// - room: 5 meters or better, and received within the last 5 seconds. Highest accuracy
 public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
-
+    
     case any = 0
     case city
     case neighborhood
     case block
     case house
     case room
-
+    
     /// Initialize a new accuracy level from raw value provided by the location manager.
     /// The nearest value is used.
     ///
@@ -471,7 +471,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
             self = bestAccuracy
         }
     }
-
+    
     /// Associated horizontal accuracy threshold (in meters) for the
     /// location request's desired accuracy level.
     public var threshold: CLLocationAccuracy {
@@ -484,7 +484,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
         case .room:                return 5.0
         }
     }
-
+    
     /// Associated recency threshold (in seconds) for the location request's
     /// desired accuracy level.
     public var timeStaleThreshold: TimeInterval {
@@ -497,7 +497,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
         case .room:                return 5
         }
     }
-
+    
     /// Validate provided request for location request object.
     /// If not valid the default fallback is returned along side a message.
     internal var validateForGPSRequest: Accuracy {
@@ -507,7 +507,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
         }
         return self
     }
-
+    
     public var description: String {
         switch self {
         case .any:                return "any"
@@ -518,7 +518,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
         case .room:                return "room"
         }
     }
-
+    
     public static func <(lhs: Accuracy, rhs: Accuracy) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
@@ -531,7 +531,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 public enum Timeout {
     case after(_: TimeInterval)
     case delayed(_: TimeInterval)
-
+    
     /// Timer start should be delayed or not?
     public var shouldBeDelayed: Bool {
         if case .delayed = self, CLLocationManager.authorizationStatus() == .notDetermined {
@@ -600,7 +600,7 @@ public enum HeadingServiceState {
 
 /// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
 public class JSONOperation: NSObject {
-
+    
     private struct ConfigStruct { static var staticVariable: URLSessionConfiguration = .default }
     // The session configuration
     public class var configuration: URLSessionConfiguration
@@ -608,27 +608,27 @@ public class JSONOperation: NSObject {
         get { return ConfigStruct.staticVariable }
         set { ConfigStruct.staticVariable = newValue }
     }
-
+    
     public typealias JSONOperationCompletionBlock = () -> Void
     public static var completionBlock: JSONOperationCompletionBlock?
     // The session executing the task
     private var session: URLSession!
-
+    
     /// Task of the operation
-    private var task: URLSessionDataTask?
-
+    private var task: URLSessionTask?
+    
     /// Callback called on success
     public var onSuccess: ((JSON) -> (Void))? = nil
-
+    
     /// Callack called on failure
     public var onFailure: ((LocationError) -> (Void))? = nil
-
+    
     public var error: Error?
-
+    
     public var response: URLResponse?
-
+    
     public var data: Data?
-
+    
     /// Initialize a new download operation with given url
     ///
     /// - Parameters:
@@ -637,7 +637,7 @@ public class JSONOperation: NSObject {
     public init(_ url: URL, timeout: TimeInterval? = nil) {
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
         super.init()
-
+        
         if JSONOperation.configuration == URLSessionConfiguration.default {
             self.session = URLSession(configuration: JSONOperation.configuration)
             self.task = dataTaskWithCompletionBlock(using: request)
@@ -648,18 +648,18 @@ public class JSONOperation: NSObject {
             self.task = dataTaskWithDelegate(using: request)
         }
     }
-
+    
     private func dataTaskWithCompletionBlock(using request: URLRequest) -> URLSessionDataTask {
         return self.session.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
             self?.onReceiveResponse(data, response, error)
         })
     }
-
-    private func dataTaskWithDelegate(using request: URLRequest) -> URLSessionDataTask {
-        let task = self.session.dataTask(with: request)
+    
+    private func dataTaskWithDelegate(using request: URLRequest) -> URLSessionDownloadTask {
+        let task = self.session.downloadTask(with: request)
         return task
     }
-
+    
     /// Response parser
     ///
     /// - Parameters:
@@ -682,17 +682,17 @@ public class JSONOperation: NSObject {
             self.onFailure?(LocationError.dataParserError)
         }
     }
-
+    
     /// Execute download and parse
     public func execute() {
         self.task?.resume()
     }
-
+    
     /// Cancel operation
     public func cancel() {
         self.task?.cancel()
     }
-
+    
 }
 
 extension JSONOperation: URLSessionDelegate {
@@ -716,7 +716,7 @@ extension JSONOperation: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Swift.Void) {
         self.response = response
     }
-
+    
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         self.data = data
         self.onReceiveResponse(self.data,
@@ -740,112 +740,112 @@ extension JSONOperation: URLSessionDownloadDelegate {
 
 /// This is a generic object used to represent a Place; its shared along all geocoding services as common base.
 public class Place: CustomStringConvertible {
-
+    
     /// A user-friendly description of a geographic coordinate, often containing the name of the place,
     /// its address, and other relevant information.
     /// This is returned only from reverse geocoding using Apple's service, otherwise it will be `nil`.
     public internal(set) var placemark: CLPlacemark?
-
+    
     /// Coordinates of the place
     public internal(set) var coordinates: CLLocationCoordinate2D?
-
+    
     /// This string is the standard abbreviation used to refer to the country.
     /// For example, if the placemark location is Apple’s headquarters,
     /// the value for this property would be the string “US”.
     public internal(set) var countryCode: String?
-
+    
     /// If the placemark location is Apple’s headquarters, for example,
     /// the value for this property would be the string “United States”.
     public internal(set) var country: String?
-
-
+    
+    
     @available(*, deprecated: 3.2.1, message: "Use administrativeArea property instead")
     public var state: String? {
         return self.administrativeArea
     }
-
+    
     /// The string in this property can be either the spelled out name of the administrative
     /// area or its designated abbreviation, if one exists.
     /// If the placemark location is Apple’s headquarters, for example,
     /// the value for this property would be the string “CA” or “California”.
     public internal(set) var administrativeArea: String?
-
+    
     @available(*, deprecated: 3.2.1, message: "Use subAdministrativeArea property instead")
     public var county: String? {
         return self.subAdministrativeArea
     }
-
+    
     /// Subadministrative areas typically correspond to counties or other regions that
     /// are then organized into a larger administrative area or state.
     /// For example, if the placemark location is Apple’s headquarters,
     /// the value for this property would be the string “Santa Clara”,
     /// which is the county in California that contains the city of Cupertino.
     public internal(set) var subAdministrativeArea: String?
-
+    
     @available(*, deprecated: 3.2.1, message: "Use locality property instead")
     public var neighborhood: String? {
         return self.locality
     }
-
+    
     /// If the placemark location is Apple’s headquarters, for example,
     /// the value for this property would be the string “Cupertino”.
     public internal(set) var locality: String?
-
+    
     /// This property contains additional information, such as the name of the neighborhood
     /// or landmark associated with the placemark. It might also refer to a common name
     /// that is associated with the location.
     public internal(set) var subLocality: String?
-
+    
     @available(*, deprecated: 3.2.1, message: "Use postalCode property instead")
     public var postcode: String? {
         return self.postalCode
     }
-
+    
     /// If the placemark location is Apple’s headquarters, for example, the value for this property would be the string “95014”.
     public internal(set) var postalCode: String?
-
+    
     /// City
     public internal(set) var city: String?
-
+    
     @available(*, deprecated: 3.2.1, message: "Use subAdministrativeArea property instead")
     public var cityDistrict: String? {
         return self.subAdministrativeArea
     }
-
+    
     @available(*, deprecated: 3.2.1, message: "Use thoroughfare property instead")
     public var road: String? {
         return self.thoroughfare
     }
-
+    
     /// The street address contains the street name.
     /// For example, if the placemark location is Apple’s headquarters,
     /// the value for this property would be the string “Infinite Loop”.
     public internal(set) var thoroughfare: String?
-
+    
     @available(*, deprecated: 3.2.1, message: "Use subThoroughfare property instead")
     public var houseNumber: String? {
         return self.subThoroughfare
     }
-
+    
     /// Subthroughfares provide information such as the street number for the location.
     /// For example, if the placemark location is Apple’s headquarters (1 Infinite Loop),
     /// the value for this property would be the string “1”.
     public internal(set) var subThoroughfare: String?
-
+    
     /// The name of the placemark.
     public internal(set) var name: String?
-
+    
     /// The relevant areas of interest associated with the placemark.
     public internal(set) var POI: String?
-
+    
     /// Full address string
     public internal(set) var formattedAddress: String?
-
+    
     /// Raw dictionary created from service
     public internal(set) var rawDictionary: [String:Any]?
-
+    
     internal init() { }
-
+    
     /// Initialize with Google raw service data
     ///
     /// - Parameter json: input json
@@ -857,7 +857,7 @@ public class Place: CustomStringConvertible {
                 })
             })
         }
-
+        
         if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
             self.coordinates = CLLocationCoordinate2DMake(lat, lon)
         }
@@ -871,7 +871,7 @@ public class Place: CustomStringConvertible {
         self.subAdministrativeArea = ab(forType: "administrative_area_level_2")?["long_name"].string
         self.city = ab(forType: "locality")?["long_name"].string
         self.formattedAddress = json["formatted_address"].string
-
+        
         self.locality = ab(forType: "neighborhood")?["long_name"].string ?? ab(forType: "sublocality_level_1")?["long_name"].string
         self.subLocality = ab(forType: "sublocality_level_2")?["long_name"].string
         self.thoroughfare = ab(forType: "route")?["long_name"].string
@@ -879,35 +879,35 @@ public class Place: CustomStringConvertible {
             self.thoroughfare = ab(forType: "neighborhood")?["short_name"].string
         }
         self.subThoroughfare = ab(forType: "street_number")?["long_name"].string
-
+        
         self.POI = ab(forType: "point_of_interest")?["long_name"].string
         self.rawDictionary = json.dictionaryObject
     }
-
-
+    
+    
     /// Initialize from Apple's raw service data
     ///
     /// - Parameter placemark: data
     internal init?(placemark: CLPlacemark?) {
         guard let p = placemark else { return nil }
         self.placemark = p
-
+        
         self.name = p.name
         self.coordinates = p.location?.coordinate
         self.rawDictionary = p.addressDictionary as? [String: Any]
-
+        
         self.countryCode = p.isoCountryCode
         self.country = p.country
-
+        
         self.administrativeArea = p.administrativeArea
         self.subAdministrativeArea = p.subAdministrativeArea
         self.locality = p.locality
         self.subLocality = p.subLocality
-
+        
         self.postalCode = p.postalCode
         self.thoroughfare = p.thoroughfare
         self.subAdministrativeArea = p.subThoroughfare
-
+        
         if #available(iOS 11.0, watchOSApplicationExtension 4.0, *) {
             if let address = p.postalAddress {
                 self.city = address.city
@@ -916,18 +916,18 @@ public class Place: CustomStringConvertible {
             self.city = p.locality
         }
     }
-
+    
     internal static func load(placemarks: [CLPlacemark]) -> [Place] {
         return placemarks.compactMap { Place(placemark: $0) }
     }
-
+    
     public var description: String {
         return self.name ?? "Unknown Place"
     }
 }
 
 internal extension String {
-
+    
     var urlEncoded: String {
         return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
     }
