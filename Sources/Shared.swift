@@ -708,7 +708,11 @@ extension JSONOperation: URLSessionTaskDelegate {
     public func urlSession(_ session: URLSession,
                            task: URLSessionTask,
                            didCompleteWithError error: Error?) {
-        self.onReceiveResponse(nil, nil, error)
+        if error != nil {
+            self.onReceiveResponse(self.data,
+                                   self.response,
+                                   error)
+        }
     }
 }
 
