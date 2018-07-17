@@ -160,6 +160,16 @@ Timeout can be specified as:
 
 This is an example of the call:
 
+### Swift 4+
+
+```swift
+Locator.currentPosition(accuracy: .room, onSuccess: { location in
+            print("Location found: \(location)")
+        }, onFail: { err, last in
+            print("Failed to get location: \(err)")
+        })
+```
+
 ```swift
 Locator.currentPosition(accuracy: .city).onSuccess { location in
 	print("Location found: \(location)")
