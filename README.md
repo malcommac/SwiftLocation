@@ -160,7 +160,7 @@ Timeout can be specified as:
 
 This is an example of the call:
 
-### Swift 4+
+#### Swift 4+
 
 ```swift
 Locator.currentPosition(accuracy: .room, onSuccess: { location in
@@ -169,7 +169,7 @@ Locator.currentPosition(accuracy: .room, onSuccess: { location in
             print("Failed to get location: \(err)")
         })
 ```
-### Oldest Swift
+#### Oldest Swift
 
 ```swift
 Locator.currentPosition(accuracy: .city).onSuccess { location in
