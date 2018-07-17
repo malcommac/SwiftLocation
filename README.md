@@ -169,6 +169,7 @@ Locator.currentPosition(accuracy: .room, onSuccess: { location in
             print("Failed to get location: \(err)")
         })
 ```
+### Oldest Swift
 
 ```swift
 Locator.currentPosition(accuracy: .city).onSuccess { location in
