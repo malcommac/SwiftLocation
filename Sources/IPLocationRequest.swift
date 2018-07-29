@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 import MapKit
-import SwiftyJSON
+//import SwiftyJSON
 
 /// Get the current location data using IP address of the device
 public class IPLocationRequest: Request, Hashable, Equatable {

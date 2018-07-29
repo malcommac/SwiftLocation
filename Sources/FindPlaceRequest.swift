@@ -8,89 +8,97 @@
 
 import Foundation
 import SwiftyJSON
+import MapKit
 
 public typealias FindPlaceRequest_Success = (([PlaceMatch]) -> (Void))
 public typealias FindPlaceRequest_Failure = ((LocationError) -> (Void))
 
+public protocol PlaceMatch {
+    /// Main text of the place
+    var mainText: String { get set }
+    
+    /// Secondary text of the place
+    var secondaryText: String { get set }
+}
 /// Public protocol for place find request
 public protocol FindPlaceRequest {
-	
-	/// Success handler
-	var success: FindPlaceRequest_Success? { get set }
-	
-	/// Failure handler
-	var failure: FindPlaceRequest_Failure? { get set }
-	
-	/// Timeout interval
-	var timeout: TimeInterval { get set }
-	
-	/// Execute operation
-	func execute()
-	
-	/// Cancel current execution (if any)
-	func cancel()
+
+    /// Success handler
+    var success: FindPlaceRequest_Success? { get set }
+
+    /// Failure handler
+    var failure: FindPlaceRequest_Failure? { get set }
+
+    /// Timeout interval
+    var timeout: TimeInterval { get set }
+
+    /// Execute operation
+    func execute()
+
+    /// Cancel current execution (if any)
+    func cancel()
 }
 
 /// Find Place with Google
 public class FindPlaceRequest_Google: FindPlaceRequest {
-	
-	/// session task
-	private var task: JSONOperation? = nil
-	
-	/// Success callback
-	public var success: FindPlaceRequest_Success?
-	
-	/// Failure callback
-	public var failure: FindPlaceRequest_Failure?
-	
-	/// Timeout interval
-	public var timeout: TimeInterval
-	
-	/// Input to search
-	public private(set) var input: String
+
+    /// session task
+    private var task: JSONOperation? = nil
+
+    /// Success callback
+    public var success: FindPlaceRequest_Success?
+
+    /// Failure callback
+    public var failure: FindPlaceRequest_Failure?
+
+    /// Timeout interval
+    public var timeout: TimeInterval
+
+    /// Input to search
+    public private(set) var input: String
 
     /// Language in which the results are displayed
     public private(set) var language: FindPlaceRequest_Google_Language?
-	
-	/// Init new find place operation
-	///
-	/// - Parameters:
-	///   - operation: operation to execute
-	///   - timeout: timeout, `nil` uses default timeout of 10 seconds
+
+    /// Init new find place operation
+    ///
+    /// - Parameters:
+    ///   - operation: operation to execute
+    ///   - timeout: timeout, `nil` uses default timeout of 10 seconds
     public init(input: String, timeout: TimeInterval? = nil, language: FindPlaceRequest_Google_Language? = nil) {
-		self.input = input
-		self.timeout = timeout ?? 10
+        self.input = input
+        self.timeout = timeout ?? 10
         self.language = language ?? FindPlaceRequest_Google_Language.english
-	}
-	
-	public func execute() {
-		guard let APIKey = Locator.api.googleAPIKey else {
-			self.failure?(LocationError.missingAPIKey(forService: "google"))
-			return
-		}
+    }
+
+    public func execute() {
+        guard let APIKey = Locator.api.googleAPIKey else {
+            self.failure?(LocationError.missingAPIKey(forService: "google"))
+            return
+        }
         let lang = language?.rawValue ?? "en"
-		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(lang)&key=\(APIKey)")!
-		self.task = JSONOperation(url, timeout: self.timeout)
-		self.task?.onFailure = { [weak self] err in
+        let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(lang)&key=\(APIKey)")!
+        self.task = JSONOperation(url, timeout: self.timeout)
+        self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
-			self.failure?(err)
-		}
-		self.task?.onSuccess = { [weak self] json in
+            self.failure?(err)
+        }
+        self.task?.onSuccess = { [weak self] json in
             guard let `self` = self else { return }
-			if json["status"].stringValue != "OK" {
-				self.failure?(LocationError.other("Wrong google response"))
-				return
-			}
-			let places = PlaceMatch.load(list: json["predictions"].arrayValue)
-			self.success?(places)
-		}
-		self.task?.execute()
-	}
-	
-	public func cancel() {
-		self.task?.cancel()
-	}
-	
+            if json["status"].stringValue != "OK" {
+                self.failure?(LocationError.other("Wrong google response"))
+                return
+            }
+            let places = Google_PlaceMatch.load(list: json["predictions"].arrayValue)
+            self.success?(places)
+        }
+        self.task?.execute()
+    }
+
+    public func cancel() {
+        self.task?.cancel()
+    }
+
 }
 
 /// Google Autocomplete supported languages
@@ -150,19 +158,19 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 /// - vietnamese: Vietnamese
 public enum FindPlaceRequest_Google_Language: String {
     case arabic = "ar"
-    case bulgarian = "bg"    
+    case bulgarian = "bg"
     case bengali = "bn"
     case catalan    = "ca"
     case czech = "cs"
     case danish = "da"
     case dutch = "nl"
     case german = "de"
-    case greek = "el"    
-    case english = "en"    
+    case greek = "el"
+    case english = "en"
     case english_AU = "en-AU"
     case english_GB = "en-GB"
     case spanish = "es"
-    case basque = "eu"    
+    case basque = "eu"
     case chinese_simplified = "zh-CN"
     case chinese_traditional = "zh-TW"
     case farsi = "fa"
@@ -205,61 +213,150 @@ public enum FindPlaceRequest_Google_Language: String {
 }
 
 /// Identify a single match entry for a place search
-public class PlaceMatch {
-	
-	/// Identifier of the place
-	public internal(set) var placeID: String
-	
-	/// Name of the place
-	public internal(set) var name: String
-	
-	/// Main text of the place
-	public internal(set) var mainText: String
-	
-	/// Secondary text of the place
-	public internal(set) var secondaryText: String
-	
-	/// Place types string (google)
-	public internal(set) var types: [String]
-	
-	/// Place detail cache
-	public private(set) var detail: Place?
+public class Google_PlaceMatch: PlaceMatch {
 
-	public init?(_ json: JSON) {
-		guard let placeID = json["place_id"].string else { return nil }
-		self.placeID = placeID
-		self.name = json["description"].stringValue
-		self.mainText = json["structured_formatting"]["main_text"].stringValue
-		self.secondaryText = json["structured_formatting"]["secondary_text"].stringValue
-		self.types = json["types"].arrayValue.map { $0.stringValue }
-	}
-	
-	public static func load(list: [JSON]) -> [PlaceMatch] {
-		return list.flatMap { PlaceMatch($0) }
-	}
-	
-	public func detail(timeout: TimeInterval? = nil,
-	                   onSuccess: @escaping ((Place) -> (Void)),
-	                   onFail: ((LocationError) -> (Void))? = nil) {
-		if let p = self.detail {
-			onSuccess(p)
-			return
-		}
-		guard let APIKey = Locator.api.googleAPIKey else {
-			onFail?(LocationError.missingAPIKey(forService: "google"))
-			return
-		}
-		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
-		let task = JSONOperation(url, timeout: timeout ?? 10)
-		task.onSuccess = { [weak self] json in
+    /// session task
+    private var task: JSONOperation? = nil
+
+    /// Identifier of the place
+    public internal(set) var placeID: String
+
+    /// Name of the place
+    public internal(set) var name: String
+
+    /// Main text of the place
+    public var mainText: String
+
+    /// Secondary text of the place
+    public var secondaryText: String
+
+    /// Place types string (google)
+    public internal(set) var types: [String]
+
+    /// Place detail cache
+    public private(set) var detail: Place?
+
+    public init?(_ json: JSON) {
+        guard let placeID = json["place_id"].string else { return nil }
+        self.placeID = placeID
+        self.name = json["description"].stringValue
+        self.mainText = json["structured_formatting"]["main_text"].stringValue
+        self.secondaryText = json["structured_formatting"]["secondary_text"].stringValue
+        self.types = json["types"].arrayValue.map { $0.stringValue }
+    }
+
+    public static func load(list: [JSON]) -> [PlaceMatch] {
+        return list.compactMap { Google_PlaceMatch($0) }
+    }
+
+    public func detail(timeout: TimeInterval? = nil,
+                       onSuccess: @escaping ((Place) -> (Void)),
+                       onFail: ((LocationError) -> (Void))? = nil) {
+        if let p = self.detail {
+            onSuccess(p)
+            return
+        }
+        guard let APIKey = Locator.api.googleAPIKey else {
+            onFail?(LocationError.missingAPIKey(forService: "google"))
+            return
+        }
+        let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
+        self.task = JSONOperation(url, timeout: timeout ?? 10)
+        self.task?.onSuccess = { [weak self] json in
             guard let `self` = self else { return }
-			self.detail = Place(googleJSON: json["result"])
-			onSuccess(self.detail!)
-		}
-		task.onFailure = { err in
-			onFail?(err)
-		}
-		task.execute()
-	}
+            self.detail = Place(googleJSON: json["result"])
+            onSuccess(self.detail!)
+        }
+        self.task?.onFailure = { err in
+            onFail?(err)
+        }
+        self.task?.execute()
+    }
 
+}
+
+
+final public class FindPlaceRequest_Apple: NSObject, FindPlaceRequest, MKLocalSearchCompleterDelegate {
+    
+    private var task: MKLocalSearchCompleter
+    
+    private var input: String
+    
+    public var success: FindPlaceRequest_Success?
+    
+    public var failure: FindPlaceRequest_Failure?
+    
+    public var timeout: TimeInterval
+    
+    public func execute() {
+        task.queryFragment = self.input
+    }
+    
+    public func cancel() {
+        task.cancel()
+    }
+    
+    public init(input: String, timeout: TimeInterval? = nil, language: FindPlaceRequest_Google_Language? = nil) {
+        self.input = input
+        self.timeout = timeout ?? 10
+        task = MKLocalSearchCompleter()
+        task.filterType = .locationsOnly
+    }
+    
+    public func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        var results = [Apple_PlaceMatch]()
+        for result in completer.results {
+            let place = Apple_PlaceMatch(localSearchCompletion: result, for: input)
+            results.append(place)
+            self.success?(results)
+        }
+    }
+
+    public func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        self.failure?(LocationError.other(error.localizedDescription))
+    }
+    
+}
+
+
+final public class Apple_PlaceMatch: PlaceMatch {
+    
+    public var mainText: String
+    
+    public var secondaryText: String
+    
+    private var localSearch: MKLocalSearch?
+    
+    private var localSearchCompletion: MKLocalSearchCompletion
+    
+    private var input: String
+    
+    init(localSearchCompletion: MKLocalSearchCompletion, for input: String) {
+        self.mainText = localSearchCompletion.title
+        self.secondaryText = localSearchCompletion.subtitle
+        self.localSearchCompletion = localSearchCompletion
+        self.input = input
+    }
+    
+    public func detail(timeout: TimeInterval? = nil,
+                       onSuccess: @escaping ((Place) -> (Void)),
+                       onFail: ((LocationError) -> (Void))? = nil) {
+        let request = MKLocalSearchRequest(completion: localSearchCompletion)
+        localSearch = MKLocalSearch(request: request)
+        localSearch?.start(completionHandler: { response, error in
+            if let error = error {
+               onFail?(LocationError.other(error.localizedDescription))
+            } else if let response = response {
+                if response.mapItems.count > 0, let item = response.mapItems.first {
+                    if let place = Place(placemark: item.placemark) {
+                        onSuccess(place)
+                    } else {
+                        onFail?(LocationError.failedToObtainData)
+                    }
+                } else {
+                    onFail?(LocationError.failedToObtainData)
+                }
+            }
+        })
+    }
 }

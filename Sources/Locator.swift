@@ -106,8 +106,10 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	private var locationRequests = SafeList<LocationRequest>()
 	
 	/// Current queued heading requests
+    #if os(iOS)
 	private var headingRequests = SafeList<HeadingRequest>()
-	
+    #endif
+
 	/// Geocoder requests
 	internal var geocoderRequests = SafeList<GeocoderRequest>()
 	
@@ -124,7 +126,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	public private(set) var isMonitoringSignificantLocationChanges = false
 	
 	/// It is possible to force enable background location fetch even if your set any kind of Authorizations
-	public var backgroundLocationUpdates: Bool {
+    @available(watchOSApplicationExtension 4.0, *)
+    public var backgroundLocationUpdates: Bool {
 		set { self.manager.allowsBackgroundLocationUpdates = true }
 		get { return self.manager.allowsBackgroundLocationUpdates }
 	}
@@ -150,6 +153,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	}
 	
 	/// Last measured heading value
+    @available(watchOS, unavailable)
 	public private(set) var currentHeading: CLHeading? = nil
 	
 	/// Last occurred error
@@ -182,7 +186,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		// background location updates.
 		// We only set it to true if the location background mode is enabled for this app,
 		// as the documentation suggests it is a fatal programmer error otherwise.
-		if #available(iOSApplicationExtension 9.0, *) {
+		if #available(iOSApplicationExtension 9.0, watchOSApplicationExtension 4.0, *) {
 			if CLLocationManager.hasBackgroundCapabilities {
 				self.manager.allowsBackgroundLocationUpdates = true
 			}
@@ -201,7 +205,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///   - onUpdate: update callback
 	///   - onFail: failure callback
 	/// - Returns: request
-	@discardableResult
+    @available(watchOSApplicationExtension 3.0, *)
+    @discardableResult
 	public func currentPosition(accuracy: Accuracy, timeout: Timeout? = nil,
 	                            onSuccess: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 	//	assert(Thread.isMainThread, "Locator functions should be called from main thread")
@@ -248,7 +253,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///   - onUpdate: update callback
 	///   - onFail: failure callback
 	/// - Returns: request
-	@discardableResult
+    @available(watchOSApplicationExtension 3.0, *)
+    @discardableResult
 	public func subscribePosition(accuracy: Accuracy,
 	                              onUpdate: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 		assert(Thread.isMainThread, "Locator functions should be called from main thread")
@@ -269,7 +275,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///   - onUpdate: update callback
 	///   - onFail: failure callback
 	/// - Returns: request
-	@discardableResult
+    @available(watchOSApplicationExtension 3.0, *)
+    @discardableResult
 	public func subscribeSignificantLocations(onUpdate: @escaping LocationRequest.Success, onFail: @escaping LocationRequest.Failure) -> LocationRequest {
 		assert(Thread.isMainThread, "Locator functions should be called from main thread")
 		let request = LocationRequest(mode: .significant, accuracy: .any, timeout: nil)
@@ -350,6 +357,28 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		request.execute()
 		return request
 	}
+    
+    @discardableResult
+    public func autocompletePlaces(with text: String,
+                                   timeout: TimeInterval? = nil,
+                                   language: FindPlaceRequest_Google_Language? = nil,
+                                   using service: GeocoderService? = .apple,
+                                   onSuccess: @escaping FindPlaceRequest_Success,
+                                   onFail: @escaping FindPlaceRequest_Failure) -> FindPlaceRequest {
+        let usedService = service ?? .apple
+        var request: FindPlaceRequest
+        if usedService == .apple {
+            request = FindPlaceRequest_Apple(input: text)
+        } else {
+            request = FindPlaceRequest_Google(input: text,
+                                              timeout: timeout,
+                                              language: language)
+        }
+        request.success = onSuccess
+        request.failure = onFail
+        request.execute()
+        return request
+    }
 	
 	// MARK: DEVICE HEADING FUNCTIONS
 	
@@ -363,6 +392,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	///   - onUpdate: update succeded callback
 	///   - onFail: failure callback
 	/// - Returns: request
+    #if os(iOS)
 	@discardableResult
 	public func subscribeHeadingUpdates(accuracy: HeadingRequest.AccuracyDegree?, minInterval: TimeInterval? = nil,
 	                                    onUpdate: @escaping HeadingRequest.Success, onFail: @escaping HeadingRequest.Failure) -> HeadingRequest {
@@ -374,6 +404,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		self.addHeadingRequest(request)
 		return request
 	}
+    #endif
 	
 	/// Stop running request
 	///
@@ -383,9 +414,11 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		if let r = request as? LocationRequest {
 			return self.stopLocationRequest(r)
 		}
+        #if os(iOS)
 		if let r = request as? HeadingRequest {
 			return self.stopHeadingRequest(r)
 		}
+        #endif
 		return false
 	}
 	
@@ -394,6 +427,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// Add heading request to queue
 	///
 	/// - Parameter request: request
+    #if os(iOS)
 	private func addHeadingRequest(_ request: HeadingRequest) {
 		let state = self.manager.headingState
 		guard state == .available else {
@@ -406,14 +440,17 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		self.headingRequests.add(request)
 		self.startUpdatingHeadingIfNeeded()
 	}
-	
+    #endif
+
 	/// Start updating heading service if needed
+    #if os(iOS)
 	private func startUpdatingHeadingIfNeeded() {
 		guard self.headingRequests.count > 0 else { return }
 		self.manager.startUpdatingHeading()
 		self.isUpdatingHeading = true
 	}
-	
+    #endif
+	#if os(iOS)
 	/// Stop heading services if possible
 	private func stopUpdatingHeadingIfPossible() {
 		if self.headingRequests.count == 0 {
@@ -421,18 +458,21 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			self.isUpdatingHeading = false
 		}
 	}
+    #endif
 	
 	
 	/// Remove heading request
 	///
 	/// - Parameter request: request to remove
 	/// - Returns: `true` if removed
+    #if os(iOS)
 	@discardableResult
 	private func stopHeadingRequest(_ request: HeadingRequest) -> Bool {
 		let removed = self.headingRequests.remove(request)
 		self.stopUpdatingHeadingIfPossible()
 		return removed
 	}
+    #endif
 	
 	// MARK: LOCATION HELPER FUNCTIONS
 	
@@ -458,7 +498,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// the maximum desired accuracy, and starts location updates if needed.
 	///
 	/// - Parameter request: request to add
-	private func addLocation(_ request: LocationRequest) {
+    @available(watchOSApplicationExtension 3.0, *)
+    private func addLocation(_ request: LocationRequest) {
 		/// No need to add this location request, because location services are turned off device-wide,
 		/// or the user has denied this app permissions to use them.
 		guard self.manager.servicesAreAvailable else {
@@ -474,7 +515,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			
 			self.startUpdatingLocationIfNeeded()
 		case .significant:
+            #if os(iOS)
 			self.startMonitoringSignificantLocationChangesIfNeeded()
+            #endif
 		}
 		
 		// Add to the queue
@@ -500,7 +543,8 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		}
 	}
 	
-	internal func startUpdatingLocationIfNeeded() {
+    @available(watchOSApplicationExtension 3.0, *)
+    internal func startUpdatingLocationIfNeeded() {
 		// Request authorization if not set yet
 		self.requestAuthorizationIfNeeded()
 		
@@ -510,8 +554,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			self.isUpdatingLocation = true
 		}
 	}
-	
+
 	/// Inform CLLocationManager to start monitoring significant location changes.
+    #if os(iOS)
 	internal func startMonitoringSignificantLocationChangesIfNeeded() {
 		// request authorization if needed
 		self.requestAuthorizationIfNeeded()
@@ -523,6 +568,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		}
 		
 	}
+    #endif
 	
 	/// Return active requests excluding the one with given mode
 	///
@@ -555,7 +601,12 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		
 		// Level to set is the one passed as argument or, if value is `nil`
 		// is determined by reading values in host application's Info.plist
-		let levelToSet = type ?? CLLocationManager.authorizationLevelFromInfoPlist
+		var levelToSet = type ?? .always
+        #if os(iOS)
+        let level = CLLocationManager.authorizationLevelFromInfoPlist
+        levelToSet = level
+        #endif
+
 		self.manager.requestAuthorization(level: levelToSet)
 	}
 	
@@ -654,7 +705,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			// Stop if no other location requests are running
 			self.stopUpdatingLocationIfPossible()
 		case .significant:
+            #if os(iOS)
 			self.stopMonitoringSignificantLocationChangesIfPossible()
+            #endif
 		}
 	}
 	
@@ -672,6 +725,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	
 	/// Checks to see if there are any outsanding significant location request in queue.
 	/// If not we can stop monitoring for significant location changes and conserve device's battery.
+    #if os(iOS)
 	private func stopMonitoringSignificantLocationChangesIfPossible() {
 		let requests = self.activeLocationRequest(forMode: .significant)
 		if requests.count == 0 { // stop
@@ -679,6 +733,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			self.isMonitoringSignificantLocationChanges = false
 		}
 	}
+    #endif
 	
 	// MARK: CLLocationManager Delegates
 	
@@ -728,12 +783,15 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			})
 		}
 	}
-	
+
+	#if os(iOS)
 	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
 		self.currentHeading = newHeading
 		self.processRecurringHeadingRequests()
 	}
-	
+    #endif
+
+    #if os(iOS)
 	private func processRecurringHeadingRequests() {
 		let h = self.currentHeading
 		DispatchQueue.main.async {
@@ -750,4 +808,5 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			}
 		}
 	}
+    #endif
 }
