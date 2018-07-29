@@ -8,10 +8,18 @@
 
 import Foundation
 import SwiftyJSON
+import MapKit
 
 public typealias FindPlaceRequest_Success = (([PlaceMatch]) -> (Void))
 public typealias FindPlaceRequest_Failure = ((LocationError) -> (Void))
 
+public protocol PlaceMatch {
+    /// Main text of the place
+    var mainText: String { get set }
+    
+    /// Secondary text of the place
+    var secondaryText: String { get set }
+}
 /// Public protocol for place find request
 public protocol FindPlaceRequest {
 
@@ -81,7 +89,7 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
                 self.failure?(LocationError.other("Wrong google response"))
                 return
             }
-            let places = PlaceMatch.load(list: json["predictions"].arrayValue)
+            let places = Google_PlaceMatch.load(list: json["predictions"].arrayValue)
             self.success?(places)
         }
         self.task?.execute()
@@ -205,7 +213,7 @@ public enum FindPlaceRequest_Google_Language: String {
 }
 
 /// Identify a single match entry for a place search
-public class PlaceMatch {
+public class Google_PlaceMatch: PlaceMatch {
 
     /// session task
     private var task: JSONOperation? = nil
@@ -217,10 +225,10 @@ public class PlaceMatch {
     public internal(set) var name: String
 
     /// Main text of the place
-    public internal(set) var mainText: String
+    public var mainText: String
 
     /// Secondary text of the place
-    public internal(set) var secondaryText: String
+    public var secondaryText: String
 
     /// Place types string (google)
     public internal(set) var types: [String]
@@ -238,7 +246,7 @@ public class PlaceMatch {
     }
 
     public static func load(list: [JSON]) -> [PlaceMatch] {
-        return list.compactMap { PlaceMatch($0) }
+        return list.compactMap { Google_PlaceMatch($0) }
     }
 
     public func detail(timeout: TimeInterval? = nil,
@@ -265,4 +273,90 @@ public class PlaceMatch {
         self.task?.execute()
     }
 
+}
+
+
+final public class FindPlaceRequest_Apple: NSObject, FindPlaceRequest, MKLocalSearchCompleterDelegate {
+    
+    private var task: MKLocalSearchCompleter
+    
+    private var input: String
+    
+    public var success: FindPlaceRequest_Success?
+    
+    public var failure: FindPlaceRequest_Failure?
+    
+    public var timeout: TimeInterval
+    
+    public func execute() {
+        task.queryFragment = self.input
+    }
+    
+    public func cancel() {
+        task.cancel()
+    }
+    
+    public init(input: String, timeout: TimeInterval? = nil, language: FindPlaceRequest_Google_Language? = nil) {
+        self.input = input
+        self.timeout = timeout ?? 10
+        task = MKLocalSearchCompleter()
+        task.filterType = .locationsOnly
+    }
+    
+    public func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        var results = [Apple_PlaceMatch]()
+        for result in completer.results {
+            let place = Apple_PlaceMatch(localSearchCompletion: result, for: input)
+            results.append(place)
+            self.success?(results)
+        }
+    }
+
+    public func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        self.failure?(LocationError.other(error.localizedDescription))
+    }
+    
+}
+
+
+final public class Apple_PlaceMatch: PlaceMatch {
+    
+    public var mainText: String
+    
+    public var secondaryText: String
+    
+    private var localSearch: MKLocalSearch?
+    
+    private var localSearchCompletion: MKLocalSearchCompletion
+    
+    private var input: String
+    
+    init(localSearchCompletion: MKLocalSearchCompletion, for input: String) {
+        self.mainText = localSearchCompletion.title
+        self.secondaryText = localSearchCompletion.subtitle
+        self.localSearchCompletion = localSearchCompletion
+        self.input = input
+    }
+    
+    public func detail(timeout: TimeInterval? = nil,
+                       onSuccess: @escaping ((Place) -> (Void)),
+                       onFail: ((LocationError) -> (Void))? = nil) {
+        let request = MKLocalSearchRequest(completion: localSearchCompletion)
+        localSearch = MKLocalSearch(request: request)
+        localSearch?.start(completionHandler: { response, error in
+            if let error = error {
+               onFail?(LocationError.other(error.localizedDescription))
+            } else if let response = response {
+                if response.mapItems.count > 0, let item = response.mapItems.first {
+                    if let place = Place(placemark: item.placemark) {
+                        onSuccess(place)
+                    } else {
+                        onFail?(LocationError.failedToObtainData)
+                    }
+                } else {
+                    onFail?(LocationError.failedToObtainData)
+                }
+            }
+        })
+    }
 }

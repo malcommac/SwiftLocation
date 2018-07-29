@@ -357,6 +357,28 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		request.execute()
 		return request
 	}
+    
+    @discardableResult
+    public func autocompletePlaces(with text: String,
+                                   timeout: TimeInterval? = nil,
+                                   language: FindPlaceRequest_Google_Language? = nil,
+                                   using service: GeocoderService? = .apple,
+                                   onSuccess: @escaping FindPlaceRequest_Success,
+                                   onFail: @escaping FindPlaceRequest_Failure) -> FindPlaceRequest {
+        let usedService = service ?? .apple
+        var request: FindPlaceRequest
+        if usedService == .apple {
+            request = FindPlaceRequest_Apple(input: text)
+        } else {
+            request = FindPlaceRequest_Google(input: text,
+                                              timeout: timeout,
+                                              language: language)
+        }
+        request.success = onSuccess
+        request.failure = onFail
+        request.execute()
+        return request
+    }
 	
 	// MARK: DEVICE HEADING FUNCTIONS
 	
