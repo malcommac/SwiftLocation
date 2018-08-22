@@ -616,7 +616,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		// is immediately completed with the appropriate error.
 		DispatchQueue.main.async {
 			if let error = r.error { // failed for some sort of error
-				r.failure?(error,r.location)
+				r.failure?(error,r.location ?? self._currentLocation)
 			} else if let loc = r.location { // succeded
 				r.success?(loc)
 			}
@@ -631,7 +631,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		
 		DispatchQueue.main.async {
 			if let error = r.error {
-				r.failure?(error,r.location)
+                r.failure?(error,r.location ?? self._currentLocation)
 			} else if let loc = r.location {
 				r.success?(loc)
 			}
