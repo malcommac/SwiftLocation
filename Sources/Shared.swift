@@ -829,7 +829,7 @@ public class Place: CustomStringConvertible {
 	}
 	
 	internal static func load(placemarks: [CLPlacemark]) -> [Place] {
-		return placemarks.flatMap { Place(placemark: $0) }
+		return placemarks.compactMap { Place(placemark: $0) }
 	}
 	
 	public var description: String {
@@ -843,3 +843,14 @@ internal extension String {
 		return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
 	}
 }
+
+//MARK: - compactMap for Swift 4.0 (not necessary > 4.0)
+
+#if swift(>=4.1)
+#else
+extension Collection {
+	func compactMap<ElementOfResult>(_ transform: (Element) throws -> ElementOfResult?) rethrows -> [ElementOfResult] {
+		return try flatMap(transform)
+	}
+}
+#endif
