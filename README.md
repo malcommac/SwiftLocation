@@ -161,9 +161,9 @@ Timeout can be specified as:
 This is an example of the call:
 
 ```swift
-Locator.currentPosition(accuracy: .city).onSuccess { location in
+Locator.currentPosition(accuracy: .city, onSuccess: { location in
 	print("Location found: \(location)")
-}.onFailure { err, last in
+}) { (err,lastLoc) in
 	print("Failed to get location: \(err)")
 }
 ```
