@@ -92,7 +92,6 @@ public class HeadingRequest: Request, Equatable, Hashable {
 	internal var error: HeadingServiceState? {
 		let err = Locator.manager.headingState
 		if err == .unavailable { return .unavailable }
-		if self.heading == nil { return .invalid }
 		return nil
 	}
 	
@@ -101,9 +100,12 @@ public class HeadingRequest: Request, Equatable, Hashable {
 	/// - Parameter heading: valid
 	/// - Returns: `true` if minimum conditions for heading are validated
 	internal func isValidHeadingForRequest(_ heading: CLHeading?) -> Bool {
-		guard let heading = heading else { return false }
+		guard let heading = heading else {
+			return false
+		}
 		let minElapsed = (self.minimumInterval == nil ? true : fabs(heading.timestamp.timeIntervalSinceNow) >= self.minimumInterval!)
-		let minAccuracy = (self.minimumAccuracy == nil ? true : self.minimumAccuracy! >= heading.headingAccuracy)
-		return minElapsed && minAccuracy
+		let minAccuracy = (self.minimumAccuracy == nil ? true : heading.headingAccuracy >= self.minimumAccuracy!)
+		let isValid = (minElapsed && minAccuracy)
+		return isValid
 	}
 }
