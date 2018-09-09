@@ -72,6 +72,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 				next = 0
 			}
 			self.callbacks[next] = callback
+			self.nextTokenID = next // increment to the next token
 			return next
 		}
 		
