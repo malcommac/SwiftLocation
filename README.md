@@ -270,6 +270,8 @@ Using `Locator` functions:
 * `completeLocationRequest()` force the request to complete early, like a manual timeout. It will execute the block (valid only for location requests).
 * `completeAllLocationRequests()` Immediately completes all active location requests and execute associated blocks.
 
+You can also call `stop()` method from the single request object (both `LocationRequest`, `HeadingRequest`).
+
 <a name="heading"/>
 
 ### Subscribing to Continuous Heading Updates
