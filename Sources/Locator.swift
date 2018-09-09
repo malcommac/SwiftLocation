@@ -103,6 +103,20 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// Core location internal manager
 	internal var manager: CLLocationManager
 	
+	/// A Boolean indicating whether the status bar changes its appearance when location services are used in the background.
+	/// This property affects only apps that received always authorization.
+	/// When such an app moves to the background, the system uses this property to determine whether to
+	/// change the status bar appearance to indicate that location services are in use.
+	///
+	/// Displaying a modified status bar gives the user a quick way to return to your app. The default value of this property is false.
+	/// For apps with when-in-use authorization, the system always changes the status bar appearance when the
+	/// app uses location services in the background.
+	@available(iOS 11, *)
+	public var showsBackgroundLocationIndicator: Bool {
+		set { self.manager.showsBackgroundLocationIndicator = newValue }
+		get { return self.manager.showsBackgroundLocationIndicator }
+	}
+	
 	/// Current queued location requests
 	private var locationRequests = SafeList<LocationRequest>()
 	
