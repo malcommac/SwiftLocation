@@ -473,7 +473,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 		case .neighborhood:		return 1000.0
 		case .block:			return 100.0
 		case .house:			return 15.0
-		case .room:				return 5.0
+		case .room:				return 10.0
 		}
 	}
 	
@@ -486,7 +486,7 @@ public enum Accuracy: Int, Equatable, Comparable, CustomStringConvertible {
 		case .neighborhood:		return 300.0
 		case .block:			return 60.0
 		case .house:			return 15.0
-		case .room:				return 5
+		case .room:				return 10.0
 		}
 	}
 	

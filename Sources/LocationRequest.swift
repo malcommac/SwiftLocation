@@ -124,11 +124,11 @@ public class LocationRequest: Request, Equatable, Hashable {
 		// This is a regular one-time location request
 		let lastUpdateTime = fabs(location.timestamp.timeIntervalSinceNow)
 		let lastAccuracy = location.horizontalAccuracy
-		if (lastUpdateTime <= self.accuracy.timeStaleThreshold &&
-			lastAccuracy <= self.accuracy.threshold) {
-			return true
-		}
-		return false
+		
+		let isFreshEnough = lastUpdateTime <= self.accuracy.timeStaleThreshold
+		let isAccuratedEnough = lastAccuracy <= self.accuracy.threshold
+		
+		return (isFreshEnough && isAccuratedEnough)
 	}
 
 	/// Return the error status of the request, if any
