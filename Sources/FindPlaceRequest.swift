@@ -235,7 +235,7 @@ public class PlaceMatch {
 	}
 	
 	public static func load(list: [JSON]) -> [PlaceMatch] {
-		return list.flatMap { PlaceMatch($0) }
+		return list.compactMap { PlaceMatch($0) }
 	}
 	
 	public func detail(timeout: TimeInterval? = nil,
