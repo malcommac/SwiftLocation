@@ -88,8 +88,8 @@ internal class SafeList<Value: Equatable> {
 }
 
 /// IP Service
-public enum IPService {
-	case freeGeoIP
+public enum IPService: CustomStringConvertible {
+	case ipStack
 	case petabyet
 	case smartIP
 	case ipApi
@@ -97,12 +97,30 @@ public enum IPService {
 	internal var url: URL {
 		var url: String = ""
 		switch self {
-		case .freeGeoIP:	url = "https://freegeoip.net/json/"
+		case .ipStack:		url = "http://api.ipstack.com/check?access_key=\(Locator.api.ipStack ?? "")"
 		case .petabyet:		url = "http://api.petabyet.com/geoip/"
 		case .smartIP:		url = "http://smart-ip.net/geoip-json/"
 		case .ipApi:		url = "http://ip-api.com/json"
 		}
 		return URL(string: url)!
+	}
+	
+	internal var apiKey: (required: Bool, key: String?) {
+		switch self {
+		case .ipStack:		return (true,Locator.api.ipStack)
+		case .petabyet:		return (false,nil)
+		case .smartIP:		return (false,nil)
+		case .ipApi:		return (false,nil)
+		}
+	}
+	
+	public var description: String {
+		switch self {
+		case .ipStack:		return "ipStack"
+		case .petabyet:		return "petabyet"
+		case .smartIP:		return "smartIP"
+		case .ipApi:		return "ipApi"
+		}
 	}
 }
 
@@ -588,6 +606,62 @@ public enum HeadingServiceState {
 	case available
 	case unavailable
 	case invalid
+}
+
+public class JSONOperation2 {
+	
+	/// Task of the operation
+	private var task: URLSessionDataTask?
+	
+	/// Callback called on success
+	public var onSuccess: (([String: Any]) -> (Void))? = nil
+	
+	/// Callack called on failure
+	public var onFailure: ((LocationError) -> (Void))? = nil
+	
+	/// Initialize a new download operation with given url
+	///
+	/// - Parameters:
+	///   - url: url to download
+	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
+	public init(_ url: URL, timeout: TimeInterval? = nil) {
+		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
+		self.task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
+			self?.onReceiveResponse(data, response, error)
+		})
+	}
+	
+	/// Response parser
+	///
+	/// - Parameters:
+	///   - data: data received if any
+	///   - response: url response if any
+	///   - error: error if any
+	private func onReceiveResponse(_ data: Data?, _ response: URLResponse?, _ error: Error?) {
+		if let e = error {
+			self.onFailure?(LocationError.other(e.localizedDescription))
+			return
+		}
+		guard let data = data else {
+			self.onFailure?(LocationError.dataParserError)
+			return
+		}
+		
+		if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+			let dictionary = json as? [String: Any] {
+			self.onSuccess?(dictionary)
+		}
+	}
+	
+	/// Execute download and parse
+	public func execute() {
+		self.task?.resume()
+	}
+	
+	/// Cancel operation
+	public func cancel() {
+		self.task?.cancel()
+	}
 }
 
 /// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON

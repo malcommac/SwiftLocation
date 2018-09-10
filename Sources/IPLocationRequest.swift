@@ -9,7 +9,6 @@
 import Foundation
 import CoreLocation
 import MapKit
-import SwiftyJSON
 
 /// Get the current location data using IP address of the device
 public class IPLocationRequest: Request, Hashable, Equatable {
@@ -29,8 +28,8 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 	public private(set) var timeout: TimeInterval?
 	
 	/// JSON Operation to download data
-	private var task: JSONOperation? = nil
-	
+	private var task: JSONOperation2? = nil
+
 	/// Identifier of the request
 	public private(set) var id: RequestID = UUID().uuidString
 	
@@ -51,9 +50,16 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 		self.timeout = timeout
 	}
 	
+	
 	/// Execute the operation
 	internal func execute() {
-		self.task = JSONOperation(self.service.url, timeout: self.timeout)
+		let result = self.service.apiKey
+		if result.required == true && result.key == nil {
+			self.failure?(LocationError.missingAPIKey(forService: "\(self.service.description)"), nil)
+			return
+		}
+
+		self.task = JSONOperation2(self.service.url, timeout: self.timeout)
 		self.task?.onSuccess = { [weak self] json in
             guard let `self` = self else { return }
 			var latKey = "latitude"
@@ -65,7 +71,7 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 			default:
 				break
 			}
-			if let lat = json[latKey].double, let lng = json[lngKey].double {
+			if let lat = json[latKey] as? Double, let lng = json[lngKey] as? Double {
 				let loc = CLLocation(latitude: lat, longitude: lng)
 				self.success?(loc)
 				Locator.ipLocationRequests.remove(self)
