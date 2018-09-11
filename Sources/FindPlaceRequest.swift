@@ -48,7 +48,7 @@ public class FindPlaceRequest: Equatable {
 public class FindPlaceRequest_Google: FindPlaceRequest {
 	
 	/// session task
-	private var task: JSONOperation2? = nil
+	private var task: JSONOperation? = nil
 
 	/// Input to search
 	public private(set) var input: String
@@ -74,7 +74,7 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 		}
         let lang = language?.rawValue ?? "en"
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(lang)&key=\(APIKey)")!
-		self.task = JSONOperation2(url, timeout: self.timeout)
+		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
@@ -273,7 +273,7 @@ public class PlaceMatch {
 			return
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
-		let task = JSONOperation2(url, timeout: timeout ?? 10)
+		let task = JSONOperation(url, timeout: timeout ?? 10)
 		task.onSuccess = { [weak self] json in
 			guard let `self` = self else { return }
 			guard 	let json = json as? [String:Any],

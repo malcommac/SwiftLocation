@@ -28,7 +28,7 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 	public private(set) var timeout: TimeInterval?
 	
 	/// JSON Operation to download data
-	private var task: JSONOperation2? = nil
+	private var task: JSONOperation? = nil
 
 	/// Identifier of the request
 	public private(set) var id: RequestID = UUID().uuidString
@@ -59,7 +59,7 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 			return
 		}
 
-		self.task = JSONOperation2(self.service.url, timeout: self.timeout)
+		self.task = JSONOperation(self.service.url, timeout: self.timeout)
 		self.task?.onSuccess = { [weak self] json in
 			guard let `self` = self, let json = json as? [String: Any] else { return }
 			var latKey = "latitude"

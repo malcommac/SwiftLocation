@@ -607,7 +607,7 @@ public enum HeadingServiceState {
 	case invalid
 }
 
-public class JSONOperation2 {
+public class JSONOperation {
 	
 	/// Task of the operation
 	private var task: URLSessionDataTask?

@@ -16,7 +16,7 @@ import Contacts
 public final class Geocoder_Google: GeocoderRequest {
 	
 	/// session task
-	private var task: JSONOperation2? = nil
+	private var task: JSONOperation? = nil
 
 	public override func execute() {
 		guard self.isFinished == false else { return }
@@ -41,7 +41,7 @@ public final class Geocoder_Google: GeocoderRequest {
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(c.latitude),\(c.longitude)&key=\(APIKey)")!
 		//self.task = JSONOperation(url, timeout: self.timeout)
-		self.task = JSONOperation2(url, timeout: self.timeout)
+		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
@@ -75,7 +75,7 @@ public final class Geocoder_Google: GeocoderRequest {
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(address.urlEncoded)&key=\(APIKey)")!
 		//self.task = JSONOperation(url, timeout: self.timeout)
-		self.task = JSONOperation2(url, timeout: self.timeout)
+		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
@@ -98,7 +98,7 @@ public final class Geocoder_Google: GeocoderRequest {
 public final class Geocoder_OpenStreet: GeocoderRequest {
 	
 	/// session task
-	private var task: JSONOperation2? = nil
+	private var task: JSONOperation? = nil
 
 	public override func execute() {
 		guard self.isFinished == false else { return }
@@ -118,7 +118,7 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 
 	private func execute_getPlace(_ coordinates: CLLocationCoordinate2D) {
 		let url =  URL(string:"https://nominatim.openstreetmap.org/reverse?format=json&lat=\(coordinates.latitude)&lon=\(coordinates.longitude)&addressdetails=1&limit=1")!
-		self.task = JSONOperation2(url, timeout: self.timeout)
+		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
@@ -139,7 +139,7 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 	private func execute_getLocation(_ address: String) {
 		let fAddr = address.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
 		let url =  URL(string:"https://nominatim.openstreetmap.org/search/\(fAddr)?format=json&addressdetails=1&limit=1")!
-		self.task = JSONOperation2(url, timeout: self.timeout)
+		self.task = JSONOperation(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
