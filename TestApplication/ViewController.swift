@@ -18,13 +18,19 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		SwiftLocation.Locator.currentPosition(usingIP: .freeGeoIP, onSuccess: { loc in
-			print("loc")
-		}) { (e, b) -> (Void) in
+		Locator.api.googleAPIKey = "AIzaSyDy2wdv5jbT7BuOhmbDU2VEQobz83xNcpw"
+//		Locator.autocompletePlaces(with: "Via Veneto", onSuccess: { place in
+//			print("\(place.count)")
+//		}) { err in
+//			print("err: \(err)")
+//		}
+
+		let c = CLLocationCoordinate2DMake(41.895660, 12.493186)
+		Locator.location(fromCoordinates: c, locale: nil, using: GeocoderService.google, timeout: 10, onSuccess: { places in
 			print("")
+		}) { err in
+			print("\(err)")
 		}
-	
-		
 	}
 	
 	override func didReceiveMemoryWarning() {

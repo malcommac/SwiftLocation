@@ -130,6 +130,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 	/// Geocoder requests
 	internal var geocoderRequests = SafeList<GeocoderRequest>()
 	
+	/// Geocoder requests
+	internal var autocompleteRequest = SafeList<FindPlaceRequest>()
+	
 	/// Ip requests
 	internal var ipLocationRequests = SafeList<IPLocationRequest>()
 
@@ -367,6 +370,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		request.success = onSuccess
 		request.failure = onFail
 		request.execute()
+		self.autocompleteRequest.add(request)
 		return request
 	}
 	

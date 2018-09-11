@@ -7,45 +7,49 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 public typealias FindPlaceRequest_Success = (([PlaceMatch]) -> (Void))
 public typealias FindPlaceRequest_Failure = ((LocationError) -> (Void))
 
 /// Public protocol for place find request
-public protocol FindPlaceRequest {
+public class FindPlaceRequest: Equatable {
 	
 	/// Success handler
-	var success: FindPlaceRequest_Success? { get set }
+	var success: FindPlaceRequest_Success?
 	
 	/// Failure handler
-	var failure: FindPlaceRequest_Failure? { get set }
+	var failure: FindPlaceRequest_Failure?
 	
 	/// Timeout interval
-	var timeout: TimeInterval { get set }
+	var timeout: TimeInterval
 	
 	/// Execute operation
-	func execute()
+	func execute() {}
 	
 	/// Cancel current execution (if any)
-	func cancel()
+	func cancel() {}
+	
+	private func complete() {}
+	
+	/// Unique identifier of the request
+	var identifier: String
+	
+	internal init(timeout: TimeInterval? = nil) {
+		self.identifier = UUID().uuidString
+		self.timeout = timeout ?? 10
+	}
+	
+	public static func == (lhs: FindPlaceRequest, rhs: FindPlaceRequest) -> Bool {
+		return lhs.identifier == rhs.identifier
+	}
 }
 
 /// Find Place with Google
 public class FindPlaceRequest_Google: FindPlaceRequest {
 	
 	/// session task
-	private var task: JSONOperation? = nil
-	
-	/// Success callback
-	public var success: FindPlaceRequest_Success?
-	
-	/// Failure callback
-	public var failure: FindPlaceRequest_Failure?
-	
-	/// Timeout interval
-	public var timeout: TimeInterval
-	
+	private var task: JSONOperation2? = nil
+
 	/// Input to search
 	public private(set) var input: String
 
@@ -59,36 +63,52 @@ public class FindPlaceRequest_Google: FindPlaceRequest {
 	///   - timeout: timeout, `nil` uses default timeout of 10 seconds
     public init(input: String, timeout: TimeInterval? = nil, language: FindPlaceRequest_Google_Language? = nil) {
 		self.input = input
-		self.timeout = timeout ?? 10
         self.language = language ?? FindPlaceRequest_Google_Language.english
+		super.init(timeout: timeout)
 	}
 	
-	public func execute() {
+	public override func execute() {
 		guard let APIKey = Locator.api.googleAPIKey else {
 			self.failure?(LocationError.missingAPIKey(forService: "google"))
 			return
 		}
         let lang = language?.rawValue ?? "en"
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(input.urlEncoded)&language=\(lang)&key=\(APIKey)")!
-		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task = JSONOperation2(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
+			self.complete()
 		}
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
-			if json["status"].stringValue != "OK" {
-				self.failure?(LocationError.other("Wrong google response"))
+			defer { self?.complete() }
+			
+			guard let `self` = self else { return }
+			guard let json = json as? [String:Any] else {
+				self.failure?(LocationError.dataParserError)
 				return
 			}
-			let places = PlaceMatch.load(list: json["predictions"].arrayValue)
+			// api related error
+			let status = json["status"] as? String
+			if status != "OK",
+				let error_msg = json["error_message"] as? String, !error_msg.isEmpty {
+				self.failure?(LocationError.other(error_msg))
+				return
+			}
+			
+			let places = PlaceMatch.load(list: json["predictions"] as? [Any])
 			self.success?(places)
 		}
 		self.task?.execute()
 	}
 	
-	public func cancel() {
+	public override func cancel() {
 		self.task?.cancel()
+		self.complete()
+	}
+	
+	private func complete() {
+		Locator.autocompleteRequest.remove(self)
 	}
 	
 }
@@ -225,17 +245,20 @@ public class PlaceMatch {
 	/// Place detail cache
 	public private(set) var detail: Place?
 
-	public init?(_ json: JSON) {
-		guard let placeID = json["place_id"].string else { return nil }
-		self.placeID = placeID
-		self.name = json["description"].stringValue
-		self.mainText = json["structured_formatting"]["main_text"].stringValue
-		self.secondaryText = json["structured_formatting"]["secondary_text"].stringValue
-		self.types = json["types"].arrayValue.map { $0.stringValue }
+	public init?(_ json: [String: Any]?) {
+		guard let json = json else { return nil }
+		guard let place = json["place_id"] as? String, !place.isEmpty else {
+			return nil
+		}
+		self.placeID = place
+		self.name = json.keyPath("description", default: "")
+		self.mainText = json.keyPath("structured_formatting.main_text", default: "")
+		self.secondaryText = json.keyPath("structured_formatting.secondary_text", default: "")
+		self.types = json.keyPath("types", default: []).compactMap { $0 as? String }
 	}
 	
-	public static func load(list: [JSON]) -> [PlaceMatch] {
-		return list.compactMap { PlaceMatch($0) }
+	public static func load(list: [Any]?) -> [PlaceMatch] {
+		return (list ?? []).compactMap { PlaceMatch($0 as? [String:Any]) }
 	}
 	
 	public func detail(timeout: TimeInterval? = nil,
@@ -250,10 +273,16 @@ public class PlaceMatch {
 			return
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/place/details/json?placeid=\(self.placeID)&key=\(APIKey)")!
-		let task = JSONOperation(url, timeout: timeout ?? 10)
+		let task = JSONOperation2(url, timeout: timeout ?? 10)
 		task.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
-			self.detail = Place(googleJSON: json["result"])
+			guard let `self` = self else { return }
+			guard 	let json = json as? [String:Any],
+					let data: [String:Any] = json.keyPath("result", default: nil),
+					let place = Place(googleJSON: data) else {
+				onFail?(LocationError.dataParserError)
+				return
+			}
+			self.detail = place
 			onSuccess(self.detail!)
 		}
 		task.onFailure = { err in

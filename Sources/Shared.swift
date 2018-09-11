@@ -33,7 +33,6 @@
 import Foundation
 import CoreLocation
 import MapKit
-import SwiftyJSON
 
 /// Thread-safe list
 /// All functions and proprierties are thread-safe.
@@ -614,7 +613,7 @@ public class JSONOperation2 {
 	private var task: URLSessionDataTask?
 	
 	/// Callback called on success
-	public var onSuccess: (([String: Any]) -> (Void))? = nil
+	public var onSuccess: ((Any) -> (Void))? = nil
 	
 	/// Callack called on failure
 	public var onFailure: ((LocationError) -> (Void))? = nil
@@ -647,67 +646,8 @@ public class JSONOperation2 {
 			return
 		}
 		
-		if let json = try? JSONSerialization.jsonObject(with: data, options: []),
-			let dictionary = json as? [String: Any] {
-			self.onSuccess?(dictionary)
-		}
-	}
-	
-	/// Execute download and parse
-	public func execute() {
-		self.task?.resume()
-	}
-	
-	/// Cancel operation
-	public func cancel() {
-		self.task?.cancel()
-	}
-}
-
-/// JSON operastion is used to get data from specified url and return a valid json parsed result using SwiftyJSON
-public class JSONOperation {
-	
-	/// Task of the operation
-	private var task: URLSessionDataTask?
-	
-	/// Callback called on success
-	public var onSuccess: ((JSON) -> (Void))? = nil
-	
-	/// Callack called on failure
-	public var onFailure: ((LocationError) -> (Void))? = nil
-	
-	/// Initialize a new download operation with given url
-	///
-	/// - Parameters:
-	///   - url: url to download
-	///   - timeout: timeout, `nil` uses default timeout (10 seconds)
-	public init(_ url: URL, timeout: TimeInterval? = nil) {
-		let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeout ?? 10)
-        self.task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] (data, response, error) in
-            self?.onReceiveResponse(data, response, error)
-        })
-	}
-	
-	/// Response parser
-	///
-	/// - Parameters:
-	///   - data: data received if any
-	///   - response: url response if any
-	///   - error: error if any
-	private func onReceiveResponse(_ data: Data?, _ response: URLResponse?, _ error: Error?) {
-		if let e = error {
-			self.onFailure?(LocationError.other(e.localizedDescription))
-			return
-		}
-		guard let d = data else {
-			self.onFailure?(LocationError.dataParserError)
-			return
-		}
-		do {
-			let json = try JSON(data: d)
+		if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
 			self.onSuccess?(json)
-		} catch {
-			self.onFailure?(LocationError.dataParserError)
 		}
 	}
 	
@@ -720,7 +660,6 @@ public class JSONOperation {
 	public func cancel() {
 		self.task?.cancel()
 	}
-	
 }
 
 /// This is a generic object used to represent a Place; its shared along all geocoding services as common base.
@@ -831,44 +770,41 @@ public class Place: CustomStringConvertible {
 	
 	internal init() { }
 	
-	/// Initialize with Google raw service data
-	///
-	/// - Parameter json: input json
-	internal init(googleJSON json: JSON) {
-		func ab(forType type: String) -> JSON? {
-			return json["address_components"].arrayValue.first(where: { data in
-				return data["types"].arrayValue.contains(where: { entry in
-					return entry.stringValue == type
-				})
-			})
-		}
+	internal init?(googleJSON json: Any) {
+		guard let json = json as? [String:Any] else { return nil }
 		
-		if let lat = json["geometry"]["location"]["lat"].double, let lon = json["geometry"]["location"]["lng"].double {
+		func ab(forType type: String) -> [String:Any]? {
+			let components: [[String: Any]] = json.keyPath("address_components", default: [])
+			let data = components.first { item in
+				return (item["types"] as! [String]).contains(type)
+			}
+			return data
+		}
+
+		if 	let lat: Double = json.keyPath("geometry.location.lat", default: nil),
+			let lon: Double = json.keyPath("geometry.location.lng", default: nil) {
 			self.coordinates = CLLocationCoordinate2DMake(lat, lon)
 		}
-		self.name = ab(forType: "establishment")?["long_name"].string
+
+		self.formattedAddress = json.keyPath("formatted_address", default: nil)
+		self.name = ab(forType: "establishment")?.keyPath("long_name", default: nil) ?? self.formattedAddress
 		if let countryData = ab(forType: "country") {
-			self.countryCode = countryData["short_name"].string
-			self.country = countryData["long_name"].string
+			self.countryCode = countryData.keyPath("short_name", default: nil)
+			self.country = countryData.keyPath("long_name", default: nil)
 		}
-		self.postalCode = ab(forType: "postal_code")?["long_name"].string
-		self.administrativeArea = ab(forType: "administrative_area_level_1")?["long_name"].string
-		self.subAdministrativeArea = ab(forType: "administrative_area_level_2")?["long_name"].string
-		self.city = ab(forType: "locality")?["long_name"].string
-		self.formattedAddress = json["formatted_address"].string
 		
-		self.locality = ab(forType: "neighborhood")?["long_name"].string ?? ab(forType: "sublocality_level_1")?["long_name"].string
-		self.subLocality = ab(forType: "sublocality_level_2")?["long_name"].string
-		self.thoroughfare = ab(forType: "route")?["long_name"].string
-		if self.thoroughfare == nil {
-			self.thoroughfare = ab(forType: "neighborhood")?["short_name"].string
-		}
-		self.subThoroughfare = ab(forType: "street_number")?["long_name"].string
-		
-		self.POI = ab(forType: "point_of_interest")?["long_name"].string
-		self.rawDictionary = json.dictionaryObject
+		self.postalCode = ab(forType: "postal_code")?.keyPath("long_name", default: nil)
+		self.administrativeArea = ab(forType: "administrative_area_level_1")?.keyPath("long_name", default: nil)
+		self.subAdministrativeArea = ab(forType: "administrative_area_level_2")?.keyPath("long_name", default: nil)
+		self.city = ab(forType: "locality")?.keyPath("long_name", default: nil)
+
+		self.locality = ab(forType: "neighborhood")?.keyPath("long_name", default: nil) ?? ab(forType: "sublocality_level_1")?.keyPath("long_name", default: nil)
+		self.subLocality = ab(forType: "sublocality_level_2")?.keyPath("long_name", default: nil)
+		self.thoroughfare = ab(forType: "sublocality_level_2")?.keyPath("long_name", default: nil) ?? ab(forType: "neighborhood")?.keyPath("short_name", default: nil)
+		self.subThoroughfare = ab(forType: "street_number")?.keyPath("long_name", default: nil)
+		self.POI = ab(forType: "point_of_interest")?.keyPath("long_name", default: nil)
+		self.rawDictionary = json
 	}
-	
 	
 	/// Initialize from Apple's raw service data
 	///

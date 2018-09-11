@@ -10,15 +10,14 @@ import Foundation
 import CoreLocation
 import MapKit
 import Contacts
-import SwiftyJSON
 
 //MARK: Geocoder Google
 
 public final class Geocoder_Google: GeocoderRequest {
 	
 	/// session task
-	private var task: JSONOperation? = nil
-	
+	private var task: JSONOperation2? = nil
+
 	public override func execute() {
 		guard self.isFinished == false else { return }
 		switch self.operation {
@@ -41,15 +40,28 @@ public final class Geocoder_Google: GeocoderRequest {
 			return
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?latlng=\(c.latitude),\(c.longitude)&key=\(APIKey)")!
-		self.task = JSONOperation(url, timeout: self.timeout)
+		//self.task = JSONOperation(url, timeout: self.timeout)
+		self.task = JSONOperation2(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
 			self.isFinished = true
 		}
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
-			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
+			guard let `self` = self else { return }
+			guard let json = json as? [String:Any] else {
+				self.failure?(LocationError.dataParserError)
+				return
+			}
+			
+			let status = json["status"] as? String
+			if status != "OK",
+				let error_msg = json["error_message"] as? String, !error_msg.isEmpty {
+				self.failure?(LocationError.other(error_msg))
+				return
+			}
+			
+			let places = json.keyPath("results", default: []).compactMap { Place(googleJSON: $0) }
 			self.success?(places)
 			self.isFinished = true
 		}
@@ -62,15 +74,17 @@ public final class Geocoder_Google: GeocoderRequest {
 			return
 		}
 		let url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json?address=\(address.urlEncoded)&key=\(APIKey)")!
-		self.task = JSONOperation(url, timeout: self.timeout)
+		//self.task = JSONOperation(url, timeout: self.timeout)
+		self.task = JSONOperation2(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
 			self.isFinished = true
 		}
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
-			let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
+			guard let `self` = self, let json = json as? [String: Any] else { return }
+		//	let places = json["results"].arrayValue.map { Place(googleJSON: $0) }
+			let places = json.keyPath("results", default: []).compactMap { Place(googleJSON: $0) }
 			self.success?(places)
 			self.isFinished = true
 		}
@@ -84,8 +98,8 @@ public final class Geocoder_Google: GeocoderRequest {
 public final class Geocoder_OpenStreet: GeocoderRequest {
 	
 	/// session task
-	private var task: JSONOperation? = nil
-	
+	private var task: JSONOperation2? = nil
+
 	public override func execute() {
 		guard self.isFinished == false else { return }
 		switch self.operation {
@@ -104,14 +118,18 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 
 	private func execute_getPlace(_ coordinates: CLLocationCoordinate2D) {
 		let url =  URL(string:"https://nominatim.openstreetmap.org/reverse?format=json&lat=\(coordinates.latitude)&lon=\(coordinates.longitude)&addressdetails=1&limit=1")!
-		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task = JSONOperation2(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
 			self.isFinished = true
 		}
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
+			guard let `self` = self else { return }
+			guard let json = json as? [String:Any] else {
+				self.failure?(LocationError.dataParserError)
+				return
+			}
 			self.success?([self.parseResultPlace(json)])
 			self.isFinished = true
 		}
@@ -121,35 +139,38 @@ public final class Geocoder_OpenStreet: GeocoderRequest {
 	private func execute_getLocation(_ address: String) {
 		let fAddr = address.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
 		let url =  URL(string:"https://nominatim.openstreetmap.org/search/\(fAddr)?format=json&addressdetails=1&limit=1")!
-		self.task = JSONOperation(url, timeout: self.timeout)
+		self.task = JSONOperation2(url, timeout: self.timeout)
 		self.task?.onFailure = { [weak self] err in
             guard let `self` = self else { return }
 			self.failure?(err)
 			self.isFinished = true
 		}
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
-			let places = json.arrayValue.map { self.parseResultPlace($0) }
+            guard let `self` = self, let json = json as? [Any] else { return }
+			let places = json.map { self.parseResultPlace($0 as? [String: Any]) }
 			self.success?(places)
 			self.isFinished = true
 		}
 		self.task?.execute()
 	}
 	
-	private func parseResultPlace(_ json: JSON) -> Place {
+	private func parseResultPlace(_ json: [String: Any]?) -> Place {
+		guard let json = json else { return Place() }
 		let place = Place()
-		place.coordinates = CLLocationCoordinate2DMake(json["lat"].doubleValue, json["lon"].doubleValue)
-		place.countryCode = json["address"]["country_code"].string
-		place.country = json["address"]["country"].string
-		place.administrativeArea = json["address"]["state"].string
-		place.subAdministrativeArea = json["address"]["county"].string
-		place.postalCode = json["address"]["postcode"].string
-		place.city = json["address"]["city"].string
-		place.locality = json["address"]["city_district"].string
-		place.thoroughfare = json["address"]["road"].string
-		place.subThoroughfare = json["address"]["house_number"].string
-		place.name = json["display_name"].string
-		place.rawDictionary = json.dictionaryObject
+		if let lat: Double = json.keyPath("lat", default: nil), let lng: Double = json.keyPath("lon", default: nil) {
+			place.coordinates = CLLocationCoordinate2DMake(lat,lng)
+		}
+		place.countryCode = json.keyPath("address.country_code", default: nil)
+		place.country = json.keyPath("address.country", default: nil)
+		place.administrativeArea = json.keyPath("address.state", default: nil)
+		place.subAdministrativeArea = json.keyPath("address.county", default: nil)
+		place.postalCode = json.keyPath("address.postcode", default: nil)
+		place.city = json.keyPath("address.city", default: nil)
+		place.locality = json.keyPath("address.city_district", default: nil)
+		place.thoroughfare = json.keyPath("address.road", default: nil)
+		place.subThoroughfare = json.keyPath("address.house_number", default: nil)
+		place.name = json.keyPath("display_name", default: nil)
+		place.rawDictionary = json
 		return place
 	}
 

@@ -61,7 +61,7 @@ public class IPLocationRequest: Request, Hashable, Equatable {
 
 		self.task = JSONOperation2(self.service.url, timeout: self.timeout)
 		self.task?.onSuccess = { [weak self] json in
-            guard let `self` = self else { return }
+			guard let `self` = self, let json = json as? [String: Any] else { return }
 			var latKey = "latitude"
 			var lngKey = "longitude"
 			switch self.service {
