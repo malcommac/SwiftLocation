@@ -120,6 +120,16 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		set { self.manager.showsBackgroundLocationIndicator = newValue }
 		get { return self.manager.showsBackgroundLocationIndicator }
 	}
+    
+    public var activityType: CLActivityType {
+        set { self.manager.activityType = newValue }
+        get { return self.manager.activityType }
+    }
+    
+    public var pausesLocationUpdatesAutomatically: Bool {
+        set { self.manager.pausesLocationUpdatesAutomatically = newValue }
+        get { return self.manager.pausesLocationUpdatesAutomatically }
+    }
 	
 	/// Current queued location requests
 	private var locationRequests = SafeList<LocationRequest>()
