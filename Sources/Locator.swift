@@ -130,6 +130,14 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
         set { self.manager.pausesLocationUpdatesAutomatically = newValue }
         get { return self.manager.pausesLocationUpdatesAutomatically }
     }
+    
+    public var (deferredDistance, deferredTimeout) = (CLLocationDistanceMax, CLTimeIntervalMax)
+    
+    public private(set) var deferringUpdates = false
+    
+    public var isDeferredUpdatesEnabled: Bool {
+        return CLLocationManager.deferredLocationUpdatesAvailable() && (deferredDistance != CLLocationDistanceMax || deferredTimeout != CLTimeIntervalMax)
+    }
 	
 	/// Current queued location requests
 	private var locationRequests = SafeList<LocationRequest>()
@@ -730,6 +738,11 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		
 		// Process the location requests using the updated location
 		self.processLocationRequests()
+        
+        if isDeferredUpdatesEnabled && !deferringUpdates {
+            self.manager.allowDeferredLocationUpdates(untilTraveled: deferredDistance, timeout: deferredTimeout)
+            self.deferringUpdates = true
+        }
 	}
 	
 	public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -770,6 +783,15 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 			}
 		}
 	}
+    
+    public func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        self.deferringUpdates = false
+        if isDeferredUpdatesEnabled && !deferringUpdates {
+            self.manager.allowDeferredLocationUpdates(untilTraveled: deferredDistance, timeout: deferredTimeout)
+            self.deferringUpdates = true
+        }
+    }
+
 	
 	public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
 		self.currentHeading = newHeading
