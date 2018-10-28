@@ -578,9 +578,9 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 						self.processRecurringRequest($0)
 					} else {
 						// This is a regular one-time location request
+						$0.location = location
 						if $0.hasValidThrehsold(forLocation: mostRecent) {
 							// The request's desired accuracy has been reached, complete it
-							$0.location = location
 							self.completeLocationRequest($0)
 						}
 					}
