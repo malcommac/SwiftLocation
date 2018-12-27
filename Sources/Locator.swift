@@ -180,6 +180,11 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		return self.manager.serviceState
 	}
 	
+	/// Return the service available flag of location services for this app
+	public var servicesAreAvailable: Bool {
+	    return self.manager.servicesAreAvailable
+  	}
+	
 	/// Return the current accuracy level of the location manager
 	/// This value is managed automatically based upon current queued requests
 	/// in order to better manage power consumption.
