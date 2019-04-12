@@ -446,7 +446,7 @@ public class LocatorManager: NSObject, CLLocationManagerDelegate {
 		
 		if r.isRecurring { // Recurring requests can only be canceled
 			r.timeout?.abort()
-			self.locationRequests.remove(r)
+			self.removeLocationRequest(r)
 		} else {
 			r.timeout?.forceTimeout() // force timeout
 			self.completeLocationRequest(r) // complete request
