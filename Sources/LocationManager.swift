@@ -19,6 +19,7 @@ public class LocationManager: NSObject {
     private typealias GeocoderRequestSet = Set<GeocoderRequest>
     private typealias AutocompleteRequestSet = Set<AutoCompleteRequest>
     private typealias IPRequestSet = Set<LocationByIPRequest>
+    private typealias HeadingRequestSet = Set<HeadingRequest>
 
     // MARK: - Public Properties -
     
@@ -55,6 +56,21 @@ public class LocationManager: NSObject {
         return managerAccuracy
     }
     
+    /// Core Location may call this method in an effort to calibrate the onboard hardware
+    /// used to determine heading values. Typically, Core Location calls this method at the following times:
+    ///     - The first time heading updates are ever requested
+    ///     - When Core Location observes a significant change in magnitude or inclination of the observed magnetic field
+    ///
+    /// If you return true from this method, Core Location displays the heading calibration alert
+    /// on top of the current window immediately.
+    /// The calibration alert prompts the user to move the device in a particular pattern so that Core Location
+    /// can distinguish between the Earth’s magnetic field and any local magnetic fields.
+    /// The alert remains visible until calibration is complete or until you explicitly dismiss it
+    /// by calling the dismissHeadingCalibrationDisplay() method.
+    /// In the latter case, you can use this method to set up a timer and dismiss the interface after
+    /// a specified amount of time has elapsed.
+    public var shouldDisplayHeadingCalibration: Bool = true
+    
     // MARK: - Private Properties -
     
     /// This is the list of the requests currently in queue.
@@ -67,8 +83,12 @@ public class LocationManager: NSObject {
     /// This is the list of all autocomplete requests currently active.
     private var autocompleteRequestsQueue: Atomic<AutocompleteRequestSet>
 
+    /// Location by IP requests.
     private var ipRequestsQueue: Atomic<IPRequestSet>
 
+    /// Heading requests.
+    private var headingRequestsQueue: Atomic<HeadingRequestSet>
+    
     /// `CLLocationManager` instance used to receive events from GPS.
     private let manager = CLLocationManager()
     
@@ -95,6 +115,7 @@ public class LocationManager: NSObject {
         geocoderRequestsQueue = Atomic(GeocoderRequestSet())
         autocompleteRequestsQueue = Atomic(AutocompleteRequestSet())
         ipRequestsQueue = Atomic(IPRequestSet())
+        headingRequestsQueue = Atomic(HeadingRequestSet())
         super.init()
         manager.delegate = self
         
@@ -157,6 +178,25 @@ public class LocationManager: NSObject {
         
         request.timeoutManager = (timeout != nil ? Timeout(mode: timeout!) : nil)
         startIPLocationRequest(request)
+        return request
+    }
+
+    
+    /// Asynchronously requests the current heading of the device using location services.
+    /// The current heading (the most recent one acquired, regardless of accuracy level),
+    /// or nil if no valid heading was acquired
+    ///
+    /// - Parameters:
+    ///   - accuracy: minimum accuracy you want to receive. `nil` to receive all events
+    ///   - minInterval: minimum interval between each request. `nil` to receive all events regardless the interval.
+    ///   - result: callback where you will receive the result of request.
+    /// - Returns: return the request itself you can use to manage the lifecycle.
+    public func headingSubscription(accuracy: HeadingRequest.AccuracyDegree?, minInterval: TimeInterval? = nil,
+                                    result: @escaping HeadingRequest.Callback) -> HeadingRequest {
+        
+        let request = HeadingRequest(accuracy: accuracy, minInterval: minInterval)
+        request.callbacks.add(result)
+        startHeadingRequest(request)
         return request
     }
 
@@ -273,6 +313,32 @@ public class LocationManager: NSObject {
         request.callbacks.add(result)
         startAutoComplete(request)
         return request
+    }
+    
+    // MARK: - Private Methods: Heading Request -
+
+    internal func startHeadingRequest(_ request: HeadingRequest) {
+        headingRequestsQueue.mutate {
+            request.state = .idle
+            $0.insert(request) // insert in queue
+            self.updateHeadingSettings()
+        }
+    }
+    
+    internal func removeHeadingRequest(_ request: HeadingRequest) {
+        headingRequestsQueue.mutate {
+            request.state = .expired
+            $0.remove(request)
+            self.updateHeadingSettings()
+        }
+    }
+    
+    internal func updateHeadingSettings() {
+        guard headingRequestsQueue.atomic.isEmpty == false else {
+            manager.stopUpdatingHeading()
+            return
+        }
+        manager.startUpdatingHeading()
     }
     
     // MARK: - Private Methods: IP Request -
@@ -405,9 +471,21 @@ public class LocationManager: NSObject {
     
 }
 
-// MARK: - CLLocationManagerDelegate -
-
 extension LocationManager: CLLocationManagerDelegate {
+
+    // MARK: - CLLocationManagerDelegate Heading -
+
+    public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        headingRequestsQueue.atomic.forEach {
+            $0.dispatch(data: .success(newHeading))
+        }
+    }
+    
+    public func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
+        return shouldDisplayHeadingCalibration
+    }
+
+    // MARK: - CLLocationManagerDelegate Location -
     
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         guard status != .denied && status != .restricted else {

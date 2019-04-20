@@ -49,6 +49,8 @@ public class LocationRequest: ServiceRequest, Hashable {
     
     /// Callbacks called once a new location or error is received.
     public var callbacks = Observers<LocationRequest.Callback>()
+    
+    /// Last obtained valid location.
     public private(set) var lastLocation: CLLocation?
     
     /// Current state of the request.
@@ -56,6 +58,13 @@ public class LocationRequest: ServiceRequest, Hashable {
     
     /// Subscription mode used to receive events.
     public internal(set) var subscription: Subscription = .oneShot
+    
+    /// You can provide a custom validation rule which overrides the default settings for
+    /// accuracy and time threshold. You will receive in this callback any location retrived
+    /// from the GPS system and you can decide if it's valid to be propagated or not.
+    /// Inside the callback you will receive the location and the time interval between now
+    /// and the time you have received the location.
+    public var customValidation: ((CLLocation, TimeInterval) -> Bool)? = nil
     
     // MARK: - Initialization -
     
@@ -149,6 +158,11 @@ public class LocationRequest: ServiceRequest, Hashable {
     private func locationSatisfyRequest(_ location: CLLocation) -> Bool {
         guard location.timestamp > (lastLocation?.timestamp ?? Date.distantPast) else {
             return false // timestamp of the location is older than the latest we got. We can ignore it.
+        }
+        
+        if let customValidationRule = customValidation {
+            // overridden by custom validator rule
+            return customValidationRule(location,location.timestamp.timeIntervalSinceNow)
         }
         
         guard location.horizontalAccuracy < accuracy.value else {
