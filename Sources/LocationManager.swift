@@ -132,6 +132,14 @@ public class LocationManager: NSObject {
     
     // MARK: - Public Methods -
     
+    /// Explicitly require authorization to the user in order to receive location events.
+    /// You can call this method explicitly or you can leave it to be handled by the library.
+    ///
+    /// - Parameter mode: the default mode of the request, if nil `preferredAuthorization` mode is used.
+    public func requireUserAuthorization(_ mode: CLLocationManager.AuthorizationMode? = nil) {
+        manager.requestAuthorizationIfNeeded(mode ?? preferredAuthorization)
+    }
+    
     /// Create and enque a request to get the current device's location.
     ///
     /// - Parameters:
