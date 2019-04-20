@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+               BlueprintIdentifier = "52D6D9EF1BEFFFBE002C0205"
                BuildableName = "SwiftLocation.framework"
-               BlueprintName = "SwiftLocation-iOS"
+               BlueprintName = "SwiftLocation-tvOS"
                ReferencedContainer = "container:SwiftLocation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,9 +33,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "52D6D9851BEFF229002C0205"
-               BuildableName = "SwiftLocation-iOS Tests.xctest"
-               BlueprintName = "SwiftLocation-iOS Tests"
+               BlueprintIdentifier = "DD75028C1C690C7A006590AF"
+               BuildableName = "SwiftLocation-tvOS Tests.xctest"
+               BlueprintName = "SwiftLocation-tvOS Tests"
                ReferencedContainer = "container:SwiftLocation.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -43,9 +43,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+            BlueprintIdentifier = "52D6D9EF1BEFFFBE002C0205"
             BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
+            BlueprintName = "SwiftLocation-tvOS"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,9 +65,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+            BlueprintIdentifier = "52D6D9EF1BEFFFBE002C0205"
             BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
+            BlueprintName = "SwiftLocation-tvOS"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -83,9 +83,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+            BlueprintIdentifier = "52D6D9EF1BEFFFBE002C0205"
             BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
+            BlueprintName = "SwiftLocation-tvOS"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

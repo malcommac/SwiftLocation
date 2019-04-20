@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+               BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
                BuildableName = "SwiftLocation.framework"
-               BlueprintName = "SwiftLocation-iOS"
+               BlueprintName = "SwiftLocation-watchOS"
                ReferencedContainer = "container:SwiftLocation.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,26 +29,7 @@
       codeCoverageEnabled = "YES"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "52D6D9851BEFF229002C0205"
-               BuildableName = "SwiftLocation-iOS Tests.xctest"
-               BlueprintName = "SwiftLocation-iOS Tests"
-               ReferencedContainer = "container:SwiftLocation.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
-            BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
-            ReferencedContainer = "container:SwiftLocation.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -65,9 +46,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+            BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
             BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
+            BlueprintName = "SwiftLocation-watchOS"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -83,9 +64,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "52D6D97B1BEFF229002C0205"
+            BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
             BuildableName = "SwiftLocation.framework"
-            BlueprintName = "SwiftLocation-iOS"
+            BlueprintName = "SwiftLocation-watchOS"
             ReferencedContainer = "container:SwiftLocation.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
