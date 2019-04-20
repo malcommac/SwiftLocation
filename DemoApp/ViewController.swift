@@ -39,7 +39,7 @@ class ViewController: UIViewController {
 //        }
         
         //let options = GeocoderRequest.GoogleOptions()
-        //options.apiKey = "AIzaSyBFNt-SA_YWs6avChK-sU5aMR3o7DRTH-8"
+        //options.apiKey = "something"
        /* let options = GeocoderRequest.OpenStreetOptions()
         
 //        let r = LocationManager.shared.locate(fromAddress: "Via Di Santa Prassede 24, Roma", service: google) { data in
@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         }*/
         
        /* var options = AutoCompleteRequest.GoogleOptions()
-        options.APIKey = "AIzaSyBFNt-SA_YWs6avChK-sU5aMR3o7DRTH-8"
+        options.APIKey = "something"
 
        /* var options = AutoCompleteRequest.AppleOptions()
         options.region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(41.884641, 12.488470),
