@@ -19,24 +19,35 @@ public class HeadingRequest: ServiceRequest, Hashable {
     /// Typealias for accuracy, measured in degree
     public typealias AccuracyDegree = CLLocationDirection
     
+    // MARK: - Public Properties -
+    
+    /// Unique identifier of the request.
     public var id: LocationManager.RequestID
     
-    public var timeout: Timeout.Mode?
+    /// Timeout of the request. Not applicable for heading request.
+    public var timeout: Timeout.Mode? = nil
     
+    /// State of the request.
     public var state: RequestState = .idle
     
+    /// Accuracy degree interval for the request. If `nil` no filter is applied.
     public var accuracy: AccuracyDegree?
     
+    /// Minimum interval between each dispatched heading. If `nil` no filter is applied.
     public var minInterval: TimeInterval?
     
     /// Callbacks called once a new location or error is received.
     public var callbacks = Observers<HeadingRequest.Callback>()
+    
+    // MARK: - Initialization -
     
     internal init(accuracy: AccuracyDegree?, minInterval: TimeInterval?) {
         self.id = UUID().uuidString
         self.accuracy = accuracy
         self.minInterval = minInterval
     }
+    
+    // MARK: - Public Functions -
     
     public func stop() {
         stop(reason: .cancelled, remove: true)
@@ -49,6 +60,8 @@ public class HeadingRequest: ServiceRequest, Hashable {
     public func pause() {
         self.state = .paused
     }
+    
+    // MARK: - Protocol Conformances -
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
