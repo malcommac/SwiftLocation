@@ -11,10 +11,18 @@ import CoreLocation
 
 public extension CLLocationManager {
     
-    enum AuthorizationMode {
+    enum AuthorizationMode: CustomStringConvertible {
         case viaInfoPlist
         case whenInUse
         case always
+        
+        public var description: String {
+            switch self {
+            case .viaInfoPlist: return "viaInfoPlist"
+            case .whenInUse:    return "whenInUse"
+            case .always:       return "always"
+            }
+        }
     }
     
     /// Return `true` if host application has background location capabilities enabled

@@ -18,6 +18,10 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     public var id: LocationManager.RequestID
     
     public var timeout: Timeout.Mode?
+    
+    public var service: LocationByIPRequest.Service {
+        fatalError("Missing service property")
+    }
         
     /// Timeout manager handles timeout events.
     internal var timeoutManager: Timeout? {

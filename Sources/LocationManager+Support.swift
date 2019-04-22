@@ -20,15 +20,25 @@ public extension LocationManager {
         case missingAPIKey
     }
     
-    enum State {
+    enum State: CustomStringConvertible {
         case available
         case undetermined
         case denied
         case restricted
         case disabled
+        
+        public var description: String {
+            switch self {
+            case .available:    return "available"
+            case .undetermined: return "undetermined"
+            case .denied:       return "denied"
+            case .restricted:   return "restricted"
+            case .disabled:     return "disabled"
+            }
+        }
     }
     
-    enum Accuracy: Comparable {
+    enum Accuracy: Comparable, CustomStringConvertible {
         case any
         case city
         case neighborhood
@@ -37,11 +47,18 @@ public extension LocationManager {
         case room
         case custom(CLLocationAccuracy)
         
+        public static var all: [Accuracy] {
+            return [.any, .city, .neighborhood, .block, .house, .room]
+        }
+        
         public static func < (lhs: LocationManager.Accuracy, rhs: LocationManager.Accuracy) -> Bool {
             return lhs.value < rhs.value
         }
         
-        public init(rawValue: CLLocationAccuracy) {
+        public init?(rawValue: CLLocationAccuracy) {
+            guard rawValue > -1 else {
+                return nil
+            }
             switch rawValue {
             case Accuracy.city.value:
                 self = .city
@@ -95,6 +112,23 @@ public extension LocationManager {
                 return 5.0
             default:
                 return TimeInterval.greatestFiniteMagnitude
+            }
+        }
+        
+        public var description: String {
+            switch self {
+            case .city:
+               return "city"
+            case .neighborhood:
+                return "neighborhood"
+            case .block:
+                return "block"
+            case .house:
+                return "house"
+            case .room:
+                return "room"
+            default:
+                return NSString(format: "%0.0fmt, %0.0fs", self.value, self.interval) as String
             }
         }
         

@@ -107,10 +107,6 @@ public class LocationRequest: ServiceRequest, Hashable {
     
     /// Start/restart a [paused/idle/expired] request.
     public func start() {
-        guard state.isRunning == false else {
-            return
-        }
-        state = (LocationManager.state == .available ? .running : .idle) // change the state
         LocationManager.shared.startLocation(self) // add to queue
     }
     
@@ -197,10 +193,22 @@ public extension LocationRequest {
     /// - oneShot: one shot subscription. Once fulfilled or rejected request will be removed automatically.
     /// - continous: continous subscription still produces events (error or valid locations) until it will be removed manually.
     /// - significant: significant subsription sitll produces events (error or valid significant location) until removed.
-    enum Subscription {
+    enum Subscription: CustomStringConvertible {
         case oneShot
         case continous
         case significant
+        
+        public static var all: [Subscription] {
+            return [.oneShot, .continous, .significant]
+        }
+        
+        public var description: String {
+            switch self {
+            case .oneShot:      return "oneShot"
+            case .continous:    return "continous"
+            case .significant:  return "significant"
+            }
+        }
     }
     
     

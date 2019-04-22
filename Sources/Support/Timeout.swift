@@ -10,7 +10,7 @@ import Foundation
 
 public class Timeout {
     
-    public enum Mode {
+    public enum Mode: CustomStringConvertible {
         case absolute(TimeInterval)
         case delayed(TimeInterval)
         
@@ -20,8 +20,18 @@ public class Timeout {
             case .delayed(let v): return v
             }
         }
+        
+        public var description: String {
+            switch self {
+            case .absolute(let t):
+                return "abs \(t)s"
+            case .delayed(let t):
+                return "dly \(t)s"
+            }
+        }
+        
     }
-    
+ 
     public let mode: Mode
     internal var callback: ((TimeInterval) -> Void)?
     private var timer: Timer?

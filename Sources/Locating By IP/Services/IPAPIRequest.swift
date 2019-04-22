@@ -12,6 +12,10 @@ public class IPAPIRequest: LocationByIPRequest {
 
     private var jsonOperation: JSONOperation?
     
+    public override var service: LocationByIPRequest.Service {
+        return .ipAPI
+    }
+    
     public override func start() {
         let url = URL(string: "http://ip-api.com/json/")!
         self.jsonOperation = JSONOperation(url, timeout: self.timeout?.interval)

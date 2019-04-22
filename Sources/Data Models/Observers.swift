@@ -45,5 +45,5 @@ public class Observers<Callback> {
     public func removeAll() {
         callbacks.removeAll()
     }
-    
+        
 }

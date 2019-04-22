@@ -9,11 +9,24 @@
 import Foundation
 import CoreLocation
 
-public enum RequestState {
+public enum RequestState: CustomStringConvertible {
     case idle
     case paused
     case running
     case expired
+    
+    public var description: String {
+        switch self {
+        case .idle:
+            return "idle"
+        case .paused:
+            return "paused"
+        case .running:
+            return "running"
+        case .expired:
+            return "expired"
+        }
+    }
     
     public var isRunning: Bool {
         guard case .running = self else {
