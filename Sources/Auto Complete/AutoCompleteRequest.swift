@@ -15,6 +15,12 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
     public typealias Data = Result<[PlaceMatch],LocationManager.ErrorReason>
     public typealias Callback = ((Data) -> Void)
     
+    public var isPartialSearch: Bool {
+        guard case .partialSearch(_) = options!.operation else {
+            return false
+        }
+        return true
+    }
     // MARK: - Public Properties -
     
     public var id: LocationManager.RequestID

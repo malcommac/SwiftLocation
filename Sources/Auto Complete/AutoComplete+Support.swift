@@ -17,9 +17,20 @@ public extension AutoCompleteRequest {
     /// - apple: apple service.
     /// - google: google service.
     /// - openStreet: open streep map service.
-    enum Service {
+    enum Service: CustomStringConvertible {
         case apple(Options?)
         case google(GoogleOptions)
+        
+        public static var all: [Service] {
+            return [.apple(nil), .google(GoogleOptions(APIKey: ""))]
+        }
+        
+        public var description: String {
+            switch self {
+            case .apple: return "Apple"
+            case .google: return "Google"
+            }
+        }
     }
     
     /// Type of autocomplete operation.
@@ -29,14 +40,25 @@ public extension AutoCompleteRequest {
     ///                  use a placeDetail search to retrive more info about the place.
     /// - placeDetail: when you have a full search query (from services like apple) or the place id (from service like google)
     ///                you can use this operation to retrive more info about the place.
-    enum Operation {
+    enum Operation: CustomStringConvertible {
         case partialSearch(String)
         case placeDetail(String)
+        
+        public static var all: [Operation] {
+            return [.partialSearch(""),.placeDetail("")]
+        }
         
         public var value: String {
             switch self {
             case .partialSearch(let v): return v
             case .placeDetail(let v): return v
+            }
+        }
+        
+        public var description: String {
+            switch self {
+            case .partialSearch: return "Partial Search"
+            case .placeDetail: return "Place Detail"
             }
         }
     }
@@ -117,6 +139,10 @@ public extension AutoCompleteRequest {
         /// Countries must be added in ISO3166-1_alpha-2 version you can found:
         /// https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
         public var countries: Set<String>?
+        
+        public init(APIKey: String?) {
+            self.APIKey = APIKey
+        }
         
         // MARK: - Private Functions -
         

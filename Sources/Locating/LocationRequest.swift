@@ -53,9 +53,12 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// Callbacks called once a new location or error is received.
     public var callbacks = Observers<LocationRequest.Callback>()
     
-    /// Last obtained valid location.
-    public private(set) var lastLocation: CLLocation?
+    /// Last received location (even if not valid).
+    public private(set) var lastAbsoluteLocation: CLLocation?
     
+    /// Last valid received location (only if meet request's criteria).
+    public private(set) var lastLocation: CLLocation?
+
     /// Current state of the request.
     public internal(set) var state: RequestState = .idle
     
@@ -90,6 +93,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     ///
     /// - Parameter location: location to pass.
     internal func complete(location: CLLocation) {
+        lastAbsoluteLocation = location
         guard state.canReceiveEvents && locationSatisfyRequest(location) else {
             return // ignore events
         }

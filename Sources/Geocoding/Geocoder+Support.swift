@@ -22,7 +22,7 @@ public extension GeocoderRequest {
         case openStreet(OpenStreetOptions)
         
         public static var all: [Service] {
-            return [.apple(nil), .google(GoogleOptions()), .openStreet(OpenStreetOptions())]
+            return [.apple(nil), .google(GoogleOptions(APIKey: "")), .openStreet(OpenStreetOptions())]
         }
         
         public var description: String {
@@ -74,6 +74,9 @@ public extension GeocoderRequest {
         /// Api key for google service. Its required.
         public var APIKey: String?
         
+        public init(APIKey: String?) {
+            self.APIKey = APIKey
+        }
     }
     
     // MARK: - OpenStreet Geocoder Options -

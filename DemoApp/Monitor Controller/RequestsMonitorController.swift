@@ -72,6 +72,10 @@ class RequestsMonitorController: UIViewController {
             self.present(NewGeocodingRequestController.create(), animated: true, completion: nil)
         }))
         
+        alert.addAction(UIAlertAction(title: "Autocomplete Places/Addresses", style: .default, handler: { _ in
+            self.present(NewAutocompleteRequestController.create(), animated: true, completion: nil)
+        }))
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
@@ -160,6 +164,12 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
             cell.monitorController = self
             return cell
             
+        case let autoRequest as AutoCompleteRequest:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "AutoCompleteRequestCell") as! AutoCompleteRequestCell
+            cell.request = autoRequest
+            cell.monitorController = self
+            return cell
+            
         default:
             fatalError("Not implemented")
         }
@@ -174,8 +184,11 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         case _ as LocationByIPRequest:
             return IPRequestCell.height
             
-        case let geoRequest as GeocoderRequest:
+        case _ as GeocoderRequest:
             return GeocodeRequestCell.height
+            
+        case _ as AutoCompleteRequest:
+            return AutoCompleteRequestCell.height
             
         default:
             fatalError("Not implemented")

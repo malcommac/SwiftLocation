@@ -15,6 +15,8 @@
 		6427B50A226F1D5200DCCC24 /* NewIPRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */; };
 		6427B50C226F20FA00DCCC24 /* NewGeocodingRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B50B226F20FA00DCCC24 /* NewGeocodingRequestController.swift */; };
 		6427B50E226F28F600DCCC24 /* GeocodeRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B50D226F28F600DCCC24 /* GeocodeRequestCell.swift */; };
+		6427B510226F328600DCCC24 /* NewAutocompleteRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */; };
+		6427B512226F42CA00DCCC24 /* AutocompleteRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */; };
 		646A557C226374F2001CD502 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A557B226374F2001CD502 /* Support.swift */; };
 		646A5584226376F0001CD502 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5583226376F0001CD502 /* AppDelegate.swift */; };
 		646A5586226376F0001CD502 /* RequestsMonitorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5585226376F0001CD502 /* RequestsMonitorController.swift */; };
@@ -200,6 +202,8 @@
 		6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewIPRequestController.swift; sourceTree = "<group>"; };
 		6427B50B226F20FA00DCCC24 /* NewGeocodingRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGeocodingRequestController.swift; sourceTree = "<group>"; };
 		6427B50D226F28F600DCCC24 /* GeocodeRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodeRequestCell.swift; sourceTree = "<group>"; };
+		6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAutocompleteRequestController.swift; sourceTree = "<group>"; };
+		6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteRequestCell.swift; sourceTree = "<group>"; };
 		646A557B226374F2001CD502 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		646A5581226376F0001CD502 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		646A5583226376F0001CD502 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -420,6 +424,7 @@
 				647D19B9226F16930034FBD7 /* GPSRequestCell.swift */,
 				647D19BD226F1ACF0034FBD7 /* IPRequestCell.swift */,
 				6427B50D226F28F600DCCC24 /* GeocodeRequestCell.swift */,
+				6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */,
 			);
 			path = "Monitor Controller";
 			sourceTree = "<group>";
@@ -430,6 +435,7 @@
 				647D19B0226EF4310034FBD7 /* NewGPSRequestController.swift */,
 				6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */,
 				6427B50B226F20FA00DCCC24 /* NewGeocodingRequestController.swift */,
+				6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */,
 			);
 			path = "New Requests";
 			sourceTree = "<group>";
@@ -1059,10 +1065,12 @@
 				6492FFA7226868DE00414FE5 /* LocationManager+Support.swift in Sources */,
 				64A6762C22670C9400A1C011 /* JSONOperation.swift in Sources */,
 				646A5584226376F0001CD502 /* AppDelegate.swift in Sources */,
+				6427B512226F42CA00DCCC24 /* AutocompleteRequestCell.swift in Sources */,
 				647D19B5226EF4310034FBD7 /* NewGPSRequestController.swift in Sources */,
 				64A676192266F43900A1C011 /* GeocoderRequest.swift in Sources */,
 				641AB6F72264712500778DC8 /* Place.swift in Sources */,
 				646A55A1226376F9001CD502 /* LocationManager.swift in Sources */,
+				6427B510226F328600DCCC24 /* NewAutocompleteRequestController.swift in Sources */,
 				6492FF9B226859A400414FE5 /* Geocoder+Support.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

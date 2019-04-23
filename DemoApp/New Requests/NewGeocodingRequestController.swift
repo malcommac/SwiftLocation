@@ -48,6 +48,16 @@ public class NewGeocodingRequestController: UIViewController {
             return
         }
         
+        var serviceToUse: GeocoderRequest.Service!
+        switch self.service! {
+        case .apple:
+            serviceToUse = .apple(GeocoderRequest.Options())
+        case .google:
+            serviceToUse = .google(GeocoderRequest.GoogleOptions(APIKey: self.apiKeyLabel.text))
+        case .openStreet(_):
+            serviceToUse = .openStreet(GeocoderRequest.OpenStreetOptions())
+        }
+        
         switch isReverse {
         case true:
             guard let rawCoordinates = self.coordinatesLabel.text?.components(separatedBy: ","),
@@ -56,14 +66,14 @@ public class NewGeocodingRequestController: UIViewController {
                     return
             }
             let coordinates = CLLocationCoordinate2DMake(Double(rawCoordinates.first!)!, Double(rawCoordinates.last!)!)
-            LocationManager.shared.locateFromCoordinates(coordinates, result: nil)
+            LocationManager.shared.locateFromCoordinates(coordinates, timeout: nil, service: serviceToUse, result: nil)
             
         case false:
             guard let address = self.addressLabel.text, address.isEmpty == false else {
                 showAlert(title: "Missing Address", message: "Add address to geocode it.")
                 return
             }
-            LocationManager.shared.locateFromAddress(address, result: nil)
+            LocationManager.shared.locateFromAddress(address, inRegion: nil, timeout: nil, service: serviceToUse, result: nil)
         }
 
         self.dismiss(animated: true, completion: nil)

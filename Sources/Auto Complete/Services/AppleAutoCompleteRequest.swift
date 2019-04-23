@@ -79,6 +79,7 @@ extension AppleAutoCompleteRequest: MKLocalSearchCompleterDelegate {
             let place = PlacePartialMatch(localSearchCompletion: $0)
             return PlaceMatch.partialMatch(place)
         }
+        value = places
         dispatch(data: .success(places), andComplete: true)
     }
     

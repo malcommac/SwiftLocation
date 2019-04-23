@@ -316,6 +316,7 @@ public class LocationManager: NSObject {
     ///   - service: service used to perform the operation. By default `apple` is used.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
+    @discardableResult
     public func autocomplete(partialMatch: AutoCompleteRequest.Operation,
                              timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
                              service: AutoCompleteRequest.Service,
