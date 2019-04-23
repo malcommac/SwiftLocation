@@ -7,13 +7,16 @@
 //
 
 import UIKit
+import CoreLocation
 
 public class NewGPSRequestController: UIViewController {
     
     @IBOutlet public var timeoutButton: UIButton!
     @IBOutlet public var accuracyButton: UIButton!
     @IBOutlet public var modeButton: UIButton!
-    
+    @IBOutlet public var distanceFilter: UITextField!
+    @IBOutlet public var activityButton: UIButton!
+
     private var timeout: Timeout.Mode? = nil {
         didSet {
             reload()
@@ -27,6 +30,12 @@ public class NewGPSRequestController: UIViewController {
     }
     
     private var mode: LocationRequest.Subscription = .oneShot {
+        didSet {
+            reload()
+        }
+    }
+    
+    private var activityType: CLActivityType = .other {
         didSet {
             reload()
         }
@@ -73,6 +82,23 @@ public class NewGPSRequestController: UIViewController {
         })
     }
     
+    @IBAction public func setActivityType() {
+        var options: [SelectionItem<CLActivityType>] = [
+            SelectionItem(title: "other", value: CLActivityType.other),
+            SelectionItem(title: "automotiveNavigation", value: CLActivityType.automotiveNavigation),
+            SelectionItem(title: "fitness", value: CLActivityType.fitness),
+            SelectionItem(title: "otherNavigation", value: CLActivityType.otherNavigation),
+        ]
+        
+        if #available(iOS 12.0, *) {
+            options.append(SelectionItem(title: "airborne", value: CLActivityType.airborne))
+        }
+
+        self.showPicker(title: "Select an Activity", msg: nil, options: options, onSelect: { item in
+            self.activityType = item.value!
+        })
+    }
+    
     @IBAction public func setTimeout() {
         let options: [SelectionItem<Timeout.Mode>] = [
             .init(title: "Absolute 5s", value: .absolute(5)),
@@ -92,13 +118,37 @@ public class NewGPSRequestController: UIViewController {
         timeoutButton.setTitle(timeout?.description ?? "not set", for: .normal)
         accuracyButton.setTitle(accuracy.description, for: .normal)
         modeButton.setTitle(mode.description, for: .normal)
+        activityButton.setTitle(activityType.description, for: .normal)
     }
     
     @objc public func createRequest() {
         LocationManager.shared.locateFromGPS(self.mode,
                                              accuracy: self.accuracy,
+                                             distance: CLLocationDistance(distanceFilter.text ?? "-1"),
+                                             activity: self.activityType,
                                              timeout: self.timeout,
                                              result: nil)
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+extension CLActivityType: CustomStringConvertible {
+    
+    public var description: String {
+        switch self {
+        case .other:
+            return "other"
+        case .automotiveNavigation:
+            return "automotiveNavigation"
+        case .fitness:
+            return "fitness"
+        case .otherNavigation:
+            return "otherNavigation"
+        case .airborne:
+            return "airborne"
+        @unknown default:
+            return ""
+        }
+    }
+    
 }

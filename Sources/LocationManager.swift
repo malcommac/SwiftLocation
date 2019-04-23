@@ -63,6 +63,35 @@ public class LocationManager: NSObject {
         return managerAccuracy
     }
     
+    // MARK: - Background Updates -
+    
+    /// It is possible to force enable background location fetch even if your set any kind of Authorizations.
+    public var backgroundLocationUpdates: Bool {
+        set { self.manager.allowsBackgroundLocationUpdates = newValue }
+        get { return self.manager.allowsBackgroundLocationUpdates }
+    }
+    
+    /// Indicate whether the location manager object may pause location updates.
+    /// See CLLocationManager's `pausesLocationUpdatesAutomatically` for a detailed explaination.
+    public var pausesLocationUpdatesAutomatically: Bool {
+        set { self.manager.pausesLocationUpdatesAutomatically = newValue }
+        get { return self.manager.pausesLocationUpdatesAutomatically }
+    }
+    
+    /// A Boolean indicating whether the status bar changes its appearance when location services are used in the background.
+    /// This property affects only apps that received always authorization.
+    /// When such an app moves to the background, the system uses this property to determine whether to
+    /// change the status bar appearance to indicate that location services are in use.
+    ///
+    /// Displaying a modified status bar gives the user a quick way to return to your app. The default value of this property is false.
+    /// For apps with when-in-use authorization, the system always changes the status bar appearance when the
+    /// app uses location services in the background.
+    @available(iOS 11, *)
+    public var showsBackgroundLocationIndicator: Bool {
+        set { self.manager.showsBackgroundLocationIndicator = newValue }
+        get { return self.manager.showsBackgroundLocationIndicator }
+    }
+    
     // MARK: - Events -
     
     /// Event called when a new request is added or removed from a queue.
@@ -104,6 +133,9 @@ public class LocationManager: NSObject {
     
     /// `CLLocationManager` instance used to receive events from GPS.
     private let manager = CLLocationManager()
+    
+    /// Last received location.
+    public var lastLocation: CLLocation?
     
     /// Accuracy set for manager.
     public var managerAccuracy: Accuracy? {
@@ -152,15 +184,21 @@ public class LocationManager: NSObject {
     /// - Parameters:
     ///   - subscription: type of subscription you want to set.
     ///   - accuracy: minimum accuracy to receive from GPS for this request.
+    ///   - distance: The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+    ///   - activity: The location manager uses the information in this property as a cue to determine when location updates
+    ///               may be automatically paused.
     ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
     @discardableResult
     public func locateFromGPS(_ subscription: LocationRequest.Subscription,
-                              accuracy: Accuracy, timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
+                              accuracy: Accuracy, distance: CLLocationDistance? = nil, activity: CLActivityType = .other,
+                              timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
                               result: LocationRequest.Callback?) -> LocationRequest {
         let request = LocationRequest()
         request.accuracy = accuracy
+        request.distance = (distance ?? kCLDistanceFilterNone)
+        request.activityType = activity
         // only one shot requests has timeout
         request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
         request.subscription = subscription
@@ -359,7 +397,7 @@ public class LocationManager: NSObject {
     
     internal func removeHeadingRequest(_ request: HeadingRequest) {
         request.state = .expired
-        if let removed = queueHeadingRequests.remove(request) {
+        if let _ = queueHeadingRequests.remove(request) {
             dispatchQueueChangeEvent(false, request: request)
         }
         self.updateHeadingSettings()
@@ -460,11 +498,27 @@ public class LocationManager: NSObject {
         return true
     }
     
+    // MARK: - Evaluation of settings -
+    
     public func evaluateRequiredAccuracy() -> Accuracy {
         let accuracy = queueLocationRequests.max(by: { (lhs, rhs) in
             return lhs.accuracy > rhs.accuracy
         })?.accuracy
         return accuracy ?? .any
+    }
+    
+    public func evaluateRequiredDistanceFilter() -> CLLocationDistance {
+        let minDistance = queueLocationRequests.min { (lhs, rhs) in
+            return lhs.distance < rhs.distance
+        }?.distance
+        return minDistance ?? kCLDistanceFilterNone
+    }
+    
+    public func evaluateActivityType() -> CLActivityType {
+        let highestActivity = queueLocationRequests.max { (lhs, rhs) in
+            return lhs.activityType.rawValue > rhs.activityType.rawValue
+        }?.activityType
+        return highestActivity ?? .other
     }
     
     /// Adjust the location manager settings based upon the currently running requests and new added request.
@@ -473,6 +527,8 @@ public class LocationManager: NSObject {
     private func updateLocationManagerSettings(_ request: LocationRequest) {
         // adjust accuracy based on requests
         self.managerAccuracy = self.evaluateRequiredAccuracy()
+        self.manager.distanceFilter = self.evaluateRequiredDistanceFilter()
+        self.manager.activityType = self.evaluateActivityType()
         
         switch request.subscription {
         case .oneShot, .continous:
@@ -566,6 +622,7 @@ extension LocationManager: CLLocationManagerDelegate {
         guard let mostRecentLocation = locations.last else {
             return
         }
+        lastLocation = mostRecentLocation
         for request in queueLocationRequests { // dispatch location to any request
             request.complete(location: mostRecentLocation)
         }

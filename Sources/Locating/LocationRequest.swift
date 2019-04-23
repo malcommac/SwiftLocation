@@ -50,6 +50,16 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// request will fails with `timeout` error and it will be removed from queue.
     public var accuracy: LocationManager.Accuracy = .any
     
+    /// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+    /// If `kCLDistanceFilterNone` this constraint will be not applied when receiving events for this request.
+    public var distance: CLLocationDistance = kCLDistanceFilterNone
+    
+    /// The location manager uses the information in this property as a cue to determine
+    /// when location updates may be automatically paused.
+    /// Pausing updates gives the system the opportunity to save power in situations where
+    /// the user's location is not likely to be changing.
+    public var activityType: CLActivityType = .other
+    
     /// Callbacks called once a new location or error is received.
     public var callbacks = Observers<LocationRequest.Callback>()
     
@@ -176,6 +186,13 @@ public class LocationRequest: ServiceRequest, Hashable {
             return false // not too much time is passed since the event itself.
         }
         
+        if let lastLoc = lastLocation, distance != kCLDistanceFilterNone {
+            let distanceWithPrevious = lastLoc.distance(from: location)
+            guard distanceWithPrevious >= distance else {
+                return false // minimum distance not found
+            }
+        }
+        
         return true
     }
     
@@ -217,6 +234,5 @@ public extension LocationRequest {
             }
         }
     }
-    
     
 }

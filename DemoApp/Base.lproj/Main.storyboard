@@ -831,6 +831,18 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Distance Filter:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Rq-Hn-fBk">
+                                <rect key="frame" x="15" y="328.5" width="121" height="21"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity Type:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SfE-ND-LLw">
+                                <rect key="frame" x="15" y="431.5" width="110" height="21"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gb4-WA-UDL">
                                 <rect key="frame" x="96" y="245" width="87" height="30"/>
                                 <state key="normal" title="absolute 15s"/>
@@ -855,11 +867,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4BA-0y-ffo">
-                                <rect key="frame" x="15" y="275.5" width="345" height="57.5"/>
-                                <string key="text">- Absolute timeout timer starts once the request is added to the queue. 
-- Delayed timeout will starts only after the user give the permission to locate the device.</string>
+                                <rect key="frame" x="15" y="275.5" width="345" height="43"/>
+                                <string key="text">Absolute timeout timer starts once the request is added to the queue. Delayed timeout will starts only after the user give the permission to locate the device.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hlY-SV-rvf">
+                                <rect key="frame" x="15" y="364" width="345" height="57.5"/>
+                                <string key="text">The minimum distance (measured in meters) a device must move horizontally before an update event is generated. Set as -1 to ignore this constraint. This value helps to preserve the energy of the device.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fGX-4f-xoq">
@@ -869,19 +887,52 @@
                                     <action selector="setMode" destination="grk-X8-7ma" eventType="touchUpInside" id="r46-vH-vM8"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="-1 to ignore" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ekq-Vi-82w">
+                                <rect key="frame" x="146" y="324" width="214" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ugq-n0-8Aa">
+                                <rect key="frame" x="133" y="427" width="37" height="30"/>
+                                <state key="normal" title="other"/>
+                                <connections>
+                                    <action selector="setActivityType" destination="grk-X8-7ma" eventType="touchUpInside" id="JKt-ND-z1b"/>
+                                    <action selector="setTimeout" destination="grk-X8-7ma" eventType="touchUpInside" id="wuw-Zv-3oi"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pib-1q-OIc">
+                                <rect key="frame" x="16" y="462" width="344" height="86"/>
+                                <string key="text">The location manager uses the information in this property as a cue to determine when location updates may be automatically paused.
+Pausing updates gives the system the opportunity to save power in situations where the user's location is not likely to be changing.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="ekq-Vi-82w" firstAttribute="leading" secondItem="0Rq-Hn-fBk" secondAttribute="trailing" constant="10" id="001-Ho-m0P"/>
                             <constraint firstItem="Tdf-Za-yxB" firstAttribute="leading" secondItem="w0x-3r-85f" secondAttribute="leading" constant="15" id="1GK-Oo-sO9"/>
+                            <constraint firstItem="w0x-3r-85f" firstAttribute="trailing" secondItem="ekq-Vi-82w" secondAttribute="trailing" constant="15" id="1KE-h8-gRG"/>
                             <constraint firstItem="w0x-3r-85f" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EnW-Yy-Fpc" secondAttribute="trailing" symbolic="YES" id="1qw-X8-exu"/>
+                            <constraint firstItem="ugq-n0-8Aa" firstAttribute="centerY" secondItem="SfE-ND-LLw" secondAttribute="centerY" id="2jH-9R-jeT"/>
+                            <constraint firstItem="SfE-ND-LLw" firstAttribute="leading" secondItem="w0x-3r-85f" secondAttribute="leading" constant="15" id="8hx-HK-6O8"/>
+                            <constraint firstItem="hlY-SV-rvf" firstAttribute="top" secondItem="ekq-Vi-82w" secondAttribute="bottom" constant="10" id="9eM-BN-kac"/>
+                            <constraint firstItem="hlY-SV-rvf" firstAttribute="leading" secondItem="w0x-3r-85f" secondAttribute="leading" constant="15" id="Aeh-mG-4q6"/>
+                            <constraint firstItem="pib-1q-OIc" firstAttribute="top" secondItem="ugq-n0-8Aa" secondAttribute="bottom" constant="5" id="Cf9-vR-I87"/>
                             <constraint firstItem="eYR-J5-ls8" firstAttribute="trailing" secondItem="w0x-3r-85f" secondAttribute="trailing" constant="-15" id="DI7-Tc-lsZ"/>
+                            <constraint firstItem="w0x-3r-85f" firstAttribute="trailing" secondItem="pib-1q-OIc" secondAttribute="trailing" constant="15" id="E5h-dh-PZD"/>
+                            <constraint firstItem="ugq-n0-8Aa" firstAttribute="leading" secondItem="SfE-ND-LLw" secondAttribute="trailing" constant="8" id="Inl-l0-9ux"/>
                             <constraint firstItem="gb4-WA-UDL" firstAttribute="leading" secondItem="YJI-X6-m97" secondAttribute="trailing" constant="10" id="J9H-fh-1E6"/>
                             <constraint firstItem="gb4-WA-UDL" firstAttribute="centerY" secondItem="YJI-X6-m97" secondAttribute="centerY" id="K6S-kw-Kkh"/>
                             <constraint firstItem="w0x-3r-85f" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="fGX-4f-xoq" secondAttribute="trailing" symbolic="YES" id="LFX-fh-K1q"/>
                             <constraint firstItem="eYR-J5-ls8" firstAttribute="leading" secondItem="Rhy-Zk-ZZ4" secondAttribute="leading" id="PaA-Yg-LNu"/>
                             <constraint firstItem="4BA-0y-ffo" firstAttribute="trailing" secondItem="w0x-3r-85f" secondAttribute="trailing" constant="-15" id="Tzn-wB-oc2"/>
                             <constraint firstItem="w0x-3r-85f" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="gb4-WA-UDL" secondAttribute="trailing" symbolic="YES" id="UkT-BY-UzI"/>
+                            <constraint firstItem="pib-1q-OIc" firstAttribute="leading" secondItem="w0x-3r-85f" secondAttribute="leading" constant="16" id="Xna-wx-9pD"/>
                             <constraint firstItem="Rhy-Zk-ZZ4" firstAttribute="leading" secondItem="Tdf-Za-yxB" secondAttribute="leading" id="Y6s-oZ-4tO"/>
+                            <constraint firstItem="0Rq-Hn-fBk" firstAttribute="top" secondItem="4BA-0y-ffo" secondAttribute="bottom" constant="10" id="YmN-Hu-oaO"/>
                             <constraint firstItem="fGX-4f-xoq" firstAttribute="leading" secondItem="Tdf-Za-yxB" secondAttribute="trailing" constant="10" id="apx-q7-HJS"/>
                             <constraint firstItem="kPo-Gm-rYw" firstAttribute="top" secondItem="fGX-4f-xoq" secondAttribute="bottom" constant="5" id="d2M-Bz-hZU"/>
                             <constraint firstItem="Rhy-Zk-ZZ4" firstAttribute="top" secondItem="kPo-Gm-rYw" secondAttribute="bottom" constant="10" id="hcB-Ye-tfm"/>
@@ -892,8 +943,12 @@
                             <constraint firstItem="eYR-J5-ls8" firstAttribute="top" secondItem="Rhy-Zk-ZZ4" secondAttribute="bottom" constant="5" id="ng0-em-y8A"/>
                             <constraint firstItem="kPo-Gm-rYw" firstAttribute="leading" secondItem="Tdf-Za-yxB" secondAttribute="leading" id="rcX-Lh-sD9"/>
                             <constraint firstItem="EnW-Yy-Fpc" firstAttribute="centerY" secondItem="Rhy-Zk-ZZ4" secondAttribute="centerY" id="twR-5h-mmB"/>
+                            <constraint firstItem="0Rq-Hn-fBk" firstAttribute="leading" secondItem="w0x-3r-85f" secondAttribute="leading" constant="15" id="uS5-bK-2qm"/>
                             <constraint firstItem="4BA-0y-ffo" firstAttribute="leading" secondItem="YJI-X6-m97" secondAttribute="leading" id="uuZ-sh-N4X"/>
+                            <constraint firstItem="SfE-ND-LLw" firstAttribute="top" secondItem="hlY-SV-rvf" secondAttribute="bottom" constant="10" id="uzr-Aa-8Kg"/>
+                            <constraint firstAttribute="trailing" secondItem="hlY-SV-rvf" secondAttribute="trailing" constant="15" id="xPT-64-dCL"/>
                             <constraint firstItem="kPo-Gm-rYw" firstAttribute="trailing" secondItem="w0x-3r-85f" secondAttribute="trailing" constant="-15" id="xae-Pw-ec7"/>
+                            <constraint firstItem="ekq-Vi-82w" firstAttribute="centerY" secondItem="0Rq-Hn-fBk" secondAttribute="centerY" id="yAP-Cd-3zt"/>
                             <constraint firstItem="EnW-Yy-Fpc" firstAttribute="leading" secondItem="Rhy-Zk-ZZ4" secondAttribute="trailing" constant="10" id="zZV-LN-k5t"/>
                             <constraint firstItem="YJI-X6-m97" firstAttribute="top" secondItem="eYR-J5-ls8" secondAttribute="bottom" constant="10" id="zsA-Yi-GZR"/>
                         </constraints>
@@ -902,13 +957,15 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="accuracyButton" destination="EnW-Yy-Fpc" id="E1L-8X-zVG"/>
+                        <outlet property="activityButton" destination="ugq-n0-8Aa" id="q1U-mp-0h3"/>
+                        <outlet property="distanceFilter" destination="ekq-Vi-82w" id="UAm-aY-Q4Z"/>
                         <outlet property="modeButton" destination="fGX-4f-xoq" id="APf-K0-6eh"/>
                         <outlet property="timeoutButton" destination="gb4-WA-UDL" id="hnM-x6-xZg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mP2-q3-AIp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="708" y="81"/>
+            <point key="canvasLocation" x="708" y="80.50974512743629"/>
         </scene>
         <!--New Location by IP Request-->
         <scene sceneID="esx-uJ-1wc">
