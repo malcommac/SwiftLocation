@@ -205,7 +205,7 @@
 		6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAutocompleteRequestController.swift; sourceTree = "<group>"; };
 		6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteRequestCell.swift; sourceTree = "<group>"; };
 		646A557B226374F2001CD502 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
-		646A5581226376F0001CD502 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		646A5581226376F0001CD502 /* SwiftLocation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		646A5583226376F0001CD502 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		646A5585226376F0001CD502 /* RequestsMonitorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsMonitorController.swift; sourceTree = "<group>"; };
 		646A5588226376F0001CD502 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -341,7 +341,7 @@
 				52D6DA0F1BF000BD002C0205 /* SwiftLocation.framework */,
 				DD75027A1C68FCFC006590AF /* SwiftLocation-macOS Tests.xctest */,
 				DD75028D1C690C7A006590AF /* SwiftLocation-tvOS Tests.xctest */,
-				646A5581226376F0001CD502 /* DemoApp.app */,
+				646A5581226376F0001CD502 /* SwiftLocation.app */,
 				646A5594226376F1001CD502 /* DemoAppTests.xctest */,
 			);
 			name = Products;
@@ -673,9 +673,9 @@
 			productReference = 52D6DA0F1BF000BD002C0205 /* SwiftLocation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		646A5580226376F0001CD502 /* DemoApp */ = {
+		646A5580226376F0001CD502 /* SwiftLocation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 646A559B226376F1001CD502 /* Build configuration list for PBXNativeTarget "DemoApp" */;
+			buildConfigurationList = 646A559B226376F1001CD502 /* Build configuration list for PBXNativeTarget "SwiftLocation" */;
 			buildPhases = (
 				646A557D226376F0001CD502 /* Sources */,
 				646A557E226376F0001CD502 /* Frameworks */,
@@ -685,9 +685,9 @@
 			);
 			dependencies = (
 			);
-			name = DemoApp;
+			name = SwiftLocation;
 			productName = DemoApp;
-			productReference = 646A5581226376F0001CD502 /* DemoApp.app */;
+			productReference = 646A5581226376F0001CD502 /* SwiftLocation.app */;
 			productType = "com.apple.product-type.application";
 		};
 		646A5593226376F1001CD502 /* DemoAppTests */ = {
@@ -815,7 +815,7 @@
 				52D6D9851BEFF229002C0205 /* SwiftLocation-iOS Tests */,
 				DD7502791C68FCFC006590AF /* SwiftLocation-macOS Tests */,
 				DD75028C1C690C7A006590AF /* SwiftLocation-tvOS Tests */,
-				646A5580226376F0001CD502 /* DemoApp */,
+				646A5580226376F0001CD502 /* SwiftLocation */,
 				646A5593226376F1001CD502 /* DemoAppTests */,
 			);
 		};
@@ -1109,7 +1109,7 @@
 		};
 		646A5596226376F1001CD502 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 646A5580226376F0001CD502 /* DemoApp */;
+			target = 646A5580226376F0001CD502 /* SwiftLocation */;
 			targetProxy = 646A5595226376F1001CD502 /* PBXContainerItemProxy */;
 		};
 		DD7502811C68FCFC006590AF /* PBXTargetDependency */ = {
@@ -1690,7 +1690,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		646A559B226376F1001CD502 /* Build configuration list for PBXNativeTarget "DemoApp" */ = {
+		646A559B226376F1001CD502 /* Build configuration list for PBXNativeTarget "SwiftLocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				646A559C226376F1001CD502 /* Debug */,

@@ -1,10 +1,12 @@
 //
-//  LocationByIPRequest.swift
-//  SwiftLocation
+//  SwiftLocation - Efficient Location Tracking for iOS
 //
-//  Created by dan on 19/04/2019.
-//  Copyright © 2019 SwiftLocation. All rights reserved.
+//  Created by Daniele Margutti
+//   - Web: https://www.danielemargutti.com
+//   - Twitter: https://twitter.com/danielemargutti
+//   - Mail: hello@danielemargutti.com
 //
+//  Copyright © 2019 Daniele Margutti. Licensed under MIT License.
 
 import Foundation
 
