@@ -32,6 +32,7 @@ public class IPAPIRequest: LocationByIPRequest {
                 }
                 
                 let place = IPPlace(ipAPIJSON: json)
+                self.value = place
                 self.dispatch(data: .success(place))
             }
         }

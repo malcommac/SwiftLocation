@@ -9,6 +9,8 @@
 import Foundation
 import CoreLocation
 
+internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or more
+
 public extension LocationManager {
     
     enum ErrorReason: Error {
@@ -71,10 +73,10 @@ public extension LocationManager {
             case Accuracy.room.value:
                 self = .room
             default:
-                if rawValue != 0 {
-                    self = .custom(rawValue)
-                } else {
+                if rawValue == CLLocationAccuracyAccuracyAny {
                     self = .any
+                } else {
+                    self = .custom(rawValue)
                 }
             }
         }
@@ -82,7 +84,7 @@ public extension LocationManager {
         public var value: CLLocationAccuracy {
             switch self {
             case .any:
-                return Double.greatestFiniteMagnitude
+                return CLLocationAccuracyAccuracyAny
             case .city:
                 return 5000
             case .neighborhood:
@@ -117,6 +119,8 @@ public extension LocationManager {
         
         public var description: String {
             switch self {
+            case .any:
+                return "any"
             case .city:
                return "city"
             case .neighborhood:

@@ -50,6 +50,7 @@ public class GoogleGeocoderRequest: GeocoderRequest {
                 
                 let rawPlaces: [Any]? = valueAtKeyPath(root: json, ["results"])
                 let places = rawPlaces?.compactMap({ Place(googleJSON: $0) }) ?? []
+                self.value = places
                 self.dispatch(data: .success(places), andComplete: true)
             }
         }

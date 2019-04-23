@@ -57,7 +57,7 @@ public class LocationManager: NSObject {
     /// Return the current level of accuracy set on manager based upon currently set list of requests.
     /// It returns `nil` until you have the necessary permission from the user or GPS location is not currently in use.
     public var accuracy: Accuracy? {
-        guard LocationManager.state == .available else {
+        guard LocationManager.state == .available, queueLocationRequests.isEmpty == false else {
             return nil
         }
         return managerAccuracy
@@ -105,16 +105,10 @@ public class LocationManager: NSObject {
     /// `CLLocationManager` instance used to receive events from GPS.
     private let manager = CLLocationManager()
     
-    public var requiredAccuracy: Accuracy {
-        return queueLocationRequests.max(by: { (lhs, rhs) in
-            return lhs.accuracy > rhs.accuracy
-        })?.accuracy ?? .any
-    }
-    
     /// Accuracy set for manager.
     public var managerAccuracy: Accuracy? {
         set {
-            manager.desiredAccuracy = newValue?.value ?? -1
+            manager.desiredAccuracy = newValue?.value ?? CLLocationAccuracyAccuracyAny
         }
         get {
             return Accuracy(rawValue: manager.desiredAccuracy)
@@ -167,7 +161,8 @@ public class LocationManager: NSObject {
                               result: LocationRequest.Callback?) -> LocationRequest {
         let request = LocationRequest()
         request.accuracy = accuracy
-        request.timeoutManager = (timeout != nil ? Timeout(mode: timeout!) : nil)
+        // only one shot requests has timeout
+        request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
         request.subscription = subscription
         if let result = result {
             request.callbacks.add(result)
@@ -389,6 +384,7 @@ public class LocationManager: NSObject {
     }
     
     internal func removeIPLocationRequest(_ request: LocationByIPRequest) {
+        request.state = .expired
         if let _ = queueLocationByIPRequests.remove(request) {
             dispatchQueueChangeEvent(false, request: request)
         }
@@ -406,6 +402,7 @@ public class LocationManager: NSObject {
     }
     
     internal func removeAutoComplete(_ request: AutoCompleteRequest) {
+        request.state = .expired
         if let _ = queueAutocompleteRequests.remove(request) {
             dispatchQueueChangeEvent(false, request: request)
         }
@@ -423,6 +420,7 @@ public class LocationManager: NSObject {
     }
     
     internal func removeGeocoder(_ request: GeocoderRequest) {
+        request.state = .expired
         if let _ = queueGeocoderRequests.remove(request) {
             dispatchQueueChangeEvent(false, request: request)
         }
@@ -434,8 +432,10 @@ public class LocationManager: NSObject {
     ///
     /// - Parameter request: request to remove.
     internal func removeLocation(_ request: LocationRequest) {
+        request.state = .expired
         if let _ = queueLocationRequests.remove(request) {
             dispatchQueueChangeEvent(false, request: request)
+            updateLocationManagerSettings(request)
         }
     }
     
@@ -459,12 +459,19 @@ public class LocationManager: NSObject {
         return true
     }
     
+    public func evaluateRequiredAccuracy() -> Accuracy {
+        let accuracy = queueLocationRequests.max(by: { (lhs, rhs) in
+            return lhs.accuracy > rhs.accuracy
+        })?.accuracy
+        return accuracy ?? .any
+    }
+    
     /// Adjust the location manager settings based upon the currently running requests and new added request.
     ///
     /// - Parameter request: request added to queue.
     private func updateLocationManagerSettings(_ request: LocationRequest) {
         // adjust accuracy based on requests
-        self.managerAccuracy = self.requiredAccuracy
+        self.managerAccuracy = self.evaluateRequiredAccuracy()
         
         switch request.subscription {
         case .oneShot, .continous:
@@ -523,7 +530,7 @@ extension LocationManager: CLLocationManagerDelegate {
     
     public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         queueHeadingRequests.forEach {
-            $0.dispatch(data: .success(newHeading))
+            $0.complete(heading: newHeading)
         }
     }
     

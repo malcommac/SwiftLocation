@@ -53,6 +53,7 @@ public class GoogleAutoCompleteRequest: AutoCompleteRequest {
                         let place = Place(googleJSON: resultNode)
                         places.append(.fullMatch(place))
                     }
+                    self.value = places
                     self.dispatch(data: .success(places), andComplete: true)
                 }
             }

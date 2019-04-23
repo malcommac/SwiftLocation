@@ -24,7 +24,9 @@ class RequestsMonitorController: UIViewController {
     @IBOutlet public var countAutocompleteReqs: UILabel!
     @IBOutlet public var countHeadingReqs: UILabel!
     
-    private var completedRequests = [ServiceRequest]()
+    internal var completedRequests = [ServiceRequest]()
+    
+    private var timer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +34,10 @@ class RequestsMonitorController: UIViewController {
         table.rowHeight = UITableView.automaticDimension
         table.estimatedRowHeight = 80
         
-        LocationManager.shared.onQueueChange.add({ _,_ in
+        LocationManager.shared.onQueueChange.add({ added, request in
+            if added == false {
+                self.completedRequests.append(request)
+            }
             self.reload()
         })
         
@@ -42,11 +47,26 @@ class RequestsMonitorController: UIViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "New", style: .plain, target: self, action: #selector(createNewRequest))
         
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        
+        reload()
+    }
+    
+    @objc func fireTimer() {
         reload()
     }
     
     @objc func createNewRequest() {
-        self.present(NewRequestController.create(), animated: true, completion: nil)
+        //self.present(NewRequestController.create(), animated: true, completion: nil)
+        let alert = UIAlertController(title: "New Request", message: nil, preferredStyle: .actionSheet)
+        
+        alert.addAction(UIAlertAction(title: "GPS Location", style: .default, handler: { _ in
+            self.present(NewGPSRequestController.create(), animated: true, completion: nil)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
 }
@@ -58,14 +78,25 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let count = requestsForSection(section).count
+        if section != 5 && count == 0 {
+            return nil
+        }
         switch section {
-        case 0: return "Locations via GPS"
-        case 1: return "Locations via IP Address"
-        case 2: return "Geocoding/Reverse Geocoding"
-        case 3: return "Device Heading"
-        case 4: return "Autocomplete"
-        case 5: return "Completed Requests"
-        default: return nil
+        case 0:
+            return "\(count) GPS"
+        case 1:
+            return "\(count) IP LOCATION"
+        case 2:
+            return "\(count) GEOCODING"
+        case 3:
+            return "\(count) HEADING"
+        case 4:
+            return "\(count) AUTOCOMPLETE"
+        case 5:
+            return "COMPLETED REQUESTS"
+        default:
+            return nil
         }
     }
     
@@ -75,16 +106,23 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
             return Array(locator.queueLocationRequests)
         case 1:
             return Array(locator.queueLocationByIPRequests)
-        case 3:
+        case 2:
             return Array(locator.queueGeocoderRequests)
-        case 4:
+        case 3:
             return Array(locator.queueHeadingRequests)
-        case 5:
+        case 4:
             return Array(locator.queueAutocompleteRequests)
-        case 6:
+        case 5:
             return completedRequests
         default:
             return []
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let header = view as? UITableViewHeaderFooterView {
+            header.textLabel!.font = UIFont.boldSystemFont(ofSize: 14.0)
+            header.textLabel!.textColor = UIColor.darkGray
         }
     }
     
@@ -93,12 +131,32 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RequestCell") as! RequestCell
-        cell.request = requestsForSection(indexPath.section)[indexPath.row]
-        return cell
+        let request = requestsForSection(indexPath.section)[indexPath.row]
+        
+        switch request {
+        case let locRequest as LocationRequest:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GPSRequestCell") as! GPSRequestCell
+            cell.request = locRequest
+            cell.monitorController = self
+            return cell
+            
+        default:
+            fatalError("Not implemented")
+        }
     }
     
-    private func reload() {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let request = requestsForSection(indexPath.section)[indexPath.row]
+        switch request {
+        case _ as LocationRequest:
+            return GPSRequestCell.height
+            
+        default:
+            fatalError("Not implemented")
+        }
+    }
+    
+    public func reload() {
         table.reloadData()
      
         countHeadingReqs.text = String(locator.queueHeadingRequests.count)
@@ -111,41 +169,4 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         currentAccuracy.text = locator.accuracy?.description ?? "not in use"
     }
     
-}
-
-public class RequestCell: UITableViewCell {
-    @IBOutlet public var stateLabel: UILabel!
-    @IBOutlet public var requestTypeLabel: UILabel!
-    @IBOutlet public var resultData: UILabel!
-    @IBOutlet public var stopButton: UIButton!
-    
-    @IBAction public func didPressStop() {
-        
-    }
-    
-    public var request: ServiceRequest? {
-        didSet {
-            guard let request = request else {
-                stateLabel.text = ""
-                requestTypeLabel.text = ""
-                resultData.text = ""
-                stopButton.isEnabled = false
-                return
-            }
-            
-            stateLabel.text = request.state.description
-            
-            switch request {
-            case let req as LocationRequest:
-                requestTypeLabel.text = "GPS Loc \(req.accuracy.description)"
-                
-            case let req as LocationByIPRequest:
-                requestTypeLabel.text = "IP Loc \(req.service.description)"
-
-                
-            default:
-                break
-            }
-        }
-    }
 }

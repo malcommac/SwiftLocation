@@ -64,6 +64,7 @@ public class AppleAutoCompleteRequest: AutoCompleteRequest {
                 let place = Place(mapItem: $0)
                 return .fullMatch(place)
             } ?? []
+            self.value = places
             self.dispatch(data: .success(places), andComplete: true)
         })
     }

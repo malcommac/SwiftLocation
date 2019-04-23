@@ -43,6 +43,7 @@ public class AppleGeocoderRequest: GeocoderRequest {
                 return
             }
             let places = placemarks?.compactMap { Place(placemark: $0) } ?? []
+            self.value = places
             self.dispatch(data: .success(places), andComplete: true)
         }
         

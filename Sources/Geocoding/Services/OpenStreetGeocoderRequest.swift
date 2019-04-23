@@ -51,6 +51,7 @@ public class OpenStreetGeocoderRequest: GeocoderRequest {
                 } else {
                     places.append(Place(openStreet: json))
                 }
+                self.value = places
                 self.dispatch(data: .success(places), andComplete: true)
             }
         }

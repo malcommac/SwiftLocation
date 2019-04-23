@@ -34,6 +34,9 @@ public class LocationRequest: ServiceRequest, Hashable {
     
     // MARK: - Public Properties -
     
+    /// Last obtained valid value for request.
+    public internal(set) var value: CLLocation?
+
     /// Type of timeout set.
     public var timeout: Timeout.Mode? {
         return timeoutManager?.mode
@@ -86,13 +89,14 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// it fulfill the request itself and remove it from queue.
     ///
     /// - Parameter location: location to pass.
-    public func complete(location: CLLocation) {
+    internal func complete(location: CLLocation) {
         guard state.canReceiveEvents && locationSatisfyRequest(location) else {
             return // ignore events
         }
         
         // We can stop the timeout timer, the first valid event has been received.
         timeoutManager?.reset()
+        value = location
         dispatch(data: .success(location)) // dispatch to callbacks
         if subscription == .oneShot { // one shot events will be removed
             LocationManager.shared.removeLocation(self)
@@ -134,7 +138,6 @@ public class LocationRequest: ServiceRequest, Hashable {
             }
         }
         timeoutManager?.reset()
-        state = .expired
         dispatch(data: .failure(reason))
     }
     

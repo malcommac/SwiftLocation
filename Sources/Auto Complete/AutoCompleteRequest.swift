@@ -43,6 +43,9 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
     /// Registered callbacks.
     public private(set) var callbacks = Observers<Callback>()
 
+    /// Last obtained valid value for request.
+    public internal(set) var value: [PlaceMatch]?
+    
     // MARK: - Initialization -
     
     internal override init() {
@@ -73,7 +76,6 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
     // MARK: - Internal Functions -
     
     internal func stop(reason: LocationManager.ErrorReason = .cancelled, remove: Bool) {
-        state = .expired
         timeoutManager?.reset()
         dispatch(data: .failure(reason))
     }
@@ -84,7 +86,6 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
         }
         
         if complete {
-            state = .expired
             LocationManager.shared.removeAutoComplete(self)
         }
     }

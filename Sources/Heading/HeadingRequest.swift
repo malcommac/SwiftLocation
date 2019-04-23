@@ -39,6 +39,9 @@ public class HeadingRequest: ServiceRequest, Hashable {
     /// Callbacks called once a new location or error is received.
     public var callbacks = Observers<HeadingRequest.Callback>()
     
+    /// Last obtained valid value for request.
+    public internal(set) var value: CLHeading?
+    
     // MARK: - Initialization -
     
     internal init(accuracy: AccuracyDegree?, minInterval: TimeInterval?) {
@@ -84,8 +87,34 @@ public class HeadingRequest: ServiceRequest, Hashable {
                 LocationManager.shared.removeHeadingRequest(self)
             }
         }
-        state = .expired
         dispatch(data: .failure(reason))
+    }
+    
+    internal func complete(heading: CLHeading) {
+        guard state.canReceiveEvents && headingSatisfyRequest(heading) else {
+            return // ignore events
+        }
+        
+        value = heading
+        dispatch(data: .success(heading)) // dispatch to callbacks
+    }
+    
+    private func headingSatisfyRequest(_ heading: CLHeading) -> Bool {
+        
+        if let minInterval = minInterval {
+            if heading.timestamp.timeIntervalSince1970 -
+                (value?.timestamp ?? Date.distantPast).timeIntervalSince1970 < minInterval {
+                return false // minimum timestamp interval not respected
+            }
+        }
+        
+        if let minAccuracy = accuracy {
+            if heading.headingAccuracy < minAccuracy {
+                return false // minimum accuracy not respected
+            }
+        }
+        
+        return true
     }
     
     /// Dispatch received events to all callbacks.

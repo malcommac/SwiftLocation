@@ -23,6 +23,9 @@ public class GeocoderRequest: ServiceRequest, Hashable {
     
     /// Service related options.
     internal var options: Options?
+    
+    /// Last obtained valid value for request.
+    public internal(set) var value: [Place]?
 
     /// Timeout manager handles timeout events.
     internal var timeoutManager: Timeout? {
@@ -96,7 +99,6 @@ public class GeocoderRequest: ServiceRequest, Hashable {
     // MARK: - Internal Functions -
     
     internal func stop(reason: LocationManager.ErrorReason = .cancelled, remove: Bool) {
-        state = .expired
         timeoutManager?.reset()
         dispatch(data: .failure(reason))
     }
@@ -107,7 +109,6 @@ public class GeocoderRequest: ServiceRequest, Hashable {
         }
         
         if complete {
-            state = .expired
             LocationManager.shared.removeGeocoder(self)
         }
     }

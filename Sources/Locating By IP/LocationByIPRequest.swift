@@ -15,10 +15,18 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     public typealias Data = Result<IPPlace,LocationManager.ErrorReason>
     public typealias Callback = ((Data) -> Void)
     
+    // MARK: - Public Properties -
+    
+    /// Unique identifier of the request.
     public var id: LocationManager.RequestID
     
+    /// Timeout of the request.
     public var timeout: Timeout.Mode?
     
+    /// Last obtained valid value for request.
+    public internal(set) var value: IPPlace?
+    
+    /// Service used
     public var service: LocationByIPRequest.Service {
         fatalError("Missing service property")
     }
@@ -33,10 +41,14 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
         }
     }
     
+    /// State of the request.
     public var state: RequestState = .idle
     
+    /// Registered callbacks.
     public var callbacks = Observers<LocationByIPRequest.Callback>()
 
+    // MARK: - Initialization -
+    
     init() {
         self.id = UUID().uuidString
     }
@@ -54,7 +66,6 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     }
     
     internal func stop(reason: LocationManager.ErrorReason = .cancelled, remove: Bool) {
-        state = .expired
         timeoutManager?.reset()
         dispatch(data: .failure(reason))
     }
@@ -65,7 +76,6 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
         }
         
         if complete {
-            state = .expired
             LocationManager.shared.removeIPLocationRequest(self)
         }
     }
