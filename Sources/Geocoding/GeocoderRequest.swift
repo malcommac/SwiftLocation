@@ -55,6 +55,11 @@ public class GeocoderRequest: ServiceRequest, Hashable {
     internal let address: String?
     internal let region: CLRegion?
     internal let coordinates: CLLocationCoordinate2D?
+    
+    /// Is reverse geocoding operation?
+    public var isReverse: Bool {
+        return coordinates != nil
+    }
 
     // MARK: - Initialization -
 

@@ -68,6 +68,10 @@ class RequestsMonitorController: UIViewController {
             self.present(NewIPRequestController.create(), animated: true, completion: nil)
         }))
         
+        alert.addAction(UIAlertAction(title: "Geocoding/Reverse Geocoding", style: .default, handler: { _ in
+            self.present(NewGeocodingRequestController.create(), animated: true, completion: nil)
+        }))
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
@@ -150,6 +154,12 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
             cell.monitorController = self
             return cell
             
+        case let geoRequest as GeocoderRequest:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GeocodeRequestCell") as! GeocodeRequestCell
+            cell.request = geoRequest
+            cell.monitorController = self
+            return cell
+            
         default:
             fatalError("Not implemented")
         }
@@ -163,6 +173,9 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
        
         case _ as LocationByIPRequest:
             return IPRequestCell.height
+            
+        case let geoRequest as GeocoderRequest:
+            return GeocodeRequestCell.height
             
         default:
             fatalError("Not implemented")

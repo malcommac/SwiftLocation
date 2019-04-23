@@ -16,10 +16,30 @@ public extension GeocoderRequest {
     /// - apple: apple service.
     /// - google: google service.
     /// - openStreet: open streep map service.
-    enum Service {
+    enum Service: CustomStringConvertible {
         case apple(Options?)
         case google(GoogleOptions)
         case openStreet(OpenStreetOptions)
+        
+        public static var all: [Service] {
+            return [.apple(nil), .google(GoogleOptions()), .openStreet(OpenStreetOptions())]
+        }
+        
+        public var description: String {
+            switch self {
+            case .apple: return "Apple"
+            case .google: return "Google"
+            case .openStreet: return "OpenStreet"
+            }
+        }
+        
+        public var requireAPIKey: Bool {
+            switch self {
+            case .apple: return false
+            case .google: return true
+            case .openStreet: return false
+            }
+        }
     }
     
     // MARK: - Geocoder Options -
