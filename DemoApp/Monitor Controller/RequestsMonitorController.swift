@@ -64,6 +64,10 @@ class RequestsMonitorController: UIViewController {
             self.present(NewGPSRequestController.create(), animated: true, completion: nil)
         }))
         
+        alert.addAction(UIAlertAction(title: "Location by IP", style: .default, handler: { _ in
+            self.present(NewIPRequestController.create(), animated: true, completion: nil)
+        }))
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
@@ -140,6 +144,12 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
             cell.monitorController = self
             return cell
             
+        case let ipRequest as LocationByIPRequest:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "IPRequestCell") as! IPRequestCell
+            cell.request = ipRequest
+            cell.monitorController = self
+            return cell
+            
         default:
             fatalError("Not implemented")
         }
@@ -150,6 +160,9 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         switch request {
         case _ as LocationRequest:
             return GPSRequestCell.height
+       
+        case _ as LocationByIPRequest:
+            return IPRequestCell.height
             
         default:
             fatalError("Not implemented")

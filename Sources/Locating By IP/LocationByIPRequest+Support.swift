@@ -14,6 +14,8 @@ public extension LocationByIPRequest {
         case ipAPI
         case ipApiCo
         
+        public static let all: [Service] = [.ipAPI, .ipApiCo]
+        
         public var description: String {
             switch self {
             case .ipAPI:

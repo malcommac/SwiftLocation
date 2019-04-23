@@ -33,7 +33,7 @@ public class IPAPICoRequest: LocationByIPRequest {
                 
                 let place = IPPlace(ipAPICoJSON: json)
                 self.value = place
-                self.dispatch(data: .success(place))
+                self.dispatch(data: .success(place), andComplete: true)
             }
         }
     }

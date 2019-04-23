@@ -71,12 +71,14 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     }
     
     internal func dispatch(data: Data, andComplete complete: Bool = false) {
-        callbacks.list.forEach {
-            $0(data)
-        }
-        
-        if complete {
-            LocationManager.shared.removeIPLocationRequest(self)
+        DispatchQueue.main.async {
+            self.callbacks.list.forEach {
+                $0(data)
+            }
+            
+            if complete {
+                LocationManager.shared.removeIPLocationRequest(self)
+            }
         }
     }
     

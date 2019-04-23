@@ -12,6 +12,7 @@
 		641AB6F42264704F00778DC8 /* AppleGeocoderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641AB6F22264704F00778DC8 /* AppleGeocoderRequest.swift */; };
 		641AB6F62264712500778DC8 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641AB6F52264712500778DC8 /* Place.swift */; };
 		641AB6F72264712500778DC8 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641AB6F52264712500778DC8 /* Place.swift */; };
+		6427B50A226F1D5200DCCC24 /* NewIPRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */; };
 		646A557C226374F2001CD502 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A557B226374F2001CD502 /* Support.swift */; };
 		646A5584226376F0001CD502 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5583226376F0001CD502 /* AppDelegate.swift */; };
 		646A5586226376F0001CD502 /* RequestsMonitorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5585226376F0001CD502 /* RequestsMonitorController.swift */; };
@@ -42,6 +43,7 @@
 		647D19B5226EF4310034FBD7 /* NewGPSRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647D19B0226EF4310034FBD7 /* NewGPSRequestController.swift */; };
 		647D19B7226EF9FE0034FBD7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647D19B6226EF9FE0034FBD7 /* Extensions.swift */; };
 		647D19BA226F16930034FBD7 /* GPSRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647D19B9226F16930034FBD7 /* GPSRequestCell.swift */; };
+		647D19BE226F1ACF0034FBD7 /* IPRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647D19BD226F1ACF0034FBD7 /* IPRequestCell.swift */; };
 		6492FF972268593000414FE5 /* Geocoder+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6492FF962268593000414FE5 /* Geocoder+Support.swift */; };
 		6492FF98226859A300414FE5 /* Geocoder+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6492FF962268593000414FE5 /* Geocoder+Support.swift */; };
 		6492FF99226859A300414FE5 /* Geocoder+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6492FF962268593000414FE5 /* Geocoder+Support.swift */; };
@@ -193,6 +195,7 @@
 		52D6DA0F1BF000BD002C0205 /* SwiftLocation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftLocation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		641AB6F22264704F00778DC8 /* AppleGeocoderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleGeocoderRequest.swift; sourceTree = "<group>"; };
 		641AB6F52264712500778DC8 /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
+		6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewIPRequestController.swift; sourceTree = "<group>"; };
 		646A557B226374F2001CD502 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		646A5581226376F0001CD502 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		646A5583226376F0001CD502 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -213,6 +216,7 @@
 		647D19B0226EF4310034FBD7 /* NewGPSRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGPSRequestController.swift; sourceTree = "<group>"; };
 		647D19B6226EF9FE0034FBD7 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		647D19B9226F16930034FBD7 /* GPSRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSRequestCell.swift; sourceTree = "<group>"; };
+		647D19BD226F1ACF0034FBD7 /* IPRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPRequestCell.swift; sourceTree = "<group>"; };
 		6492FF962268593000414FE5 /* Geocoder+Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Geocoder+Support.swift"; sourceTree = "<group>"; };
 		6492FF9C226868CB00414FE5 /* Observers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observers.swift; sourceTree = "<group>"; };
 		6492FFA2226868DE00414FE5 /* LocationManager+Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocationManager+Support.swift"; sourceTree = "<group>"; };
@@ -410,6 +414,7 @@
 			children = (
 				646A5585226376F0001CD502 /* RequestsMonitorController.swift */,
 				647D19B9226F16930034FBD7 /* GPSRequestCell.swift */,
+				647D19BD226F1ACF0034FBD7 /* IPRequestCell.swift */,
 			);
 			path = "Monitor Controller";
 			sourceTree = "<group>";
@@ -418,6 +423,7 @@
 			isa = PBXGroup;
 			children = (
 				647D19B0226EF4310034FBD7 /* NewGPSRequestController.swift */,
+				6427B509226F1D5200DCCC24 /* NewIPRequestController.swift */,
 			);
 			path = "New Requests";
 			sourceTree = "<group>";
@@ -1024,6 +1030,7 @@
 				6492FFC822686B5900414FE5 /* GoogleAutoCompleteRequest.swift in Sources */,
 				646A55B12263A7A6001CD502 /* CLLocationManager+Extras.swift in Sources */,
 				64A802BC2269FD8500FDCB2F /* IPAPICoRequest.swift in Sources */,
+				6427B50A226F1D5200DCCC24 /* NewIPRequestController.swift in Sources */,
 				6492FFBB22686A4B00414FE5 /* AutoComplete+Support.swift in Sources */,
 				6492FFA1226868CB00414FE5 /* Observers.swift in Sources */,
 				6492FFAE2268698E00414FE5 /* AutoCompleteRequest.swift in Sources */,
@@ -1033,6 +1040,7 @@
 				64A802AF2269DD2F00FDCB2F /* LocationByIPRequest+Support.swift in Sources */,
 				64A802A22269D73E00FDCB2F /* LocationByIPRequest.swift in Sources */,
 				64A802A82269DB3C00FDCB2F /* IPPlace.swift in Sources */,
+				647D19BE226F1ACF0034FBD7 /* IPRequestCell.swift in Sources */,
 				646A5586226376F0001CD502 /* RequestsMonitorController.swift in Sources */,
 				646A55A2226376F9001CD502 /* Support.swift in Sources */,
 				6492FFB5226869D800414FE5 /* PlaceMatch.swift in Sources */,
