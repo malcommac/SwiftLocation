@@ -45,7 +45,8 @@ class RequestsMonitorController: UIViewController {
             self.reload()
         })
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "New", style: .plain, target: self, action: #selector(createNewRequest))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(createNewRequest))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Authorize", style: .plain, target: self, action: #selector(authorizeManually))
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         
@@ -78,6 +79,21 @@ class RequestsMonitorController: UIViewController {
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    @objc func authorizeManually() {
+        let alert = UIAlertController(title: "Authorize GPS Usage", message: "You can ask for users permission directly when you want by calling requireUserAuthorization() function.", preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "whenInUse", style: .default, handler: { _ in
+            LocationManager.shared.requireUserAuthorization(.whenInUse)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "always", style: .default, handler: { _ in
+            LocationManager.shared.requireUserAuthorization(.always)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -133,8 +149,9 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let header = view as? UITableViewHeaderFooterView {
+            header.contentView.backgroundColor = UIColor(red: 43/255, green: 100/255, blue: 130/255, alpha: 0.8)
             header.textLabel!.font = UIFont.boldSystemFont(ofSize: 14.0)
-            header.textLabel!.textColor = UIColor.darkGray
+            header.textLabel!.textColor = UIColor.white
         }
     }
     
