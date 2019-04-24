@@ -7,9 +7,9 @@
 |  	| Main Features 	|
 |----	|----------------------------------------------------------------------------	|
 | 🛰 	| GPS location with single line of code and fully customizable filters 	|
-| 🙅‍♀️   	| No delegates, requests based architecture upon the new Swift 5 Result type 	|
-| 🔋 	| Auto manage resources based upon running requests behaviour 	|
-| 🔒 	| Automatic/manual user's permissions management 	|
+| 🙅‍♀️   	| No delegates, requests based architecture. We use the new Swift 5's Result type 	|
+| 🔋 	| Auto manage tracking resources based upon running requests.	|
+| 🔒 	| Automatic/manual user's permissions management	|
 | 🌏 	| Support for Geocoding/Reverse Geocoding (Apple, Google, OpenStreet) 	|
 | 🔍 	| Support for Autocomplete/Place Details (Apple, Google) 	|
 | 🖥 	| Support IP based location with multiple pluggable services 	|
@@ -32,19 +32,20 @@ The latest version of SwiftLocation require:
 - iOS 10+
 - Xcode 10+
 
-## Installation via CocoaPods
+## Installation
 
 The preferred installation method is with CocoaPods. Add the following to your Podfile:
 
 ```pod 'SwiftLocation', '~> 4.0'```
 
-## TODO & Contributions
+## Roadmap & Contributions
 
 Would you contribute to the project? There are some interesting area of the project where your help will be very appreciated!
 
 - [ ] Region Monitoring
 - [ ] MapBox Support for geocoding/reverse and autocomplete
 - [ ] Beacon Monitoring
+- [ ] freeGeoIP and smartIP support for IP to location discovery
 
 Any other idea for improvements? Fell free to open a PR!
 
@@ -209,8 +210,8 @@ Currently supported services:
 |------------	|--------------	|-------------------------	|
 | ip-api.com 	| no 	| http://ip-api.com/json/ 	|
 | apiapi.co 	| no 	| https://ipapi.co/json 	|
-| freeGeoIP 	| yes (free) 	| https://freegeoip.net 	|
-| smartIP 	| no 	| http://smart-ip.net 	|
+| freeGeoIP 	| yes (free) 	| https://freegeoip.net (NO YET SUPPORTED)	|
+| smartIP 	| no 	| http://smart-ip.net (NO YET SUPPORTED) 	|
 
 **Are you interested in adding another custom service? Fell free to make a PR!**
 
