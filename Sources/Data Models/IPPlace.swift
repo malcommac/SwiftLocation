@@ -24,28 +24,28 @@ public class IPPlace {
     public let countryName: String?
     
     /// IP used for the query. Example: `"173.194.67.94"`
-    public var ip: String?
+    public let ip: String?
    
     /// Internet Service Provider name. Example: `"Google"`
-    public var isp: String?
+    public let isp: String?
     
     /// IP Coordinates.
-    public var coordinates: CLLocationCoordinate2D?
+    public let coordinates: CLLocationCoordinate2D?
     
     /// Organization name. Example: `"Google"`
-    public var organization: String?
+    public let organization: String?
     
     /// Region/State code short. Example: `"CA"` or `"10"`
-    public var regionCode: String?
+    public let regionCode: String?
     
     /// Region/State name. Example: `"California"`
-    public var regionName: String?
+    public let regionName: String?
     
     /// Timezone. Example: `"America/Los_Angeles"`
-    public var timezone: String?
+    public let timezone: String?
     
     /// Zip code. Example: `"94043"`
-    public var zipCode: String?
+    public let zipCode: String?
 
     // MARK: - Initialization -
     
@@ -60,8 +60,11 @@ public class IPPlace {
         if let lat: Double = valueAtKeyPath(root: json, ["lat"]),
             let lng: Double = valueAtKeyPath(root: json, ["lon"]) {
             self.coordinates = CLLocationCoordinate2DMake(lat, lng)
+        } else {
+            self.coordinates = nil
         }
         
+        self.ip = nil
         self.timezone = valueAtKeyPath(root: json, ["timezone"])
         self.isp = valueAtKeyPath(root: json, ["isp"])
         self.organization = valueAtKeyPath(root: json, ["org"])

@@ -50,10 +50,6 @@ public class IPRequestCell: UITableViewCell {
                 return
             }
             
-            guard let request = request else {
-                return
-            }
-            
             coordinatesLabel.text = NSString(format: "%0.5f, %0.5f", place.coordinates!.latitude, place.coordinates!.longitude) as String
             cityLabel.text = "\((place.city ?? "-")), \((place.zipCode ?? "-"))"
             regionLabel.text = "\((place.regionName ?? "-")), \((place.regionCode ?? "-"))"
