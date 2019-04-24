@@ -63,7 +63,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     public var activityType: CLActivityType = .other
     
     /// Callbacks called once a new location or error is received.
-    public var callbacks = Observers<LocationRequest.Callback>()
+    public var observers = Observers<LocationRequest.Callback>()
     
     /// Last received location (even if not valid).
     public private(set) var lastAbsoluteLocation: CLLocation?
@@ -161,7 +161,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     ///
     /// - Parameter data: data to pass.
     internal func dispatch(data: Data) {
-        callbacks.list.forEach {
+        observers.list.forEach {
             $0(data)
         }
     }

@@ -82,6 +82,8 @@ public class IPPlace {
         if let lat: Double = valueAtKeyPath(root: json, ["latitude"]),
             let lng: Double = valueAtKeyPath(root: json, ["longitude"]) {
             self.coordinates = CLLocationCoordinate2DMake(lat, lng)
+        } else {
+            self.coordinates = nil
         }
         
         self.timezone = valueAtKeyPath(root: json, ["timezone"])

@@ -39,7 +39,7 @@ public class HeadingRequest: ServiceRequest, Hashable {
     public var minInterval: TimeInterval?
     
     /// Callbacks called once a new location or error is received.
-    public var callbacks = Observers<HeadingRequest.Callback>()
+    public var observers = Observers<HeadingRequest.Callback>()
     
     /// Last obtained valid value for request.
     public internal(set) var value: CLHeading?
@@ -123,7 +123,7 @@ public class HeadingRequest: ServiceRequest, Hashable {
     ///
     /// - Parameter data: data to pass.
     internal func dispatch(data: Data) {
-        callbacks.list.forEach {
+        observers.list.forEach {
             $0(data)
         }
     }

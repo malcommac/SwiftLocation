@@ -41,7 +41,7 @@ public class GeocoderRequest: ServiceRequest, Hashable {
     
     // MARK: - Public Properties -
     
-    public private(set) var callbacks = Observers<Callback>()
+    public private(set) var observers = Observers<Callback>()
 
     /// Identifier of the request.
     public var id: LocationManager.RequestID
@@ -111,7 +111,7 @@ public class GeocoderRequest: ServiceRequest, Hashable {
     }
     
     internal func dispatch(data: Data, andComplete complete: Bool = false) {
-        callbacks.list.forEach {
+        observers.list.forEach {
             $0(data)
         }
         

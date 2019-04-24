@@ -47,7 +47,7 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     public var state: RequestState = .idle
     
     /// Registered callbacks.
-    public var callbacks = Observers<LocationByIPRequest.Callback>()
+    public var observers = Observers<LocationByIPRequest.Callback>()
 
     // MARK: - Initialization -
     
@@ -74,7 +74,7 @@ public class LocationByIPRequest: ServiceRequest, Hashable {
     
     internal func dispatch(data: Data, andComplete complete: Bool = false) {
         DispatchQueue.main.async {
-            self.callbacks.list.forEach {
+            self.observers.list.forEach {
                 $0(data)
             }
             

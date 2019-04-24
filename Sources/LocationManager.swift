@@ -205,7 +205,7 @@ public class LocationManager: NSObject {
         request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
         request.subscription = subscription
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         let _ = request.start()
         return request
@@ -235,7 +235,7 @@ public class LocationManager: NSObject {
         }
         
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         request.timeoutManager = (timeout != nil ? Timeout(mode: timeout!) : nil)
         startIPLocationRequest(request)
@@ -258,7 +258,7 @@ public class LocationManager: NSObject {
         let request = HeadingRequest(accuracy: accuracy, minInterval: minInterval)
         
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         startHeadingRequest(request)
         return request
@@ -302,7 +302,7 @@ public class LocationManager: NSObject {
         
         request.timeoutManager = timeoutManager
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         startGeocoder(request)
         return request
@@ -342,7 +342,7 @@ public class LocationManager: NSObject {
         
         request.timeoutManager = timeoutManager
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         startGeocoder(request)
         return request
@@ -380,7 +380,7 @@ public class LocationManager: NSObject {
         request.options?.operation = partialMatch
         request.timeoutManager = timeoutManager
         if let result = result {
-            request.callbacks.add(result)
+            request.observers.add(result)
         }
         startAutoComplete(request)
         return request

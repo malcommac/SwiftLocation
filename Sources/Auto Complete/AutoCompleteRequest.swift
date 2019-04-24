@@ -49,7 +49,7 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
     internal var options: AutoCompleteRequest.Options?
 
     /// Registered callbacks.
-    public private(set) var callbacks = Observers<Callback>()
+    public private(set) var observers = Observers<Callback>()
 
     /// Last obtained valid value for request.
     public internal(set) var value: [PlaceMatch]?
@@ -89,7 +89,7 @@ public class AutoCompleteRequest: NSObject, ServiceRequest {
     }
     
     internal func dispatch(data: Data, andComplete complete: Bool = false) {
-        callbacks.list.forEach {
+        observers.list.forEach {
             $0(data)
         }
         
