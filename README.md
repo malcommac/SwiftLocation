@@ -55,31 +55,39 @@ Using this lightweight library you will not need to struggle with CoreLocation's
 
 ## Index
 
-- Main Concepts
-- Request Authorization
-	- Configure Info.plist in iOS 8-10
-	- Configure Info.plist in iOS 11+
-	- Explicitly ask for Authorization
-	- Observe Authorization State Changes
-- Get Current Location via GPS
-- Get Current Location via IP
-- Background Monitoring (Significant)
-- Heading Updates
-- Geocoding/Reverse Geocoding
+- [Main Concepts](#main_concepts)
+- [Request Authorization](#request_authorization)
+	- [Configure Info.plist in iOS 8-10](#configure_ios810)
+	- [Configure Info.plist in iOS 11+](#configure_ios11)
+	- [Explicitly ask for Authorization](#explicitly_ask_authorization)
+	- [Observe Authorization State Changes](#observe_auth_changes)
+- [Get Current Location via GPS](#user_location_gps)
+- [Get Current Location via IP](#user_location_ip)
+- [Background Monitoring (Significant)](#background_monitoring)
+- [Heading Updates](#heading_updates)
+- [Geocoding/Reverse Geocoding](#geocoding)
+- [Autocomplete](#autocomplete)
+
+<a name="main_concepts"/>
 
 ### Main Concepts
 
 All the SwiftLocation's services are exposed using the concept of request. Using the `LocationManager.shared` singleton you can call one of the available methods to request something; it will create a request for you, start & return it as output; You don't need to keep it alive (SwiftLocation's will take care of it for its entire lifecycle) but you may want to store it somewhere to manage it (this maybe useful when working with continous location requests and you want to pause or stop it).
 
-Each request may have one or multiple observers; once the request will receive new data it will dispatch the result to any of subscribed callbacks by passing a [`Result`](https://www.swiftbysundell.com/posts/the-power-of-result-types-in-swift) type.
+Each request may have one or multiple `observers`; once the request will receive new data it will dispatch the result to any of subscribed callbacks by passing a [`Result`](https://www.swiftbysundell.com/posts/the-power-of-result-types-in-swift) type.
+You can add/remove observers by accessing to `.observer` property of the request and using `add()`, `remove()` (you need to pass a previously saved from `.add()` observer ID) or `removeAll()` function.
 
-Request can be stopped (and it will be removed from queue) or paused (stay on queue but did not receive events).
+Request can be stopped via `.stop()` (and it will be removed from queue) or paused via `.pause()` (stay on queue but did not receive events).
 
 That's all, you are now ready to look a the functions!
+
+<a name="request_authorization"/>
 
 ### Request Authorization
 
 SwiftLocation automatically handles obtaining permission to access location services of the host machine when you issue a location request and user has not granted your app permissions yet.
+
+<a name="configure_ios810"/>
 
 #### Configure Info.plist in iOS 8-10
 
@@ -89,9 +97,13 @@ SwiftLocation determines which level of permissions to request based on which de
 
 You can change how SwiftLocation can decide what kind of authorization to pick by changing the `LocationManager.shared.preferredAuthorization` property.
 
+<a name="configure_ios11"/>
+
 #### Configure Info.plist in iOS 11+
 
 Starting with iOS 11, you must provide a description for how your app uses location services by setting a string for the key `NSLocationAlwaysAndWhenInUseUsageDescription` as well as a key for `NSLocationWhenInUseUsageDescription` in your app's `Info.plist` file.
+
+<a name="explicitly_ask_authorization"/>
 
 #### Explicitly ask for Authorization
 
@@ -104,6 +116,8 @@ In case you need to ask, at certain point of your flow for user's location permi
 followed by your desired mode (`.whenInUse` or `.always`).
 
 You can also omit the authorization mode. In this case SwiftLocation determines which level of permissions to request based on which description key is present in your app's Info.plist (If you provide values for both description keys, the more permissive Always level is requested.). If you need to set the authorization manually be sure to call this function before adding any request.
+
+<a name="observe_auth_changes"/>
 
 #### Observe Authorization State Changes
 
@@ -125,6 +139,8 @@ LocationManager.shared.onAuthorizationChange.remove(observerID)
 // Remove all observers
 LocationManager.shared.onAuthorizationChange.removeAll()        
 ```
+
+<a name="user_location_gps"/>
 
 ### Get Current Location via GPS
 
@@ -177,6 +193,7 @@ let req = LocationManager.shared.locateFromGPS(.continous, accuracy: .city) { re
 req.stop() // remove from queue
 req.pause() // pause events dispatching, request still in queue
 ```
+<a name="user_location_ip"/>
 
 ### Get Current Location via IP
 
@@ -223,6 +240,7 @@ LocationManager.shared.locateFromIP(service: .ipAPI) { result in
   }
 }
 ```
+<a name="background_monitoring"/>
 
 ### Background Monitoring (Significant)
 
@@ -245,6 +263,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
+<a name="heading_updates"/>
+
 ### Heading Updates
 
 To subscribe to continuous heading updates, use the method `LocationManager.shared.headingSubscription()` function.
@@ -265,6 +285,7 @@ LocationManager.shared.headingSubscription(accuracy: 2, minInterval: 10) { resul
    // data
 }        
 ```
+<a name="geocoding"/>
 
 ### Geocoding/Reverse Geocoding
 
@@ -342,6 +363,7 @@ public class Place {
     let addressDictionary: [AnyHashable: Any]?
 }
 ```
+<a name="autocomplete"/>
 
 ## Autocomplete
 
