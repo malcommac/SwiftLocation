@@ -1,5 +1,5 @@
 <p align="left" >
-<img src="./logo.png" width=300px alt="SwiftDate" title="SwiftDate">
+<img src="./swiftlocation_logo.png" width=300px alt="SwiftDate" title="SwiftDate">
 </p>
 
 ### Efficient and easy to use location tracking framework for iOS
