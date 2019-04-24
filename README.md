@@ -1,4 +1,4 @@
-<p align="center" >
+<p align="left" >
 <img src="./logo.png" height=129px alt="SwiftDate" title="SwiftDate">
 </p>
 
@@ -14,8 +14,12 @@
 | 🔍 	| Support for Autocomplete/Place Details (Apple, Google) 	|
 | 🖥 	| Support IP based location with multiple pluggable services 	|
 
-SwiftLocation is created and maintaned with ❥ by [Daniele Margutti](http://www.danielemargutti.com). Take a look to other cool open source projects in my [Github Profile](https://github.com/malcommac).
 
+SwiftLocation is **created and maintaned with ❥** by Daniele Margutti - [www.danielemargutti.com](http://www.danielemargutti.com).
+
+A complete list of my **open source contributions** is on my [Github Profile](https://github.com/malcommac).
+
+---
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![CI Status](https://travis-ci.org/malcommac/SwiftLocation.svg)](https://travis-ci.org/malcommac/SwiftLocation) [![Version](https://img.shields.io/cocoapods/v/SwiftLocation.svg?style=flat)](http://cocoadocs.org/docsets/SwiftLocation) [![License](https://img.shields.io/cocoapods/l/SwiftLocation.svg?style=flat)](http://cocoadocs.org/docsets/SwiftLocation) [![Platform](https://img.shields.io/cocoapods/p/SwiftLocation.svg?style=flat)](http://cocoadocs.org/docsets/SwiftLocation)
 
