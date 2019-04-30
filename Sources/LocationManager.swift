@@ -549,6 +549,11 @@ public class LocationManager: NSObject {
                 manager.stopMonitoringSignificantLocationChanges()
                 return
             }
+            /// The significant-change location service requires always authorization.
+            /// With this service, the location manager ignores the values in its distanceFilter and
+            /// desiredAccuracy properties, so you do not need to configure them.
+            requireUserAuthorization(.always)
+            /// Start monitoring
             manager.startMonitoringSignificantLocationChanges()
             break
         }
