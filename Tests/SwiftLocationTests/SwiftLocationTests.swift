@@ -1,9 +1,9 @@
 //
 //  SwiftLocationTests.swift
-//  Daniele Margutti
+//  SwiftLocation
 //
-//  Created by Daniele Margutti on 27/10/2017.
-//  Copyright © 2017 Daniele Margutti. All rights reserved.
+//  Created by Daniele Margutti on 13/04/2019.
+//  Copyright © 2019 SwiftLocation. All rights reserved.
 //
 
 import Foundation
