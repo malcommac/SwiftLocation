@@ -20,7 +20,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     // MARK: - Typealiases -
 
     public typealias Data = Result<CLLocation,LocationManager.ErrorReason>
-    public typealias Callback = ((Data) -> Void)
+    public typealias Callback = ((Data, LocationRequest) -> Void)
     
     // MARK: - Private Properties -
     
@@ -162,7 +162,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// - Parameter data: data to pass.
     internal func dispatch(data: Data) {
         observers.list.forEach {
-            $0(data)
+            $0(data, self)
         }
     }
     
