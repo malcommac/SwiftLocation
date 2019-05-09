@@ -29,7 +29,7 @@ public class LocationRequest: ServiceRequest, Hashable {
         didSet {
             // Also set the callback to receive timeout event; it will remove the request.
             timeoutManager?.callback = { interval in
-                self.stop(reason: .timeout(interval), remove: true)
+                self.stop(reason: .timeout(interval), remove: self.subscription == .oneShot)
             }
         }
     }
@@ -153,7 +153,19 @@ public class LocationRequest: ServiceRequest, Hashable {
                 LocationManager.shared.removeLocation(self)
             }
         }
-        timeoutManager?.reset()
+
+        switch reason {
+        case .cancelled:
+            timeoutManager?.reset()
+        default:
+            if subscription != .oneShot {
+                timeoutManager?.startIfNeeded()
+            }
+            else {
+                timeoutManager?.reset()
+            }
+        }
+        
         dispatch(data: .failure(reason))
     }
     

@@ -60,8 +60,8 @@ public class Timeout {
     }
     
     @objc private func timerFired() {
-        callback?(mode.interval)
         reset()
+        callback?(mode.interval)
     }
     
 }

@@ -201,8 +201,7 @@ public class LocationManager: NSObject {
         request.accuracy = accuracy
         request.distance = (distance ?? kCLDistanceFilterNone)
         request.activityType = activity
-        // only one shot requests has timeout
-        request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
+        request.timeoutManager = timeout != nil ? Timeout(mode: timeout!) : nil
         request.subscription = subscription
         if let result = result {
             request.observers.add(result)
