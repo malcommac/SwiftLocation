@@ -90,6 +90,10 @@ public class LocationRequest: ServiceRequest, Hashable {
         self.id = UUID().uuidString
     }
     
+    deinit {
+        stop()
+    }
+    
     // MARK: - Public Methods -
     
     /// Stop the request and remove it from queue.
