@@ -130,7 +130,7 @@ You can also observe for changes in authorization status by subscribing auth cha
 
 ```swift
 let observerID = LocationManager.shared.onAuthorizationChange.add { newState in
-  print("Authorization status changed to \(newStatus)")
+  print("Authorization status changed to \(newState)")
 }
 ```
 

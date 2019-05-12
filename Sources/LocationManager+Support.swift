@@ -15,6 +15,15 @@ internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or 
 
 public extension LocationManager {
     
+    /// Errors of the location manager.
+    ///
+    /// - cancelled: operation was cancelled by the user.
+    /// - timeout: timeout reached.
+    /// - invalidAuthStatus: invalid authorization status.
+    /// - generic: generic error.
+    /// - noData: no data received from service.
+    /// - missingAPIKey: missing required api key for service.
+    /// - requiredLocationNotFound: required accurated location were not found, last found reported.
     enum ErrorReason: Error {
         case cancelled
         case timeout(TimeInterval)
@@ -22,6 +31,7 @@ public extension LocationManager {
         case generic(String)
         case noData(URL?)
         case missingAPIKey
+        case requiredLocationNotFound(timeout: TimeInterval, last: CLLocation?)
     }
     
     enum State: CustomStringConvertible {
