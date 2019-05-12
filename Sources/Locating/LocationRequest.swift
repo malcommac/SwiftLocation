@@ -29,7 +29,7 @@ public class LocationRequest: ServiceRequest, Hashable {
         didSet {
             // Also set the callback to receive timeout event; it will remove the request.
             timeoutManager?.callback = { interval in
-                self.stop(reason: .timeout(interval), remove: true)
+                self.stop(reason: .requiredLocationNotFound(timeout: interval, last: self.lastAbsoluteLocation), remove: true)
             }
         }
     }
