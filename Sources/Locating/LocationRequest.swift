@@ -142,7 +142,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     
     // MARK: - Internal Methods -
     
-    /// Stop a request with passed error reason and optionally remvoe it from queue.
+    /// Stop a request with passed error reason and optionally remove it from queue.
     ///
     /// - Parameters:
     ///   - reason: reason of failure.
