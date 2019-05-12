@@ -173,7 +173,7 @@ public class LocationRequest: ServiceRequest, Hashable {
     ///
     /// - Parameter data: data to pass.
     internal func dispatch(data: Data) {
-        observers.list.forEach {
+        observers.list.forEach { [unowned self] in
             $0(data, self)
         }
     }
