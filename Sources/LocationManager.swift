@@ -566,10 +566,10 @@ public class LocationManager: NSObject {
         }
     }
     
-    /// Complete all requests in list and remove them.
+    /// Complete all requests in list and remove them. Optionally you can also pass a reason.
     ///
-    /// - Parameter error: error used to complete each request.
-    private func completeAllLocationRequest(error: ErrorReason) {
+    /// - Parameter error: error used to complete each request. By default is `.cancelled`.
+    public func completeAllLocationRequest(error: ErrorReason = .cancelled) {
         queueLocationRequests.forEach {
             $0.stop(reason: error, remove: true)
             updateLocationManagerSettings($0)
