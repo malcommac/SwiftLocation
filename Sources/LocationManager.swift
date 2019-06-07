@@ -581,7 +581,8 @@ public class LocationManager: NSObject {
     /// - Parameter states: states to filter.
     /// - Returns: `Int`
     private func countRequestsInStates(_ states: Set<RequestState>) -> Int {
-        return queueLocationRequests.count(where: {
+        let normalLocationRequests = queueLocationRequests.filter( { $0.subscription != .significant })
+        return normalLocationRequests.count(where: {
             states.contains($0.state)
         })
     }
