@@ -32,6 +32,7 @@ public extension LocationManager {
         case noData(URL?)
         case missingAPIKey
         case requiredLocationNotFound(timeout: TimeInterval, last: CLLocation?)
+        case requiredBeaconsNotFound(timeout: TimeInterval, last: [CLBeacon]?)
     }
     
     enum State: CustomStringConvertible {
