@@ -107,12 +107,12 @@ class RequestsMonitorController: UIViewController {
 extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6 // all kinds + completed requests
+        return 7 // all kinds + completed requests
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let count = requestsForSection(section).count
-        if section != 5 && count == 0 {
+        if section != 6 && count == 0 {
             return nil
         }
         switch section {

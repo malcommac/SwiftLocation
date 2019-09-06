@@ -66,13 +66,13 @@ public class BeaconsRequest: ServiceRequest, Hashable {
 //    /// the user's location is not likely to be changing.
 //    public var activityType: CLActivityType = .other
     
-    /// Callbacks called once a new location or error is received.
+    /// Callbacks called once a new iBeacon or error is received.
     public var observers = Observers<BeaconsRequest.Callback>()
     
-    /// Last received location (even if not valid).
+    /// Last received iBeacons (even if not valid).
     public private(set) var lastAbsoluteBeacons: [CLBeacon]?
     
-    /// Last valid received location (only if meet request's criteria).
+    /// Last valid received iBeacons (only if meet request's criteria).
     public private(set) var lastBeacons: [CLBeacon]?
 
     /// Current state of the request.
@@ -103,12 +103,12 @@ public class BeaconsRequest: ServiceRequest, Hashable {
         stop(reason: .cancelled, remove: true)
     }
     
-    /// Complete a request with given location.
+    /// Complete a request with given CLBeacons.
     /// If subscription mode is continous the event will be passed to callbacks and
     /// request still alive receiving other events; in case of one shot request
     /// it fulfill the request itself and remove it from queue.
     ///
-    /// - Parameter location: location to pass.
+    /// - Parameter beacons: CLBeacon to pass.
     internal func complete(beacons: [CLBeacon]) {
         lastBeacons = beacons
         guard state.canReceiveEvents && beaconsSatisfyRequest(beacons) else {
@@ -171,35 +171,15 @@ public class BeaconsRequest: ServiceRequest, Hashable {
         }
     }
     
-    /// Return `true` if received location satisfy the constraint of the request and can be dispatched to its observers.
+    /// Return `true` if received CLBeacon satisfy the constraint of the request and can be dispatched to its observers.
     ///
-    /// - Parameter location: location to evaluate.
+    /// - Parameter beacons: CLBeacons to evaluate.
     /// - Returns: `true` if valid, `false` otherwise.
     private func beaconsSatisfyRequest(_ beacons: [CLBeacon]) -> Bool {
-//        guard location.timestamp > (lastBeacons?.first.timestamp ?? Date.distantPast) else {
-//            return false // timestamp of the location is older than the latest we got. We can ignore it.
-//        }
-        
         if let customValidationRule = customValidation {
             // overridden by custom validator rule
             return customValidationRule(beacons)
         }
-        
-//        guard location.horizontalAccuracy < accuracy.value else {
-//            return false // accuracy is not enough
-//        }
-        
-//        guard location.timestamp.timeIntervalSinceNow <= accuracy.interval else {
-//            return false // not too much time is passed since the event itself.
-//        }
-//
-//        if let lastLoc = lastLocation, distance != kCLDistanceFilterNone {
-//            let distanceWithPrevious = lastLoc.distance(from: location)
-//            guard distanceWithPrevious >= distance else {
-//                return false // minimum distance not found
-//            }
-//        }
-        
         return true
     }
     

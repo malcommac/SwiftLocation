@@ -631,19 +631,17 @@ public class LocationManager: NSObject {
     ///
     /// - Parameter request: request added to queue.
     private func updateLocationManagerSettings(_ request: BeaconsRequest) {
-        
-        switch request.subscription {
-        case .oneShot, .continous:
+        // Request authorization always for beacons access
+        manager.requestAuthorizationIfNeeded(preferredAuthorization)
 
-            let beaconRegion = CLBeaconRegion(proximityUUID: request.proximityUUID, identifier: request.id)
-            guard queueBeaconsRequests.count(where: { [.idle,.running].contains($0.state) }) > 0 else {
-                // if no running requests are active we can stop monitoring
-                manager.stopMonitoring(for: beaconRegion)
-                return
-            }
-            
-            manager.startMonitoring(for: beaconRegion)
+        let beaconRegion = CLBeaconRegion(proximityUUID: request.proximityUUID, identifier: request.id)
+        guard queueBeaconsRequests.count(where: { [.idle,.running].contains($0.state) }) > 0 else {
+            // if no running requests are active we can stop monitoring
+            manager.stopMonitoring(for: beaconRegion)
+            return
         }
+        
+        manager.startMonitoring(for: beaconRegion)
     }
     
     internal func dispatchQueueChangeEvent(_ new: Bool, request: ServiceRequest) {
@@ -745,13 +743,14 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-        if let region = region as? CLBeaconRegion {
+        let hasRequestsForRegion = queueBeaconsRequests.filter ({ $0.id == region.identifier }).count > 0
+        if hasRequestsForRegion, let region = region as? CLBeaconRegion {
             manager.startRangingBeacons(in: region)
         }
     }
     
     public func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        for request in queueBeaconsRequests { // dispatch location to any request
+        for request in queueBeaconsRequests.filter ({ $0.id == region.identifier }) { // dispatch location to any request
             request.complete(beacons: beacons)
         }
     }

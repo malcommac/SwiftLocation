@@ -14,9 +14,8 @@ public class BeaconsRequestCell: UITableViewCell {
     public static let height: CGFloat = 105
     
     @IBOutlet public var titleLabel: UILabel!
-    @IBOutlet public var coordinatesLabel: UILabel!
+    @IBOutlet public var descriptionLabel: UILabel!
     @IBOutlet public var accuracyLabel: UILabel!
-    @IBOutlet public var updateLabel: UILabel!
     @IBOutlet public var stopButton: UIButton!
     
     internal weak var monitorController: RequestsMonitorController?
@@ -38,28 +37,15 @@ public class BeaconsRequestCell: UITableViewCell {
             stopButton.setTitle( (request?.state == .running ? "Stop" : "Remove"), for: .normal)
             titleLabel.text = "BEACONS MONITORING"
             
-            guard let loc = request?.value else {
-                coordinatesLabel.text = "(not received)"
+            guard let beacons = request?.value else {
+                descriptionLabel.text = "(not received)"
                 accuracyLabel.text = "-"
-                updateLabel.text = "-"
                 return
             }
             
-            guard let request = request else {
-                return
-            }
-            
-//            coordinatesLabel.text = NSString(format: "%0.5f, %0.5f", loc.coordinate.latitude, loc.coordinate.longitude) as String
-//            accuracyLabel.text = NSString(format: "%0.3f mt",loc.horizontalAccuracy) as String
-//
-//            if request.state == .running {
-//                updateLabel.text = NSString(format: "%0.0f secs ago", abs(loc.timestamp.timeIntervalSinceNow)) as String
-//            } else {
-//                let dateFormatter = DateFormatter()
-//                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:SS"
-//                updateLabel.text = dateFormatter.string(from: loc.timestamp)
-//            }
-            
+            let descritpion = beacons.compactMap { "\($0.major) \($0.minor)" }.joined(separator: " | ")
+            descriptionLabel.text = descritpion
+            accuracyLabel.text = beacons.compactMap { "\($0.accuracy)" }.joined(separator: " | ")
             stopButton.isEnabled = true
             stopButton.alpha = 1.0
         }
