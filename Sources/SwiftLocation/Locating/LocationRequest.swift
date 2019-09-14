@@ -77,6 +77,11 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// Subscription mode used to receive events.
     public internal(set) var subscription: Subscription = .oneShot
     
+    /// Data frequency to receive event.
+    /// This is only a filter for a `continuos` subscription and does not apply to the other subscriptions.
+    /// By default is set to `asAvailable`.
+    public var dataFrequency: DataFrequency = .asAvailable
+    
     /// You can provide a custom validation rule which overrides the default settings for
     /// accuracy and time threshold. You will receive in this callback any location retrived
     /// from the GPS system and you can decide if it's valid to be propagated or not.
@@ -106,7 +111,9 @@ public class LocationRequest: ServiceRequest, Hashable {
     /// - Parameter location: location to pass.
     internal func complete(location: CLLocation) {
         lastAbsoluteLocation = location
-        guard state.canReceiveEvents && locationSatisfyRequest(location) else {
+        guard state.canReceiveEvents &&
+            dataFrequencyIsSatisfied(location) &&
+            locationSatisfyRequest(location) else {
             return // ignore events
         }
         
@@ -198,6 +205,32 @@ public class LocationRequest: ServiceRequest, Hashable {
         return true
     }
     
+    /// Return true if data frequency constraints are satisfied.
+    /// - Parameter location: location to compare againist the last accepted.
+    private func dataFrequencyIsSatisfied(_ location: CLLocation) -> Bool {
+        guard let lastLocation = lastLocation else {
+            return true // first event received always pass
+        }
+        switch dataFrequency {
+        case .asAvailable:
+            return true // no filter is applied
+
+        case .fixed(let minInterval, let minDistance):
+            if let minInterval = minInterval {
+                return abs(location.timestamp.timeIntervalSince(lastLocation.timestamp)) >= minInterval
+            }
+            
+            if let minDistance = minDistance {
+                return location.distance(from: lastLocation) >= minDistance
+            }
+            
+            return true
+            
+        @unknown default:
+            return false
+        }
+    }
+    
     /// Restart a request which are not paused.
     internal func switchToRunningIfNotPaused() {
         switch state {
@@ -235,6 +268,16 @@ public extension LocationRequest {
             case .significant:  return "significant"
             }
         }
+    }
+    
+}
+
+public extension LocationRequest {
+    
+    /// Data frequency to receive events
+    enum DataFrequency {
+        case asAvailable
+        case fixed(minInterval: TimeInterval?, minDistance: CLLocationDistance?)
     }
     
 }
