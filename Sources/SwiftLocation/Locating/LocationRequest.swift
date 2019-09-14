@@ -225,9 +225,6 @@ public class LocationRequest: ServiceRequest, Hashable {
             }
             
             return true
-            
-        @unknown default:
-            return false
         }
     }
     
