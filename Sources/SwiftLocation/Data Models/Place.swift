@@ -48,6 +48,7 @@ public class Place {
             self.coordinates = CLLocationCoordinate2DMake(CLLocationDegrees(lat) ?? 0, CLLocationDegrees(lng) ?? 0)
         }
         
+        self.identifier = valueAtKeyPath(root: json, ["place_id"])
         self.formattedAddress = valueAtKeyPath(root: json, ["display_name"])
         self.name = valueAtKeyPath(root: json, ["address29"])
         self.state = valueAtKeyPath(root: json, ["address","country"])
