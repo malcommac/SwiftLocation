@@ -66,6 +66,9 @@ public extension GeocoderRequest {
                 URLQueryItem(name: key, value: value)
             })
         }
+        
+        public init() {}
+        
     }
     
     // MARK: - Google Geocoder Options -

@@ -13,6 +13,7 @@
 | 🌏 	| Support for Geocoding/Reverse Geocoding (Apple, Google, OpenStreet) 	|
 | 🔍 	| Support for Autocomplete/Place Details (Apple, Google) 	|
 | 🖥 	| Support IP based location with multiple pluggable services 	|
+| ⏱ 	| Support continous location monitoring with fixed minumum time interval / min distance	|
 
 
 SwiftLocation is **created and maintaned with ❥** by Daniele Margutti - [www.danielemargutti.com](http://www.danielemargutti.com).
@@ -67,6 +68,7 @@ Using this lightweight library you will not need to struggle with CoreLocation's
 	- [Explicitly ask for Authorization](#explicitly_ask_authorization)
 	- [Observe Authorization State Changes](#observe_auth_changes)
 - [Get Current Location via GPS](#user_location_gps)
+- [Get Current Location via GPS with fixed min interval/distance](#minintervaldistance)
 - [Get Current Location via IP](#user_location_ip)
 - [Background Monitoring (Significant)](#background_monitoring)
 - [Heading Updates](#heading_updates)
@@ -198,6 +200,27 @@ let req = LocationManager.shared.locateFromGPS(.continous, accuracy: .city) { re
 req.stop() // remove from queue
 req.pause() // pause events dispatching, request still in queue
 ```
+<a name="minintervaldistance"/>
+
+### Get Current Location via GPS with fixed min interval/distance
+
+You can also subscribe to continuos location updates by filtering data using constraints on minimum passed time interval (since the last accepted location) and/or minimum distance (since the last accepted location).
+Keep in mind: location manager still works even if data is not passed to the the request callback so you should pick the right `accuracy` parameter to balance the energy consuption and quality of the data.
+
+This is an example of the code:
+
+```swift
+let request = LocationManager.shared.locateFromGPS(.continous, accuracy: .city) { data in
+  switch data {
+    case .failure(let error):
+      print("Location error: \(error)")
+    case .success(let location):
+      print("New Location: \(location)")
+  }
+}
+request.dataFrequency = .fixed(minInterval: 40, minDistance: 100) // minimum 40 seconds & 100 meters since the last update. 
+```
+
 <a name="user_location_ip"/>
 
 ### Get Current Location via IP
