@@ -18,6 +18,7 @@ public class Place {
     public private(set) var placemark: CLPlacemark?
     public private(set) var name: String?
     public private(set) var coordinates: CLLocationCoordinate2D?
+    public private(set) var identifier: String?
 
     public private(set) var state: String?
     public private(set) var county: String?
@@ -35,6 +36,8 @@ public class Place {
     public private(set) var timezone: TimeZone?
     public private(set) var postalAddress: CNPostalAddress?
     public private(set) var addressDictionary: [AnyHashable: Any]?
+    
+    public private(set) var rawData: Any?
 
     // MARK: - Initialization -
     
@@ -45,6 +48,7 @@ public class Place {
             self.coordinates = CLLocationCoordinate2DMake(CLLocationDegrees(lat) ?? 0, CLLocationDegrees(lng) ?? 0)
         }
         
+        self.identifier = valueAtKeyPath(root: json, ["place_id"])
         self.formattedAddress = valueAtKeyPath(root: json, ["display_name"])
         self.name = valueAtKeyPath(root: json, ["address29"])
         self.state = valueAtKeyPath(root: json, ["address","country"])
@@ -59,6 +63,8 @@ public class Place {
 
         self.placemark = Place.clPlacemarkFromPlace(self)
         self.postalAddress = Place.cnPostalAddressFromPlace(self)
+        
+        self.rawData = json
     }
     
     /// Initialize from map item.
@@ -98,6 +104,7 @@ public class Place {
             self.coordinates = CLLocationCoordinate2DMake(lat, lng)
         }
         
+        self.identifier = valueAtKeyPath(root: json, ["place_id"])
         self.formattedAddress = valueAtKeyPath(root: json, ["formatted_address"])
         self.name = abValue(inType: "establishment", path: ["long_name"])
         self.state = abValue(inType: "administrative_area_level_1", path: ["long_name"])
@@ -117,6 +124,8 @@ public class Place {
         
         self.placemark = Place.clPlacemarkFromPlace(self)
         self.postalAddress = Place.cnPostalAddressFromPlace(self)
+        
+        self.rawData = json
     }
     
     /// Initialize a new place from `CLPlacemark` instance.
