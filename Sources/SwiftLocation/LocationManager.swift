@@ -723,12 +723,12 @@ extension LocationManager: CLLocationManagerDelegate {
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         for request in queueLocationRequests { // dispatch the error to any request
             let shouldRemove = !(request.subscription == .oneShot) // oneshot location will be removed in this case
-            request.stop(reason: .generic(error.localizedDescription), remove: shouldRemove)
+            request.stop(reason: ErrorReason.errorReason(from: error), remove: shouldRemove)
         }
 
         for request in queueBeaconsRequests { // dispatch the error to any request
             let shouldRemove = !(request.subscription == .oneShot) // oneshot location will be removed in this case
-            request.stop(reason: .generic(error.localizedDescription), remove: shouldRemove)
+            request.stop(reason: ErrorReason.errorReason(from: error), remove: shouldRemove)
         }
 
     }

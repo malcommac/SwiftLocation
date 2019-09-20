@@ -33,7 +33,17 @@ public extension LocationManager {
         case missingAPIKey
         case requiredLocationNotFound(timeout: TimeInterval, last: CLLocation?)
         case requiredBeaconsNotFound(timeout: TimeInterval, last: [CLBeacon]?)
+    
+        static func errorReason(from error: Error) -> ErrorReason {
+            if let locationError = error as? CLError {
+                if locationError == CLError(.denied) || locationError == CLError(.regionMonitoringDenied) {
+                    return .invalidAuthStatus(.denied)
+                }
+            }
+            return .generic(error.localizedDescription)
+        }
     }
+    
     
     enum State: CustomStringConvertible {
         case available
