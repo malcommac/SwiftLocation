@@ -126,8 +126,9 @@ public class NewGPSRequestController: UIViewController {
                                              accuracy: self.accuracy,
                                              distance: CLLocationDistance(distanceFilter.text ?? "-1"),
                                              activity: self.activityType,
-                                             timeout: self.timeout,
-                                             result: nil)
+                                             timeout: self.timeout) { result in
+                                                print("\(result)")
+        }
         self.dismiss(animated: true, completion: nil)
     }
 }

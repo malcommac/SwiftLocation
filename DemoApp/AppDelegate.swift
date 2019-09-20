@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             do {
                 try result.get()
             } catch {
+                print("\(error)")
                 if let error = error as? LocationManager.ErrorReason, case .invalidAuthStatus = error {
                     
                 } else if error is LocationManager.ErrorReason {
