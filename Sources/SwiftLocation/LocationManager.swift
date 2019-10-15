@@ -531,6 +531,12 @@ public class LocationManager: NSObject {
             dispatchQueueChangeEvent(true, request: request)
         }
         
+        // Use last known location for added location if location manager is active
+        if queueLocationRequests.count(where: { $0.state == .running && $0.subscription == .continous }) > 0,
+            let location = manager.location {
+            request.complete(location: location)
+        }
+        
         updateLocationManagerSettings(request)
         return true
     }
@@ -604,7 +610,7 @@ public class LocationManager: NSObject {
         case .oneShot, .continous:
             // Request authorization only if needed
             manager.requestAuthorizationIfNeeded(preferredAuthorization)
-            guard queueLocationRequests.count(where: { [.idle,.running].contains($0.state) }) > 0 || LocationManager.state != .available else {
+            guard queueLocationRequests.count(where: { [.idle, .running].contains($0.state) }) > 0 || LocationManager.state != .available else {
                 // if no running requests are active we can stop monitoring
                 manager.stopUpdatingLocation()
                 return
@@ -646,7 +652,7 @@ public class LocationManager: NSObject {
     
     internal func dispatchQueueChangeEvent(_ new: Bool, request: ServiceRequest) {
         onQueueChange.list.forEach {
-            $0(new,request)
+            $0(new, request)
         }
     }
     
