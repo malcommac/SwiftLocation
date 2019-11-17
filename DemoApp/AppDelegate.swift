@@ -16,21 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-//        LocationManager.shared.locateFromGPS(.oneShot, accuracy: .any) { result in
-//            do {
-//                try result.get()
-//            } catch {
-//                print("\(error)")
-//                if let error = error as? LocationManager.ErrorReason, case .invalidAuthStatus = error {
-//                    
-//                } else if error is LocationManager.ErrorReason {
-//                    
-//                } else {
-//                    
-//                }
-//            }
-//        }
 
 //        let options = GeocoderRequest.GoogleOptions(APIKey: "AIzaSyBFNt-SA_YWs6avChK-sU5aMR3o7DRTH-8")
 //        let google = GeocoderRequest.Service.google(options)

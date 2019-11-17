@@ -115,9 +115,9 @@ public extension LocationManager {
             case .block:
                 return 100
             case .house:
-                return 15
+                return 60
             case .room:
-                return 5
+                return 25
             case .custom(let value):
                 return value
             }
@@ -132,9 +132,9 @@ public extension LocationManager {
             case .block:
                 return 60.0
             case .house:
-                return 15.0
+                return 40.0
             case .room:
-                return 5.0
+                return 20.0
             default:
                 return TimeInterval.greatestFiniteMagnitude
             }
