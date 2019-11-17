@@ -1,8 +1,8 @@
 <p align="left" >
-<img src="./swiftlocation_logo.png" width=300px alt="SwiftDate" title="SwiftDate">
+<img src="./swiftlocation_logo.png" width=300px alt="SwiftLocation" title="SwiftLocation">
 </p>
 
-### Efficient and easy to use location tracking framework for iOS
+### Efficient and easy to use location tracking, geocoding, autocomplete & beacon framework for iOS
 
 |  	| Main Features 	|
 |----	|----------------------------------------------------------------------------	|
