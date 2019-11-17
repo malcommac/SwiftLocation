@@ -16,18 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-        
-        let options = GeocoderRequest.GoogleOptions(APIKey: "AIzaSyBFNt-SA_YWs6avChK-sU5aMR3o7DRTH-8")
-        let google = GeocoderRequest.Service.google(options)
-        let x = LocationManager.shared.locateFromAddress("Via dei durantini 221, Rome", service: google) { data in
-            switch data {
-            case .failure(let error):
-                break
-            case .success(let value):
-                print(value)
-            }
-        }
         return true
     }
 
