@@ -32,7 +32,18 @@ public extension LocationManager {
         case noData(URL?)
         case missingAPIKey
         case requiredLocationNotFound(timeout: TimeInterval, last: CLLocation?)
+        case requiredBeaconsNotFound(timeout: TimeInterval, last: [CLBeacon]?)
+    
+        static func errorReason(from error: Error) -> ErrorReason {
+            if let locationError = error as? CLError {
+                if locationError == CLError(.denied) || locationError == CLError(.regionMonitoringDenied) {
+                    return .invalidAuthStatus(.denied)
+                }
+            }
+            return .generic(error.localizedDescription)
+        }
     }
+    
     
     enum State: CustomStringConvertible {
         case available
@@ -104,9 +115,9 @@ public extension LocationManager {
             case .block:
                 return 100
             case .house:
-                return 15
+                return 60
             case .room:
-                return 5
+                return 25
             case .custom(let value):
                 return value
             }
@@ -121,9 +132,9 @@ public extension LocationManager {
             case .block:
                 return 60.0
             case .house:
-                return 15.0
+                return 40.0
             case .room:
-                return 5.0
+                return 20.0
             default:
                 return TimeInterval.greatestFiniteMagnitude
             }
