@@ -56,16 +56,6 @@ public class BeaconsRequest: ServiceRequest, Hashable {
     /// request will fails with `timeout` error and it will be removed from queue.
     public var accuracy: LocationManager.Accuracy = .any
     
-//    /// The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
-//    /// If `kCLDistanceFilterNone` this constraint will be not applied when receiving events for this request.
-//    public var distance: CLLocationDistance = kCLDistanceFilterNone
-//
-//    /// The location manager uses the information in this property as a cue to determine
-//    /// when location updates may be automatically paused.
-//    /// Pausing updates gives the system the opportunity to save power in situations where
-//    /// the user's location is not likely to be changing.
-//    public var activityType: CLActivityType = .other
-    
     /// Callbacks called once a new iBeacon or error is received.
     public var observers = Observers<BeaconsRequest.Callback>()
     
