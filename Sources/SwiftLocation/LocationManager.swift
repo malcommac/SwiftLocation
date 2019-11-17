@@ -18,6 +18,7 @@ public class LocationManager: NSObject {
     
     public typealias RequestID = String
     internal typealias LocationRequestSet = Set<LocationRequest>
+    internal typealias BeaconsRequestSet = Set<BeaconsRequest>
     internal typealias GeocoderRequestSet = Set<GeocoderRequest>
     internal typealias AutocompleteRequestSet = Set<AutoCompleteRequest>
     internal typealias IPRequestSet = Set<LocationByIPRequest>
@@ -120,7 +121,11 @@ public class LocationManager: NSObject {
     /// This is the list of the requests currently in queue.
     /// List is thread safe in read/write.
     internal private(set) var queueLocationRequests: LocationRequestSet
-    
+
+    /// This is the list of the requests currently in queue.
+    /// List is thread safe in read/write.
+    internal private(set) var queueBeaconsRequests: BeaconsRequestSet
+
     /// This is the list of all geocoder (reverse/not reverse) requests currently active.
     internal private(set) var queueGeocoderRequests: GeocoderRequestSet
     
@@ -153,6 +158,7 @@ public class LocationManager: NSObject {
     
     internal override init() {
         queueLocationRequests = LocationRequestSet()
+        queueBeaconsRequests = BeaconsRequestSet()
         queueGeocoderRequests = GeocoderRequestSet()
         queueAutocompleteRequests = AutocompleteRequestSet()
         queueLocationByIPRequests = IPRequestSet()
@@ -201,6 +207,35 @@ public class LocationManager: NSObject {
         request.accuracy = accuracy
         request.distance = (distance ?? kCLDistanceFilterNone)
         request.activityType = activity
+        // only one shot requests has timeout
+        request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
+        request.subscription = subscription
+        if let result = result {
+            request.observers.add(result)
+        }
+        let _ = request.start()
+        return request
+    }
+
+    /// Create and enque a request to get the current device's location.
+    ///
+    /// - Parameters:
+    ///   - subscription: type of subscription you want to set.
+    ///   - accuracy: minimum accuracy to receive from GPS for this request.
+    ///   - distance: The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
+    ///   - activity: The location manager uses the information in this property as a cue to determine when location updates
+    ///               may be automatically paused.
+    ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
+    ///   - result: callback where you will receive the result of request.
+    /// - Returns: return the request itself you can use to manage the lifecycle.
+    @discardableResult
+    public func locateFromBeacons(_ subscription: BeaconsRequest.Subscription,
+                                  proximityUUID: UUID,
+                                  accuracy: Accuracy,
+                                  timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
+                                  result: BeaconsRequest.Callback?) -> BeaconsRequest {
+        let request = BeaconsRequest(proximityUUID: proximityUUID)
+        request.accuracy = accuracy
         // only one shot requests has timeout
         request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
         request.subscription = subscription
@@ -496,6 +531,45 @@ public class LocationManager: NSObject {
             dispatchQueueChangeEvent(true, request: request)
         }
         
+        // Use last known location for added location if location manager is active
+        if queueLocationRequests.count(where: { $0.state == .running && $0.subscription == .continous }) > 0,
+            let location = manager.location {
+            request.complete(location: location)
+        }
+        
+        updateLocationManagerSettings(request)
+        return true
+    }
+    
+    // MARK: - Private Methods: Beacons Location -
+    
+    /// Remove location from the list of requests.
+    ///
+    /// - Parameter request: request to remove.
+    internal func removeBeaconTracking(_ request: BeaconsRequest) {
+        request.state = .expired
+        if let _ = queueBeaconsRequests.remove(request) {
+            dispatchQueueChangeEvent(false, request: request)
+            updateLocationManagerSettings(request)
+        }
+    }
+    
+    /// Start a new request.
+    ///
+    /// - Parameter request: request to start.
+    /// - Returns: `true` if added correctly to the queue, `false` otherwise.
+    @discardableResult
+    internal func startBeaconTracking(_ request: BeaconsRequest) -> Bool {
+        guard request.state.isRunning == false else {
+            return true
+        }
+        request.state = (LocationManager.state == .available ? .running : .idle) // change the state
+        request.timeoutManager?.startIfNeeded()
+        let result = queueBeaconsRequests.insert(request)
+        if result.inserted {
+            dispatchQueueChangeEvent(true, request: request)
+        }
+        
         updateLocationManagerSettings(request)
         return true
     }
@@ -536,7 +610,7 @@ public class LocationManager: NSObject {
         case .oneShot, .continous:
             // Request authorization only if needed
             manager.requestAuthorizationIfNeeded(preferredAuthorization)
-            guard countRequestsInStates([.idle,.running]) > 0 || LocationManager.state != .available else {
+            guard queueLocationRequests.count(where: { [.idle, .running].contains($0.state) }) > 0 || LocationManager.state != .available else {
                 // if no running requests are active we can stop monitoring
                 manager.stopUpdatingLocation()
                 return
@@ -557,12 +631,28 @@ public class LocationManager: NSObject {
             manager.startMonitoringSignificantLocationChanges()
             break
         }
+    }
+    
+    /// Adjust the location manager settings based upon the currently running requests and new added request.
+    ///
+    /// - Parameter request: request added to queue.
+    private func updateLocationManagerSettings(_ request: BeaconsRequest) {
+        // Request authorization always for beacons access
+        manager.requestAuthorizationIfNeeded(preferredAuthorization)
+
+        let beaconRegion = CLBeaconRegion(proximityUUID: request.proximityUUID, identifier: request.id)
+        guard queueBeaconsRequests.count(where: { [.idle,.running].contains($0.state) }) > 0 else {
+            // if no running requests are active we can stop monitoring
+            manager.stopMonitoring(for: beaconRegion)
+            return
+        }
         
+        manager.startMonitoring(for: beaconRegion)
     }
     
     internal func dispatchQueueChangeEvent(_ new: Bool, request: ServiceRequest) {
         onQueueChange.list.forEach {
-            $0(new,request)
+            $0(new, request)
         }
     }
     
@@ -574,16 +664,11 @@ public class LocationManager: NSObject {
             $0.stop(reason: error, remove: true)
             updateLocationManagerSettings($0)
         }
-    }
-    
-    /// Count the number of requests enqueued into the list of states.
-    ///
-    /// - Parameter states: states to filter.
-    /// - Returns: `Int`
-    private func countRequestsInStates(_ states: Set<RequestState>) -> Int {
-        return queueLocationRequests.count(where: {
-            states.contains($0.state)
-        })
+
+        queueBeaconsRequests.forEach {
+            $0.stop(reason: error, remove: true)
+            updateLocationManagerSettings($0)
+        }
     }
     
 }
@@ -622,6 +707,12 @@ extension LocationManager: CLLocationManagerDelegate {
                 $0.switchToRunningIfNotPaused()
                 $0.timeoutManager?.startIfNeeded()
             }
+            
+            queueBeaconsRequests.forEach {
+                $0.switchToRunningIfNotPaused()
+                $0.timeoutManager?.startIfNeeded()
+            }
+
         }
     }
     
@@ -638,8 +729,35 @@ extension LocationManager: CLLocationManagerDelegate {
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         for request in queueLocationRequests { // dispatch the error to any request
             let shouldRemove = request.subscription == .oneShot // oneshot location will be removed in this case
+            request.stop(reason: ErrorReason.errorReason(from: error), remove: shouldRemove)
+        }
+
+        for request in queueBeaconsRequests { // dispatch the error to any request
+            let shouldRemove = request.subscription == .oneShot // oneshot location will be removed in this case
+            request.stop(reason: ErrorReason.errorReason(from: error), remove: shouldRemove)
+        }
+
+    }
+    
+    // MARK: - CoreLocationManagerDelegate for iBeacons
+    
+    public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        for request in queueBeaconsRequests.filter ({ $0.id == region?.identifier }) { // dispatch location to any request
+            let shouldRemove = !(request.subscription == .oneShot) // oneshot location will be removed in this case
             request.stop(reason: .generic(error.localizedDescription), remove: shouldRemove)
         }
     }
     
+    public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        let hasRequestsForRegion = queueBeaconsRequests.filter ({ $0.id == region.identifier }).count > 0
+        if hasRequestsForRegion, let region = region as? CLBeaconRegion {
+            manager.startRangingBeacons(in: region)
+        }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        for request in queueBeaconsRequests.filter ({ $0.id == region.identifier }) { // dispatch location to any request
+            request.complete(beacons: beacons)
+        }
+    }
 }

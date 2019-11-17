@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 
-public class NewGPSRequestController: UIViewController {
+public class NewBeaconsRequestController: UIViewController {
     
     @IBOutlet public var timeoutButton: UIButton!
     @IBOutlet public var accuracyButton: UIButton!
@@ -29,7 +29,7 @@ public class NewGPSRequestController: UIViewController {
         }
     }
     
-    private var mode: LocationRequest.Subscription = .oneShot {
+    private var mode: BeaconsRequest.Subscription = .oneShot {
         didSet {
             reload()
         }
@@ -43,7 +43,7 @@ public class NewGPSRequestController: UIViewController {
     
     public static func create() -> UINavigationController {
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        let vc = storyboard.instantiateViewController(withIdentifier: "NewGPSRequestController") as! NewGPSRequestController
+        let vc = storyboard.instantiateViewController(withIdentifier: "NewBeaconsRequestController") as! NewBeaconsRequestController
         return UINavigationController(rootViewController: vc)
     }
     
@@ -65,7 +65,7 @@ public class NewGPSRequestController: UIViewController {
     
     
     @IBAction public func setMode() {
-        let options: [SelectionItem<LocationRequest.Subscription>] = LocationRequest.Subscription.all.map {
+        let options: [SelectionItem<BeaconsRequest.Subscription>] = BeaconsRequest.Subscription.all.map {
             return SelectionItem(title: $0.description, value: $0)
         }
         self.showPicker(title: "Select a Subscription mode", msg: nil, options: options, onSelect: { item in
@@ -122,34 +122,10 @@ public class NewGPSRequestController: UIViewController {
     }
     
     @objc public func createRequest() {
-        LocationManager.shared.locateFromGPS(self.mode,
-                                             accuracy: self.accuracy,
-                                             distance: CLLocationDistance(distanceFilter.text ?? "-1"),
-                                             activity: self.activityType,
-                                             timeout: self.timeout) { result in
-                                                print("\(result)")
-        }
+        LocationManager.shared.locateFromBeacons(self.mode,
+                                                 proximityUUID: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+                                                 accuracy: LocationManager.Accuracy.any,
+                                                 result: nil)
         self.dismiss(animated: true, completion: nil)
     }
-}
-
-extension CLActivityType: CustomStringConvertible {
-    
-    public var description: String {
-        switch self {
-        case .other:
-            return "other"
-        case .automotiveNavigation:
-            return "automotiveNavigation"
-        case .fitness:
-            return "fitness"
-        case .otherNavigation:
-            return "otherNavigation"
-        case .airborne:
-            return "airborne"
-        @unknown default:
-            return ""
-        }
-    }
-    
 }
