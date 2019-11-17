@@ -174,8 +174,8 @@ It will accepts the following parameters:
 | `city`         | (lowest accuracy) 5000 meters or better, received within the last 10 minutes |
 | `neighborhood` | 1000 meters or better, received within the last 5 minutes                    |
 | `block`        | 100 meters or better, received within the last 1 minute                      |
-| `house`        | 15 meters or better, received within the last 15 seconds                     |
-| `room`         | (highest accuracy) 5 meters or better, received within the last 5 seconds    |
+| `house`        | 60 meters or better, received within the last 40 seconds                     |
+| `room`         | (highest accuracy) 25 meters or better, received within the last 20 seconds    |
 
 The timeout parameter specifies how long you are willing to wait for a location with the accuracy you requested. The timeout guarantees that your block will execute within this period of time, either with a location of at least the accuracy you requested (succeded), or with whatever location could be determined before the timeout interval was up (timedout).
 
