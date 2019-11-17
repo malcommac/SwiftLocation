@@ -13,6 +13,7 @@
 | 🌏 	| Support for Geocoding/Reverse Geocoding (Apple, Google, OpenStreet) 	|
 | 🔍 	| Support for Autocomplete/Place Details (Apple, Google) 	|
 | 🖥 	| Support IP based location with multiple pluggable services 	|
+| 📍 	| Support iBeacon tracking	|
 | ⏱ 	| Support continous location monitoring with fixed minumum time interval / min distance	|
 
 
@@ -74,6 +75,7 @@ Using this lightweight library you will not need to struggle with CoreLocation's
 - [Heading Updates](#heading_updates)
 - [Geocoding/Reverse Geocoding](#geocoding)
 - [Autocomplete](#autocomplete)
+- [iBeacon Tracking](#ibeacon)
 
 <a name="main_concepts"/>
 
@@ -441,6 +443,21 @@ LocationManager.shared.autocomplete(partialMatch: .partialSearch("Piazza della R
       }
     }
 }
+```
+
+<a name="ibeacon"/>
+
+## iBeacon Tracking
+
+Since 4.2.0 SwiftLocation also support iBeacon's beacons tracking.  
+Tracking a beacon is very simple:
+
+```swift
+let beaconProximityUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+LocationManager.shared.locateFromBeacons(self.mode,
+                                        proximityUUID: beaconProximityUUID,
+                                        accuracy: LocationManager.Accuracy.any,
+                                                 result: nil)
 ```
 
 ## Copyright
