@@ -51,11 +51,6 @@ public class BeaconsRequest: ServiceRequest, Hashable {
     /// Proximity identifier of iBeacon to monitor
     public var proximityUUID: UUID
     
-    /// Minimum accuracy level required to receive valid locations in this request.
-    /// If a timeout is set and no events are received inside the interval range the
-    /// request will fails with `timeout` error and it will be removed from queue.
-    public var accuracy: LocationManager.Accuracy = .any
-    
     /// Callbacks called once a new iBeacon or error is received.
     public var observers = Observers<BeaconsRequest.Callback>()
     

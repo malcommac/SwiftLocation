@@ -124,7 +124,6 @@ public class NewBeaconsRequestController: UIViewController {
     @objc public func createRequest() {
         LocationManager.shared.locateFromBeacons(self.mode,
                                                  proximityUUID: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                                                 accuracy: LocationManager.Accuracy.any,
                                                  result: nil)
         self.dismiss(animated: true, completion: nil)
     }

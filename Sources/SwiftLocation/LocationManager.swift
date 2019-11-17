@@ -221,7 +221,6 @@ public class LocationManager: NSObject {
     ///
     /// - Parameters:
     ///   - subscription: type of subscription you want to set.
-    ///   - accuracy: minimum accuracy to receive from GPS for this request.
     ///   - distance: The minimum distance (measured in meters) a device must move horizontally before an update event is generated.
     ///   - activity: The location manager uses the information in this property as a cue to determine when location updates
     ///               may be automatically paused.
@@ -231,11 +230,9 @@ public class LocationManager: NSObject {
     @discardableResult
     public func locateFromBeacons(_ subscription: BeaconsRequest.Subscription,
                                   proximityUUID: UUID,
-                                  accuracy: Accuracy,
                                   timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
                                   result: BeaconsRequest.Callback?) -> BeaconsRequest {
         let request = BeaconsRequest(proximityUUID: proximityUUID)
-        request.accuracy = accuracy
         // only one shot requests has timeout
         request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
         request.subscription = subscription
@@ -743,7 +740,7 @@ extension LocationManager: CLLocationManagerDelegate {
     
     public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         for request in queueBeaconsRequests.filter ({ $0.id == region?.identifier }) { // dispatch location to any request
-            let shouldRemove = !(request.subscription == .oneShot) // oneshot location will be removed in this case
+            let shouldRemove = request.subscription == .oneShot // oneshot location will be removed in this case
             request.stop(reason: .generic(error.localizedDescription), remove: shouldRemove)
         }
     }
