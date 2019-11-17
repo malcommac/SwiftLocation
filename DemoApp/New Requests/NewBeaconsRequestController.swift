@@ -12,18 +12,12 @@ import CoreLocation
 public class NewBeaconsRequestController: UIViewController {
     
     @IBOutlet public var timeoutButton: UIButton!
-    @IBOutlet public var accuracyButton: UIButton!
     @IBOutlet public var modeButton: UIButton!
     @IBOutlet public var distanceFilter: UITextField!
+    @IBOutlet public var proximityUUID: UITextField!
     @IBOutlet public var activityButton: UIButton!
 
     private var timeout: Timeout.Mode? = nil {
-        didSet {
-            reload()
-        }
-    }
-    
-    private var accuracy: LocationManager.Accuracy = .city {
         didSet {
             reload()
         }
@@ -54,7 +48,6 @@ public class NewBeaconsRequestController: UIViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(createRequest))
 
         self.timeout = .delayed(10)
-        self.accuracy = .city
         self.mode = .oneShot
         reload()
     }
@@ -70,15 +63,6 @@ public class NewBeaconsRequestController: UIViewController {
         }
         self.showPicker(title: "Select a Subscription mode", msg: nil, options: options, onSelect: { item in
             self.mode = item.value!
-        })
-    }
-    
-    @IBAction public func setAccuracy() {
-        let options: [SelectionItem<LocationManager.Accuracy>] = LocationManager.Accuracy.all.map {
-            return SelectionItem(title: $0.description, value: $0)
-        }
-        self.showPicker(title: "Select an Accuracy Level", msg: nil, options: options, onSelect: { item in
-            self.accuracy = item.value!
         })
     }
     
@@ -116,14 +100,20 @@ public class NewBeaconsRequestController: UIViewController {
     
     private func reload() {
         timeoutButton.setTitle(timeout?.description ?? "not set", for: .normal)
-        accuracyButton.setTitle(accuracy.description, for: .normal)
         modeButton.setTitle(mode.description, for: .normal)
         activityButton.setTitle(activityType.description, for: .normal)
     }
     
     @objc public func createRequest() {
+        guard let proximityUUID = UUID(uuidString: proximityUUID.text ?? "") else {
+            let alert = UIAlertController(title: "Invalid Proximity UUID", message: "Invalid identifier of the beacon.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            return
+        }
+        
         LocationManager.shared.locateFromBeacons(self.mode,
-                                                 proximityUUID: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+                                                 proximityUUID: proximityUUID,
                                                  result: nil)
         self.dismiss(animated: true, completion: nil)
     }

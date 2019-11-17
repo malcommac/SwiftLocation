@@ -29,6 +29,8 @@
 	<string>We are requesting user auth to read GPS - ALWAYS</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ONLY IN USE</string>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
