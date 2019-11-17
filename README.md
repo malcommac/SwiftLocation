@@ -450,15 +450,58 @@ LocationManager.shared.autocomplete(partialMatch: .partialSearch("Piazza della R
 ## iBeacon Tracking
 
 Since 4.2.0 SwiftLocation also support iBeacon's beacons tracking.  
-Tracking a beacon is very simple:
+
+An iBeacon is a device that emits a Bluetooth signal that can be detected by your devices. Companies can deploy iBeacon devices in environments where proximity detection is a benefit to users, and apps can use the proximity of beacons to determine an appropriate course of action. You decide what actions to take based on the proximity of nearby beacons. For example, a department store might deploy beacons identifying each section of the store, and the corresponding app might point out sale items when the user is near each section.
+
+When deploying your iBeacon hardware, you must program each iBeacon with an appropriate proximity UUID, major value, and minor value. These values identify each of your beacons uniquely and make it possible for your app to differentiate between those beacons later.
+
+- The uuid (universally unique identifier) is a 128-bit value that uniquely identifies your app’s beacons.
+- The major value is a 16-bit unsigned integer that you use to differentiate groups of beacons with the same UUID.
+- The minor value is a 16-bit unsigned integer that you use to differentiate groups of beacons with the same UUID and major value.
+
+Only the UUID is required, but it is recommended that you program all three values into your iBeacon hardware. In your app, you can look for related groups of beacons by specifying only a subset of values.
+
+Tracking a beacon with SwiftLocation is very simple.
 
 ```swift
-let beaconProximityUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-LocationManager.shared.locateFromBeacons(self.mode,
-                                        proximityUUID: beaconProximityUUID,
-                                        accuracy: LocationManager.Accuracy.any,
-                                                 result: nil)
+// The UUID is a 128-bit value that uniquely identifies your app’s beacons.
+let proximityUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+LocationManager.shared.locateFromBeacons(.continous, proximityUUID: proximityUUID, result:  { result in
+  switch result {
+    case .failure(let error): 
+        // something went wrong
+    case .success(let beaconsFound):
+        // beacons found                           
+  }
+})
+
+func doSomethingWithBeacons(_ beacons: [CLBeacon]) {
+  guard beacons.isEmpty == false else {
+    return
+  }
+ 
+   let nearestBeacon = beacons.first!
+   let major = CLBeaconMajorValue(nearestBeacon.major)
+   let minor = CLBeaconMinorValue(nearestBeacon.minor)
+        
+   switch nearestBeacon.proximity {
+        case .near, .immediate:
+            // Display information about the relevant exhibit.
+            displayInformationAboutExhibit(major: major, minor: minor)
+            break
+                
+        default:
+           // Dismiss exhibit information, if it is displayed.
+           dismissExhibit(major: major, minor: minor)
+           break
+           }
+    }
+}
 ```
+
+### Tip
+
+When deploying beacons, consider giving each one a unique combination of UUID, major, and minor values so that you can distinguish among them. If multiple beacons use the same UUID, major, and minor values, the array of beacons delivered to the request reponse method might be differentiated only by their proximity and accuracy values.
 
 ## Copyright
 

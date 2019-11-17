@@ -11,11 +11,10 @@ import CoreLocation
 import MapKit
 
 public class BeaconsRequestCell: UITableViewCell {
-    public static let height: CGFloat = 105
+    public static let height: CGFloat = 70
     
     @IBOutlet public var titleLabel: UILabel!
     @IBOutlet public var descriptionLabel: UILabel!
-    @IBOutlet public var accuracyLabel: UILabel!
     @IBOutlet public var stopButton: UIButton!
     
     internal weak var monitorController: RequestsMonitorController?
@@ -39,13 +38,11 @@ public class BeaconsRequestCell: UITableViewCell {
             
             guard let beacons = request?.value else {
                 descriptionLabel.text = "(not received)"
-                accuracyLabel.text = "-"
                 return
             }
             
             let descritpion = beacons.compactMap { "\($0.major) \($0.minor)" }.joined(separator: " | ")
             descriptionLabel.text = descritpion
-            accuracyLabel.text = beacons.compactMap { "\($0.accuracy)" }.joined(separator: " | ")
             stopButton.isEnabled = true
             stopButton.alpha = 1.0
         }
