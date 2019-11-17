@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SwiftLocation"
-  s.version      = "4.1.0"
+  s.version      = "4.2.0"
   s.summary      = "Easy and Efficient Location Tracking for iOS"
   s.description  = <<-DESC
   Efficient location tracking for iOS with support for oneshot/continuous/background tracking, reverse geocoding, autocomplete and more!
