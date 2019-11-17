@@ -471,7 +471,8 @@ LocationManager.shared.locateFromBeacons(.continous, proximityUUID: proximityUUI
     case .failure(let error): 
         // something went wrong
     case .success(let beaconsFound):
-        // beacons found                           
+        // beacons found     
+        doSomethingWithBeacons(beaconsFound)                      
   }
 })
 
@@ -487,14 +488,12 @@ func doSomethingWithBeacons(_ beacons: [CLBeacon]) {
    switch nearestBeacon.proximity {
         case .near, .immediate:
             // Display information about the relevant exhibit.
-            displayInformationAboutExhibit(major: major, minor: minor)
             break
                 
         default:
            // Dismiss exhibit information, if it is displayed.
-           dismissExhibit(major: major, minor: minor)
            break
-           }
+        }
     }
 }
 ```
