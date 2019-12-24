@@ -11,7 +11,7 @@
 import Foundation
 import CoreLocation
 
-internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or more
+internal let CLLocationAccuracyAny: CLLocationAccuracy = 6000 // 6km or more
 
 public extension LocationManager {
     
@@ -96,7 +96,7 @@ public extension LocationManager {
             case Accuracy.room.value:
                 self = .room
             default:
-                if rawValue == CLLocationAccuracyAccuracyAny {
+                if rawValue == CLLocationAccuracyAny || rawValue == kCLLocationAccuracyBest {
                     self = .any
                 } else {
                     self = .custom(rawValue)
@@ -107,7 +107,7 @@ public extension LocationManager {
         public var value: CLLocationAccuracy {
             switch self {
             case .any:
-                return CLLocationAccuracyAccuracyAny
+                return CLLocationAccuracyAny
             case .city:
                 return 5000
             case .neighborhood:

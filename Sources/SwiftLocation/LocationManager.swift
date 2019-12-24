@@ -147,7 +147,7 @@ public class LocationManager: NSObject {
     /// Accuracy set for manager.
     public var managerAccuracy: Accuracy? {
         set {
-            manager.desiredAccuracy = newValue?.value ?? CLLocationAccuracyAccuracyAny
+            manager.desiredAccuracy = newValue?.value ?? CLLocationAccuracyAny
         }
         get {
             return Accuracy(rawValue: manager.desiredAccuracy)
