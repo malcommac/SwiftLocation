@@ -227,6 +227,7 @@ public class LocationManager: NSObject {
     ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
+    #if !targetEnvironment(macCatalyst)
     @discardableResult
     public func locateFromBeacons(_ subscription: BeaconsRequest.Subscription,
                                   proximityUUID: UUID,
@@ -242,6 +243,7 @@ public class LocationManager: NSObject {
         let _ = request.start()
         return request
     }
+    #endif
     
     /// Return device's approximate location by using one of the specified services.
     /// Some services may require subscription and return approximate locations without requiring explicit permission to the user.
