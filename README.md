@@ -46,7 +46,7 @@ Would you contribute to the project? There are some interesting area of the proj
 
 - [ ] Region Monitoring
 - [ ] MapBox Support for geocoding/reverse and autocomplete
-- [ ] Beacon Monitoring
+- [x] Beacon Monitoring
 - [ ] freeGeoIP and smartIP support for IP to location discovery
 
 Any other idea for improvements? Fell free to open a PR!
