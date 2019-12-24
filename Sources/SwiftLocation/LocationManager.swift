@@ -18,6 +18,7 @@ public class LocationManager: NSObject {
     
     public typealias RequestID = String
     internal typealias LocationRequestSet = Set<LocationRequest>
+    internal typealias RegionRequestSet = Set<RegionRequest>
     internal typealias BeaconsRequestSet = Set<BeaconsRequest>
     internal typealias GeocoderRequestSet = Set<GeocoderRequest>
     internal typealias AutocompleteRequestSet = Set<AutoCompleteRequest>
@@ -121,6 +122,9 @@ public class LocationManager: NSObject {
     /// This is the list of the requests currently in queue.
     /// List is thread safe in read/write.
     internal private(set) var queueLocationRequests: LocationRequestSet
+    
+    /// This is the list of the requests for region monitoring currently in queue.
+    internal private(set) var queueRegionRequests: RegionRequestSet
 
     /// This is the list of the requests currently in queue.
     /// List is thread safe in read/write.
@@ -163,6 +167,7 @@ public class LocationManager: NSObject {
         queueAutocompleteRequests = AutocompleteRequestSet()
         queueLocationByIPRequests = IPRequestSet()
         queueHeadingRequests = HeadingRequestSet()
+        queueRegionRequests = RegionRequestSet()
         super.init()
         manager.delegate = self
         
@@ -216,7 +221,22 @@ public class LocationManager: NSObject {
         let _ = request.start()
         return request
     }
-
+    
+    /// Locate circular region and receive events on exit/enter from/to region.
+    ///
+    /// - Parameters:
+    ///   - region: region to observe.
+    ///   - notify: notification types.
+    ///   - result: callback where you will receive the result of request.
+    public func locateCircularRegion(_ region: CLCircularRegion, notify: RegionRequest.Notify = RegionRequest.Notify.all, result: RegionRequest.Callback?) -> RegionRequest {
+        let request = RegionRequest(notify: notify)
+        if let result = result {
+            request.observers.add(result)
+        }
+        _ = request.start()
+        return request
+    }
+    
     /// Create and enque a request to get the current device's location.
     ///
     /// - Parameters:
@@ -501,6 +521,19 @@ public class LocationManager: NSObject {
         }
     }
     
+    // MARK: - Private Methods: Region Monitoring -
+    
+    /// Remove region monitoring request from the list of requests.
+    ///
+    /// - Parameter request: request to remove.
+    internal func removeRegion(_ request: RegionRequest) {
+        request.state = .expired
+        if let _ = queueRegionRequests.remove(request) {
+            dispatchQueueChangeEvent(false, request: request)
+            updateLocationManagerSettings(request)
+        }
+    }
+    
     // MARK: - Private Methods: GPS Location -
     
     /// Remove location from the list of requests.
@@ -512,6 +545,22 @@ public class LocationManager: NSObject {
             dispatchQueueChangeEvent(false, request: request)
             updateLocationManagerSettings(request)
         }
+    }
+    
+    @discardableResult
+    internal func startRegion(_ request: RegionRequest) -> Bool {
+        guard request.state.isRunning == false else {
+            return true
+        }
+        
+        request.state = (LocationManager.state == .available ? .running : .idle) // change the state
+        let result = queueRegionRequests.insert(request)
+        if result.inserted {
+            dispatchQueueChangeEvent(true, request: request)
+        }
+     
+        updateLocationManagerSettings(request)
+        return true
     }
     
     /// Start a new request.
@@ -594,6 +643,18 @@ public class LocationManager: NSObject {
             return lhs.activityType.rawValue > rhs.activityType.rawValue
         }?.activityType
         return highestActivity ?? .other
+    }
+    
+    private func updateLocationManagerSettings(_ request: RegionRequest) {
+        // Request authorization always for beacons access
+        manager.requestAuthorizationIfNeeded(.always)
+        
+        guard queueRegionRequests.count(where: { [.idle, .running].contains($0.state) }) > 0 || LocationManager.state != .available else {
+            // if no running requests are active we can stop monitoring
+            manager.stopUpdatingLocation()
+            return
+        }
+        manager.startUpdatingLocation()
     }
     
     /// Adjust the location manager settings based upon the currently running requests and new added request.
@@ -756,9 +817,24 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        for request in queueBeaconsRequests.filter ({ $0.id == region.identifier }) { // dispatch location to any request
+        for request in queueBeaconsRequests where request.id == region.identifier { // dispatch location to any request
             request.complete(beacons: beacons)
         }
     }
     #endif
+    
+    // MARK: - CoreLocationManagerDelegate for Regions
+    
+    public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        for request in queueRegionRequests where request.state.canReceiveEvents {
+            request.didReceiveEvent(kind: .enter, inRegion: region)
+        }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        for request in queueRegionRequests where request.state.canReceiveEvents {
+            request.didReceiveEvent(kind: .exit, inRegion: region)
+        }
+    }
+    
 }

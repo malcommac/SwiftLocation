@@ -17,6 +17,8 @@
 		6427B50E226F28F600DCCC24 /* GeocodeRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B50D226F28F600DCCC24 /* GeocodeRequestCell.swift */; };
 		6427B510226F328600DCCC24 /* NewAutocompleteRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */; };
 		6427B512226F42CA00DCCC24 /* AutocompleteRequestCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */; };
+		6469770523B2136100339B90 /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469770423B2136100339B90 /* RegionRequest.swift */; };
+		6469770623B2136100339B90 /* RegionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6469770423B2136100339B90 /* RegionRequest.swift */; };
 		646A557C226374F2001CD502 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A557B226374F2001CD502 /* Support.swift */; };
 		646A5584226376F0001CD502 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5583226376F0001CD502 /* AppDelegate.swift */; };
 		646A5586226376F0001CD502 /* RequestsMonitorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A5585226376F0001CD502 /* RequestsMonitorController.swift */; };
@@ -109,6 +111,7 @@
 		6427B50D226F28F600DCCC24 /* GeocodeRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodeRequestCell.swift; sourceTree = "<group>"; };
 		6427B50F226F328600DCCC24 /* NewAutocompleteRequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAutocompleteRequestController.swift; sourceTree = "<group>"; };
 		6427B511226F42CA00DCCC24 /* AutocompleteRequestCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteRequestCell.swift; sourceTree = "<group>"; };
+		6469770423B2136100339B90 /* RegionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionRequest.swift; sourceTree = "<group>"; };
 		646A557B226374F2001CD502 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		646A5581226376F0001CD502 /* SwiftLocation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		646A5583226376F0001CD502 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -220,6 +223,20 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
+		6469770723B2136500339B90 /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				6469770423B2136100339B90 /* RegionRequest.swift */,
+				646A55B22263B17D001CD502 /* LocationRequest.swift */,
+				B818C1102321786F0002CA31 /* BeaconsRequest.swift */,
+				647D199D226B42CA0034FBD7 /* HeadingRequest.swift */,
+				6492FFAF2268699100414FE5 /* Auto Complete */,
+				64A675F52266EF1B00A1C011 /* Geocoding */,
+				64A802A92269DCD900FDCB2F /* Locating By IP */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
 		646A5582226376F0001CD502 /* DemoApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -244,14 +261,6 @@
 			path = DemoAppTests;
 			sourceTree = "<group>";
 		};
-		646A55B52263C818001CD502 /* Locating */ = {
-			isa = PBXGroup;
-			children = (
-				646A55B22263B17D001CD502 /* LocationRequest.swift */,
-			);
-			path = Locating;
-			sourceTree = "<group>";
-		};
 		646A55B62263C823001CD502 /* Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -271,14 +280,6 @@
 				64712C892267B69E00B320DA /* OpenStreetGeocoderRequest.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		647D19A3226B42CC0034FBD7 /* Heading */ = {
-			isa = PBXGroup;
-			children = (
-				647D199D226B42CA0034FBD7 /* HeadingRequest.swift */,
-			);
-			path = Heading;
 			sourceTree = "<group>";
 		};
 		647D19B8226F167F0034FBD7 /* Monitor Controller */ = {
@@ -379,12 +380,7 @@
 				8933C7841EB5B820000D00A4 /* LocationManager.swift */,
 				6492FFA2226868DE00414FE5 /* LocationManager+Support.swift */,
 				646A55A322638A3F001CD502 /* ServiceRequest.swift */,
-				646A55B52263C818001CD502 /* Locating */,
-				B818C10F2321786F0002CA31 /* Beacons */,
-				64A802A92269DCD900FDCB2F /* Locating By IP */,
-				647D19A3226B42CC0034FBD7 /* Heading */,
-				64A675F52266EF1B00A1C011 /* Geocoding */,
-				6492FFAF2268699100414FE5 /* Auto Complete */,
+				6469770723B2136500339B90 /* Requests */,
 				6492FFA82268692400414FE5 /* Data Models */,
 				646A55B62263C823001CD502 /* Support */,
 			);
@@ -399,14 +395,6 @@
 			);
 			name = Tests;
 			path = Tests/SwiftLocationTests;
-			sourceTree = "<group>";
-		};
-		B818C10F2321786F0002CA31 /* Beacons */ = {
-			isa = PBXGroup;
-			children = (
-				B818C1102321786F0002CA31 /* BeaconsRequest.swift */,
-			);
-			path = Beacons;
 			sourceTree = "<group>";
 		};
 		DD7502721C68FC1B006590AF /* Frameworks */ = {
@@ -604,6 +592,7 @@
 				6492FF972268593000414FE5 /* Geocoder+Support.swift in Sources */,
 				8933C7851EB5B820000D00A4 /* LocationManager.swift in Sources */,
 				64A8029E2269D73E00FDCB2F /* LocationByIPRequest.swift in Sources */,
+				6469770523B2136100339B90 /* RegionRequest.swift in Sources */,
 				641AB6F32264704F00778DC8 /* AppleGeocoderRequest.swift in Sources */,
 				64A675F72266EF2F00A1C011 /* GoogleGeocoderRequest.swift in Sources */,
 				6492FF9D226868CB00414FE5 /* Observers.swift in Sources */,
@@ -664,6 +653,7 @@
 				647D19BE226F1ACF0034FBD7 /* IPRequestCell.swift in Sources */,
 				646A5586226376F0001CD502 /* RequestsMonitorController.swift in Sources */,
 				6427B50E226F28F600DCCC24 /* GeocodeRequestCell.swift in Sources */,
+				6469770623B2136100339B90 /* RegionRequest.swift in Sources */,
 				646A55A2226376F9001CD502 /* Support.swift in Sources */,
 				6492FFB5226869D800414FE5 /* PlaceMatch.swift in Sources */,
 				647D19B7226EF9FE0034FBD7 /* Extensions.swift in Sources */,
