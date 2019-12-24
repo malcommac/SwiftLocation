@@ -96,6 +96,8 @@ public extension AutoCompleteRequest {
             return []
         }
         
+        public init() { }
+        
     }
 
     class GoogleOptions: Options {

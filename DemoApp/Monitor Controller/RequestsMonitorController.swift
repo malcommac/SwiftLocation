@@ -19,11 +19,12 @@ class RequestsMonitorController: UIViewController {
     @IBOutlet public var currentAuth: UILabel!
     @IBOutlet public var currentAccuracy: UILabel!
     @IBOutlet public var countLocationReqs: UILabel!
+    @IBOutlet public var countBeaconsReqs: UILabel!
     @IBOutlet public var countLocationByIPReqs: UILabel!
     @IBOutlet public var countGeocodingReqs: UILabel!
     @IBOutlet public var countAutocompleteReqs: UILabel!
     @IBOutlet public var countHeadingReqs: UILabel!
-    
+
     internal var completedRequests = [ServiceRequest]()
     
     private var timer: Timer?
@@ -65,6 +66,10 @@ class RequestsMonitorController: UIViewController {
             self.present(NewGPSRequestController.create(), animated: true, completion: nil)
         }))
         
+        alert.addAction(UIAlertAction(title: "Monitor iBeacon", style: .default, handler: { _ in
+            self.present(NewBeaconsRequestController.create(), animated: true, completion: nil)
+        }))
+        
         alert.addAction(UIAlertAction(title: "Location by IP", style: .default, handler: { _ in
             self.present(NewIPRequestController.create(), animated: true, completion: nil)
         }))
@@ -102,26 +107,28 @@ class RequestsMonitorController: UIViewController {
 extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6 // all kinds + completed requests
+        return 7 // all kinds + completed requests
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let count = requestsForSection(section).count
-        if section != 5 && count == 0 {
+        if section != 6 && count == 0 {
             return nil
         }
         switch section {
         case 0:
             return "\(count) GPS"
         case 1:
-            return "\(count) IP LOCATION"
+            return "\(count) Beacons"
         case 2:
-            return "\(count) GEOCODING"
+            return "\(count) IP LOCATION"
         case 3:
-            return "\(count) HEADING"
+            return "\(count) GEOCODING"
         case 4:
-            return "\(count) AUTOCOMPLETE"
+            return "\(count) HEADING"
         case 5:
+            return "\(count) AUTOCOMPLETE"
+        case 6:
             return "COMPLETED REQUESTS"
         default:
             return nil
@@ -133,14 +140,16 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         case 0:
             return Array(locator.queueLocationRequests)
         case 1:
-            return Array(locator.queueLocationByIPRequests)
+            return Array(locator.queueBeaconsRequests)
         case 2:
-            return Array(locator.queueGeocoderRequests)
+            return Array(locator.queueLocationByIPRequests)
         case 3:
-            return Array(locator.queueHeadingRequests)
+            return Array(locator.queueGeocoderRequests)
         case 4:
-            return Array(locator.queueAutocompleteRequests)
+            return Array(locator.queueHeadingRequests)
         case 5:
+            return Array(locator.queueAutocompleteRequests)
+        case 6:
             return completedRequests
         default:
             return []
@@ -166,6 +175,12 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         case let locRequest as LocationRequest:
             let cell = tableView.dequeueReusableCell(withIdentifier: "GPSRequestCell") as! GPSRequestCell
             cell.request = locRequest
+            cell.monitorController = self
+            return cell
+
+        case let beaconsRequest as BeaconsRequest:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "BeaconsRequestCell") as! BeaconsRequestCell
+            cell.request = beaconsRequest
             cell.monitorController = self
             return cell
             
@@ -197,7 +212,10 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
         switch request {
         case _ as LocationRequest:
             return GPSRequestCell.height
-       
+
+        case _ as BeaconsRequest:
+            return BeaconsRequestCell.height
+
         case _ as LocationByIPRequest:
             return IPRequestCell.height
             
@@ -217,6 +235,7 @@ extension RequestsMonitorController: UITableViewDataSource, UITableViewDelegate 
      
         countHeadingReqs.text = String(locator.queueHeadingRequests.count)
         countLocationReqs.text = String(locator.queueLocationRequests.count)
+        countBeaconsReqs.text = String(locator.queueBeaconsRequests.count)
         countGeocodingReqs.text = String(locator.queueGeocoderRequests.count)
         countAutocompleteReqs.text = String(locator.queueAutocompleteRequests.count)
         countLocationByIPReqs.text = String(locator.queueLocationByIPRequests.count)
