@@ -36,8 +36,12 @@ public class JSONOperation {
     ///   - url: url to download.
     ///   - timeout: timeout of the request, `10` seconds if not explicitly specified.
     ///   - cachePolicy: cache policy, if not specified `reloadIgnoringLocalAndRemoteCacheData`.
-    public init(_ url: URL, timeout: TimeInterval?, cachePolicy: NSURLRequest.CachePolicy? = nil) {
+    ///   - extraHeaders: extra headers to add to the request
+    public init(_ url: URL, timeout: TimeInterval?, cachePolicy: NSURLRequest.CachePolicy? = nil, extraHeaders: [String:String]? = nil) {
         self.request = URLRequest(url: url, cachePolicy: (cachePolicy ?? .reloadIgnoringLocalAndRemoteCacheData), timeoutInterval: timeout ?? 10.0)
+        extraHeaders?.forEach{
+            self.request.addValue($0.value, forHTTPHeaderField: $0.key)
+        }
     }
     
     /// Start a request. Any pending request from the same class will be discarded.

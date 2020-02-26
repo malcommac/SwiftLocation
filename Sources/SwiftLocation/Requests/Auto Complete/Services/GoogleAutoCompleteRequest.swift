@@ -30,7 +30,7 @@ public class GoogleAutoCompleteRequest: AutoCompleteRequest {
             return
         }
         
-        jsonOperation = JSONOperation(url, timeout: self.timeout?.interval)
+        jsonOperation = JSONOperation(url, timeout: self.timeout?.interval, extraHeaders: ["X-Ios-Bundle-Identifier": Bundle.main.bundleIdentifier ?? ""])
         jsonOperation?.start { response in
             switch response {
             case .failure(let error):
