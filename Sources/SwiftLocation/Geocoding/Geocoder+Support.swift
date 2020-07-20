@@ -147,7 +147,7 @@ public extension GeocoderRequest {
             }
         }
         
-        override init() {
+        override public init() {
             super.init()
             self.params["limit"] = "10"
             self.params["addressdetails"] = "1"
