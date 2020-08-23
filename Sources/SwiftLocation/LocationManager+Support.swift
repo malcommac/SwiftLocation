@@ -160,4 +160,33 @@ public extension LocationManager {
         }
         
     }
+    
+    enum Precise: Comparable {
+        case fullAccuracy
+        case reducedAccuracy
+        
+        public static var all: [Precise] {
+            return [.fullAccuracy, .reducedAccuracy]
+        }
+
+        public var description: String {
+            switch self {
+            case .fullAccuracy:
+                return "fullAccuracy"
+            case .reducedAccuracy:
+               return "reducedAccuracy"
+            }
+        }
+        
+        public var value: CLAccuracyAuthorization {
+            switch self {
+            case .fullAccuracy:
+                return .fullAccuracy
+            case .reducedAccuracy:
+                return .reducedAccuracy
+            }
+        }
+
+    }
+    
 }
