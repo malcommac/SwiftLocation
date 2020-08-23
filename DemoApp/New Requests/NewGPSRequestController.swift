@@ -16,6 +16,7 @@ public class NewGPSRequestController: UIViewController {
     @IBOutlet public var modeButton: UIButton!
     @IBOutlet public var distanceFilter: UITextField!
     @IBOutlet public var activityButton: UIButton!
+    @IBOutlet public var preciseButton: UIButton!
 
     private var timeout: Timeout.Mode? = nil {
         didSet {
@@ -36,6 +37,12 @@ public class NewGPSRequestController: UIViewController {
     }
     
     private var activityType: CLActivityType = .other {
+        didSet {
+            reload()
+        }
+    }
+    
+    private var preciseType: LocationManager.Precise = .fullAccuracy {
         didSet {
             reload()
         }
@@ -114,11 +121,21 @@ public class NewGPSRequestController: UIViewController {
         })
     }
     
+    @IBAction public func setPreciseLocation(_ sender: UIButton) {
+        let options: [SelectionItem<LocationManager.Precise>] = LocationManager.Precise.all.map {
+            return SelectionItem(title: $0.description, value: $0)
+        }
+        self.showPicker(title: "Select an Precise setting", msg: nil, options: options, onSelect: { item in
+            self.preciseType = item.value!
+        })
+    }
+
     private func reload() {
         timeoutButton.setTitle(timeout?.description ?? "not set", for: .normal)
         accuracyButton.setTitle(accuracy.description, for: .normal)
         modeButton.setTitle(mode.description, for: .normal)
         activityButton.setTitle(activityType.description, for: .normal)
+        preciseButton.setTitle(preciseType.description, for: .normal)
     }
     
     @objc public func createRequest() {
@@ -126,7 +143,8 @@ public class NewGPSRequestController: UIViewController {
                                              accuracy: self.accuracy,
                                              distance: CLLocationDistance(distanceFilter.text ?? "-1"),
                                              activity: self.activityType,
-                                             timeout: self.timeout) { result in
+                                             timeout: self.timeout,
+                                             precise: self.preciseType) { result in
                                                 print("\(result)")
         }
         self.dismiss(animated: true, completion: nil)

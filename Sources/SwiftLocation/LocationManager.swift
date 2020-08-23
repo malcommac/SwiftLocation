@@ -18,6 +18,7 @@ public class LocationManager: NSObject {
     
     public typealias RequestID = String
     internal typealias LocationRequestSet = Set<LocationRequest>
+    internal typealias RegionRequestSet = Set<RegionRequest>
     internal typealias BeaconsRequestSet = Set<BeaconsRequest>
     internal typealias GeocoderRequestSet = Set<GeocoderRequest>
     internal typealias AutocompleteRequestSet = Set<AutoCompleteRequest>
@@ -121,6 +122,9 @@ public class LocationManager: NSObject {
     /// This is the list of the requests currently in queue.
     /// List is thread safe in read/write.
     internal private(set) var queueLocationRequests: LocationRequestSet
+    
+    /// This is the list of the requests for region monitoring currently in queue.
+    internal private(set) var queueRegionRequests: RegionRequestSet
 
     /// This is the list of the requests currently in queue.
     /// List is thread safe in read/write.
@@ -147,7 +151,7 @@ public class LocationManager: NSObject {
     /// Accuracy set for manager.
     public var managerAccuracy: Accuracy? {
         set {
-            manager.desiredAccuracy = newValue?.value ?? CLLocationAccuracyAccuracyAny
+            manager.desiredAccuracy = newValue?.value ?? CLLocationAccuracyAny
         }
         get {
             return Accuracy(rawValue: manager.desiredAccuracy)
@@ -163,6 +167,7 @@ public class LocationManager: NSObject {
         queueAutocompleteRequests = AutocompleteRequestSet()
         queueLocationByIPRequests = IPRequestSet()
         queueHeadingRequests = HeadingRequestSet()
+        queueRegionRequests = RegionRequestSet()
         super.init()
         manager.delegate = self
         
@@ -196,27 +201,64 @@ public class LocationManager: NSObject {
     ///   - activity: The location manager uses the information in this property as a cue to determine when location updates
     ///               may be automatically paused.
     ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
+    ///   - precise: iOS 14 only: specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
     @discardableResult
     public func locateFromGPS(_ subscription: LocationRequest.Subscription,
                               accuracy: Accuracy, distance: CLLocationDistance? = nil, activity: CLActivityType = .other,
                               timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
+                              precise: Precise? = .reducedAccuracy,
                               result: LocationRequest.Callback?) -> LocationRequest {
         let request = LocationRequest()
-        request.accuracy = accuracy
-        request.distance = (distance ?? kCLDistanceFilterNone)
-        request.activityType = activity
-        // only one shot requests has timeout
-        request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
-        request.subscription = subscription
+        
+        if #available(iOS 14.0, *), precise == .fullAccuracy {
+            self.checkForAccuracyAuthorization() { authorized in
+                guard authorized == true else {
+                    // Cancel, user did not give permission, inform user
+                    return
+                }
+                request.accuracy = accuracy
+                request.distance = (distance ?? kCLDistanceFilterNone)
+                request.activityType = activity
+                // only one shot requests has timeout
+                request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
+                request.subscription = subscription
+                if let result = result {
+                    request.observers.add(result)
+                }
+                let _ = request.start()
+            }
+        } else {
+            request.accuracy = accuracy
+            request.distance = (distance ?? kCLDistanceFilterNone)
+            request.activityType = activity
+            // only one shot requests has timeout
+            request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
+            request.subscription = subscription
+            if let result = result {
+                request.observers.add(result)
+            }
+            let _ = request.start()
+        }
+        return request
+    }
+    
+    /// Locate circular region and receive events on exit/enter from/to region.
+    ///
+    /// - Parameters:
+    ///   - region: region to observe.
+    ///   - notify: notification types.
+    ///   - result: callback where you will receive the result of request.
+    public func locateCircularRegion(_ region: CLCircularRegion, notify: RegionRequest.Notify = RegionRequest.Notify.all, result: RegionRequest.Callback?) -> RegionRequest {
+        let request = RegionRequest(notify: notify)
         if let result = result {
             request.observers.add(result)
         }
-        let _ = request.start()
+        _ = request.start()
         return request
     }
-
+    
     /// Create and enque a request to get the current device's location.
     ///
     /// - Parameters:
@@ -227,6 +269,7 @@ public class LocationManager: NSObject {
     ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
+    #if !targetEnvironment(macCatalyst)
     @discardableResult
     public func locateFromBeacons(_ subscription: BeaconsRequest.Subscription,
                                   proximityUUID: UUID,
@@ -242,6 +285,7 @@ public class LocationManager: NSObject {
         let _ = request.start()
         return request
     }
+    #endif
     
     /// Return device's approximate location by using one of the specified services.
     /// Some services may require subscription and return approximate locations without requiring explicit permission to the user.
@@ -418,6 +462,20 @@ public class LocationManager: NSObject {
         return request
     }
     
+    /// Check for precise location authorization
+    /// If user hasn't given it, ask for one time permission
+    @available(iOS 14.0, *)
+    func checkForAccuracyAuthorization(completion: @escaping (Bool) -> Void) {
+      let manager = CLLocationManager()
+      guard manager.accuracyAuthorization != .fullAccuracy else {
+        completion(true)
+        return
+      }
+      manager.requestTemporaryFullAccuracyAuthorization(withPurposeKey: "OneTimeLocation") { (error) in
+        manager.accuracyAuthorization == .fullAccuracy ? completion(true) : completion(false)
+      }
+    }
+
     // MARK: - Private Methods: Heading Request -
     
     internal func startHeadingRequest(_ request: HeadingRequest) {
@@ -499,6 +557,19 @@ public class LocationManager: NSObject {
         }
     }
     
+    // MARK: - Private Methods: Region Monitoring -
+    
+    /// Remove region monitoring request from the list of requests.
+    ///
+    /// - Parameter request: request to remove.
+    internal func removeRegion(_ request: RegionRequest) {
+        request.state = .expired
+        if let _ = queueRegionRequests.remove(request) {
+            dispatchQueueChangeEvent(false, request: request)
+            updateLocationManagerSettings(request)
+        }
+    }
+    
     // MARK: - Private Methods: GPS Location -
     
     /// Remove location from the list of requests.
@@ -510,6 +581,22 @@ public class LocationManager: NSObject {
             dispatchQueueChangeEvent(false, request: request)
             updateLocationManagerSettings(request)
         }
+    }
+    
+    @discardableResult
+    internal func startRegion(_ request: RegionRequest) -> Bool {
+        guard request.state.isRunning == false else {
+            return true
+        }
+        
+        request.state = (LocationManager.state == .available ? .running : .idle) // change the state
+        let result = queueRegionRequests.insert(request)
+        if result.inserted {
+            dispatchQueueChangeEvent(true, request: request)
+        }
+     
+        updateLocationManagerSettings(request)
+        return true
     }
     
     /// Start a new request.
@@ -592,6 +679,18 @@ public class LocationManager: NSObject {
             return lhs.activityType.rawValue > rhs.activityType.rawValue
         }?.activityType
         return highestActivity ?? .other
+    }
+    
+    private func updateLocationManagerSettings(_ request: RegionRequest) {
+        // Request authorization always for beacons access
+        manager.requestAuthorizationIfNeeded(.always)
+        
+        guard queueRegionRequests.count(where: { [.idle, .running].contains($0.state) }) > 0 || LocationManager.state != .available else {
+            // if no running requests are active we can stop monitoring
+            manager.stopUpdatingLocation()
+            return
+        }
+        manager.startUpdatingLocation()
     }
     
     /// Adjust the location manager settings based upon the currently running requests and new added request.
@@ -745,6 +844,7 @@ extension LocationManager: CLLocationManagerDelegate {
         }
     }
     
+    #if !targetEnvironment(macCatalyst)
     public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         let hasRequestsForRegion = queueBeaconsRequests.filter ({ $0.id == region.identifier }).count > 0
         if hasRequestsForRegion, let region = region as? CLBeaconRegion {
@@ -753,8 +853,24 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        for request in queueBeaconsRequests.filter ({ $0.id == region.identifier }) { // dispatch location to any request
+        for request in queueBeaconsRequests where request.id == region.identifier { // dispatch location to any request
             request.complete(beacons: beacons)
         }
     }
+    #endif
+    
+    // MARK: - CoreLocationManagerDelegate for Regions
+    
+    public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        for request in queueRegionRequests where request.state.canReceiveEvents {
+            request.didReceiveEvent(kind: .enter, inRegion: region)
+        }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        for request in queueRegionRequests where request.state.canReceiveEvents {
+            request.didReceiveEvent(kind: .exit, inRegion: region)
+        }
+    }
+    
 }
