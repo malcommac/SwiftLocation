@@ -24,7 +24,7 @@ public extension LocationManager {
     /// - noData: no data received from service.
     /// - missingAPIKey: missing required api key for service.
     /// - requiredLocationNotFound: required accurated location were not found, last found reported.
-    enum ErrorReason: Error {
+    enum ErrorReason: Error, Equatable {
         case cancelled
         case timeout(TimeInterval)
         case invalidAuthStatus(CLAuthorizationStatus)
