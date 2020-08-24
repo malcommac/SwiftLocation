@@ -201,12 +201,13 @@ public class LocationManager: NSObject {
     ///   - activity: The location manager uses the information in this property as a cue to determine when location updates
     ///               may be automatically paused.
     ///   - timeout: if set a valid timeout interval to set; if you don't receive events in this interval requests will expire.
-    ///   - precise: iOS 14 only: specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission.
+    ///   - precise: starting with iOS 14: specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission.
     ///   - result: callback where you will receive the result of request.
     /// - Returns: return the request itself you can use to manage the lifecycle.
     @discardableResult
     public func locateFromGPS(_ subscription: LocationRequest.Subscription,
-                              accuracy: Accuracy, distance: CLLocationDistance? = nil, activity: CLActivityType = .other,
+                              accuracy: Accuracy, distance: CLLocationDistance? = nil,
+                              activity: CLActivityType = .other,
                               timeout: Timeout.Mode? = .delayed(LocationManager.shared.timeout),
                               precise: Precise? = .reducedAccuracy,
                               result: LocationRequest.Callback?) -> LocationRequest {
@@ -214,20 +215,24 @@ public class LocationManager: NSObject {
         
         if #available(iOS 14.0, *), precise == .fullAccuracy {
             self.checkForAccuracyAuthorization() { authorized in
-                guard authorized == true else {
-                    // Cancel, user did not give permission, inform user
-                    return
+                if authorized == false {
+                    // user did not give permission
+                    if let result = result {
+                        request.observers.add(result)
+                    }
+                    let _ = request.stop(reason: .invalidAuthStatus(.denied), remove: true)
+                } else {
+                    request.accuracy = accuracy
+                    request.distance = (distance ?? kCLDistanceFilterNone)
+                    request.activityType = activity
+                    // only one shot requests has timeout
+                    request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
+                    request.subscription = subscription
+                    if let result = result {
+                        request.observers.add(result)
+                    }
+                    let _ = request.start()
                 }
-                request.accuracy = accuracy
-                request.distance = (distance ?? kCLDistanceFilterNone)
-                request.activityType = activity
-                // only one shot requests has timeout
-                request.timeoutManager = (subscription == .oneShot ? (timeout != nil ? Timeout(mode: timeout!) : nil) : nil)
-                request.subscription = subscription
-                if let result = result {
-                    request.observers.add(result)
-                }
-                let _ = request.start()
             }
         } else {
             request.accuracy = accuracy
