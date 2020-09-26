@@ -13,6 +13,8 @@ internal let IPServiceDecoder = CodingUserInfoKey(rawValue: "decoder")!
 public enum IPServiceDecoders {
     case ipstack // IPStackService
     case ipdata // IPDataService
+    case ipinfo // IPInfoService
+    case ipapi // IPApiService
 }
 
 public protocol IPService: class {
@@ -38,6 +40,12 @@ public protocol IPService: class {
     /// Execute network request and produce result.
     /// - Parameter completion: completion block.
     func execute(_ completion: @escaping ((Result<IPLocation, LocatorErrors>) -> Void))
+    
+    /// Validate json response for specific errors.
+    /// - Parameters:
+    ///   - data: data received.
+    ///   - httpResponse: http response received
+    func validateResponse(data: Data, httpResponse: HTTPURLResponse) -> LocatorErrors?
     
     /// Cancel active request.
     func cancel()

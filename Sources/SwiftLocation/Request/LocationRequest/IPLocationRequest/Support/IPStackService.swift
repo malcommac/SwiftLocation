@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 /// This is the implementation of IPStack location search by ip.
 /// https://ipstack.com
@@ -18,7 +17,8 @@ public class IPStackService: IPService {
     // MARK: - Configurable Settings
     
     /// Optional target IP to discover; `nil` to use current machine internet address.
-    public let targetIP: String?
+    /// At the time of this documentation 50 is the limit of target IPs you can lookup.
+    public let targetIPs: [String]?
     
     /// Locale identifier.
     /// Not all languages are supported (https://ipstack.com/documentation#language).
@@ -50,17 +50,17 @@ public class IPStackService: IPService {
     /// - Parameters:
     ///   - IP: IP to discover; ignore this parameter to get the location of the currently machine.
     ///   - APIKey: APIKey to use service (go to https://ipstack.com/product for more infos).
-    public init(targetIP: String? = nil, APIKey: String) {
-        self.targetIP = targetIP
+    public init(targetIPs: [String]? = nil, APIKey: String) {
+        self.targetIPs = targetIPs
         self.APIKey = APIKey
     }
     
     private func serviceURL() -> URL {
-        guard let targetIP = targetIP else {
+        guard let targetIPs = targetIPs else {
             return URL(string: "http://api.ipstack.com/check")!
         }
         
-        return URL(string: "http://api.ipstack.com/\(targetIP)")!
+        return URL(string: "http://api.ipstack.com/\(targetIPs.joined(separator: ","))")!
     }
     
     public func buildRequest() throws -> URLRequest {
@@ -78,6 +78,20 @@ public class IPStackService: IPService {
         
         let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
         return request
+    }
+    
+    public func validateResponse(data: Data, httpResponse: HTTPURLResponse) -> LocatorErrors? {
+        guard httpResponse.statusCode != 200 else {
+            return nil
+        }
+        
+        // see https://ipstack.com/documentation#errors
+        switch httpResponse.statusCode {
+        case 404:           return .notFound
+        case 101, 102, 103: return .invalidAPIKey
+        case 104:           return .usageLimitReached
+        default:            return .other(String(httpResponse.statusCode))
+        }
     }
     
 }

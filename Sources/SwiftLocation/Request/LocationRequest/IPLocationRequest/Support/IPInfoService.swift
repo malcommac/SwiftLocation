@@ -8,11 +8,11 @@
 import Foundation
 
 /// This is the implementation of IPData location search by ip.
-/// https://ipdata.co
-public class IPDataService: IPService {
+/// https://ipinfo.io
+public class IPInfoService: IPService {
     
     /// Used to retrive data from json.
-    public var jsonServiceDecoder: IPServiceDecoders = .ipdata
+    public var jsonServiceDecoder: IPServiceDecoders = .ipinfo
 
     // MARK: - Configurable Settings
     
@@ -47,13 +47,17 @@ public class IPDataService: IPService {
     }
     
     private func serviceURL() -> URL {
-        return URL(string: "https://api.ipdata.co/\(targetIP != nil ? targetIP! : "")")!
+        guard let targetIP = targetIP else {
+            return URL(string: "https://ipinfo.io")!
+        }
+        
+        return URL(string: "https://ipinfo.io/\(targetIP)")!
     }
     
     public func buildRequest() throws -> URLRequest {
         var urlComponents = URLComponents(string: serviceURL().absoluteString)
         urlComponents?.queryItems = [
-            URLQueryItem(name: "api-key", value: APIKey)
+            URLQueryItem(name: "token", value: APIKey)
         ]
         
         guard let fullURL = urlComponents?.url else {
@@ -68,12 +72,7 @@ public class IPDataService: IPService {
             return nil
         }
         
-        // see https://docs.ipdata.co/api-reference/status-codes
-        switch httpResponse.statusCode {
-        case 401: return .invalidAPIKey
-        case 403: return .usageLimitReached
-        default:  return .other(String(httpResponse.statusCode))
-        }
+        return .other(String(httpResponse.statusCode))
     }
     
 }
