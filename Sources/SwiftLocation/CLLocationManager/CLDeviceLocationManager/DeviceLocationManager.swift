@@ -24,9 +24,15 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
     /// Delegate of events.
     public weak var delegate: LocationManagerDelegate?
     
-    /// Current authorization status.
+    // MARK: - Public Properties
+
+    /// The status of the authorization manager.
     public var authorizationStatus: CLAuthorizationStatus {
-        manager.authorizationStatus
+        if #available(iOS 14.0, *) {
+            return manager.authorizationStatus
+        } else {
+            return CLLocationManager.authorizationStatus()
+        }
     }
     
     // MARK: - Initialization
@@ -57,16 +63,21 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
     
     // MARK: - Private Functions
     
-    private func didChangeAuthorizationStatus() {
+    private func didChangeAuthorizationStatus(_ newStatus: CLAuthorizationStatus) {
+        guard newStatus != .notDetermined else {
+            return
+        }
+        
         let callbacks = authorizationCallbacks
         callbacks.forEach( { $0(authorizationStatus) })
         authorizationCallbacks.removeAll()
     }
-
+    
     // MARK: - CLLocationManagerDelegate
     
-    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        didChangeAuthorizationStatus()
+    public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        // This method is called only on iOS 13 or lower, for iOS14 we are using `locationManagerDidChangeAuthorization` below.
+        didChangeAuthorizationStatus(status)
     }
     
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

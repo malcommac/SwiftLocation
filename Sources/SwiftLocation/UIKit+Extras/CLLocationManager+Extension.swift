@@ -8,20 +8,6 @@
 import Foundation
 import CoreLocation
 
-// MARK: - CLLocation
-
-internal extension CLLocation {
-    
-    static func mostRecentsTimeStampCompare(_ loc1: CLLocation, loc2: CLLocation) -> Bool {
-        return loc1.timestamp > loc2.timestamp
-    }
- 
-    var accuracy: LocationOptions.Accuracy {
-        LocationOptions.Accuracy(rawValue: horizontalAccuracy)
-    }
-    
-}
-
 // MARK: - CLLocationManager
 
 internal extension CLLocationManager {
@@ -50,6 +36,7 @@ internal extension CLLocationManager {
         self.activityType = settings.activityType
         self.distanceFilter = settings.minDistance ?? kCLLocationAccuracyThreeKilometers
         
+        debugPrint("SETTING DESIDERED ACCURACY \(settings.accuracy.value)")
         // Location updates
         let hasContinousLocation = settings.activeServices.contains(.continousLocation)
         if hasContinousLocation {
@@ -70,8 +57,14 @@ internal extension CLLocationManager {
     // MARK: - Private Functions
     
     private func requestPlistAuthorization() {
-        guard authorizationStatus != .notDetermined else {
-            return
+        if #available(iOS 14.0, *) {
+            guard authorizationStatus != .notDetermined else {
+                return
+            }
+        } else {
+            guard CLLocationManager.authorizationStatus() == .notDetermined else {
+                return
+            }
         }
         
         let alwaysIsEnabled = Bundle.main.object(forInfoDictionaryKey: "NSLocationAlwaysAndWhenInUseUsageDescription") != nil
@@ -88,15 +81,57 @@ internal extension CLLocationManager {
 
 // MARK: - CLAuthorizationStatus
 
-internal extension CLAuthorizationStatus {
+extension CLAuthorizationStatus: CustomStringConvertible {
     
-    var isAuthorized: Bool {
+    internal var isAuthorized: Bool {
         switch self {
         case .authorizedAlways, .authorizedWhenInUse:
             return true
         default:
             return false
         }
+    }
+    
+    public var description: String {
+        switch self {
+        case .notDetermined:            return "notDetermined"
+        case .restricted:               return "restricted"
+        case .denied:                   return "denied"
+        case .authorizedAlways:         return "always"
+        case .authorizedWhenInUse:      return "whenInUse"
+        @unknown default:               return "unknown"
+        }
+    }
+    
+}
+
+// MARK: - CLActivityType
+
+extension CLActivityType: CustomStringConvertible {
+
+    public var description: String {
+        switch self {
+        case .other:                return "other"
+        case .automotiveNavigation: return "automotiveNavigation"
+        case .fitness:              return "fitness"
+        case .otherNavigation:      return "otherNavigation"
+        case .airborne:             return "airbone"
+        @unknown default:           return "unknown"
+        }
+    }
+
+}
+
+// MARK: - CLLocation
+
+internal extension CLLocation {
+    
+    static func mostRecentsTimeStampCompare(_ loc1: CLLocation, loc2: CLLocation) -> Bool {
+        return loc1.timestamp > loc2.timestamp
+    }
+ 
+    var accuracy: LocationOptions.Accuracy {
+        LocationOptions.Accuracy(rawValue: horizontalAccuracy)
     }
     
 }
