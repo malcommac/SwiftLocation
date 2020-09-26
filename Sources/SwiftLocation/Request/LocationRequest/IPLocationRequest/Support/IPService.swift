@@ -11,7 +11,8 @@ import CoreLocation
 internal let IPServiceDecoder = CodingUserInfoKey(rawValue: "decoder")!
 
 public enum IPServiceDecoders {
-    case ipstack
+    case ipstack // IPStackService
+    case ipdata // IPDataService
 }
 
 public protocol IPService: class {

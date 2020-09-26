@@ -39,8 +39,12 @@ class ViewController: UIViewController {
             }
         }*/
         
-        Locator.shared.getLocationByIP(IPStackService(APIKey: "75ac4f649a866a310c17940722ad39ce")).then(queue: .main) { result in
+        /*Locator.shared.getLocationByIP(IPStackService(APIKey: "")).then(queue: .main) { result in
             print(result)
+        }*/
+        
+        Locator.shared.getLocationByIP(IPDataService(APIKey: "")).then(queue: .main) { result in
+            print("result: \(result)")
         }
         
     }

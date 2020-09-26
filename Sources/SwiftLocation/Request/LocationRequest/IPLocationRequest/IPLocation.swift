@@ -12,16 +12,19 @@ public struct IPLocation: Decodable, CustomStringConvertible {
     
     public enum Keys {
         case hostname
-        case ip
         case continent
+        case continentCode
         case country
         case countryCode
         case region
         case regionCode
+        case city
+        case postalCode
     }
     
     public let coordinates: CLLocationCoordinate2D
-    public let info: [Keys: String]
+    public private(set) var info = [Keys: String?]()
+    public let ip: String
 
     public init(from decoder: Decoder) throws {
         guard let decoderService = decoder.userInfo[IPServiceDecoder] as? IPServiceDecoders else {
@@ -31,30 +34,67 @@ public struct IPLocation: Decodable, CustomStringConvertible {
         switch decoderService {
         case .ipstack:
             let container = try decoder.container(keyedBy: IPStackCodingKeys.self)
-
-            self.info = [
-                Keys.hostname: try container.decodeIfPresent(String.self, forKey: .hostname),
-                Keys.continent: try container.decodeIfPresent(String.self, forKey: .continent),
-                
-                Keys.country: try container.decodeIfPresent(String.self, forKey: .country),
-                Keys.countryCode: try container.decodeIfPresent(String.self, forKey: .countryCode),
-                
-                Keys.region: try container.decodeIfPresent(String.self, forKey: .region),
-                Keys.regionCode: try container.decodeIfPresent(String.self, forKey: .regionCode),
-                Keys.ip: try container.decodeIfPresent(String.self, forKey: .ip),
-            ].compactMapValues({ $0 })
+            
+            self.ip = try container.decode(String.self, forKey: .ip)
+            
             let latitude = try container.decode(CLLocationDegrees.self, forKey: .latitude)
             let longitude = try container.decode(CLLocationDegrees.self, forKey: .longitude)
             self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            self.info[Keys.hostname] = try container.decodeIfPresent(String.self, forKey: .hostname)
+            
+            self.info[Keys.continent] = try container.decodeIfPresent(String.self, forKey: .continent)
+            self.info[Keys.continentCode] = try container.decodeIfPresent(String.self, forKey: .continentCode)
+            
+            self.info[Keys.country] = try container.decodeIfPresent(String.self, forKey: .country)
+            self.info[Keys.countryCode] = try container.decodeIfPresent(String.self, forKey: .countryCode)
+            
+            self.info[Keys.region] = try container.decodeIfPresent(String.self, forKey: .region)
+            self.info[Keys.regionCode] = try container.decodeIfPresent(String.self, forKey: .regionCode)
+            
+        case .ipdata:
+            let container = try decoder.container(keyedBy: IPDataCodingKeys.self)
+
+            self.ip = try container.decode(String.self, forKey: .ip)
+         
+            let latitude = try container.decode(CLLocationDegrees.self, forKey: .latitude)
+            let longitude = try container.decode(CLLocationDegrees.self, forKey: .longitude)
+            self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            self.info[Keys.continent] = try container.decodeIfPresent(String.self, forKey: .continent)
+            self.info[Keys.continentCode] = try container.decodeIfPresent(String.self, forKey: .continentCode)
+            
+            self.info[Keys.country] = try container.decodeIfPresent(String.self, forKey: .country)
+            self.info[Keys.countryCode] = try container.decodeIfPresent(String.self, forKey: .countryCode)
+            
+            self.info[Keys.region] = try container.decodeIfPresent(String.self, forKey: .region)
+            self.info[Keys.regionCode] = try container.decodeIfPresent(String.self, forKey: .regionCode)
+            
+            self.info[Keys.city] = try container.decodeIfPresent(String.self, forKey: .city)
+            self.info[Keys.postalCode] = try container.decodeIfPresent(String.self, forKey: .postalCode)
         }
     }
+    
+    // MARK: - IPData
+    
+    private enum IPDataCodingKeys: String, CodingKey {
+        case ip,
+             city,
+             latitude, longitude,
+             postalCode = "postal",
+             continent = "continent_name", continentCode = "continent_code",
+             country = "country_name", countryCode = "country_code",
+             region = "region", regionCode = "region_code"
+    }
         
+    // MARK: - IPStack
+    
     private enum IPStackCodingKeys: String, CodingKey {
         case latitude,
              longitude,
              hostname,
              ip,
-             continent = "continent_name",
+             continent = "continent_name", continentCode = "continent_code",
              country = "country_name", countryCode = "country_code",
              region = "region_name", regionCode = "region_code"
     }

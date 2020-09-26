@@ -8,6 +8,8 @@
 import Foundation
 import CoreLocation
 
+/// This is the implementation of IPStack location search by ip.
+/// https://ipstack.com
 public class IPStackService: IPService {
     
     /// Used to retrive data from json.
