@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 /// The following class define a single location request.
-public class LocationRequest: RequestProtocol {
+public class GPSLocationRequest: RequestProtocol {
     public typealias ProducedData = CLLocation
     
     /// Unique identifier of the request.
@@ -19,7 +19,7 @@ public class LocationRequest: RequestProtocol {
     public var isEnabled: Bool = true
 
     /// Options for location
-    public var options: LocationOptions
+    public var options: GPSLocationOptions
 
     /// Registered callbacks which receive events.
     public var subscriptions = [RequestDataCallback<DataCallback>]()
@@ -67,8 +67,8 @@ public class LocationRequest: RequestProtocol {
     
     /// Initialize.
     /// - Parameter locationOptions: custom options to use.
-    internal init(_ locationOptions: LocationOptions? = nil) {
-        self.options = locationOptions ?? LocationOptions()
+    internal init(_ locationOptions: GPSLocationOptions? = nil) {
+        self.options = locationOptions ?? GPSLocationOptions()
         self.options.request = self
         
         if options.subscription == .single {
@@ -76,7 +76,7 @@ public class LocationRequest: RequestProtocol {
         }
     }
     
-    public static func == (lhs: LocationRequest, rhs: LocationRequest) -> Bool {
+    public static func == (lhs: GPSLocationRequest, rhs: GPSLocationRequest) -> Bool {
         return lhs.uuid == rhs.uuid
     }
     

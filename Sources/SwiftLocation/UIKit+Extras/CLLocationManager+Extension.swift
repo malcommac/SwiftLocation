@@ -130,8 +130,8 @@ internal extension CLLocation {
         return loc1.timestamp > loc2.timestamp
     }
  
-    var accuracy: LocationOptions.Accuracy {
-        LocationOptions.Accuracy(rawValue: horizontalAccuracy)
+    var accuracy: GPSLocationOptions.Accuracy {
+        GPSLocationOptions.Accuracy(rawValue: horizontalAccuracy)
     }
     
 }

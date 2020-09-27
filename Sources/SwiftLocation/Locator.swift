@@ -33,15 +33,15 @@ public class Locator: LocationManagerDelegate {
     }
     
     /// Queued location result.
-    public lazy var locationQueue: RequestQueue<LocationRequest> = {
-        let queue = RequestQueue<LocationRequest>()
+    public lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
+        let queue = RequestQueue<GPSLocationRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
         }
         return queue
     }()
     
-    public lazy var ipLocationQueue: RequestQueue<IPLocationRequest> = {
+    public lazy var ipRequests: RequestQueue<IPLocationRequest> = {
         let queue = RequestQueue<IPLocationRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
@@ -81,29 +81,30 @@ public class Locator: LocationManagerDelegate {
         self.manager?.delegate = self
     }
     
-    /// Get the location with given options.
+    /// Get the location with GPS module with given options.
     ///
     /// - Parameter optionsBuilder: options for search.
     /// - Returns: `LocationRequest`
     @discardableResult
-    public func getLocation(_ optionsBuilder: ((LocationOptions) -> Void)) -> LocationRequest {
-        let newRequest = LocationRequest()
+    public func getGPSLocation(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
+        let newRequest = GPSLocationRequest()
         optionsBuilder(newRequest.options)
-        return locationQueue.add(newRequest)
+        return gpsRequests.add(newRequest)
     }
     
-    /// Get the location with given passed options data.
+    /// Get the location with GPS module with given options.
+    ///
     /// - Parameter options: options to use.
     /// - Returns: `LocationRequest`
-    public func getLocation(_ options: LocationOptions) -> LocationRequest {
-        locationQueue.add(LocationRequest(options))
+    public func getGPSLocation(_ options: GPSLocationOptions) -> GPSLocationRequest {
+        gpsRequests.add(GPSLocationRequest(options))
     }
     
     /// Get the current approximate location by asking to the passed service.
     /// - Parameter service: service to use.
     /// - Returns: `IPLocationRequest`
-    public func getLocationByIP(_ service: IPService) -> IPLocationRequest {
-        ipLocationQueue.add(IPLocationRequest(service))
+    public func getIPLocation(_ service: IPService) -> IPLocationRequest {
+        ipRequests.add(IPLocationRequest(service))
     }
     
     /// Cancel passed request from queue.
@@ -111,8 +112,8 @@ public class Locator: LocationManagerDelegate {
     /// - Parameter request: request.
     public func cancel(request: Any) {
         switch request {
-        case let location as LocationRequest:
-            locationQueue.remove(location)
+        case let location as GPSLocationRequest:
+            gpsRequests.remove(location)
             
         default:
             break
@@ -122,14 +123,14 @@ public class Locator: LocationManagerDelegate {
     /// Cancel subscription token with given id from their associated request.
     /// - Parameter tokenID: token identifier.
     public func cancel(subscription identifier: Identifier) {
-        locationQueue.list.first(where: { $0.subscriptionWithID(identifier) != nil })?.cancel(subscription: identifier)
+        gpsRequests.list.first(where: { $0.subscriptionWithID(identifier) != nil })?.cancel(subscription: identifier)
     }
     
     // MARK: - Private Functions
     
     /// Reset all location requests and manager's settings.
     private func resetAll() {
-        locationQueue.removeAll()
+        gpsRequests.removeAll()
         updateCoreLocationManagerSettings()
     }
     
@@ -180,7 +181,7 @@ public class Locator: LocationManagerDelegate {
         var services = Set<LocationManagerSettings.Services>()
         var settings = LocationManagerSettings(activeServices: services)
         
-        print("\(locationQueue.list.count) requests")
+        print("\(gpsRequests.list.count) requests")
         enumerateLocationRequests { request in
             services.insert(request.options.subscription.service)
             
@@ -215,12 +216,12 @@ public class Locator: LocationManagerDelegate {
         dispatchLocationDataToRequests(.success(lastLocation))
     }
     
-    private func enumerateLocationRequests(_ callback: ((LocationRequest) -> Void)) {
-        let requests = locationQueue
+    private func enumerateLocationRequests(_ callback: ((GPSLocationRequest) -> Void)) {
+        let requests = gpsRequests
         requests.list.forEach(callback)
     }
     
-    private func dispatchLocationDataToRequests(filter: ((LocationRequest) -> Bool)? = nil, _ data: Result<CLLocation, LocatorErrors>) {
+    private func dispatchLocationDataToRequests(filter: ((GPSLocationRequest) -> Bool)? = nil, _ data: Result<CLLocation, LocatorErrors>) {
         enumerateLocationRequests { request in
             if filter?(request) ?? true {
                 if let discardReason = request.receiveData(data) {

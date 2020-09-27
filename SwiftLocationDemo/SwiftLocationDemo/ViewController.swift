@@ -59,7 +59,7 @@ class ViewController: UIViewController {
             print("\(result)")
         }*/
         
-        Locator.shared.getLocationByIP(IPIpifyService(APIKey: "")).then(queue: .main) { result in
+        Locator.shared.getIPLocation(IPIpifyService(APIKey: "")).then(queue: .main) { result in
             print("\(result)")
         }
     }

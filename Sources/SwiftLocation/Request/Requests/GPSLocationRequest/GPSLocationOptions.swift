@@ -11,7 +11,7 @@ import CoreLocation
 /// NOTE: In iOS14+ we are using kCLLocationAccuracyReduced instead.
 internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or more
 
-public class LocationOptions: CustomStringConvertible {
+public class GPSLocationOptions: CustomStringConvertible {
     
     /// Type of subscription.
     ///
@@ -152,7 +152,7 @@ public class LocationOptions: CustomStringConvertible {
     }
     
     /// Associated request.
-    public weak var request: LocationRequest?
+    public weak var request: GPSLocationRequest?
     
     /// Avoid request authorization. If this value is set to true and authorization is not granted by the user
     /// the request fails with `authorizationNeeded` error.

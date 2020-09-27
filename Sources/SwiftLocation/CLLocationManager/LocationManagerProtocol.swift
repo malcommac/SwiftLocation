@@ -94,7 +94,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     var activeServices = Set<Services>()
     
     /// Accuracy needed.
-    var accuracy: LocationOptions.Accuracy = .any
+    var accuracy: GPSLocationOptions.Accuracy = .any
     
     /// Minimum distance.
     var minDistance: CLLocationDistance?
