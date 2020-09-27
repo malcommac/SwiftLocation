@@ -17,8 +17,7 @@ public class IPStackService: IPService {
     // MARK: - Configurable Settings
     
     /// Optional target IP to discover; `nil` to use current machine internet address.
-    /// At the time of this documentation 50 is the limit of target IPs you can lookup.
-    public let targetIPs: [String]?
+    public let targetIP: String?
     
     /// Locale identifier.
     /// Not all languages are supported (https://ipstack.com/documentation#language).
@@ -50,17 +49,17 @@ public class IPStackService: IPService {
     /// - Parameters:
     ///   - IP: IP to discover; ignore this parameter to get the location of the currently machine.
     ///   - APIKey: APIKey to use service (go to https://ipstack.com/product for more infos).
-    public init(targetIPs: [String]? = nil, APIKey: String) {
-        self.targetIPs = targetIPs
+    public init(targetIP: String? = nil, APIKey: String) {
+        self.targetIP = targetIP
         self.APIKey = APIKey
     }
     
     private func serviceURL() -> URL {
-        guard let targetIPs = targetIPs else {
+        guard let targetIP = targetIP else {
             return URL(string: "http://api.ipstack.com/check")!
         }
         
-        return URL(string: "http://api.ipstack.com/\(targetIPs.joined(separator: ","))")!
+        return URL(string: "http://api.ipstack.com/\(targetIP)")!
     }
     
     public func buildRequest() throws -> URLRequest {

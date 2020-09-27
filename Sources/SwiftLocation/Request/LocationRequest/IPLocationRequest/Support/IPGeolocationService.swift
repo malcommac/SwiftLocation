@@ -17,19 +17,14 @@ public class IPGeolocationService: IPService {
     // MARK: - Configurable Settings
     
     /// Optional target IP to discover; `nil` to use current machine internet address.
-    public let targetIPs: [String]?
+    public let targetIP: String?
     
     /// API key. See https://app.ipgeolocation.io.
     public let APIKey: String?
     
-    
     /// Locale identifier.
     /// Not all languages are supported (https://ip-api.com/docs/api:json).
     public var locale = Locale(identifier: "en")
-    
-    /// Hostname lookup.
-    /// By default, the ipstack API does not return information about the hostname the given IP address resolves to.
-    public var hostnameLookup = false
     
     // MARK: - Protocol Specific
     
@@ -50,8 +45,8 @@ public class IPGeolocationService: IPService {
     /// - Parameters:
     ///   - targetIP: IP to discover; ignore this parameter to get the location of the currently machine.
     ///   - APIKey: API Key for service. Signup at https://app.ipgeolocation.io.
-    public init(targetIPs: [String]? = nil, APIKey: String) {
-        self.targetIPs = targetIPs
+    public init(targetIP: String? = nil, APIKey: String) {
+        self.targetIP = targetIP
         self.APIKey = APIKey
     }
     
@@ -59,34 +54,17 @@ public class IPGeolocationService: IPService {
         let serviceURL = URL(string: "https://api.ipgeolocation.io/ipgeo")!
         var urlComponents = URLComponents(string: serviceURL.absoluteString)
         
-        var httpMethod = "GET"
-        var httpBody: Data? = nil
-        var queryItems = [
+        urlComponents?.queryItems = [
             URLQueryItem(name: "apiKey", value: APIKey),
-            URLQueryItem(name: "lang", value: locale.collatorIdentifier?.lowercased())
-        ]
-        
-        if let targetIPs = targetIPs {
-            if targetIPs.count == 1 { // single ip lookup
-                queryItems.append(URLQueryItem(name: "ip", value: targetIPs.first!))
-            } else { // multiple ips lookup
-                httpMethod = "POST"
-                httpBody = try? JSONSerialization.data(withJSONObject: ["ips": targetIPs], options: .prettyPrinted)
-            }
-        } else { // current machin lookup
-            // nothing
-        }
-        
-        urlComponents?.queryItems = queryItems
-        
+            URLQueryItem(name: "lang", value: locale.collatorIdentifier?.lowercased()),
+            (targetIP != nil ? URLQueryItem(name: "ip", value: targetIP) : nil)
+        ].compactMap({ $0 })
+                
         guard let fullURL = urlComponents?.url else {
             throw LocatorErrors.internalError
         }
         
-        var request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
-        request.httpMethod = httpMethod
-        request.httpBody = httpBody
-        return request
+        return URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
     }
     
     public func validateResponse(data: Data, httpResponse: HTTPURLResponse) -> LocatorErrors? {

@@ -16,6 +16,7 @@ public enum IPServiceDecoders {
     case ipinfo // IPInfoService
     case ipapi // IPApiService
     case ipgeolocation // IPGeolocationService
+    case ipify // IPIpifyService
 }
 
 public protocol IPService: class {

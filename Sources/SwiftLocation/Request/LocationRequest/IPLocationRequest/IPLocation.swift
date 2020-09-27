@@ -122,8 +122,7 @@ public struct IPLocation: Decodable, CustomStringConvertible {
             
             let latitude = try container.decode(String.self, forKey: .latitude)
             let longitude = try container.decode(String.self, forKey: .longitude)
-            self.coordinates = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude) ?? 0,
-                                                      longitude: CLLocationDegrees(longitude) ?? 0)
+            self.coordinates = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude) ?? 0, longitude: CLLocationDegrees(longitude) ?? 0)
             
             self.info[Keys.continent] = try container.decodeIfPresent(String.self, forKey: .continent)
             self.info[Keys.continentCode] = try container.decodeIfPresent(String.self, forKey: .continentCode)
@@ -136,7 +135,33 @@ public struct IPLocation: Decodable, CustomStringConvertible {
             self.info[Keys.district] = try container.decodeIfPresent(String.self, forKey: .district)
             
             self.info[Keys.isp] = try container.decodeIfPresent(String.self, forKey: .isp)
+            
+        case .ipify:
+            let container = try decoder.container(keyedBy: IPIPifyCodingKeys.self)
+            let locationContainer = try container.nestedContainer(keyedBy: IPIPifyLocationNodeCodingKeys.self, forKey: .location)
+
+            self.ip = try container.decode(String.self, forKey: .ip)
+            self.info[Keys.isp] = try container.decodeIfPresent(String.self, forKey: .isp)
+            
+            let latitude = try locationContainer.decode(CLLocationDegrees.self, forKey: .lat)
+            let longitude = try locationContainer.decode(CLLocationDegrees.self, forKey: .lng)
+            self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                        
+            self.info[Keys.country] = try locationContainer.decodeIfPresent(String.self, forKey: .country)
+            self.info[Keys.region] = try locationContainer.decodeIfPresent(String.self, forKey: .region)
+            self.info[Keys.city] = try locationContainer.decodeIfPresent(String.self, forKey: .city)
+            self.info[Keys.postalCode] = try locationContainer.decodeIfPresent(String.self, forKey: .postalCode)
         }
+    }
+    
+    // MARK: - IPIPify
+    
+    private enum IPIPifyCodingKeys: String, CodingKey {
+        case ip, isp, location
+    }
+    
+    private enum IPIPifyLocationNodeCodingKeys: String, CodingKey {
+        case country, region, city, lat, lng, postalCode
     }
     
     // MARK: - IPGeolocationCodingKeys
