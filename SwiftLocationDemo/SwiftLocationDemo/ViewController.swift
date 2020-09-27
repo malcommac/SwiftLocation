@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftLocation
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -14,7 +15,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        /*Locator.shared.getLocation { options in
+        /*Locator.shared.getGPSLocation { options in
             options.request?.evictionPolicy = [.onReceiveData(count: 4)]
             options.accuracy = .city
         }.then(queue: .main) {
@@ -26,7 +27,7 @@ class ViewController: UIViewController {
             }
         }
         
-        Locator.shared.getLocation {
+        Locator.shared.getGPSLocation {
             $0.subscription = .continous
             $0.accuracy = .room
             $0.timeout = .immediate(5)
@@ -39,29 +40,43 @@ class ViewController: UIViewController {
             }
         }*/
         
-        /*Locator.shared.getLocationByIP(IPStackService(APIKey: "")).then(queue: .main) { result in
+        /*Locator.shared.getIPLocation(IPStackService(APIKey: "")).then(queue: .main) { result in
             print(result)
         }*/
         
-        /*Locator.shared.getLocationByIP(IPDataService(APIKey: "")).then(queue: .main) { result in
+        /*Locator.shared.getIPLocation(IPDataService(APIKey: "")).then(queue: .main) { result in
             print("result: \(result)")
         }*/
         
-        /*Locator.shared.getLocationByIP(IPInfoService(APIKey: "1c61f98ad7a104")).then(queue: .main) { result in
+        /*Locator.shared.getIPLocation(IPInfoService(APIKey: "1c61f98ad7a104")).then(queue: .main) { result in
             print("\(result)")
         }*/
         
-       /* Locator.shared.getLocationByIP(IPAPIService()).then(queue: .main) { result in
+       /* Locator.shared.getIPLocation(IPAPIService()).then(queue: .main) { result in
             print(result)
         }*/
         
-        /*Locator.shared.getLocationByIP(IPGeolocationService(targetIP: "2.236.174.49", APIKey: "e618c7ed650d43d2b59f6390b65f7349")).then(queue: .main) { result in
+        /*Locator.shared.getIPLocation(IPGeolocationService(targetIP: "2.236.174.49", APIKey: "e618c7ed650d43d2b59f6390b65f7349")).then(queue: .main) { result in
             print("\(result)")
         }*/
         
-        Locator.shared.getIPLocation(IPIpifyService(APIKey: "")).then(queue: .main) { result in
+        /*Locator.shared.getIPLocation(IPIpifyService(APIKey: "")).then(queue: .main) { result in
             print("\(result)")
+        }*/
+        
+
+       /* Locator.shared.getGeocode(AppleGeocoderService(address: "via veneto 12, rieti")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*Locator.shared.getGeocode(AppleGeocoderService(coordinates: CLLocationCoordinate2D(latitude: 42.4333871, longitude: 12.92514))).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        Locator.shared.getGeocode(GoogleGeocoderService(address: "Via veneto 12, rieti", APIKey: ")).then(queue: .main) { result in
+            print(result)
         }
+        
     }
 
 

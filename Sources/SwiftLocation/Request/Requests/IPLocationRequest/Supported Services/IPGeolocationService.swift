@@ -9,7 +9,7 @@ import Foundation
 
 /// This is the implementation of IPGeolocation location search by ip.
 /// https://ipgeolocation.io
-public class IPGeolocationService: IPService {
+public class IPGeolocationService: IPServiceProtocol {
     
     /// Used to retrive data from json.
     public var jsonServiceDecoder: IPServiceDecoders = .ipgeolocation

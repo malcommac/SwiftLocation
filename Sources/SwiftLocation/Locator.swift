@@ -19,6 +19,15 @@ public class Locator: LocationManagerDelegate {
     /// Shared instance.
     public static let shared = Locator()
     
+    /// Authorization mode. By default the best authorization to get is based upon the plist file.
+    /// If plist contains always usage description the always mode is used, otherwise only whenInUse is preferred.
+    public var preferredAuthorizationMode: AuthorizationMode = .plist
+    
+    /// Current authorization status.
+    public var authorizationStatus: CLAuthorizationStatus {
+        return manager?.authorizationStatus ?? .notDetermined
+    }
+    
     /// Currently active location settings
     public private(set) var currentSettings = LocationManagerSettings() {
         didSet {
@@ -32,8 +41,10 @@ public class Locator: LocationManagerDelegate {
         }
     }
     
+    // MARK: - Queues
+    
     /// Queued location result.
-    public lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
+    private lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
         let queue = RequestQueue<GPSLocationRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
@@ -41,22 +52,16 @@ public class Locator: LocationManagerDelegate {
         return queue
     }()
     
-    public lazy var ipRequests: RequestQueue<IPLocationRequest> = {
+    private lazy var ipRequests: RequestQueue<IPLocationRequest> = {
         let queue = RequestQueue<IPLocationRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
         }
         return queue
     }()
-        
-    /// Authorization mode. By default the best authorization to get is based upon the plist file.
-    /// If plist contains always usage description the always mode is used, otherwise only whenInUse is preferred.
-    public var preferredAuthorizationMode: AuthorizationMode = .plist
     
-    /// Current authorization status.
-    public var authorizationStatus: CLAuthorizationStatus {
-        return manager?.authorizationStatus ?? .notDetermined
-    }
+    /// Geocoder Requests
+    private var geocoderRequests = RequestQueue<GeocoderRequest>()
     
     // MARK: - Initialization
     
@@ -68,7 +73,7 @@ public class Locator: LocationManagerDelegate {
         }
     }
     
-    // MARK: - Public Properties
+    // MARK: - Setting up
     
     /// This functiction change the underlying manager which manage the hardware. By default the `CLLocationManager` based
     /// object is used (`DeviceLocationManager`); this function should not be called directly but it's used for unit test.
@@ -80,6 +85,8 @@ public class Locator: LocationManagerDelegate {
         self.manager = try DeviceLocationManager(locator: self)
         self.manager?.delegate = self
     }
+    
+    // MARK: - Public Properties
     
     /// Get the location with GPS module with given options.
     ///
@@ -96,6 +103,7 @@ public class Locator: LocationManagerDelegate {
     ///
     /// - Parameter options: options to use.
     /// - Returns: `LocationRequest`
+    @discardableResult
     public func getGPSLocation(_ options: GPSLocationOptions) -> GPSLocationRequest {
         gpsRequests.add(GPSLocationRequest(options))
     }
@@ -103,8 +111,20 @@ public class Locator: LocationManagerDelegate {
     /// Get the current approximate location by asking to the passed service.
     /// - Parameter service: service to use.
     /// - Returns: `IPLocationRequest`
-    public func getIPLocation(_ service: IPService) -> IPLocationRequest {
+    @discardableResult
+    public func getIPLocation(_ service: IPServiceProtocol) -> IPLocationRequest {
         ipRequests.add(IPLocationRequest(service))
+    }
+    
+    /// Geocoding is the process of converting addresses (like "1600 Amphitheatre Parkway, Mountain View, CA") into geographic coordinates (like latitude 37.423021 and longitude -122.083739),
+    /// which you can use to place markers on a map, or position the map.
+    /// Reverse geocoding is the process of converting geographic coordinates into a human-readable address.
+    /// This service allows you to perform both operations.
+    ///
+    /// - Parameter service: service to use.
+    /// - Returns: GeocoderRequest
+    public func getGeocode(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
+        geocoderRequests.add(GeocoderRequest(service: service))
     }
     
     /// Cancel passed request from queue.

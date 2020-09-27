@@ -9,7 +9,7 @@ import Foundation
 
 /// This is the implementation of IPStack location search by ip.
 /// https://ipstack.com
-public class IPStackService: IPService {
+public class IPStackService: IPServiceProtocol {
     
     /// Used to retrive data from json.
     public var jsonServiceDecoder: IPServiceDecoders = .ipstack

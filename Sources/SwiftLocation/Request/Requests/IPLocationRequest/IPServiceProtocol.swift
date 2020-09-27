@@ -19,7 +19,7 @@ public enum IPServiceDecoders {
     case ipify // IPIpifyService
 }
 
-public protocol IPService: class {
+public protocol IPServiceProtocol: class {
     
     /// Decoder userd to read data from service.
     var jsonServiceDecoder: IPServiceDecoders { get }
@@ -56,7 +56,7 @@ public protocol IPService: class {
 
 // MARK: - IPService Extension
 
-public extension IPService {
+public extension IPServiceProtocol {
     
     func execute(_ completion: @escaping ((Result<IPLocation, LocatorErrors>) -> Void)) {
         do {

@@ -10,7 +10,7 @@ import Foundation
 public class IPLocationRequest: RequestProtocol {
     public typealias ProducedData = IPLocation
 
-    private var service: IPService
+    private var service: IPServiceProtocol
     
     public var uuid = UUID().uuidString
     
@@ -40,7 +40,7 @@ public class IPLocationRequest: RequestProtocol {
         hasher.combine(uuid)
     }
     
-    public init(_ service: IPService) {
+    public init(_ service: IPServiceProtocol) {
         self.service = service
     }
     

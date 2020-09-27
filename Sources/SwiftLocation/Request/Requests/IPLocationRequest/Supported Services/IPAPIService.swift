@@ -9,7 +9,7 @@ import Foundation
 
 /// This is the implementation of IPStack location search by ip.
 /// https://ip-api.com (documentation: https://ip-api.com/docs/api:jsonfor)
-public class IPAPIService: IPService {
+public class IPAPIService: IPServiceProtocol {
     
     public enum ReturnedFields: String {
         case continent, // Continent name ('North America')

@@ -9,7 +9,7 @@ import Foundation
 
 /// This is the implementation of IPData location search by ip.
 /// https://ipinfo.io
-public class IPInfoService: IPService {
+public class IPInfoService: IPServiceProtocol {
     
     /// Used to retrive data from json.
     public var jsonServiceDecoder: IPServiceDecoders = .ipinfo

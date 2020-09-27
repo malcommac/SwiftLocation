@@ -9,7 +9,7 @@ import Foundation
 
 /// This is the implementation of IPify location search by ip.
 /// https://www.ipify.org
-public class IPIpifyService: IPService {
+public class IPIpifyService: IPServiceProtocol {
     
     /// Used to retrive data from json.
     public var jsonServiceDecoder: IPServiceDecoders = .ipify
