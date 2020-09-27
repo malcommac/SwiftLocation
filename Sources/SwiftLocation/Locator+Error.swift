@@ -20,6 +20,7 @@ import Foundation
 /// - `invalidAPIKey`: for external service this means you have inserted an invalid API key
 /// - `usageLimitReached`: for external service this means you'r usage limit quota has been reached
 /// - `notFound`: resource not found.
+/// - `reserved`: for geolocation service this means queried IP address is a bogon (reserved) IP address like private, multicast, etc.
 public enum LocatorErrors: LocalizedError, Equatable {
     case discardedData(DataDiscardReason)
     case timeout
@@ -31,6 +32,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
     case invalidAPIKey
     case usageLimitReached
     case notFound
+    case reserved
     case other(String)
 
     /// Is a discarded data error.
@@ -56,6 +58,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case .invalidAPIKey:        return "Invalid/Missing API Key"
         case .usageLimitReached:    return "Quota limit reached"
         case .notFound:             return "Not Found"
+        case .reserved:             return "Reserved IP"
         case .other(let e):         return e
         }
     }
@@ -73,7 +76,8 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case (.invalidAPIKey, .invalidAPIKey):          return true
         case (.usageLimitReached, .usageLimitReached):  return true
         case (.notFound, .notFound):                    return true
-            
+        case (.reserved, .reserved):                    return true
+
         default:                                        return false
         }
     }

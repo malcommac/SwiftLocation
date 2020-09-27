@@ -15,6 +15,7 @@ public enum IPServiceDecoders {
     case ipdata // IPDataService
     case ipinfo // IPInfoService
     case ipapi // IPApiService
+    case ipgeolocation // IPGeolocationService
 }
 
 public protocol IPService: class {
@@ -81,6 +82,9 @@ public extension IPService {
                 do {
                     let decoder = JSONDecoder()
                     decoder.userInfo = [IPServiceDecoder : self.jsonServiceDecoder]
+                    
+                    print(String(data: data, encoding: .utf8))
+                    
                     let location = try decoder.decode(IPLocation.self, from: data)
                     completion(.success(location))
                 } catch {

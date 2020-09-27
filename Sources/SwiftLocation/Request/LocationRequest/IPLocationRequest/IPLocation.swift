@@ -113,7 +113,41 @@ public struct IPLocation: Decodable, CustomStringConvertible {
             
             self.info[Keys.timezone] = try container.decodeIfPresent(String.self, forKey: .timezone)
             self.info[Keys.isp] = try container.decodeIfPresent(String.self, forKey: .isp)
+            
+        case .ipgeolocation:
+            let container = try decoder.container(keyedBy: IPGeolocationCodingKeys.self)
+
+            self.ip = try container.decode(String.self, forKey: .ip)
+            self.info[Keys.hostname] = try container.decodeIfPresent(String.self, forKey: .hostname)
+            
+            let latitude = try container.decode(String.self, forKey: .latitude)
+            let longitude = try container.decode(String.self, forKey: .longitude)
+            self.coordinates = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude) ?? 0,
+                                                      longitude: CLLocationDegrees(longitude) ?? 0)
+            
+            self.info[Keys.continent] = try container.decodeIfPresent(String.self, forKey: .continent)
+            self.info[Keys.continentCode] = try container.decodeIfPresent(String.self, forKey: .continentCode)
+            
+            self.info[Keys.country] = try container.decodeIfPresent(String.self, forKey: .country)
+            self.info[Keys.countryCode] = try container.decodeIfPresent(String.self, forKey: .countryCode)
+
+            self.info[Keys.city] = try container.decodeIfPresent(String.self, forKey: .city)
+            self.info[Keys.postalCode] = try container.decodeIfPresent(String.self, forKey: .postalCode)
+            self.info[Keys.district] = try container.decodeIfPresent(String.self, forKey: .district)
+            
+            self.info[Keys.isp] = try container.decodeIfPresent(String.self, forKey: .isp)
         }
+    }
+    
+    // MARK: - IPGeolocationCodingKeys
+    
+    private enum IPGeolocationCodingKeys: String, CodingKey {
+        case ip, hostname, continent = "continent_name", continentCode = "continent_code",
+             country = "country_name", countryCode = "country_code2",
+             district = "district",
+             city, postalCode = "zipcode",
+             latitude, longitude,
+             isp
     }
     
     // MARK: - IPApi

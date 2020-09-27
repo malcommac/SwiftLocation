@@ -51,8 +51,12 @@ class ViewController: UIViewController {
             print("\(result)")
         }*/
         
-        Locator.shared.getLocationByIP(IPAPIService()).then(queue: .main) { result in
+       /* Locator.shared.getLocationByIP(IPAPIService()).then(queue: .main) { result in
             print(result)
+        }*/
+        
+        Locator.shared.getLocationByIP(IPGeolocationService(APIKey: "")).then(queue: .main) { result in
+            print("\(result)")
         }
     }
 
