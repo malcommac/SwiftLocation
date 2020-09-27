@@ -13,18 +13,25 @@ public struct GeocoderLocation: CustomStringConvertible {
     public enum Keys {
         case id // unique identifier
         case name // formatted name
-        case countryCode
-        case country
-        case postalCode
-        case administrativeArea
-        case subAdministrativeArea
-        case locality
-        case subLocality
-        case throughfare
-        case subThroughfare
-        case locationType
+        case countryCode // 2-digit country code
+        case country // indicates the national political entity, and is typically the highest order type returned by the Geocoder.
+        case postalCode //  indicates a postal code as used to address postal mail within the country.
+        case administrativeArea // indicates a first-order civil entity below the country level
+        case subAdministrativeArea //  indicates a second-order civil entity below the country level
+        case subAdministrativeArea3 //  indicates a third-order civil entity below the country level
+        case subAdministrativeArea4 //  indicates a fourth-order civil entity below the country level.
+        case subAdministrativeArea5 //  ndicates a fifth-order civil entity below the country level.
+        case locality // indicates an incorporated city or town political entity.
+        case intersection // indicates a major intersection, usually of two major roads.
+        case subLocality // indicates a first-order civil entity below a locality.
+        case throughfare // indicates a named neighborhood
+        case subThroughfare // Additional street-level information for the placemark.
+        case locationType // type of locationn
+        case streetAddress // indicates a precise street address.
+        case POI // area of interests separated by ;.
     }
     
+    /// Coordinates of the location.
     public let coordinates: CLLocationCoordinate2D
     
     /// Represented object. It's CLPlacemark when using Apple services, or a Dictionary with raw json data for any other external service.

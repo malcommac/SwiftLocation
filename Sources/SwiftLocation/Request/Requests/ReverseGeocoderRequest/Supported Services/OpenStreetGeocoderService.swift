@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
+public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
 
     /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
     public struct Viewport {
@@ -131,7 +131,7 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
         return request
     }
     
-    internal static func parseRawData(_ data: Data) throws -> [GeocoderLocation] {
+    private static func parseRawData(_ data: Data) throws -> [GeocoderLocation] {
         return try GeocoderLocation.fromGoogleList(data)
     }
 

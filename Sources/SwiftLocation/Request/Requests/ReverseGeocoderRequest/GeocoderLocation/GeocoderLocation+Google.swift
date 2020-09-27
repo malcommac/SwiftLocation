@@ -34,18 +34,28 @@ internal extension GeocoderLocation {
         let locality: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["locality"], key: "long_name")
         let administrativeArea: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_1"], key: "long_name")
         let subAdministrativeArea: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_2"], key: "long_name")
+        let subAdministrativeArea3: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_3"], key: "long_name")
+        let subAdministrativeArea4: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_4"], key: "long_name")
+        let subAdministrativeArea5: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_5"], key: "long_name")
         let throughfare: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["neighborhood", "route"], key: "long_name")
         let postalCode: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["postal_code"], key: "long_name")
+        let streetAddress: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["street_address"], key: "long_name")
+        let intersection: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["intersection"], key: "long_name")
         let locationType: String? = json.valueForKeyPath(keyPath: "geometry.location_type")
-
+        
         self.info[.country] = country
         self.info[.countryCode] = countryCode
         self.info[.locality] = locality
         self.info[.administrativeArea] = administrativeArea
         self.info[.subAdministrativeArea] = subAdministrativeArea
+        self.info[.subAdministrativeArea3] = subAdministrativeArea3
+        self.info[.subAdministrativeArea4] = subAdministrativeArea4
+        self.info[.subAdministrativeArea5] = subAdministrativeArea5
         self.info[.throughfare] = throughfare
         self.info[.postalCode] = postalCode
         self.info[.locationType] = locationType
+        self.info[.intersection] = intersection
+        self.info[.streetAddress] = streetAddress
         
         self.region = nil
         self.timezone = nil

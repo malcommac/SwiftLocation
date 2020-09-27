@@ -32,6 +32,7 @@ public extension GeocoderLocation {
         self.info[.subLocality] = clPlacemark.subLocality
         self.info[.throughfare] = clPlacemark.thoroughfare
         self.info[.subThroughfare] = clPlacemark.subThoroughfare
+        self.info[.POI] = clPlacemark.areasOfInterest?.joined(separator: ";")
     }
     
     /// Initialize from a response of placemarks.
