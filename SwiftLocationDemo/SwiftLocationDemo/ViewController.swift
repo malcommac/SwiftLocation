@@ -73,7 +73,15 @@ class ViewController: UIViewController {
             print(result)
         }*/
         
-        Locator.shared.getGeocode(GoogleGeocoderService(address: "Via veneto 12, rieti", APIKey: ")).then(queue: .main) { result in
+        /*Locator.shared.getGeocode(GoogleGeocoderService(address: "Empire State Building", APIKey: "")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*Locator.shared.getGeocode(GoogleGeocoderService(coordinates: CLLocationCoordinate2D(latitude: 40.748441, longitude: -73.985428), APIKey: "")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        Locator.shared.getGeocode(OpenStreetGeocoderService(address: "Via Veneto 12, Rieti")).then(queue: .main) { result in
             print(result)
         }
         

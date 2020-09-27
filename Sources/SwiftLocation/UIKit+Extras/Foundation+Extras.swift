@@ -84,3 +84,13 @@ extension Dictionary {
     }
     
 }
+
+// MARK: - String
+
+internal extension String {
+    
+    var urlEncoded: String {
+        return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+    }
+    
+}

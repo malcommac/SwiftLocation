@@ -23,6 +23,7 @@ public extension GeocoderLocation {
         self.timezone = clPlacemark.timeZone
         
         self.info[.name] = clPlacemark.name
+        self.info[.formattedAddress] = clPlacemark.formattedAddress
         self.info[.countryCode] = clPlacemark.isoCountryCode
         self.info[.country] = clPlacemark.country
         self.info[.postalCode] = clPlacemark.postalCode
@@ -32,7 +33,7 @@ public extension GeocoderLocation {
         self.info[.subLocality] = clPlacemark.subLocality
         self.info[.throughfare] = clPlacemark.thoroughfare
         self.info[.subThroughfare] = clPlacemark.subThoroughfare
-        self.info[.POI] = clPlacemark.areasOfInterest?.joined(separator: ";")
+        self.info[.POI] = clPlacemark.areasOfInterest?.joined(separator: "|")
     }
     
     /// Initialize from a response of placemarks.

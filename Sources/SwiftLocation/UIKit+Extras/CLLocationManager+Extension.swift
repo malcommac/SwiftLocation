@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import Contacts
 
 // MARK: - CLLocationManager
 
@@ -132,6 +133,21 @@ internal extension CLLocation {
  
     var accuracy: GPSLocationOptions.Accuracy {
         GPSLocationOptions.Accuracy(rawValue: horizontalAccuracy)
+    }
+    
+}
+
+
+extension CLPlacemark {
+    
+    /// Formatted address
+    var formattedAddress: String? {
+        guard let postalAddress = postalAddress else {
+            return nil
+        }
+        
+        let formatter = CNPostalAddressFormatter()
+        return formatter.string(from: postalAddress)
     }
     
 }

@@ -21,7 +21,8 @@ internal extension GeocoderLocation {
         
         let name: String? = json.valueForKeyPath(keyPath: "formatted_address")
         self.info[.name] = name
-        
+        self.info[.formattedAddress] = name
+
         let lat: CLLocationDegrees? = json.valueForKeyPath(keyPath: "geometry.location.lat")
         let lng: CLLocationDegrees? = json.valueForKeyPath(keyPath: "geometry.location.lng")
         self.coordinates = CLLocationCoordinate2D(latitude: lat ?? 0, longitude: lng ?? 0)

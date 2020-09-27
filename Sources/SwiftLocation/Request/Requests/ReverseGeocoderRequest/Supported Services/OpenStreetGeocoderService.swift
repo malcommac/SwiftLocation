@@ -8,49 +8,39 @@
 import Foundation
 import CoreLocation
 
+/// Geocoding using OpenStreet APIs
+/// https://nominatim.org/release-docs/develop/api/Overview/)
 public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
-
-    /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
-    public struct Viewport {
-        var southwest: CLLocationCoordinate2D
-        var northeast: CLLocationCoordinate2D
-        
-        internal var rawValue: String {
-            return "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
-        }
-        
-    }
     
     /// Operation to perform
     public private(set) var operation: GeocoderOperation
     
-    /// Service API Key (https://console.cloud.google.com/google/maps-apis/credentials)
-    public var APIKey: String
-    
     /// Request timeout.
     public var timeout: TimeInterval = 5
     
-    /// The language in which to return results.
-    /// See https://developers.google.com/maps/faq#languagesupport for more informations.
-    /// NOTE: If language is not supplied, the geocoder attempts to use the preferred language as specified in the Accept-Language header, or the native language of the domain from which the request is sent.
-    /// More info: https://developers.google.com/maps/documentation/geocoding/overview
-    public var language: String?
+    /// Include a breakdown of the address into elements.
+    /// By default is set `true`
+    public var includeAddressDetails = true
+
+    /// Include additional information in the result if available, e.g. wikipedia link, opening hours.
+    /// By default is set to `false`.
+    public var includeExtraTags = false
     
-    /// The region code, specified as a ccTLD ("top-level domain") two-character value.
-    /// This parameter will only influence, not fully restrict, results from the geocoder.
-    /// For more informations see https://developers.google.com/maps/documentation/geocoding/overview#RegionCodes.
-    public var region: String?
+    /// Include a list of alternative names in the results. These may include language variants, references, operator and brand.
+    /// By default is set to `false`.
+    public var includeNameDetails = false
     
-    /// The bounding box of the viewport within which to bias geocode results more prominently.
-    /// This parameter will only influence, not fully restrict, results from the geocoder.
-    /// See https://developers.google.com/maps/documentation/geocoding/overview#Viewports for more infos.
-    public var bounds: Viewport?
+    /// Level of detail required for the address. Default is `building`
+    /// This is a number that corresponds roughly to the zoom level used in map frameworks like Leaflet.js, Openlayers etc.
+    public var zoomLevel: ZoomLevel = .building
     
-    /// A components filter with elements separated by a pipe (|).
-    /// The components filter is required if the request doesn't include an address.
-    /// Each element in the components filter consists of a component:value pair, and fully restricts the results from the geocoder.
-    /// See https://developers.google.com/maps/documentation/geocoding/overview#component-filtering for more infos.
-    public var components: [String]?
+    /// Preferred language order for showing search results, overrides the value specified in the "Accept-Language" HTTP header.
+    /// Either use a standard RFC2616 accept-language string or a simple comma-separated list of language codes.
+    public var locale: Locale?
+    
+    /// Simplify the output geometry before returning. The parameter is the tolerance in degrees with which the geometry may differ from the original geometry. Topology is preserved in the result.
+    /// Default is 0.
+    public var polygonThreshold = 0.0
 
     // MARK: - Initialize
     
@@ -59,9 +49,8 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     /// - Parameters:
     ///   - coordinates: coordinates.
     ///   - APIKey: API key
-    public init(coordinates: CLLocationCoordinate2D, APIKey: String) {
+    public init(coordinates: CLLocationCoordinate2D) {
         self.operation = .geoAddress(coordinates)
-        self.APIKey = APIKey
     }
     
     /// Initialize to geocode given address and obtain coordinates.
@@ -69,9 +58,8 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     /// - Parameters:
     ///   - address: address to geocode.
     ///   - APIKey: API Key
-    public init(address: String, APIKey: String) {
+    public init(address: String) {
         self.operation = .getCoordinates(address)
-        self.APIKey = APIKey
     }
     
     // MARK: - Public Functions
@@ -85,7 +73,7 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
                     completion(.failure(error))
                 case .success(let rawData):
                     do {
-                        let locations = try GoogleGeocoderService.parseRawData(rawData)
+                        let locations = try OpenStreetGeocoderService.parseRawData(rawData)
                         completion(.success(locations))
                     } catch {
                         completion(.failure(.parsingError))
@@ -101,23 +89,28 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     
     private func buildRequest() throws -> URLRequest {
         var url: URL!
-        var queryItems = [ URLQueryItem(name: "key", value: APIKey), ]
+        var queryItems = [
+            URLQueryItem(name: "format", value: "json")
+        ]
+
+        // Options
+        queryItems.append(URLQueryItem(name: "addressdetails", value: String(includeAddressDetails)))
+        queryItems.append(URLQueryItem(name: "extratags", value: String(includeExtraTags)))
+        queryItems.append(URLQueryItem(name: "namedetails", value: String(includeNameDetails)))
+        queryItems.append(URLQueryItem(name: "zoom", value: String(zoomLevel.rawValue)))
+        queryItems.append(URLQueryItem(name: "polygon_threshold", value: String(polygonThreshold)))
 
         switch operation {
         case .getCoordinates(let address):
-            url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json")!
-            queryItems.append(URLQueryItem(name: "address", value: address))
+            url = URL(string: "https://nominatim.openstreetmap.org/search/\(address.urlEncoded)")!
             
         case .geoAddress(let coordinates):
-            url = URL(string: "https://maps.googleapis.com/maps/api/geocode/json")!
-            queryItems.append(URLQueryItem(name: "latlng", value: "\(coordinates.latitude),\(coordinates.longitude)"))
+            url = URL(string: "https://nominatim.openstreetmap.org/reverse")!
+            queryItems.append(contentsOf: [
+                URLQueryItem(name: "lat", value: String(coordinates.latitude)),
+                URLQueryItem(name: "lon", value: String(coordinates.latitude)),
+            ])
         }
-        
-        // Options
-        queryItems.appendIfNotNil(URLQueryItem(name: "language", optional: language))
-        queryItems.appendIfNotNil(URLQueryItem(name: "bounds", optional: bounds?.rawValue))
-        queryItems.appendIfNotNil(URLQueryItem(name: "region", optional: region))
-        queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: components?.joined(separator: "|")))
 
         // Create
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -132,7 +125,25 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     }
     
     private static func parseRawData(_ data: Data) throws -> [GeocoderLocation] {
-        return try GeocoderLocation.fromGoogleList(data)
+        return try GeocoderLocation.fromOpenStreetList(data)
     }
+    
+}
 
+// MARK: - OpenStreetGeocoderService
+
+public extension OpenStreetGeocoderService {
+    
+    /// Level of detail required for the address.
+    enum ZoomLevel: Int {
+        case country = 3
+        case state = 5
+        case county = 8
+        case city = 10
+        case suburb = 14
+        case majorStreets = 16
+        case majorAndMinorStreets = 17
+        case building = 18
+    }
+    
 }

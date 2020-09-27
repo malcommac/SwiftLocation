@@ -9,17 +9,6 @@ import Foundation
 import CoreLocation
 
 public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
-
-    /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
-    public struct Viewport {
-        var southwest: CLLocationCoordinate2D
-        var northeast: CLLocationCoordinate2D
-        
-        internal var rawValue: String {
-            return "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
-        }
-        
-    }
     
     /// Operation to perform
     public private(set) var operation: GeocoderOperation
@@ -51,7 +40,11 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
     /// Each element in the components filter consists of a component:value pair, and fully restricts the results from the geocoder.
     /// See https://developers.google.com/maps/documentation/geocoding/overview#component-filtering for more infos.
     public var components: [String]?
-
+    
+    /// A filter of one or more location types.
+    /// By default is set to `nil`.
+    public var locationTypes: [LocationTypes]?
+    
     // MARK: - Initialize
     
     /// Initialize to reverse geocode coordinates to return estimated address.
@@ -118,6 +111,7 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
         queryItems.appendIfNotNil(URLQueryItem(name: "bounds", optional: bounds?.rawValue))
         queryItems.appendIfNotNil(URLQueryItem(name: "region", optional: region))
         queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: components?.joined(separator: "|")))
+        queryItems.appendIfNotNil(URLQueryItem(name: "location_type", optional: locationTypes?.map({ $0.rawValue }).joined(separator: "|")))
 
         // Create
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -135,4 +129,34 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
         return try GeocoderLocation.fromGoogleList(data)
     }
 
+}
+
+// MARK: - GoogleGeocoderService Extension
+
+public extension GoogleGeocoderService {
+    
+    /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
+    struct Viewport {
+        var southwest: CLLocationCoordinate2D
+        var northeast: CLLocationCoordinate2D
+        
+        fileprivate var rawValue: String {
+            return "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
+        }
+        
+    }
+    
+    /// A filter of one or more location types, separated by a pipe (|). If the parameter contains multiple location types, the API returns all addresses that match any of the types
+    /// - `rooftop`: returns only the addresses for which Google has location information accurate down to street address precision.
+    /// - `rangeInterpolated`: returns only the addresses that reflect an approximation (usually on a road) interpolated between two precise points (such as intersections).
+    ///                       An interpolated range generally indicates that rooftop geocodes are unavailable for a street address.
+    /// - `geometricCenter`: returns only geometric centers of a location such as a polyline (for example, a street) or polygon (region).
+    /// - `approximate`: returns only the addresses that are characterized as approximate.
+    enum LocationTypes: String {
+        case rooftop = "ROOFTOP"
+        case rangeInterpolated = "RANGE_INTERPOLATED"
+        case geometricCenter = "GEOMETRIC_CENTER"
+        case approximate = "APPROXIMATE"
+    }
+    
 }

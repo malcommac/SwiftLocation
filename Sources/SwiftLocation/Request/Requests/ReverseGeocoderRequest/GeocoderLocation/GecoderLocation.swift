@@ -12,7 +12,8 @@ public struct GeocoderLocation: CustomStringConvertible {
     
     public enum Keys {
         case id // unique identifier
-        case name // formatted name
+        case name // name
+        case formattedAddress // formatted complete address
         case countryCode // 2-digit country code
         case country // indicates the national political entity, and is typically the highest order type returned by the Geocoder.
         case postalCode //  indicates a postal code as used to address postal mail within the country.
@@ -26,9 +27,10 @@ public struct GeocoderLocation: CustomStringConvertible {
         case subLocality // indicates a first-order civil entity below a locality.
         case throughfare // indicates a named neighborhood
         case subThroughfare // Additional street-level information for the placemark.
-        case locationType // type of locationn
+        case locationType // type of location separated by |
         case streetAddress // indicates a precise street address.
-        case POI // area of interests separated by ;.
+        case POI // area of interests separated by |.
+        case osmID // OSM identifier
     }
     
     /// Coordinates of the location.
