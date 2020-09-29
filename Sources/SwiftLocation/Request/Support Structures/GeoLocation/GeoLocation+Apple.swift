@@ -44,7 +44,7 @@ public extension GeoLocation {
         return placemarks?.compactMap({ GeoLocation(clPlacemark: $0) }) ?? []
     }
     
-    internal static func fromAppleList(_ mapItem: [MKMapItem]?) -> [AutocompleteResult] {
+    internal static func fromAppleList(_ mapItem: [MKMapItem]?) -> [Autocomplete.AutocompleteResult] {
         return mapItem?.compactMap({
             guard let location = GeoLocation(clPlacemark: $0.placemark) else {
                 return nil

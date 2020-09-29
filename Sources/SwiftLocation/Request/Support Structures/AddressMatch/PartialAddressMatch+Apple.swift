@@ -24,7 +24,7 @@ internal extension PartialAddressMatch {
         self.types = nil
     }
     
-    static func fromAppleList(_ completer: MKLocalSearchCompleter) -> [AutocompleteResult] {
+    static func fromAppleList(_ completer: MKLocalSearchCompleter) -> [Autocomplete.AutocompleteResult] {
         completer.results.map( { .partial(PartialAddressMatch(apple: $0)) })
     }
     

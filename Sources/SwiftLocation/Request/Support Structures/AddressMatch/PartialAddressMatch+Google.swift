@@ -25,8 +25,8 @@ internal extension PartialAddressMatch {
         self.types = json.valueForKeyPath(keyPath: "types")
     }
     
-    static func fromGoogleList(_ rawList: [[String: Any]]?) -> [AutocompleteResult] {
-        let list: [AutocompleteResult] = rawList?.compactMap( {
+    static func fromGoogleList(_ rawList: [[String: Any]]?) -> [Autocomplete.AutocompleteResult] {
+        let list: [Autocomplete.AutocompleteResult] = rawList?.compactMap( {
             guard let address = PartialAddressMatch(google: $0) else {
                 return nil
             }

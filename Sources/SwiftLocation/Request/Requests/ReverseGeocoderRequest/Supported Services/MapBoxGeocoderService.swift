@@ -42,7 +42,7 @@ public class MapBoxGeocoderService: JSONNetworkHelper, GeocoderServiceProtocol {
     
     /// Filter results to include only a subset (one or more) of the available feature types.
     /// By default is `nil`.
-    public var types: [Types]?
+    public var types: [ResultTypes]?
     
     // MARK: - Reverse Geocoder Specific Properties
 
@@ -121,8 +121,6 @@ public class MapBoxGeocoderService: JSONNetworkHelper, GeocoderServiceProtocol {
                             return
                         }
                         
-                        // try! rawData.write(to: URL(fileURLWithPath: "/Users/daniele/Desktop/mapbox.json"), options: .atomic)
-                        
                         let locations = GeoLocation.fromMapBoxList(json.valueForKeyPath(keyPath: "features"))
                         completion(.success(locations))
                     } catch {
@@ -190,19 +188,6 @@ public extension MapBoxGeocoderService {
         case score
     }
     
-    /// Filter results to include only a subset (one or more) of the available feature types.
-    enum Types: String {
-        case country,
-             region,
-             postcode,
-             district,
-             place,
-             locality,
-             neighborhood,
-             address,
-             poi
-    }
-    
     /// A bounding box array in the form
     struct BoundingBox {
         public let minLon: CLLocationDegrees
@@ -214,6 +199,20 @@ public extension MapBoxGeocoderService {
         internal var rawValue: String {
             return "\(minLon),\(minLat),\(maxLon),\(maxLat)"
         }
+        
     }
-    
+
+    /// Filter results to include only a subset (one or more) of the available feature types.
+    enum ResultTypes: String {
+        case country,
+             region,
+             postcode,
+             district,
+             place,
+             locality,
+             neighborhood,
+             address,
+             poi
+    }
+
 }

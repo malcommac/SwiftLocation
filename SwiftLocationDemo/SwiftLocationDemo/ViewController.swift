@@ -121,6 +121,27 @@ class ViewController: UIViewController {
             print(result)
         }*/
         
+        /*
+        let coords = CLLocationCoordinate2D(latitude: 42.42277, longitude: 12.91436)
+        let hereMaps = HereAutocomplete(partialMatches: "via veneto",
+                                        limit: .proximity(coords),
+                                        APIKey: "HvPrS_nFVuIywo1PneI-9KcXH9ZjUA3q-b0-ENA8xkw")
+        Locator.shared.getAutocomplete(hereMaps).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*let hereMaps = HereAutocomplete(detailsFor: "Via Veneto, Via Vittorio Veneto, 00187 Roma RM, Italia",
+                                        APIKey: "HvPrS_nFVuIywo1PneI-9KcXH9ZjUA3q-b0-ENA8xkw")
+        Locator.shared.getAutocomplete(hereMaps).then(queue: .main) { result in
+            print(result)
+        }*/
+    
+        /*let hereMaps = HereAutocomplete(lookupByID: "here:pds:place:380sr2yk-b7b98fe7321b4e77ad06668c861c01b5",
+                                        APIKey: "G1DzMylAa0jm4GbKAU5IIku50TjVbyU4EapclLAPBEA")
+        Locator.shared.getAutocomplete(hereMaps).then(queue: .main) { result in
+            print(result)
+        }*/
+        
     }
 
 

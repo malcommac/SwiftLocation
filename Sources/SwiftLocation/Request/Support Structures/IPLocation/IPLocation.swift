@@ -10,25 +10,17 @@ import CoreLocation
 
 public struct IPLocation: Decodable, CustomStringConvertible {
     
-    public enum Keys {
-        case hostname
-        case continent
-        case continentCode
-        case country
-        case countryCode
-        case region
-        case regionCode
-        case city
-        case postalCode
-        case district
-        case timezone
-        case isp
-    }
-    
+    /// Coordinates of the location.
     public let coordinates: CLLocationCoordinate2D
+    
+    /// Extra informations.
     public private(set) var info = [Keys: String?]()
+    
+    /// Query IP address (not necessary the current address, depending your request).
     public let ip: String
 
+    // MARK: - Initialization
+    
     public init(from decoder: Decoder) throws {
         guard let decoderService = decoder.userInfo[IPServiceDecoder] as? IPServiceDecoders else {
             throw LocatorErrors.parsingError
@@ -223,4 +215,26 @@ public struct IPLocation: Decodable, CustomStringConvertible {
         return "{lat=\(coordinates.latitude), lng=\(coordinates.longitude), info=\(info)}"
     }
         
+}
+
+// MARK: - IPLocation Keys
+
+public extension IPLocation {
+    
+    /// Extra information keys.
+    enum Keys {
+        case hostname
+        case continent
+        case continentCode
+        case country
+        case countryCode
+        case region
+        case regionCode
+        case city
+        case postalCode
+        case district
+        case timezone
+        case isp
+    }
+    
 }
