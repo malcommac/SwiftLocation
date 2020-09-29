@@ -10,7 +10,7 @@ import CoreLocation
 
 // MARK: - GeocoderLocation Google Initialization
 
-internal extension GeocoderLocation {
+internal extension GeoLocation {
     
     // MARK: - Initialization Google Maps
     
@@ -30,18 +30,18 @@ internal extension GeocoderLocation {
         let id: String? = json.valueForKeyPath(keyPath: "place_id")
         self.info[.id] = id
         
-        let country: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["country"], key: "long_name")
-        let countryCode: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["country"], key: "short_name")
-        let locality: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["locality"], key: "long_name")
-        let administrativeArea: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_1"], key: "long_name")
-        let subAdministrativeArea: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_2"], key: "long_name")
-        let subAdministrativeArea3: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_3"], key: "long_name")
-        let subAdministrativeArea4: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_4"], key: "long_name")
-        let subAdministrativeArea5: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_5"], key: "long_name")
-        let throughfare: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["neighborhood", "route"], key: "long_name")
-        let postalCode: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["postal_code"], key: "long_name")
-        let streetAddress: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["street_address"], key: "long_name")
-        let intersection: String? = GeocoderLocation.addComponentValueForTypes(json, allowedTypes: ["intersection"], key: "long_name")
+        let country: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["country"], key: "long_name")
+        let countryCode: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["country"], key: "short_name")
+        let locality: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["locality"], key: "long_name")
+        let administrativeArea: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_1"], key: "long_name")
+        let subAdministrativeArea: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_2"], key: "long_name")
+        let subAdministrativeArea3: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_3"], key: "long_name")
+        let subAdministrativeArea4: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_4"], key: "long_name")
+        let subAdministrativeArea5: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["administrative_area_level_5"], key: "long_name")
+        let throughfare: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["neighborhood", "route"], key: "long_name")
+        let postalCode: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["postal_code"], key: "long_name")
+        let streetAddress: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["street_address"], key: "long_name")
+        let intersection: String? = GeoLocation.addComponentValueForTypes(json, allowedTypes: ["intersection"], key: "long_name")
         let locationType: String? = json.valueForKeyPath(keyPath: "geometry.location_type")
         
         self.info[.country] = country
@@ -62,7 +62,17 @@ internal extension GeocoderLocation {
         self.timezone = nil
     }
     
-    static func fromGoogleList(_ data: Data) throws -> [GeocoderLocation] {
+    static func fromGoogleSingle(_ data: Data) throws -> GeoLocation? {
+        let rawJson = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+        guard let json = rawJson as? [String: Any],
+              let result: [String: Any] = json.valueForKeyPath(keyPath: "result") else {
+            return nil
+        }
+        
+        return GeoLocation(googleJSON: result)
+    }
+    
+    static func fromGoogleList(_ data: Data) throws -> [GeoLocation] {
         let rawObj = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         
         // Parsing errors.
@@ -80,7 +90,7 @@ internal extension GeocoderLocation {
             return []
         }
         
-        return rawResults?.compactMap({ GeocoderLocation(googleJSON: $0) }) ?? []
+        return rawResults?.compactMap({ GeoLocation(googleJSON: $0) }) ?? []
     }
     
     // MARK: - Helper Functions
@@ -118,7 +128,7 @@ internal extension GeocoderLocation {
 
 // MARK: - GeocoderLocation GoogleStatusResponse
 
-internal extension GeocoderLocation {
+internal extension GeoLocation {
     
     fileprivate enum GoogleStatusResponse: String {
         case ok = "OK"

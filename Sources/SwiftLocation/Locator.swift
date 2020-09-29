@@ -60,9 +60,12 @@ public class Locator: LocationManagerDelegate {
         return queue
     }()
     
-    /// Geocoder Requests
+    /// Geocoder requests
     private var geocoderRequests = RequestQueue<GeocoderRequest>()
     
+    /// Address autocomplete requests
+    private var autocompleteRequests = RequestQueue<AutocompleteRequest>()
+
     // MARK: - Initialization
     
     private init() {
@@ -125,6 +128,14 @@ public class Locator: LocationManagerDelegate {
     /// - Returns: GeocoderRequest
     public func getGeocode(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
         geocoderRequests.add(GeocoderRequest(service: service))
+    }
+    
+    /// Prepare a new request for address autocomplete.
+    ///
+    /// - Parameter service: service to use.
+    /// - Returns: AutocompleteRequest
+    public func getAutocomplete(_ service: AutocompleteProtocol) -> AutocompleteRequest {
+        autocompleteRequests.add(AutocompleteRequest(service))
     }
     
     /// Cancel passed request from queue.

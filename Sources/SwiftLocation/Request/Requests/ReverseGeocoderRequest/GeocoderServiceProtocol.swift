@@ -12,7 +12,7 @@ public protocol GeocoderServiceProtocol: class {
     
     var operation: GeocoderOperation { get }
     
-    func execute(_ completion: @escaping ((Result<[GeocoderLocation], LocatorErrors>) -> Void))
+    func execute(_ completion: @escaping ((Result<[GeoLocation], LocatorErrors>) -> Void))
     func cancel()
     
     var isCancelled: Bool { get }

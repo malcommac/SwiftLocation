@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public struct GeocoderLocation: CustomStringConvertible {
+public struct GeoLocation: CustomStringConvertible {
     
     public enum Keys {
         case id // unique identifier
@@ -31,6 +31,8 @@ public struct GeocoderLocation: CustomStringConvertible {
         case streetAddress // indicates a precise street address.
         case POI // area of interests separated by |.
         case osmID // OSM identifier
+        case osmType// OSM type
+        case placeRank // P
     }
     
     /// Coordinates of the location.
@@ -56,7 +58,10 @@ public struct GeocoderLocation: CustomStringConvertible {
     // MARK: - Public Methods
     
     public var description: String {
-        return "{ coordinates=\(coordinates), name=\(String(describing: self.info[.name] ?? "")) }"
+        let infoDictionary = info.enumerated().map {
+            "\($0.element.key) = '\($0.element.value ?? "")'"
+        }.joined(separator: "\n\t")
+        return "{ \n\tcoordinates = lat:\(coordinates.latitude),lng:\(coordinates.longitude),\n\tname=\(String(describing: self.info[.name] ?? ""))\n\t\(infoDictionary)\n}"
     }
     
 }

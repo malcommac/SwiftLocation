@@ -8,7 +8,9 @@
 import Foundation
 
 public class GeocoderRequest: RequestProtocol {
-    public typealias ProducedData = [GeocoderLocation]
+    public typealias ProducedData = [GeoLocation]
+    
+    // MARK: - Public Properties
     
     /// Unique identifier of the request.
     public var uuid = UUID().uuidString
@@ -26,26 +28,22 @@ public class GeocoderRequest: RequestProtocol {
     public var countReceivedData = 0
     
     /// Last received response.
-    public var lastReceivedValue: (Result<[GeocoderLocation], LocatorErrors>)?
+    public var lastReceivedValue: (Result<[GeoLocation], LocatorErrors>)?
 
-    public static func == (lhs: GeocoderRequest, rhs: GeocoderRequest) -> Bool {
-        return lhs.uuid == rhs.uuid
-    }
+    // MARK: - Private Properties
+
+    private var service: GeocoderServiceProtocol
     
-    public func validateData(_ data: [GeocoderLocation]) -> DataDiscardReason? {
+    // MARK: - Public Functions
+    
+    public func validateData(_ data: [GeoLocation]) -> DataDiscardReason? {
         return nil
     }
     
     public func startTimeoutIfNeeded() {
         
     }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(uuid)
-    }
-    
-    private var service: GeocoderServiceProtocol
-    
+        
     public init(service: GeocoderServiceProtocol) {
         self.service = service
     }
@@ -59,6 +57,14 @@ public class GeocoderRequest: RequestProtocol {
     
     public func didRemovedFromQueue() {
         service.cancel()
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+    }
+    
+    public static func == (lhs: GeocoderRequest, rhs: GeocoderRequest) -> Bool {
+        return lhs.uuid == rhs.uuid
     }
     
 }

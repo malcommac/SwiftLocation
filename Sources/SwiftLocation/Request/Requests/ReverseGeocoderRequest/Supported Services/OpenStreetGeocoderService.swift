@@ -10,7 +10,7 @@ import CoreLocation
 
 /// Geocoding using OpenStreet APIs
 /// https://nominatim.org/release-docs/develop/api/Overview/)
-public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
+public class OpenStreetGeocoderService: JSONNetworkHelper, GeocoderServiceProtocol {
     
     /// Operation to perform
     public private(set) var operation: GeocoderOperation
@@ -64,7 +64,7 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     
     // MARK: - Public Functions
 
-    public func execute(_ completion: @escaping ((Result<[GeocoderLocation], LocatorErrors>) -> Void)) {
+    public func execute(_ completion: @escaping ((Result<[GeoLocation], LocatorErrors>) -> Void)) {
         do {
             let request = try buildRequest()
             executeDataRequest(request: request) { result in
@@ -90,7 +90,7 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
     private func buildRequest() throws -> URLRequest {
         var url: URL!
         var queryItems = [
-            URLQueryItem(name: "format", value: "json")
+            URLQueryItem(name: "format", value: "jsonv2")
         ]
 
         // Options
@@ -124,8 +124,8 @@ public class OpenStreetGeocoderService: JSONGeocoderServiceHelper, GeocoderServi
         return request
     }
     
-    private static func parseRawData(_ data: Data) throws -> [GeocoderLocation] {
-        return try GeocoderLocation.fromOpenStreetList(data)
+    private static func parseRawData(_ data: Data) throws -> [GeoLocation] {
+        return try GeoLocation.fromOpenStreetList(data)
     }
     
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 // MARK: - Array
 
@@ -91,6 +92,29 @@ internal extension String {
     
     var urlEncoded: String {
         return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+    }
+    
+}
+
+// MARK: - Bool
+
+internal extension Bool {
+    
+    var serverValue: String {
+        switch self {
+        case true: return "true"
+        case false: return "false"
+        }
+    }
+    
+}
+
+// MARK: - CLLocationCoordinate2D
+
+internal extension CLLocationCoordinate2D {
+    
+    var serverValue: String {
+        return "\(longitude),\(latitude)"
     }
     
 }

@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServiceProtocol {
+public class GoogleGeocoderService: JSONNetworkHelper, GeocoderServiceProtocol {
     
     /// Operation to perform
     public private(set) var operation: GeocoderOperation
@@ -69,7 +69,7 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
     
     // MARK: - Public Functions
 
-    public func execute(_ completion: @escaping ((Result<[GeocoderLocation], LocatorErrors>) -> Void)) {
+    public func execute(_ completion: @escaping ((Result<[GeoLocation], LocatorErrors>) -> Void)) {
         do {
             let request = try buildRequest()
             executeDataRequest(request: request) { result in
@@ -125,8 +125,8 @@ public class GoogleGeocoderService: JSONGeocoderServiceHelper, GeocoderServicePr
         return request
     }
     
-    internal static func parseRawData(_ data: Data) throws -> [GeocoderLocation] {
-        return try GeocoderLocation.fromGoogleList(data)
+    internal static func parseRawData(_ data: Data) throws -> [GeoLocation] {
+        return try GeoLocation.fromGoogleList(data)
     }
 
 }

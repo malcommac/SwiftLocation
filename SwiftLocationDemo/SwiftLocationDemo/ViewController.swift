@@ -81,9 +81,45 @@ class ViewController: UIViewController {
             print(result)
         }*/
         
-        Locator.shared.getGeocode(OpenStreetGeocoderService(address: "Via Veneto 12, Rieti")).then(queue: .main) { result in
+        /*Locator.shared.getGeocode(OpenStreetGeocoderService(address: "Via Veneto 12, Rieti")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+       /* Locator.shared.getAutocomplete(AppleAutocomplete(partialMatches: "via veneto")).then(queue: .main) { result in
             print(result)
         }
+        
+                
+        Locator.shared.getAutocomplete(AppleAutocomplete(detailsFor: "Via Veneto 12, Rieti")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+       /* Locator.shared.getAutocomplete(GoogleAutocomplete(partialMatches: "Via veneto rieti", APIKey: "" )).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*
+        Locator.shared.getAutocomplete(GoogleAutocomplete(detailsFor: "EitWaWEgVmVuZXRvLCBSaWV0aSwgUHJvdmluY2Ugb2YgUmlldGksIEl0YWx5Ii4qLAoUChIJnzTT0cisLxMRreCrDTlsp8gSFAoSCT8z3roIqy8TEZHBUuEuiGbj", APIKey: "")).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*
+        let c = CLLocationCoordinate2D(latitude: 41.901026, longitude: 12.499178)
+        var mapBox = MapBoxGeocoderService(coordinates: c, APIKey: "")
+        Locator.shared.getGeocode(mapBox).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*let mapBox = MapBoxGeocoderService(address: "Via veneto", APIKey: "")
+        Locator.shared.getGeocode(mapBox).then(queue: .main) { result in
+            print(result)
+        }*/
+        
+        /*let c = CLLocationCoordinate2D(latitude: 37.4267861, longitude: -122.0806032)
+        let hereMaps = HereGeocoderService(coordinates: c, APIKey: "")
+        Locator.shared.getGeocode(hereMaps).then(queue: .main) { result in
+            print(result)
+        }*/
         
     }
 

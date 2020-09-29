@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class JSONGeocoderServiceHelper {
+public class JSONNetworkHelper {
     
     /// Inner task.
     private var networkTask: URLSessionDataTask?
@@ -37,7 +37,7 @@ public class JSONGeocoderServiceHelper {
             
             // not expected response
             guard let response = response as? HTTPURLResponse,
-                  response.statusCode == 200,
+                  //response.statusCode == 200,
                   let data = data else {
                 completion(.failure(.internalError))
                 return

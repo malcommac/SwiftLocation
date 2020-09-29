@@ -7,8 +7,9 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
-public extension GeocoderLocation {
+public extension GeoLocation {
     
     /// Initialize from CLPlacemark instance.
     /// - Parameter clPlacemark: placemark.
@@ -39,8 +40,18 @@ public extension GeocoderLocation {
     /// Initialize from a response of placemarks.
     /// - Parameter placemarks: placemarks to parse.
     /// - Returns: [GeocoderLocation]
-    internal static func fromAppleList(_ placemarks: [CLPlacemark]?) -> [GeocoderLocation] {
-        return placemarks?.compactMap({ GeocoderLocation(clPlacemark: $0) }) ?? []
+    internal static func fromAppleList(_ placemarks: [CLPlacemark]?) -> [GeoLocation] {
+        return placemarks?.compactMap({ GeoLocation(clPlacemark: $0) }) ?? []
+    }
+    
+    internal static func fromAppleList(_ mapItem: [MKMapItem]?) -> [AutocompleteResult] {
+        return mapItem?.compactMap({
+            guard let location = GeoLocation(clPlacemark: $0.placemark) else {
+                return nil
+            }
+            
+            return .place(location)
+        }) ?? []
     }
 
 }

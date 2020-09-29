@@ -28,7 +28,7 @@ public class AppleGeocoderService: GeocoderServiceProtocol {
         self.locale = locale
     }
     
-    public func execute(_ completion: @escaping ((Result<[GeocoderLocation], LocatorErrors>) -> Void)) {
+    public func execute(_ completion: @escaping ((Result<[GeoLocation], LocatorErrors>) -> Void)) {
         let completionHandler: CoreLocation.CLGeocodeCompletionHandler = { [weak self] (placemarks, error) in
             guard let self = self, !self.isCancelled else {
                 return
@@ -39,7 +39,7 @@ public class AppleGeocoderService: GeocoderServiceProtocol {
                 return
             }
             
-            let locations = GeocoderLocation.fromAppleList(placemarks)
+            let locations = GeoLocation.fromAppleList(placemarks)
             completion(.success(locations))
         }
         
