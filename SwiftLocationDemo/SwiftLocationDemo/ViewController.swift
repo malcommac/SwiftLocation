@@ -11,6 +11,8 @@ import CoreLocation
 
 class ViewController: UIViewController {
 
+    @IBOutlet public var textlabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -142,6 +144,40 @@ class ViewController: UIViewController {
             print(result)
         }*/
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        Locator.shared.gpsLocationWith {
+            $0.accuracy = .block
+        }.then(queue: .main) { data in
+            print("new loc: \(data)")
+        }
+
+        let montiTiburtini = CLLocationCoordinate2D(latitude: 41.914402, longitude: 12.541790)
+        Locator.shared.geofenceWith(GeofencingOptions(circleWithCenter: montiTiburtini, radius: 100)).then(queue: .main) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                self?.showAlert(error.localizedDescription)
+                print(error.localizedDescription)
+            case .success(let data):
+                self?.showAlert(data.description)
+                print(data)
+            }
+        }
+                
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+            self.showAlert("ciao")
+        })
+    }
+    
+    private func showAlert(_ message: String) {
+        textlabel.text = message
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
 
 

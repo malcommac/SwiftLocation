@@ -26,6 +26,8 @@
 		647BBFF2251C8266000EB5AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		647BBFF4251C8266000EB5AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		647BBFFE251C85EE000EB5AC /* SwiftLocation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftLocation; path = ../..; sourceTree = "<group>"; };
+		64F0D7162524786C00EDC4AD /* Termini.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Termini.gpx; path = ../../../../../Desktop/Termini.gpx; sourceTree = "<group>"; };
+		64F0D7172524787100EDC4AD /* Monti Tiburtini.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Monti Tiburtini.gpx"; path = "../../../../../Desktop/Monti Tiburtini.gpx"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +45,8 @@
 		647BBFDA251C8265000EB5AC = {
 			isa = PBXGroup;
 			children = (
+				64F0D7172524787100EDC4AD /* Monti Tiburtini.gpx */,
+				64F0D7162524786C00EDC4AD /* Termini.gpx */,
 				647BBFE5251C8265000EB5AC /* SwiftLocationDemo */,
 				647BBFE4251C8265000EB5AC /* Products */,
 				647BC002251C85FD000EB5AC /* Frameworks */,

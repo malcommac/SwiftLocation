@@ -31,10 +31,7 @@ public class Locator: LocationManagerDelegate {
     /// Currently active location settings
     public private(set) var currentSettings = LocationManagerSettings() {
         didSet {
-            guard currentSettings != oldValue else {
-                LocatorLogger.log("CLLocationManager: **settings ignored**")
-                return
-            } // same settings, no needs to perform any change
+            guard currentSettings != oldValue else { return } // same settings, no needs to perform any change
 
             LocatorLogger.log("CLLocationManager: \(currentSettings)")
             manager?.updateSettings(currentSettings)
@@ -43,7 +40,7 @@ public class Locator: LocationManagerDelegate {
     
     // MARK: - Queues
     
-    /// Queued location result.
+    /// Location requests.
     private lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
         let queue = RequestQueue<GPSLocationRequest>()
         queue.onUpdateSettings = { [weak self] in
@@ -52,18 +49,19 @@ public class Locator: LocationManagerDelegate {
         return queue
     }()
     
-    private lazy var ipRequests: RequestQueue<IPLocationRequest> = {
-        let queue = RequestQueue<IPLocationRequest>()
+    /// Geofencing requests.
+    private lazy var geofenceRequests: RequestQueue<GeofencingRequest> = {
+        let queue = RequestQueue<GeofencingRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
         }
         return queue
     }()
     
-    /// Geocoder requests
-    private var geocoderRequests = RequestQueue<GeocoderRequest>()
+    // Other requests queue.
     
-    /// Address autocomplete requests
+    private var ipRequests = RequestQueue<IPLocationRequest>()
+    private var geocoderRequests = RequestQueue<GeocoderRequest>()
     private var autocompleteRequests = RequestQueue<AutocompleteRequest>()
 
     // MARK: - Initialization
@@ -96,7 +94,7 @@ public class Locator: LocationManagerDelegate {
     /// - Parameter optionsBuilder: options for search.
     /// - Returns: `LocationRequest`
     @discardableResult
-    public func getGPSLocation(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
+    public func gpsLocationWith(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
         let newRequest = GPSLocationRequest()
         optionsBuilder(newRequest.options)
         return gpsRequests.add(newRequest)
@@ -107,7 +105,7 @@ public class Locator: LocationManagerDelegate {
     /// - Parameter options: options to use.
     /// - Returns: `LocationRequest`
     @discardableResult
-    public func getGPSLocation(_ options: GPSLocationOptions) -> GPSLocationRequest {
+    public func gpsLocationWith(_ options: GPSLocationOptions) -> GPSLocationRequest {
         gpsRequests.add(GPSLocationRequest(options))
     }
     
@@ -115,7 +113,7 @@ public class Locator: LocationManagerDelegate {
     /// - Parameter service: service to use.
     /// - Returns: `IPLocationRequest`
     @discardableResult
-    public func getIPLocation(_ service: IPServiceProtocol) -> IPLocationRequest {
+    public func ipLocationWith(_ service: IPServiceProtocol) -> IPLocationRequest {
         ipRequests.add(IPLocationRequest(service))
     }
     
@@ -126,7 +124,7 @@ public class Locator: LocationManagerDelegate {
     ///
     /// - Parameter service: service to use.
     /// - Returns: GeocoderRequest
-    public func getGeocode(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
+    public func geocodeWith(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
         geocoderRequests.add(GeocoderRequest(service: service))
     }
     
@@ -134,8 +132,16 @@ public class Locator: LocationManagerDelegate {
     ///
     /// - Parameter service: service to use.
     /// - Returns: AutocompleteRequest
-    public func getAutocomplete(_ service: AutocompleteProtocol) -> AutocompleteRequest {
+    public func autocompleteWith(_ service: AutocompleteProtocol) -> AutocompleteRequest {
         autocompleteRequests.add(AutocompleteRequest(service))
+    }
+    
+    /// Create a new geofence request.
+    ///
+    /// - Parameter options: settings for geofence.
+    /// - Returns: GeofenceRequest
+    public func geofenceWith(_ options: GeofencingOptions) -> GeofencingRequest {
+        geofenceRequests.add(GeofencingRequest(options: options))
     }
     
     /// Cancel passed request from queue.
@@ -174,18 +180,27 @@ public class Locator: LocationManagerDelegate {
         let updatedSettings = bestSettingsForCoreLocationManager()
         guard updatedSettings.requireLocationUpdates() else {
             self.currentSettings = updatedSettings
+            self.updateGeofencing()
             return
         }
         
         failWeakAuthorizationRequests()
         
-        manager?.requestAuthorization(preferredAuthorizationMode) { [weak self] auth in
+        /// If at least one geofencing request is in progress we want to ask for always authorization,
+        /// otherwise we can use the preferred authorization mode specified.
+        let authMode: AuthorizationMode = (geofenceRequests.hasActiveRequests ? .always : preferredAuthorizationMode)
+        manager?.requestAuthorization(authMode) { [weak self] auth in
             guard auth.isAuthorized else {
                 return
             }
             self?.currentSettings = updatedSettings
+            self?.updateGeofencing()
             return
         }
+    }
+    
+    private func updateGeofencing() {
+        manager?.geofenceRegions(Array(geofenceRequests.list))
     }
     
     private func failWeakAuthorizationRequests() {
@@ -209,6 +224,7 @@ public class Locator: LocationManagerDelegate {
     }
     
     private func bestSettingsForCoreLocationManager() -> LocationManagerSettings {
+        // Setup settings for CoreLocationManager
         var services = Set<LocationManagerSettings.Services>()
         var settings = LocationManagerSettings(activeServices: services)
         
@@ -221,13 +237,22 @@ public class Locator: LocationManagerDelegate {
             settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.options.activityType.rawValue)) ?? .other
         }
         
+        enumerateGeofencedRequests { request in
+            if let circularRegion = request.monitoredRegion as? CLCircularRegion {
+                settings.accuracy = min(settings.accuracy, GPSLocationOptions.Accuracy(rawValue: circularRegion.radius))
+            }
+        }
+        /*if geofenceRequests.hasActiveRequests {
+            services.insert(.continousLocation)
+        }*/
+        
         if settings.minDistance == -1 { settings.minDistance = nil }
         settings.activeServices = services
         
         return settings
     }
     
-    // MARK: - LocationManagerDelegate
+    // MARK: - Location Delegate Evenets
     
     public func locationManager(didFailWithError error: Error) {
         dispatchLocationDataToRequests(.failure(.generic(error)))
@@ -237,7 +262,27 @@ public class Locator: LocationManagerDelegate {
         dispatchLocationUpdate(locations)
     }
     
+    // MARK: - Geofencing Delegate Events
+    
+    public func locationManager(geofenceEvent event: GeofenceEvent) {
+        geofenceRequestForRegion(event.region)?.receiveData(.success(event))
+    }
+    
+    public func locationManager(geofenceError error: LocatorErrors, region: CLRegion?) {
+        if let region = region { // specific error for a region
+            geofenceRequestForRegion(region)?.receiveData(.failure(.generic(error)))
+        } else { // generic error, will discard all monitored regions
+            enumerateGeofencedRequests {
+                $0.receiveData(.failure(error))
+            }
+        }
+    }
+    
     // MARK: - Private Functions
+    
+    private func geofenceRequestForRegion(_ region: CLRegion) -> GeofencingRequest? {
+        return geofenceRequests.list.first(where: { $0.uuid == region.identifier })
+    }
     
     private func dispatchLocationUpdate(_ locations: [CLLocation]) {
         guard let lastLocation = locations.max(by: CLLocation.mostRecentsTimeStampCompare) else {
@@ -249,6 +294,11 @@ public class Locator: LocationManagerDelegate {
     
     private func enumerateLocationRequests(_ callback: ((GPSLocationRequest) -> Void)) {
         let requests = gpsRequests
+        requests.list.forEach(callback)
+    }
+    
+    private func enumerateGeofencedRequests(_ callback: ((GeofencingRequest) -> Void)) {
+        let requests = geofenceRequests
         requests.list.forEach(callback)
     }
     
@@ -267,9 +317,29 @@ public class Locator: LocationManagerDelegate {
 public extension Locator {
     
     class RequestQueue<Value: RequestProtocol> {
+        
+        // MARK: - Public Properties
+        
         /// List of enqueued requests.
         public private(set) var list = Set<Value>()
         
+        /// Return `true` if there is at least one active request.
+        public var hasActiveRequests: Bool {
+            return list.first { request in
+                request.isEnabled
+            } != nil
+        }
+        
+        // MARK: - Internal Properties
+        
+        /// Event called when one or more requests are added/removed from the queue.
+        internal var onUpdateSettings: (() -> Void)?
+
+        // MARK: - Internal Functions
+
+        /// Add a new request to the queue.
+        /// - Parameter request: request.
+        /// - Returns: Self
         @discardableResult
         internal func add(_ request: Value) -> Value {
             LocatorLogger.log("+ Add new request: \(request.uuid)")
@@ -280,7 +350,10 @@ public extension Locator {
             onUpdateSettings?()
             return request
         }
-
+        
+        /// Remove existing request from the queue.
+        /// - Parameter request: request.
+        /// - Returns: Self
         @discardableResult
         internal func remove(_ request: Value) -> Value {
             LocatorLogger.log("- Remove request: \(request.uuid)")
@@ -292,6 +365,7 @@ public extension Locator {
             return request
         }
         
+        /// Remove all requests from the queue.
         internal func removeAll() {
             guard !list.isEmpty else { return }
             
@@ -304,7 +378,6 @@ public extension Locator {
             onUpdateSettings?()
         }
         
-        internal var onUpdateSettings: (() -> Void)?
     }
     
 }

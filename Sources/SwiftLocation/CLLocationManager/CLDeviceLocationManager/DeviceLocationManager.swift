@@ -61,6 +61,30 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
         manager.setSettings(newSettings)
     }
     
+    public func geofenceRegions(_ requests: [GeofencingRequest]) {
+        // If region monitoring is not supported for this device just cancel all monitoring by dispatching `.notSupported`.
+        let isMonitoringSupported = CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self)
+        if !isMonitoringSupported {
+            delegate?.locationManager(geofenceError: .notSupported, region: nil)
+            return
+        }
+        
+        let requestMonitorIds = Set<String>(requests.map({ $0.uuid }))
+        let regionToStopMonitoring = manager.monitoredRegions.filter {
+            requestMonitorIds.contains($0.identifier) == false
+        }
+        
+        regionToStopMonitoring.forEach { [weak self] in
+            LocatorLogger.log("Stop monitoring region: \($0)")
+            self?.manager.stopMonitoring(for: $0)
+        }
+        
+        requests.forEach { [weak self] in
+            LocatorLogger.log("Start monitoring region: \($0.monitoredRegion)")
+            self?.manager.startMonitoring(for: $0.monitoredRegion)
+        }
+    }
+    
     // MARK: - Private Functions
     
     private func didChangeAuthorizationStatus(_ newStatus: CLAuthorizationStatus) {
@@ -73,19 +97,45 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
         authorizationCallbacks.removeAll()
     }
     
-    // MARK: - CLLocationManagerDelegate
+    // MARK: - CLLocationManagerDelegate (Location GPS)
     
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // This method is called only on iOS 13 or lower, for iOS14 we are using `locationManagerDidChangeAuthorization` below.
+        
+        LocatorLogger.log("Authorization changed to \(status)")
         didChangeAuthorizationStatus(status)
     }
     
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        LocatorLogger.log("Failed to receive new locations: \(error.localizedDescription)")
+
         delegate?.locationManager(didFailWithError: error)
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        LocatorLogger.log("Received new locations: \(locations)")
+        
         delegate?.locationManager(didReceiveLocations: locations)
+    }
+    
+    // MARK: - CLLocationManagerDelegate (Geofencing)
+    
+    public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        LocatorLogger.log("Did enter in region: \(region.identifier)")
+
+        delegate?.locationManager(geofenceEvent: .didEntered(region))
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        LocatorLogger.log("Did exit from region: \(region.identifier)")
+
+        delegate?.locationManager(geofenceEvent: .didExited(region))
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        LocatorLogger.log("Did fail to monitoring region: \(region?.identifier ?? "all"). \(error.localizedDescription)")
+
+        delegate?.locationManager(geofenceError: .generic(error), region: region)
     }
     
 }

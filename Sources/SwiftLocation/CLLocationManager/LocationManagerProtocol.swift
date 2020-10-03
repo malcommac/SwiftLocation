@@ -11,8 +11,16 @@ import CoreLocation
 // MARK: - LocationManagerDelegate
 
 public protocol LocationManagerDelegate: class {
+    
+    // MARK: - Location Manager
+    
     func locationManager(didFailWithError error: Error)
     func locationManager(didReceiveLocations locations: [CLLocation])
+    
+    // MARK: - Geofencing
+    
+    func locationManager(geofenceEvent event: GeofenceEvent)
+    func locationManager(geofenceError error: LocatorErrors, region: CLRegion?)
 }
 
 // MARK: - LocationManagerProtocol
@@ -28,6 +36,8 @@ public protocol LocationManagerProtocol: class {
     func requestAuthorization(_ mode: AuthorizationMode, _ callback: @escaping AuthorizationCallback)
     
     func updateSettings(_ newSettings: LocationManagerSettings)
+    
+    func geofenceRegions(_ requests: [GeofencingRequest])
     
 }
 

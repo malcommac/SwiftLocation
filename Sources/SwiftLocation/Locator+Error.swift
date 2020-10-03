@@ -21,6 +21,7 @@ import Foundation
 /// - `usageLimitReached`: for external service this means you'r usage limit quota has been reached
 /// - `notFound`: resource not found.
 /// - `reserved`: for geolocation service this means queried IP address is a bogon (reserved) IP address like private, multicast, etc.
+/// - `notSupported`: functionality is not supported on this device.
 public enum LocatorErrors: LocalizedError, Equatable {
     case discardedData(DataDiscardReason)
     case timeout
@@ -34,6 +35,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
     case notFound
     case reserved
     case other(String)
+    case notSupported
 
     /// Is a discarded data error.
     internal var isDataDiscarded: Bool {
@@ -59,6 +61,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case .usageLimitReached:    return "Quota limit reached"
         case .notFound:             return "Not Found"
         case .reserved:             return "Reserved IP"
+        case .notSupported:         return "Not Supported"
         case .other(let e):         return e
         }
     }
@@ -77,6 +80,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case (.usageLimitReached, .usageLimitReached):  return true
         case (.notFound, .notFound):                    return true
         case (.reserved, .reserved):                    return true
+        case (.notSupported, .notSupported):            return true
 
         default:                                        return false
         }

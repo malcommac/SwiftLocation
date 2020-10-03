@@ -33,7 +33,7 @@ internal extension PartialAddressMatch {
         self.types = PartialAddressMatch.parseTypes(json.valueForKeyPath(keyPath: "categories"))
     }
     
-    static func fromHereList(_ rawList: [[String: Any]]?) -> [Autocomplete.AutocompleteResult] {
+    static func fromHereList(_ rawList: [[String: Any]]?) -> [Autocomplete.Data] {
         rawList?.compactMap( {
             guard let address = PartialAddressMatch(here: $0) else {
                 return nil
