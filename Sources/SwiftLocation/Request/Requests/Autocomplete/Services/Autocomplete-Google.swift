@@ -13,6 +13,8 @@ public extension Autocomplete {
     
     class Google: JSONNetworkHelper, AutocompleteProtocol {
         
+        public private(set) var kind: AutocompleteKind = .google
+
         // MARK: - Public Properties
         
         /// Timeout interval for request.
@@ -202,6 +204,39 @@ public extension Autocomplete {
             return request
         }
         
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case timeout, APIKey, placeTypes, radius, strictBounds, locale, countries, operation
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(timeout, forKey: .timeout)
+            try container.encode(APIKey, forKey: .APIKey)
+            try container.encodeIfPresent(placeTypes, forKey: .placeTypes)
+            try container.encodeIfPresent(radius, forKey: .radius)
+            try container.encodeIfPresent(strictBounds, forKey: .strictBounds)
+            try container.encodeIfPresent(locale, forKey: .locale)
+            try container.encodeIfPresent(countries, forKey: .countries)
+            try container.encodeIfPresent(operation, forKey: .operation)
+        }
+        
+        // Decodable protocol
+        required public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
+            self.APIKey = try container.decode(String.self, forKey: .APIKey)
+            self.placeTypes = try container.decodeIfPresent(Set<PlaceTypes>.self, forKey: .placeTypes)
+            self.radius = try container.decodeIfPresent(Float.self, forKey: .radius)
+            self.strictBounds = try container.decode(Bool.self, forKey: .strictBounds)
+            self.locale = try container.decodeIfPresent(String.self, forKey: .locale)
+            self.countries = try container.decodeIfPresent(Set<String>.self, forKey: .countries)
+            self.operation = try container.decode(AutocompleteOp.self, forKey: .operation)
+        }
+        
     }
     
 }
@@ -218,7 +253,7 @@ public extension Autocomplete.Google {
     /// - establishment: return only business results.
     /// - regions: return any result matching the following types: `locality, sublocality, postal_code, country, administrative_area_level_1, administrative_area_level_2`
     /// - cities: return results that match `locality` or `administrative_area_level_3`.
-    enum PlaceTypes: String {
+    enum PlaceTypes: String, Codable {
         case geocode
         case address
         case establishment

@@ -11,7 +11,7 @@ import CoreLocation
 /// NOTE: In iOS14+ we are using kCLLocationAccuracyReduced instead.
 internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or more
 
-public class GPSLocationOptions: CustomStringConvertible {
+public class GPSLocationOptions: CustomStringConvertible, Codable {
     
     /// Type of subscription.
     ///
@@ -20,7 +20,7 @@ public class GPSLocationOptions: CustomStringConvertible {
     /// - `significant`: only significant location changes are received from the underlying service.
     ///                 You should use it when you don't need high-precision/high-frequency data
     ///                 and you want to preserve battery life.
-    public enum Subscription: String {
+    public enum Subscription: String, Codable {
         case single
         case continous
         case significant
@@ -37,13 +37,14 @@ public class GPSLocationOptions: CustomStringConvertible {
         public var description: String {
             rawValue
         }
+        
     }
     
     /// The timeout policy of the request.
     ///
     /// - `immediate`: timeout countdown starts immediately after the request is added regardless the current authorization level.
     /// - `delayed`: timeout countdown starts only after the required authorization are granted from the user.
-    public enum Timeout: CustomStringConvertible {
+    public enum Timeout: CustomStringConvertible, Codable {
         case immediate(TimeInterval)
         case delayed(TimeInterval)
         
@@ -69,6 +70,40 @@ public class GPSLocationOptions: CustomStringConvertible {
             case .delayed(let t):   return "delayed \(t)s"
             }
         }
+        
+        private var kind: Int {
+            switch self {
+            case .delayed: return 0
+            case .immediate: return 1
+            }
+        }
+        
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case kind, interval
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(kind, forKey: .kind)
+            try container.encode(interval, forKey: .interval)
+        }
+        
+        // Decodable protocol
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let kind = try container.decode(Int.self, forKey: .kind)
+            let interval = try container.decode(TimeInterval.self, forKey: .interval)
+            
+            switch kind {
+            case 0: self = .delayed(interval)
+            case 1: self = .immediate(interval)
+            default: fatalError("Failed to decode Timeout")
+            }
+        }
+        
     }
     
     /// Accuracy level.
@@ -81,7 +116,7 @@ public class GPSLocationOptions: CustomStringConvertible {
     /// - `house`: only data with accuracy of <= 60mts in the last 40s are reported.
     /// - `room`: only data with accuracy of <= 25mts in the last 40s are reported.
     /// - `custom`: only data with custom level of accuracy are reported.
-    public enum Accuracy: Comparable, CustomStringConvertible {
+    public enum Accuracy: Comparable, CustomStringConvertible, Codable {
         case any
         case city
         case neighborhood
@@ -149,6 +184,26 @@ public class GPSLocationOptions: CustomStringConvertible {
             case .custom(let v):    return "custom(\(v)"
             }
         }
+        
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case value
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(value, forKey: .value)
+        }
+        
+        // Decodable protocol
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let value = try container.decode(CLLocationAccuracy.self, forKey: .value)
+            self = Accuracy(rawValue: value)
+        }
+        
     }
     
     /// Associated request.
@@ -193,23 +248,42 @@ public class GPSLocationOptions: CustomStringConvertible {
         ].joined(separator: ", ") + "}"
     }
     
+    // MARK: - Initialization
+    
+    public init() {
+
+    }
+    
     // MARK: - Codable
     
-   /* enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, options, lastReceivedValue, timeoutTimer
+    enum CodingKeys: String, CodingKey {
+        case avoidRequestAuthorization, subscription, accuracy, timeout, activityType, minTimeInterval, minDistance
     }
     
     // Encodable protocol
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(user, forKey: .user)
-
+        
+        try container.encode(avoidRequestAuthorization, forKey: .avoidRequestAuthorization)
+        try container.encode(subscription, forKey: .subscription)
+        try container.encode(accuracy, forKey: .accuracy)
+        try container.encodeIfPresent(timeout, forKey: .timeout)
+        try container.encode(activityType.rawValue, forKey: .activityType)
+        try container.encodeIfPresent(minTimeInterval, forKey: .minTimeInterval)
+        try container.encodeIfPresent(minDistance, forKey: .minDistance)
     }
     
     // Decodable protocol
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
     
-    }*/
+        self.avoidRequestAuthorization = try container.decode(Bool.self, forKey: .avoidRequestAuthorization)
+        self.subscription = try container.decode(Subscription.self, forKey: .subscription)
+        self.accuracy = try container.decode(Accuracy.self, forKey: .accuracy)
+        self.timeout = try container.decode(Timeout.self, forKey: .timeout)
+        self.activityType = try CLActivityType(rawValue: container.decode(Int.self, forKey: .activityType)) ?? .other
+        self.minTimeInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .minTimeInterval)
+        self.minDistance = try container.decodeIfPresent(CLLocationDistance.self, forKey: .minDistance)
+    }
     
 }

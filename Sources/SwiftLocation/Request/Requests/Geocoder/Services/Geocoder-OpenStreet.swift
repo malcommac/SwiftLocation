@@ -14,6 +14,8 @@ public extension Geocoder {
     /// https://nominatim.org/release-docs/develop/api/Overview/)
     class OpenStreet: JSONNetworkHelper, GeocoderServiceProtocol {
         
+        public private(set) var kind: GeocoderServiceKind = .openStreet
+
         /// Operation to perform
         public private(set) var operation: GeocoderOperation
         
@@ -139,7 +141,7 @@ public extension Geocoder {
 public extension Geocoder.OpenStreet {
     
     /// Level of detail required for the address.
-    enum ZoomLevel: Int {
+    enum ZoomLevel: Int, Codable {
         case country = 3
         case state = 5
         case county = 8

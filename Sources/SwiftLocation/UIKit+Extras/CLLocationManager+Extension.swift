@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 import Contacts
 
 // MARK: - CLLocationManager
@@ -137,6 +138,7 @@ internal extension CLLocation {
     
 }
 
+// MARK: - CLPlacemark
 
 extension CLPlacemark {
     
@@ -148,6 +150,73 @@ extension CLPlacemark {
         
         let formatter = CNPostalAddressFormatter()
         return formatter.string(from: postalAddress)
+    }
+    
+}
+
+// MARK: - CLLocationCoordinate2D
+
+extension CLLocationCoordinate2D: Codable {
+   
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(longitude)
+        try container.encode(latitude)
+    }
+     
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let longitude = try container.decode(CLLocationDegrees.self)
+        let latitude = try container.decode(CLLocationDegrees.self)
+        self.init(latitude: latitude, longitude: longitude)
+    }
+    
+}
+
+// MARK: - MKCoordinateSpan
+
+extension MKCoordinateSpan: Codable {
+   
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(latitudeDelta)
+        try container.encode(longitudeDelta)
+    }
+     
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let longitude = try container.decode(CLLocationDegrees.self)
+        let latitude = try container.decode(CLLocationDegrees.self)
+        self.init(latitudeDelta: latitude, longitudeDelta: longitude)
+    }
+    
+}
+
+// MARK: - MKMultiPoint
+
+internal extension MKMultiPoint {
+    
+    /// Get the coordinates of the polygon
+    var coordinates: [CLLocationCoordinate2D] {
+        var coords = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: pointCount)
+        getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
+        return coords
+    }
+    
+}
+
+internal extension MKPolygon {
+    
+    /// Coordinates is inside the polygon.
+    ///
+    /// - Parameter location: coordinates to check.
+    /// - Returns: Bool
+    func containsCoordinate(_ location: CLLocationCoordinate2D) -> Bool {
+        let polygonRenderer = MKPolygonRenderer(polygon: self)
+        let mapPoint = MKMapPoint(location)
+        let polygonPoint = polygonRenderer.point(for: mapPoint)
+
+        return polygonRenderer.path.contains(polygonPoint)
     }
     
 }

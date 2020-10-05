@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 /// The following class define a single location request.
-public class GPSLocationRequest: RequestProtocol {
+public class GPSLocationRequest: RequestProtocol, Codable {
     public typealias ProducedData = CLLocation
     
     /// Unique identifier of the request.
@@ -65,22 +65,26 @@ public class GPSLocationRequest: RequestProtocol {
     
     // MARK: - Codable
         
-    /*enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case uuid, isEnabled, options, lastReceivedValue, timeoutTimer
     }
     
     // Encodable protocol
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(user, forKey: .user)
-
+        try container.encode(uuid, forKey: .uuid)
+        try container.encode(isEnabled, forKey: .isEnabled)
+        try container.encode(options, forKey: .options)
     }
     
     // Decodable protocol
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-    
-    }*/
+        self.uuid = try container.decode(String.self, forKey: .uuid)
+        self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        self.options = try container.decode(GPSLocationOptions.self, forKey: .options)
+        self.options.request = self
+    }
      
     // MARK: - Initialization
     

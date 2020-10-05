@@ -8,6 +8,12 @@
 import Foundation
 import CoreLocation
 
+#if os(OSX)
+import AppKit
+#else
+import UIKit
+#endif
+
 public class Locator: LocationManagerDelegate {
         
     // MARK: - Private Properties
@@ -26,6 +32,12 @@ public class Locator: LocationManagerDelegate {
     /// Current authorization status.
     public var authorizationStatus: CLAuthorizationStatus {
         return manager?.authorizationStatus ?? .notDetermined
+    }
+    
+    public var onRestoreGeofenceRequests: (([GeofencingRequest]) -> [GeofencingRequest])? {
+        didSet {
+            restoreGeofenceRequestsIfAvailable()
+        }
     }
     
     /// Currently active location settings
@@ -85,6 +97,42 @@ public class Locator: LocationManagerDelegate {
         
         self.manager = try DeviceLocationManager(locator: self)
         self.manager?.delegate = self
+    }
+    
+    // MARK: - Private Functions
+    
+    private static let UserDefaultsGeofenceRequests = "com.swiftlocation.requests.geofence"
+    
+    /// Save requests before deinit
+    private func saveRequests() {
+        do {
+            // Encode all requests
+            let encodedGeofenceRequests = try JSONEncoder().encode(geofenceRequests)
+            UserDefaults.standard.setValue(encodedGeofenceRequests, forKey: Locator.UserDefaultsGeofenceRequests)
+            
+        } catch {
+            LocatorLogger.log("Failed to save requests: \(error.localizedDescription)")
+        }
+    }
+    
+    deinit {
+        saveRequests()
+    }
+    
+    private func restoreGeofenceRequestsIfAvailable() {
+        do {
+            if let encodedGeofencesData = UserDefaults.standard.data(forKey: Locator.UserDefaultsGeofenceRequests) {
+                let decodedGeofenceRequests = try JSONDecoder().decode([GeofencingRequest].self, from: encodedGeofencesData)
+                guard decodedGeofenceRequests.isEmpty == false,
+                      let validatedGeofences = onRestoreGeofenceRequests?(decodedGeofenceRequests) else {
+                    return
+                }
+                
+                geofenceRequests.add(validatedGeofences)
+            }
+        } catch {
+            LocatorLogger.log("Failed to restore requests: \(error.localizedDescription)")
+        }
     }
     
     // MARK: - Public Properties
@@ -314,9 +362,11 @@ public class Locator: LocationManagerDelegate {
     
 }
 
+// MARK: - RequestQueue
+
 public extension Locator {
     
-    class RequestQueue<Value: RequestProtocol> {
+    class RequestQueue<Value: RequestProtocol & Codable>: Codable {
         
         // MARK: - Public Properties
         
@@ -329,7 +379,6 @@ public extension Locator {
                 request.isEnabled
             } != nil
         }
-        
         // MARK: - Internal Properties
         
         /// Event called when one or more requests are added/removed from the queue.
@@ -349,6 +398,28 @@ public extension Locator {
             
             onUpdateSettings?()
             return request
+        }
+        
+        // MARK: - Initialization
+        
+        public init() {
+            
+        }
+        
+        // MARK: - Public Methods
+        
+        /// Append a list of requests into the list.
+        ///
+        /// - Parameter requests: requests to add.
+        internal func add(_ requests: [Value]) {
+            LocatorLogger.log("+ Add requests: \(requests.map({ $0.uuid }).joined(separator: ","))")
+            
+            requests.forEach {
+                list.insert($0)
+                $0.didAddInQueue()
+            }
+            
+            onUpdateSettings?()
         }
         
         /// Remove existing request from the queue.
@@ -376,6 +447,22 @@ public extension Locator {
             removedRequests.forEach({ $0.didRemovedFromQueue() })
             
             onUpdateSettings?()
+        }
+        
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case list
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(list, forKey: .list)
+        }
+        
+        required public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.list = try container.decode(Set<Value>.self, forKey: .list)
         }
         
     }

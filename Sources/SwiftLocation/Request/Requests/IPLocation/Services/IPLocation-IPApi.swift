@@ -11,9 +11,9 @@ public extension IPLocation {
     
     /// This is the implementation of IPStack location search by ip.
     /// https://ip-api.com (documentation: https://ip-api.com/docs/api:jsonfor)
-    class IPApi: IPServiceProtocol {
+    class IPApi: IPServiceProtocol, Codable {
         
-        public enum ReturnedFields: String {
+        public enum ReturnedFields: String, Codable {
             case continent, // Continent name ('North America')
                  continentCode, // Two-letter continent code ('NA')
                  country, // Country name ('United States')
@@ -44,7 +44,7 @@ public extension IPLocation {
         
         /// Locale identifier.
         /// Not all languages are supported (https://ip-api.com/docs/api:json).
-        public var locale = Locale(identifier: "en")
+        public var language: String?
         
         /// Hostname lookup.
         /// By default, the ipstack API does not return information about the hostname the given IP address resolves to.
@@ -85,7 +85,8 @@ public extension IPLocation {
             
             let allReturnedFields = returnedFields.union([.query, .lat, .lon])
             urlComponents?.queryItems = [
-                URLQueryItem(name: "fields", value: Array(allReturnedFields).map({ $0.rawValue }).joined(separator: ","))
+                URLQueryItem(name: "fields", value: Array(allReturnedFields).map({ $0.rawValue }).joined(separator: ",")),
+                URLQueryItem(name: "lang", value: language ?? Locale.current.collatorIdentifier?.lowercased() ?? "en")
             ]
             
             guard let fullURL = urlComponents?.url else {
@@ -102,6 +103,32 @@ public extension IPLocation {
             }
             
             return .other(String(httpResponse.statusCode))
+        }
+        
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case jsonServiceDecoder, targetIP, returnedFields, hostnameLookup, timeout
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(jsonServiceDecoder, forKey: .jsonServiceDecoder)
+            try container.encodeIfPresent(targetIP, forKey: .targetIP)
+            try container.encode(returnedFields, forKey: .returnedFields)
+            try container.encode(hostnameLookup, forKey: .hostnameLookup)
+            try container.encode(timeout, forKey: .timeout)
+        }
+        
+        // Decodable protocol
+        required public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.jsonServiceDecoder = try container.decode(IPServiceDecoders.self, forKey: .jsonServiceDecoder)
+            self.targetIP = try container.decodeIfPresent(String.self, forKey: .targetIP)
+            self.returnedFields = try container.decode(Set<ReturnedFields>.self, forKey: .returnedFields)
+            self.hostnameLookup = try container.decode(Bool.self, forKey: .hostnameLookup)
+            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
         }
         
     }

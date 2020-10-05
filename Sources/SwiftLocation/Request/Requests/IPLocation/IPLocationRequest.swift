@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class IPLocationRequest: RequestProtocol {
+public class IPLocationRequest: RequestProtocol, Codable {
     public typealias ProducedData = IPLocation.Data
     
     // MARK: - Private Functions
@@ -69,6 +69,46 @@ public class IPLocationRequest: RequestProtocol {
     
     public func didRemovedFromQueue() {
         service.cancel()
+    }
+    
+    // MARK: - Codable
+    
+    enum CodingKeys: String, CodingKey {
+        case uuid, isEnabled, service, serviceType
+    }
+    
+    // Encodable protocol
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(uuid, forKey: .uuid)
+        try container.encode(isEnabled, forKey: .isEnabled)
+        try container.encode(service.jsonServiceDecoder, forKey: .serviceType)
+
+        switch service.jsonServiceDecoder {
+        case .ipapi:            try container.encode((service as! IPLocation.IPApi), forKey: .service)
+        case .ipdata:           try container.encode((service as! IPLocation.IPData), forKey: .service)
+        case .ipgeolocation:    try container.encode((service as! IPLocation.IPGeolocation), forKey: .service)
+        case .ipify:            try container.encode((service as! IPLocation.IPify), forKey: .service)
+        case .ipinfo:           try container.encode((service as! IPLocation.IPInfo), forKey: .service)
+        case .ipstack:          try container.encode((service as! IPLocation.IPStack), forKey: .service)
+        }
+    }
+    
+    // Decodable protocol
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.uuid = try container.decode(String.self, forKey: .uuid)
+        self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        let serviceType = try container.decode(IPServiceDecoders.self, forKey: .serviceType)
+        
+        switch serviceType {
+        case .ipapi:            self.service = try container.decode(IPLocation.IPApi.self, forKey: .service)
+        case .ipdata:           self.service = try container.decode(IPLocation.IPData.self, forKey: .service)
+        case .ipgeolocation:    self.service = try container.decode(IPLocation.IPGeolocation.self, forKey: .service)
+        case .ipify:            self.service = try container.decode(IPLocation.IPify.self, forKey: .service)
+        case .ipinfo:           self.service = try container.decode(IPLocation.IPInfo.self, forKey: .service)
+        case .ipstack:          self.service = try container.decode(IPLocation.IPStack.self, forKey: .service)
+        }
     }
     
 }

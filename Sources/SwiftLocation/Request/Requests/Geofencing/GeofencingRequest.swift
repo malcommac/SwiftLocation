@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 import CoreLocation
 
-public class GeofencingRequest: RequestProtocol {
+public class GeofencingRequest: RequestProtocol, Codable {
     public typealias ProducedData = GeofenceEvent
     
     // MARK: - Public Properties
@@ -40,6 +40,27 @@ public class GeofencingRequest: RequestProtocol {
     /// Number of events received.
     public var countReceivedData = 0
     
+    // MARK: - Codable Support
+    
+    enum CodingKeys: String, CodingKey {
+        case options, monitoredRegion, uuid, isEnabled
+    }
+    
+    // Encodable protocol
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(options, forKey: .options)
+        try container.encode(uuid, forKey: .uuid)
+        try container.encode(isEnabled, forKey: .isEnabled)
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.options = try container.decode(GeofencingOptions.self, forKey: .options)
+        self.uuid = try container.decode(String.self, forKey: .uuid)
+        self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+    }
+    
     // MARK: - Initialization
     
     public init(options: GeofencingOptions) {
@@ -53,11 +74,11 @@ public class GeofencingRequest: RequestProtocol {
         switch options.region {
         case .circle:
             return nil // it's always valid, no need to make evaluations
-        case .polygon(let p, _):
+        case .polygon(let polygon, let cRegion):
             // for polygon we can check if the point received is inside the polygon
             // this because the normal geofencing of iOS does not support polygon monitoring.
-            // TODO: Check
             return nil
+            //return polygon.containsCoordinate()
         }
     }
         

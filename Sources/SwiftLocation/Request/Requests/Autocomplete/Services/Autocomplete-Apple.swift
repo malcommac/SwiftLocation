@@ -13,6 +13,8 @@ public extension Autocomplete {
     
     class Apple: NSObject, AutocompleteProtocol {
         
+        public private(set) var kind: AutocompleteKind = .apple
+        
         /// Is operation cancelled.
         public var isCancelled: Bool = false
         
@@ -132,6 +134,34 @@ public extension Autocomplete {
                 let places = GeoLocation.fromAppleList(response?.mapItems)
                 self.callback?(.success(places))
             })
+        }
+        
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case proximityRegionCenter, proximityRegionSpan, dataFilter, operation
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encodeIfPresent(proximityRegion?.center, forKey: .proximityRegionCenter)
+            try container.encodeIfPresent(proximityRegion?.span, forKey: .proximityRegionSpan)
+            try container.encode(dataFilter.rawValue, forKey: .dataFilter)
+            try container.encode(operation, forKey: .operation)
+        }
+        
+        // Decodable protocol
+        required public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            if let proximityCenter = try container.decodeIfPresent(CLLocationCoordinate2D.self, forKey: .proximityRegionCenter),
+               let proximitySpan = try container.decodeIfPresent(MKCoordinateSpan.self, forKey: .proximityRegionSpan) {
+                self.proximityRegion = MKCoordinateRegion(center: proximityCenter, span: proximitySpan)
+            }
+            
+            self.dataFilter = try MKLocalSearchCompleter.FilterType(rawValue: container.decode(Int.self, forKey: .dataFilter))!
+            self.operation = try container.decode(AutocompleteOp.self, forKey: .operation)
         }
         
     }

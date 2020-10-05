@@ -12,6 +12,8 @@ public extension Geocoder {
     
     class Google: JSONNetworkHelper, GeocoderServiceProtocol {
         
+        public private(set) var kind: GeocoderServiceKind = .google
+
         /// Operation to perform
         public private(set) var operation: GeocoderOperation
         
@@ -130,6 +132,40 @@ public extension Geocoder {
         internal static func parseRawData(_ data: Data) throws -> [GeoLocation] {
             return try GeoLocation.fromGoogleList(data)
         }
+     
+        // MARK: - Codable
+        
+        enum CodingKeys: String, CodingKey {
+            case operation, APIKey, timeout, language, region, bounds, components, locationTypes
+        }
+        
+        // Encodable protocol
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            
+            try container.encode(operation, forKey: .operation)
+            try container.encode(APIKey, forKey: .APIKey)
+            try container.encode(timeout, forKey: .timeout)
+            try container.encodeIfPresent(language, forKey: .language)
+            try container.encodeIfPresent(region, forKey: .region)
+            try container.encodeIfPresent(bounds, forKey: .bounds)
+            try container.encodeIfPresent(components, forKey: .components)
+            try container.encodeIfPresent(locationTypes, forKey: .locationTypes)
+        }
+        
+        // Decodable protocol
+        required public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            self.operation = try container.decode(GeocoderOperation.self, forKey: .operation)
+            self.APIKey = try container.decode(String.self, forKey: .APIKey)
+            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
+            self.language = try container.decodeIfPresent(String.self, forKey: .language)
+            self.region = try container.decodeIfPresent(String.self, forKey: .region)
+            self.bounds = try container.decodeIfPresent(Viewport.self, forKey: .bounds)
+            self.components = try container.decodeIfPresent([String].self, forKey: .components)
+            self.locationTypes = try container.decodeIfPresent([LocationTypes].self, forKey: .locationTypes)
+        }
         
     }
     
@@ -140,7 +176,7 @@ public extension Geocoder {
 public extension Geocoder.Google {
     
     /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
-    struct Viewport {
+    struct Viewport: Codable {
         var southwest: CLLocationCoordinate2D
         var northeast: CLLocationCoordinate2D
         
@@ -156,7 +192,7 @@ public extension Geocoder.Google {
     ///                       An interpolated range generally indicates that rooftop geocodes are unavailable for a street address.
     /// - `geometricCenter`: returns only geometric centers of a location such as a polyline (for example, a street) or polygon (region).
     /// - `approximate`: returns only the addresses that are characterized as approximate.
-    enum LocationTypes: String {
+    enum LocationTypes: String, Codable {
         case rooftop = "ROOFTOP"
         case rangeInterpolated = "RANGE_INTERPOLATED"
         case geometricCenter = "GEOMETRIC_CENTER"
