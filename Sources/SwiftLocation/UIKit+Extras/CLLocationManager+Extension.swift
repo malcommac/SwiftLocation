@@ -27,9 +27,12 @@ internal extension CLLocationManager {
     
     func requestAuthorization(_ mode: AuthorizationMode) {
         switch mode {
-        case .always:       requestAlwaysAuthorization()
-        case .onlyInUse:    requestWhenInUseAuthorization()
-        case .plist:        requestPlistAuthorization()
+        case .always:
+            requestAlwaysAuthorization()
+        case .onlyInUse:
+            requestWhenInUseAuthorization()
+        case .plist:
+            requestPlistAuthorization()
         }
     }
     
@@ -39,6 +42,7 @@ internal extension CLLocationManager {
         self.distanceFilter = settings.minDistance ?? kCLLocationAccuracyThreeKilometers
         
         debugPrint("SETTING DESIDERED ACCURACY \(settings.accuracy.value)")
+        
         // Location updates
         let hasContinousLocation = settings.activeServices.contains(.continousLocation)
         if hasContinousLocation {
@@ -47,12 +51,19 @@ internal extension CLLocationManager {
             stopUpdatingLocation()
         }
         
-        // Significant locations
+        // Significant Locations
         let hasSignificantLocation = settings.activeServices.contains(.significantLocation)
         if hasSignificantLocation {
             startMonitoringSignificantLocationChanges()
         } else {
             stopMonitoringSignificantLocationChanges()
+        }
+        
+        // Visits
+        if settings.activeServices.contains(.visits) {
+            startMonitoringVisits()
+        } else {
+            stopMonitoringVisits()
         }
     }
     
@@ -60,7 +71,7 @@ internal extension CLLocationManager {
     
     private func requestPlistAuthorization() {
         if #available(iOS 14.0, *) {
-            guard authorizationStatus != .notDetermined else {
+            guard authorizationStatus == .notDetermined else {
                 return
             }
         } else {
@@ -194,10 +205,10 @@ extension MKCoordinateSpan: Codable {
 
 // MARK: - MKMultiPoint
 
-internal extension MKMultiPoint {
+extension MKMultiPoint {
     
     /// Get the coordinates of the polygon
-    var coordinates: [CLLocationCoordinate2D] {
+    public var coordinates: [CLLocationCoordinate2D] {
         var coords = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: pointCount)
         getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
         return coords
@@ -205,18 +216,77 @@ internal extension MKMultiPoint {
     
 }
 
-internal extension MKPolygon {
+// MARK: - MKPolygon
+
+extension MKPolygon {
     
     /// Coordinates is inside the polygon.
     ///
     /// - Parameter location: coordinates to check.
     /// - Returns: Bool
-    func containsCoordinate(_ location: CLLocationCoordinate2D) -> Bool {
+    internal func containsCoordinate(_ location: CLLocationCoordinate2D) -> Bool {
         let polygonRenderer = MKPolygonRenderer(polygon: self)
         let mapPoint = MKMapPoint(location)
         let polygonPoint = polygonRenderer.point(for: mapPoint)
-
+        
         return polygonRenderer.path.contains(polygonPoint)
+    }
+    
+    /// Return the outer circle which contains the polygon.
+    /// - Returns: MKCircle.
+    public func outerCircle() -> MKCircle? {
+        guard let center = centroidForCoordinates(coordinates) else {
+            return nil
+        }
+        
+        let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
+
+        var maxDistance = CLLocationDistance(0)
+        for point in coordinates {
+            let distanceToCenter = CLLocation(latitude: point.latitude, longitude: point.longitude).distance(from: centerLocation)
+            maxDistance = max(maxDistance, distanceToCenter)
+        }
+        
+        let inscribedCircle = MKCircle(center: center, radius: maxDistance)
+        return inscribedCircle
+    }
+    
+    // MARK: - Internal Helper Functions
+    
+    /// Return the centroid of a polygon.
+    ///
+    /// - Parameter coords: coordinates lsit.
+    /// - Returns: CLLocationCoordinate2D
+    private func centroidForCoordinates(_ coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D? {
+        guard let firstCoordinate = coordinates.first else {
+            return nil
+        }
+        
+        guard coords.count > 1 else {
+            return firstCoordinate
+        }
+        
+        var minX = firstCoordinate.longitude
+        var maxX = firstCoordinate.longitude
+        var minY = firstCoordinate.latitude
+        var maxY = firstCoordinate.latitude
+        
+        for i in 1..<coords.count {
+            let current = coords[i]
+            if minX > current.longitude {
+                minX = current.longitude
+            } else if maxX < current.longitude {
+                maxX = current.longitude
+            } else if minY > current.latitude {
+                minY = current.latitude
+            } else if maxY < current.latitude {
+                maxY = current.latitude
+            }
+        }
+        
+        let centerX = minX + ((maxX - minX) / 2)
+        let centerY = minY + ((maxY - minY) / 2)
+        return CLLocationCoordinate2D(latitude: centerY, longitude: centerX)
     }
     
 }

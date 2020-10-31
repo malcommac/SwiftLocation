@@ -47,6 +47,10 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
         self.manager.allowsBackgroundLocationUpdates = CLLocationManager.hasBackgroundCapabilities()
     }
     
+    public var monitoredRegions: Set<CLRegion> {
+        manager.monitoredRegions
+    }
+    
     public func requestAuthorization(_ mode: AuthorizationMode, _ callback: @escaping AuthorizationCallback) {
         guard authorizationStatus.isAuthorized == false else {
             callback(authorizationStatus)
@@ -102,7 +106,7 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // This method is called only on iOS 13 or lower, for iOS14 we are using `locationManagerDidChangeAuthorization` below.
         
-        LocatorLogger.log("Authorization changed to \(status)")
+        LocatorLogger.log("Authorization is set to = \(status)")
         didChangeAuthorizationStatus(status)
     }
     
@@ -123,19 +127,25 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
     public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         LocatorLogger.log("Did enter in region: \(region.identifier)")
 
-        delegate?.locationManager(geofenceEvent: .didEntered(region))
+        delegate?.locationManager(geofenceEvent: .didEnteredRegion(region))
     }
     
     public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         LocatorLogger.log("Did exit from region: \(region.identifier)")
 
-        delegate?.locationManager(geofenceEvent: .didExited(region))
+        delegate?.locationManager(geofenceEvent: .didExitedRegion(region))
     }
     
     public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         LocatorLogger.log("Did fail to monitoring region: \(region?.identifier ?? "all"). \(error.localizedDescription)")
 
         delegate?.locationManager(geofenceError: .generic(error), region: region)
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+        LocatorLogger.log("Did fail to monitoring visit: \(visit.description)")
+
+        delegate?.locationManager(didVisits: visit)
     }
     
 }

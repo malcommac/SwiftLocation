@@ -19,7 +19,11 @@ public extension IPLocation {
         // MARK: - Configurable Settings
         
         /// Optional target IP to discover; `nil` to use current machine internet address.
-        public let targetIP: String?
+        public var targetIP: String?
+        
+        /// Locale.
+        /// NOTE: It's ignored for this service.
+        public var locale: String?
         
         // MARK: - Protocol Specific
         
@@ -36,7 +40,16 @@ public extension IPLocation {
         public var session = URLSession.shared
         
         /// API key to use the service.
-        public let APIKey: String
+        public var APIKey: String?
+        
+        public var description: String {
+            JSONStringify([
+                "targetIP": targetIP ?? "",
+                "isCancelled": isCancelled,
+                "timeout": timeout,
+                "decoder": jsonServiceDecoder.rawValue
+            ])
+        }
         
         /// Initialize a new service with given parameters.
         ///

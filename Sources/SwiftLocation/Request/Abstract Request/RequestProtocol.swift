@@ -12,7 +12,7 @@ public typealias Identifier = String
 
 // MARK: - RequestProtocol
 
-public protocol RequestProtocol: class, Hashable {
+public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     associatedtype ProducedData
     
     typealias DataCallback = ((Result<ProducedData, LocatorErrors>) -> Void)
@@ -21,6 +21,9 @@ public protocol RequestProtocol: class, Hashable {
     
     /// Unique identifier of the request.
     var uuid: Identifier { get }
+    
+    /// Name of the request, you can use it to identify your requests with a readable value.
+    var name: String? { get set }
     
     /// Define the policy used to auto-remove a request from the pool.
     /// The default behaviour differ from request type.

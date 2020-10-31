@@ -42,6 +42,19 @@ public extension Geocoder {
         /// Specify the center of the search context expressed as coordinates.
         public var proximityCoordinates: CLLocationCoordinate2D?
         
+        public var description: String {
+            JSONStringify([
+                "kind": kind.rawValue,
+                "APIKey": APIKey.trunc(length: 5),
+                "timeout": timeout,
+                "locale": locale ?? "",
+                "limit": limit ?? "",
+                "locale": locale ?? "",
+                "limitToCountries": limitToCountries ?? "",
+                "proximityCoordinates": proximityCoordinates?.description  ?? ""
+            ])
+        }
+        
         // MARK: - Initialize
         
         /// Initialize to reverse geocode coordinates to return estimated address.

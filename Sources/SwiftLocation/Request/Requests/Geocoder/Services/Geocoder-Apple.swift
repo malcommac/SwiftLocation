@@ -33,6 +33,15 @@ public extension Geocoder {
         /// Geocoder service.
         private var geocoder = CLGeocoder()
         
+        public var description: String {
+            JSONStringify([
+                "kind": kind.rawValue,
+                "operation": operation.description,
+                "proximityRegion": proximityRegion?.description ?? "",
+                "locale": locale?.description ?? ""
+            ])
+        }
+        
         // MARK: - Initialize
         
         /// Initialize to reverse geocode a pair of coordinates.

@@ -12,7 +12,7 @@ public enum Autocomplete { }
 
 // MARK: - AutocompleteProtocol
 
-public protocol AutocompleteProtocol: class, Codable {
+public protocol AutocompleteProtocol: class, Codable, CustomStringConvertible {
     
     /// Execute the search.
     /// - Parameter completion: completion callback.
@@ -26,6 +26,14 @@ public protocol AutocompleteProtocol: class, Codable {
     
     /// Kind of the request.
     var kind: AutocompleteKind { get }
+    
+}
+
+public extension AutocompleteProtocol {
+    
+    var description: String {
+        JSONStringify(["kind": kind.rawValue])
+    }
     
 }
 

@@ -80,6 +80,23 @@ public extension Geocoder {
         /// NOTE: Applicable only for geocoder.
         public var fuzzyMatch: Bool?
         
+        public var description: String {
+            let data: [String: Any] = [
+                "APIKey": APIKey.trunc(length: 5),
+                "timeout": timeout,
+                "locale": locale ?? "",
+                "country": country ?? "",
+                "limit": limit ?? 0,
+                "routing": routing ?? "",
+                "types": types?.description ?? "",
+                "reverseMode": reverseMode?.description ?? "",
+                "proximityRegion": proximityRegion?.description ?? "",
+                "boundingBox": boundingBox?.description ?? "",
+                "fuzzyMatch": fuzzyMatch ?? ""
+            ]
+            return JSONStringify(data)
+        }
+        
         // MARK: - Initialize
         
         /// Initialize to reverse geocode coordinates to return estimated address.
@@ -231,13 +248,17 @@ public extension Geocoder {
 public extension Geocoder.MapBox {
     
     /// Decides how results are sorted in a reverse geocoding query if multiple results are requested using a limit other than 1
-    enum ReverseMode: String, Codable {
+    enum ReverseMode: String, Codable, CustomStringConvertible {
         case distance
         case score
+        
+        public var description: String {
+            rawValue
+        }
     }
     
     /// A bounding box array in the form
-    struct BoundingBox: Codable {
+    struct BoundingBox: Codable, CustomStringConvertible {
         public let minLon: CLLocationDegrees
         public let minLat: CLLocationDegrees
         
@@ -245,13 +266,17 @@ public extension Geocoder.MapBox {
         public let maxLat: CLLocationDegrees
         
         internal var rawValue: String {
-            return "\(minLon),\(minLat),\(maxLon),\(maxLat)"
+            "\(minLon),\(minLat),\(maxLon),\(maxLat)"
+        }
+        
+        public var description: String {
+            rawValue
         }
         
     }
     
     /// Filter results to include only a subset (one or more) of the available feature types.
-    enum ResultTypes: String, Codable {
+    enum ResultTypes: String, Codable, CustomStringConvertible {
         case country,
              region,
              postcode,
@@ -261,6 +286,10 @@ public extension Geocoder.MapBox {
              neighborhood,
              address,
              poi
+        
+        public var description: String {
+            rawValue
+        }
     }
     
 }

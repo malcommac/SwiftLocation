@@ -22,6 +22,7 @@ import Foundation
 /// - `notFound`: resource not found.
 /// - `reserved`: for geolocation service this means queried IP address is a bogon (reserved) IP address like private, multicast, etc.
 /// - `notSupported`: functionality is not supported on this device.
+/// - `invalidPolygon`: invalid polygon passed.
 public enum LocatorErrors: LocalizedError, Equatable {
     case discardedData(DataDiscardReason)
     case timeout
@@ -36,6 +37,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
     case reserved
     case other(String)
     case notSupported
+    case invalidPolygon
 
     /// Is a discarded data error.
     internal var isDataDiscarded: Bool {
@@ -62,6 +64,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case .notFound:             return "Not Found"
         case .reserved:             return "Reserved IP"
         case .notSupported:         return "Not Supported"
+        case .invalidPolygon:       return "Invalid polygon. Must be 1 or more points"
         case .other(let e):         return e
         }
     }
@@ -81,6 +84,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         case (.notFound, .notFound):                    return true
         case (.reserved, .reserved):                    return true
         case (.notSupported, .notSupported):            return true
+        case (.invalidPolygon, .invalidPolygon):        return true
 
         default:                                        return false
         }

@@ -19,10 +19,11 @@ public extension IPLocation {
         // MARK: - Configurable Settings
         
         /// Optional target IP to discover; `nil` to use current machine internet address.
-        public let targetIP: String?
+        public var targetIP: String?
         
-        /// API key. See https://app.ipgeolocation.io.
-        public let APIKey: String?
+        /// This service require API Key.
+        /// NOTE: See https://app.ipgeolocation.io.
+        public var APIKey: String?
         
         /// Locale identifier.
         /// Not all languages are supported (https://ip-api.com/docs/api:json).
@@ -41,6 +42,17 @@ public extension IPLocation {
         
         /// Session URL session.
         public var session = URLSession.shared
+        
+        public var description: String {
+            JSONStringify([
+                "targetIP": targetIP ?? "",
+                "APIKey": APIKey?.trunc(length: 5) ?? "",
+                "locale": locale ?? "",
+                "isCancelled": isCancelled,
+                "timeout": timeout,
+                "decoder": jsonServiceDecoder.rawValue
+            ])
+        }
         
         /// Initialize a new https://ip-api.com service with given parameters.
         ///

@@ -10,7 +10,7 @@ import CoreLocation
 
 internal let IPServiceDecoder = CodingUserInfoKey(rawValue: "decoder")!
 
-public enum IPServiceDecoders: String, Codable {
+public enum IPServiceDecoders: String, Codable, CaseIterable {
     case ipstack // IPStackService
     case ipdata // IPDataService
     case ipinfo // IPInfoService
@@ -19,7 +19,7 @@ public enum IPServiceDecoders: String, Codable {
     case ipify // IPIpifyService
 }
 
-public protocol IPServiceProtocol: class, Codable {
+public protocol IPServiceProtocol: class, Codable, CustomStringConvertible {
     
     /// Decoder userd to read data from service.
     var jsonServiceDecoder: IPServiceDecoders { get }
@@ -32,6 +32,16 @@ public protocol IPServiceProtocol: class, Codable {
     
     /// Active network call data task.
     var task: URLSessionDataTask? { get set }
+    
+    /// If you want to lookup for other IP address rather than machine's one.
+    var targetIP: String? { get set }
+    
+    /// Some services may need of API Key value.
+    /// In case of required key value is requested on init of the service.
+    var APIKey: String? { get set }
+    
+    /// Locale of the results. See each service for its own formast.
+    var locale: String? { get set }
     
     /// `true` if task received cancel command  when removed from request.
     var isCancelled: Bool { get set }

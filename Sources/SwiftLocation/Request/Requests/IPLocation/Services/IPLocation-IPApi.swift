@@ -36,19 +36,22 @@ public extension IPLocation {
         // MARK: - Configurable Settings
         
         /// Optional target IP to discover; `nil` to use current machine internet address.
-        public let targetIP: String?
+        public var targetIP: String?
         
         /// The API can return the following fields and values.
         /// By default `[.city, .region, .regionName, .continent, .continentCode]` are used.
         public var returnedFields = Set<ReturnedFields>([.city, .region, .regionName, .continent, .continentCode])
         
-        /// Locale identifier.
+        /// Locale identifier as ISO 639.
         /// Not all languages are supported (https://ip-api.com/docs/api:json).
-        public var language: String?
+        public var locale: String?
         
         /// Hostname lookup.
         /// By default, the ipstack API does not return information about the hostname the given IP address resolves to.
         public var hostnameLookup = false
+        
+        /// NOTE: This service don't need of API Key.
+        public var APIKey: String?
         
         // MARK: - Protocol Specific
         
@@ -63,6 +66,18 @@ public extension IPLocation {
         
         /// Session URL session.
         public var session = URLSession.shared
+        
+        public var description: String {
+            JSONStringify([
+                "targetIP": targetIP ?? "",
+                "fields": Array(returnedFields),
+                "locale": locale ?? "",
+                "hostnameLookup": hostnameLookup,
+                "isCancelled": isCancelled,
+                "timeout": timeout,
+                "decoder": jsonServiceDecoder.rawValue
+            ])
+        }
         
         /// Initialize a new https://ip-api.com service with given parameters.
         ///
@@ -86,7 +101,7 @@ public extension IPLocation {
             let allReturnedFields = returnedFields.union([.query, .lat, .lon])
             urlComponents?.queryItems = [
                 URLQueryItem(name: "fields", value: Array(allReturnedFields).map({ $0.rawValue }).joined(separator: ",")),
-                URLQueryItem(name: "lang", value: language ?? Locale.current.collatorIdentifier?.lowercased() ?? "en")
+                URLQueryItem(name: "lang", value: locale ?? Locale.current.collatorIdentifier?.lowercased() ?? "en")
             ]
             
             guard let fullURL = urlComponents?.url else {

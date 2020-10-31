@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 import CoreLocation
 
-public struct GeofencingOptions: Codable {
+public struct GeofencingOptions: Codable, CustomStringConvertible {
     
     // MARK: - Public Properties
     
@@ -36,15 +36,28 @@ public struct GeofencingOptions: Codable {
         }
     }
     
+    public var description: String {
+        JSONStringify([
+            "region": region.description,
+            "notifyOnEntry": notifyOnEntry,
+            "notifyOnExit": notifyOnExit
+        ])
+    }
+    
     // MARK: - Initialization
     
     /// Initialize to monitor a specific polygon.
     ///
     /// - Parameter polygon: polygon to monitor.
-    public init(polygon: MKPolygon) {
+    public init(polygon: MKPolygon) throws {
         // TODO: inner circle!
-        let innerCircle = CLCircularRegion(center: CLLocationCoordinate2D(), radius: 0, identifier: UUID().uuidString)
-        self.region = .polygon(polygon, innerCircle)
+        guard let outerCircle = polygon.outerCircle() else {
+            // failed to create the outer circle from polygon
+            throw LocatorErrors.invalidPolygon
+        }
+        
+        let outerCircleRegion = CLCircularRegion(center: outerCircle.coordinate, radius: outerCircle.radius, identifier: UUID().uuidString)
+        self.region = .polygon(polygon, outerCircleRegion)
         
         defer {
             self.notifyOnEntry = true
@@ -67,6 +80,13 @@ public struct GeofencingOptions: Codable {
         }
     }
     
+    /// Initialize a new region monitoring with circle passed.
+    /// 
+    /// - Parameter circle: circle.
+    public init(circle: MKCircle) {
+        self.init(circleWithCenter: circle.coordinate, radius: circle.radius)
+    }
+    
 }
 
 // MARK: - GeofencingOptions Options
@@ -77,7 +97,7 @@ public extension GeofencingOptions {
     /// - `circle`: monitoring a circle region.
     /// - `polygon`: monitoring a polygon region.
     ///             (it's always a circle but it's evaluated by request and it's inside the circular region identified by the second parameter, generated internally)
-    enum Region: Codable {
+    enum Region: Codable, CustomStringConvertible {
         case circle(CLCircularRegion)
         case polygon(MKPolygon, CLCircularRegion)
         
@@ -112,6 +132,14 @@ public extension GeofencingOptions {
             case .circle: return nil
             case .polygon(let p, _): return p
             }
+        }
+        
+        public var description: String {
+            JSONStringify([
+                "kind": (kind == 0 ? "circle": "polygon"),
+                "polygon": polygon?.description ?? "",
+                "circularRegion": circularRegion.description
+            ])
         }
         
         // MARK: - Codable Support

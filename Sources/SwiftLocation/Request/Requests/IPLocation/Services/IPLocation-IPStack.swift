@@ -19,11 +19,11 @@ public extension IPLocation {
         // MARK: - Configurable Settings
         
         /// Optional target IP to discover; `nil` to use current machine internet address.
-        public let targetIP: String?
+        public var targetIP: String?
         
         /// Locale identifier.
         /// Not all languages are supported (https://ipstack.com/documentation#language).
-        public var locale = Locale(identifier: "en")
+        public var locale: String?
         
         /// Hostname lookup.
         /// By default, the ipstack API does not return information about the hostname the given IP address resolves to.
@@ -44,7 +44,18 @@ public extension IPLocation {
         public var session = URLSession.shared
         
         /// API key to use the service.
-        public let APIKey: String
+        public var APIKey: String?
+        
+        public var description: String {
+            JSONStringify([
+                "targetIP": targetIP ?? "",
+                "APIKey": APIKey?.trunc(length: 5) ?? "",
+                "locale": locale ?? "",
+                "isCancelled": isCancelled,
+                "timeout": timeout,
+                "decoder": jsonServiceDecoder.rawValue
+            ])
+        }
         
         /// Initialize a new https://ipstack.com/ service with given parameters.
         ///
@@ -68,10 +79,10 @@ public extension IPLocation {
             var urlComponents = URLComponents(string: serviceURL().absoluteString)
             urlComponents?.queryItems = [
                 URLQueryItem(name: "access_key", value: APIKey),
-                URLQueryItem(name: "language", value: locale.identifier.lowercased()),
+                URLQueryItem(name: "language", optional: locale?.lowercased()),
                 URLQueryItem(name: "hostname", value: (hostnameLookup ? "1": "0")),
                 URLQueryItem(name: "output", value: "json")
-            ]
+            ].compactMap({ $0 })
             
             guard let fullURL = urlComponents?.url else {
                 throw LocatorErrors.internalError

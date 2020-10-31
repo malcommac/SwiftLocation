@@ -16,6 +16,9 @@ public class AutocompleteRequest: RequestProtocol, Codable {
     /// Unique identifier of the request.
     public var uuid = UUID().uuidString
     
+    /// Readable name.
+    public var name: String?
+    
     /// Eviction policy of the request.
     ///
     /// NOTE: You should never change it for this kind of request.
@@ -34,6 +37,17 @@ public class AutocompleteRequest: RequestProtocol, Codable {
     
     /// Number of data received. For this kind of request it's always 1 once data is arrived.
     public var countReceivedData = 0
+    
+    public var description: String {
+        JSONStringify([
+            "uuid": uuid,
+            "name": name ?? "",
+            "subscriptions": subscriptions.count,
+            "enabled": isEnabled,
+            "lastValue": lastReceivedValue?.description ?? "",
+            "service": service.description
+        ])
+    }
     
     // MARK: - Public Properties
     
@@ -74,7 +88,7 @@ public class AutocompleteRequest: RequestProtocol, Codable {
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, serviceKind, service
+        case uuid, isEnabled, serviceKind, service, name
     }
     
     // Encodable protocol
@@ -84,6 +98,7 @@ public class AutocompleteRequest: RequestProtocol, Codable {
         try container.encode(uuid, forKey: .uuid)
         try container.encode(isEnabled, forKey: .isEnabled)
         try container.encode(service.kind, forKey: .serviceKind)
+        try container.encodeIfPresent(name, forKey: .name)
         
         switch service.kind {
         case .apple:    try container.encode((service as! Autocomplete.Apple), forKey: .service)
@@ -98,6 +113,7 @@ public class AutocompleteRequest: RequestProtocol, Codable {
         
         self.uuid = try container.decode(String.self, forKey: .uuid)
         self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
         
         switch try container.decode(AutocompleteKind.self, forKey: .serviceKind) {
         case .apple:    self.service = try container.decode(Autocomplete.Apple.self, forKey: .service)
@@ -106,4 +122,19 @@ public class AutocompleteRequest: RequestProtocol, Codable {
         }
     }
 
+}
+
+// MARK: - Result<[Autocomplete.Data],LocatorErrors>
+
+public extension Result where Success == [Autocomplete.Data], Failure == LocatorErrors {
+    
+    var description: String {
+        switch self {
+        case .failure(let error):
+            return "Failure \(error.localizedDescription)"
+        case .success(let data):
+            return "Success \(data.description)"
+        }
+    }
+    
 }

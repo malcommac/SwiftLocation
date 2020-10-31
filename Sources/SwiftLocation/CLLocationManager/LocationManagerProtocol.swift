@@ -21,6 +21,10 @@ public protocol LocationManagerDelegate: class {
     
     func locationManager(geofenceEvent event: GeofenceEvent)
     func locationManager(geofenceError error: LocatorErrors, region: CLRegion?)
+    
+    // MARK: - Visits
+    
+    func locationManager(didVisits visit: CLVisit)
 }
 
 // MARK: - LocationManagerProtocol
@@ -30,14 +34,27 @@ public protocol LocationManagerProtocol: class {
 
     var authorizationStatus: CLAuthorizationStatus { get }
     var delegate: LocationManagerDelegate? { get set }
-
+    
+    /// Initialize with a new locator.
+    /// - Parameter locator: locator.
     init(locator: Locator) throws
-
+    
+    /// Request authorization.
+    /// - Parameters:
+    ///   - mode: mode.
+    ///   - callback: callback.
     func requestAuthorization(_ mode: AuthorizationMode, _ callback: @escaping AuthorizationCallback)
     
+    /// Update settings of the hardware based on running requests.
+    /// - Parameter newSettings: settings.
     func updateSettings(_ newSettings: LocationManagerSettings)
     
+    /// Activate geofence per requests.
+    /// - Parameter requests: requests.
     func geofenceRegions(_ requests: [GeofencingRequest])
+    
+    /// Currently monitored regions
+    var monitoredRegions: Set<CLRegion> { get }
     
 }
 
@@ -54,15 +71,17 @@ public enum DataDiscardReason: CustomStringConvertible {
     case notMinDistance
     case notMinInterval
     case requestNotEnabled
+    case internalEvaluation
     case generic(Error)
     
     public var description: String {
         switch self {
-        case .notMinAccuracy:   return "Not minimum accuracy"
-        case .notMinDistance:   return "Not min distance"
-        case .notMinInterval:   return "Not min interval"
-        case .requestNotEnabled:return "Request disabled"
-        case .generic(let e):   return e.localizedDescription
+        case .notMinAccuracy:       return "Not minimum accuracy"
+        case .notMinDistance:       return "Not min distance"
+        case .notMinInterval:       return "Not min interval"
+        case .requestNotEnabled:    return "Request disabled"
+        case .internalEvaluation:   return "Internal evaluation"
+        case .generic(let e):       return e.localizedDescription
         }
     }
     
@@ -92,7 +111,8 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     public enum Services: String, CustomStringConvertible {
         case continousLocation
         case significantLocation
-        
+        case visits
+
         public var description: String {
             rawValue
         }
@@ -114,11 +134,18 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     
     public func requireLocationUpdates() -> Bool {
         return activeServices.contains(.continousLocation) ||
-                activeServices.contains(.significantLocation)
+                activeServices.contains(.significantLocation) ||
+            activeServices.contains(.visits)
     }
     
     public var description: String {
-        return "\n{ \n\tservices = \(activeServices), \n\taccuracy = \(accuracy), \n\tminDistance = \(minDistance ?? -1), \n\tactivityType = \(activityType)\n}"
+        let data: [String: Any] = [
+            "services": activeServices.description,
+            "accuracy": accuracy.description,
+            "minDistance": minDistance ?? -1,
+            "activityType": activityType.description
+        ]
+        return JSONStringify(data)
     }
     
 }

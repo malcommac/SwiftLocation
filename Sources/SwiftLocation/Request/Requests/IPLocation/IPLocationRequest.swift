@@ -20,6 +20,9 @@ public class IPLocationRequest: RequestProtocol, Codable {
     /// Unique identifier of the request.
     public var uuid = UUID().uuidString
     
+    /// Readable name.
+    public var name: String?
+    
     /// Eviction policy.
     /// NOTE: You don't need to change this value.
     public var evictionPolicy = Set<RequestEvictionPolicy>([.onError, .onReceiveData(count: 1)])
@@ -37,6 +40,7 @@ public class IPLocationRequest: RequestProtocol, Codable {
     /// Number of received data.
     /// NOTE: You don't need to change this value.
     public var countReceivedData = 0
+    
     
     // MARK: - Public Functions
     
@@ -74,7 +78,7 @@ public class IPLocationRequest: RequestProtocol, Codable {
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, service, serviceType
+        case uuid, isEnabled, service, serviceType, name
     }
     
     // Encodable protocol
@@ -83,6 +87,7 @@ public class IPLocationRequest: RequestProtocol, Codable {
         try container.encode(uuid, forKey: .uuid)
         try container.encode(isEnabled, forKey: .isEnabled)
         try container.encode(service.jsonServiceDecoder, forKey: .serviceType)
+        try container.encodeIfPresent(name, forKey: .name)
 
         switch service.jsonServiceDecoder {
         case .ipapi:            try container.encode((service as! IPLocation.IPApi), forKey: .service)
@@ -99,6 +104,7 @@ public class IPLocationRequest: RequestProtocol, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.uuid = try container.decode(String.self, forKey: .uuid)
         self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
         let serviceType = try container.decode(IPServiceDecoders.self, forKey: .serviceType)
         
         switch serviceType {
@@ -108,6 +114,32 @@ public class IPLocationRequest: RequestProtocol, Codable {
         case .ipify:            self.service = try container.decode(IPLocation.IPify.self, forKey: .service)
         case .ipinfo:           self.service = try container.decode(IPLocation.IPInfo.self, forKey: .service)
         case .ipstack:          self.service = try container.decode(IPLocation.IPStack.self, forKey: .service)
+        }
+    }
+    
+    public var description: String {
+        JSONStringify([
+            "uuid": uuid,
+            "name": name ?? "",
+            "enabled": isEnabled,
+            "lastValue": lastReceivedValue?.description ?? "",
+            "subscriptions": subscriptions.count,
+            "service": service.description
+        ])
+    }
+    
+}
+
+// MARK: - Result<,LocatorErrors>
+
+extension Result where Success == IPLocation.Data, Failure == LocatorErrors {
+    
+    var description: String {
+        switch self {
+        case .failure(let error):
+            return "Failure \(error.localizedDescription)"
+        case .success(let data):
+            return "Success \(data.description)"
         }
     }
     

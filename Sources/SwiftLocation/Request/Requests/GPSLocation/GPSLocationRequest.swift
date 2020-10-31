@@ -15,6 +15,9 @@ public class GPSLocationRequest: RequestProtocol, Codable {
     /// Unique identifier of the request.
     public var uuid: Identifier = UUID().uuidString
     
+    /// Readable name.
+    public var name: String?
+    
     /// `true` if request is enabled.
     public var isEnabled: Bool = true
 
@@ -66,7 +69,7 @@ public class GPSLocationRequest: RequestProtocol, Codable {
     // MARK: - Codable
         
     enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, options, lastReceivedValue, timeoutTimer
+        case uuid, isEnabled, options, lastReceivedValue, timeoutTimer, name
     }
     
     // Encodable protocol
@@ -75,6 +78,7 @@ public class GPSLocationRequest: RequestProtocol, Codable {
         try container.encode(uuid, forKey: .uuid)
         try container.encode(isEnabled, forKey: .isEnabled)
         try container.encode(options, forKey: .options)
+        try container.encodeIfPresent(name, forKey: .name)
     }
     
     // Decodable protocol
@@ -84,6 +88,7 @@ public class GPSLocationRequest: RequestProtocol, Codable {
         self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
         self.options = try container.decode(GPSLocationOptions.self, forKey: .options)
         self.options.request = self
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
     }
      
     // MARK: - Initialization
@@ -144,6 +149,33 @@ public class GPSLocationRequest: RequestProtocol, Codable {
             timer.invalidate()
             self?.receiveData(.failure(.timeout))
         })
+    }
+    
+    public var description: String {
+        JSONStringify([
+            "uuid" : uuid,
+            "name": name ?? "",
+            "enabled": isEnabled,
+            "options": options.description,
+            "subscriptions": subscriptions.count,
+            "lastValue": lastReceivedValue?.description ?? "",
+            "timeout": timeoutTimer?.description ?? ""
+        ])
+    }
+    
+}
+
+// MARK: - Result<CLLocation,LocatorErrors>
+
+extension Result where Success == CLLocation, Failure == LocatorErrors {
+    
+    var description: String {
+        switch self {
+        case .failure(let error):
+            return "Failure \(error.localizedDescription)"
+        case .success(let location):
+            return "Success \(location.description)"
+        }
     }
     
 }

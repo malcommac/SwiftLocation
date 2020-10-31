@@ -90,8 +90,18 @@ extension Dictionary {
 
 internal extension String {
     
+    /// URL Encoded string.
     var urlEncoded: String {
         return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+    }
+    
+    /// Truncate string.
+    /// - Parameters:
+    ///   - length: length.
+    ///   - trailing: trailing character, by default is three dot.
+    /// - Returns: String
+    func trunc(length: Int, trailing: String = "…") -> String {
+        return (self.count > length) ? self.prefix(length) + trailing : self
     }
     
 }
@@ -111,10 +121,27 @@ internal extension Bool {
 
 // MARK: - CLLocationCoordinate2D
 
-internal extension CLLocationCoordinate2D {
+extension CLLocationCoordinate2D: CustomStringConvertible {
     
     var serverValue: String {
-        return "\(longitude),\(latitude)"
+        "\(longitude),\(latitude)"
     }
     
+    public var description: String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 3
+        return "{lng=\(numberFormatter.string(from: NSNumber(value: longitude)) ?? ""),lat=\(numberFormatter.string(from: NSNumber(value: latitude)) ?? "")}"
+    }
+    
+}
+
+// MARK: - Other
+
+internal func JSONStringify(_ object: Any) -> String {
+    do {
+        let data = try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys])
+        return String(data: data, encoding: .utf8) ?? ""
+    } catch {
+        return ""
+    }
 }

@@ -15,6 +15,9 @@ public class GeocoderRequest: RequestProtocol, Codable {
     /// Unique identifier of the request.
     public var uuid = UUID().uuidString
     
+    /// Readable name.
+    public var name: String?
+    
     /// Eviction policy for request. You should never change this for GeocoderRequest.
     public var evictionPolicy = Set<RequestEvictionPolicy>([.onError, .onReceiveData(count: 1)])
     
@@ -35,6 +38,17 @@ public class GeocoderRequest: RequestProtocol, Codable {
     private var service: GeocoderServiceProtocol
     
     // MARK: - Public Functions
+    
+    public var description: String {
+        JSONStringify([
+            "uuid": uuid,
+            "name": name ?? "",
+            "subscriptions": subscriptions.count,
+            "enabled": isEnabled,
+            "lastValue": lastReceivedValue?.description ?? "",
+            "service": service.description
+        ])
+    }
     
     public func validateData(_ data: [GeoLocation]) -> DataDiscardReason? {
         return nil
@@ -70,7 +84,7 @@ public class GeocoderRequest: RequestProtocol, Codable {
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, serviceKind, service
+        case uuid, isEnabled, serviceKind, service, name
     }
     
     // Encodable protocol
@@ -79,6 +93,7 @@ public class GeocoderRequest: RequestProtocol, Codable {
         try container.encode(uuid, forKey: .uuid)
         try container.encode(isEnabled, forKey: .isEnabled)
         try container.encode(service.kind, forKey: .serviceKind)
+        try container.encodeIfPresent(name, forKey: .name)
         
         switch service.kind {
         case .apple:        try container.encode((service as! Geocoder.Apple), forKey: .service)
@@ -94,6 +109,7 @@ public class GeocoderRequest: RequestProtocol, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.uuid = try container.decode(String.self, forKey: .uuid)
         self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
         let serviceKind = try container.decode(GeocoderServiceKind.self, forKey: .serviceKind)
         
         switch serviceKind {
@@ -107,3 +123,17 @@ public class GeocoderRequest: RequestProtocol, Codable {
         
 }
 
+// MARK: - Result<[GeoLocation,LocatorErrors>
+
+public extension Result where Success == [GeoLocation], Failure == LocatorErrors {
+    
+    var description: String {
+        switch self {
+        case .failure(let error):
+            return "Failure \(error.localizedDescription)"
+        case .success(let values):
+            return "Success \(values.count) locations"
+        }
+    }
+    
+}

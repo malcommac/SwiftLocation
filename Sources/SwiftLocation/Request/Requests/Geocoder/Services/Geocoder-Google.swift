@@ -49,6 +49,19 @@ public extension Geocoder {
         /// By default is set to `nil`.
         public var locationTypes: [LocationTypes]?
         
+        public var description: String {
+            JSONStringify([
+                "kind": kind.rawValue,
+                "APIKey": APIKey.trunc(length: 5),
+                "timeout": timeout,
+                "language": language ?? "",
+                "region": region ?? "",
+                "bounds": bounds?.description ?? "",
+                "components": components ?? "",
+                "locationTypes": locationTypes?.description ?? ""
+            ])
+        }
+        
         // MARK: - Initialize
         
         /// Initialize to reverse geocode coordinates to return estimated address.
@@ -176,12 +189,16 @@ public extension Geocoder {
 public extension Geocoder.Google {
     
     /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
-    struct Viewport: Codable {
+    struct Viewport: Codable, CustomStringConvertible {
         var southwest: CLLocationCoordinate2D
         var northeast: CLLocationCoordinate2D
         
         fileprivate var rawValue: String {
-            return "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
+            "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
+        }
+        
+        public var description: String {
+            rawValue
         }
         
     }

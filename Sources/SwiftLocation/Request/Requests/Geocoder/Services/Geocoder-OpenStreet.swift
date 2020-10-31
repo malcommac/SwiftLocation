@@ -46,6 +46,19 @@ public extension Geocoder {
         /// Default is 0.
         public var polygonThreshold = 0.0
         
+        public var description: String {
+            JSONStringify([
+                "kind": kind.description,
+                "timeout": timeout,
+                "includeAddressDetails": includeAddressDetails,
+                "includeExtraTags": includeExtraTags,
+                "includeNameDetails": includeNameDetails,
+                "zoomLevel": zoomLevel.description,
+                "locale": locale ?? "",
+                "polygonThreshold": polygonThreshold
+            ])
+        }
+        
         // MARK: - Initialize
         
         /// Initialize to reverse geocode coordinates to return estimated address.
@@ -141,7 +154,7 @@ public extension Geocoder {
 public extension Geocoder.OpenStreet {
     
     /// Level of detail required for the address.
-    enum ZoomLevel: Int, Codable {
+    enum ZoomLevel: Int, Codable, CustomStringConvertible {
         case country = 3
         case state = 5
         case county = 8
@@ -150,6 +163,19 @@ public extension Geocoder.OpenStreet {
         case majorStreets = 16
         case majorAndMinorStreets = 17
         case building = 18
+        
+        public var description: String {
+            switch self {
+            case .country: return "country"
+            case .state: return "state"
+            case .county: return "county"
+            case .city: return "city"
+            case .suburb: return "suburb"
+            case .majorStreets: return "majorStreets"
+            case .majorAndMinorStreets: return "majorAndMinorStreets"
+            case .building: return "building"
+            }
+        }
     }
     
 }
