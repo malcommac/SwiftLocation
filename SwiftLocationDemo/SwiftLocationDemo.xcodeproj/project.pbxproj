@@ -7,7 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */; };
+		6401DB9225555F4B0017BD91 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB9125555F4B0017BD91 /* ActionCell.swift */; };
+		6401DB96255563220017BD91 /* IPLocationController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DB95255563220017BD91 /* IPLocationController.storyboard */; };
+		6401DBDF255564460017BD91 /* StandardCellSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBDE255564460017BD91 /* StandardCellSettings.swift */; };
+		6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBE1255564590017BD91 /* StandardCellButton.swift */; };
+		6401DBE5255566D60017BD91 /* ResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBE4255566D60017BD91 /* ResultController.swift */; };
+		6401DBEA255566F30017BD91 /* ResultController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBE9255566F30017BD91 /* ResultController.storyboard */; };
+		6401DBF025556CEE0017BD91 /* GPSController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBEF25556CEE0017BD91 /* GPSController.storyboard */; };
+		6401DBF725556E010017BD91 /* VisitsController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBF625556E010017BD91 /* VisitsController.storyboard */; };
+		6401DBFB25556E690017BD91 /* GeofenceController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBFA25556E690017BD91 /* GeofenceController.storyboard */; };
+		6401DBFF25556EFB0017BD91 /* AutocompleteController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBFE25556EFB0017BD91 /* AutocompleteController.storyboard */; };
 		642076B4254DB3E500D0BB09 /* IPLocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642076B3254DB3E500D0BB09 /* IPLocationController.swift */; };
+		642076C0254DD20D00D0BB09 /* AutocompleteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642076BF254DD20D00D0BB09 /* AutocompleteController.swift */; };
 		64425DFD2539C3B500953D49 /* GPSController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64425DFC2539C3B500953D49 /* GPSController.swift */; };
 		646A339C253706E0006B822B /* UIKit+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A339B253706E0006B822B /* UIKit+Extensions.swift */; };
 		646A33EA25386117006B822B /* GeofencedRegionsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A33E925386117006B822B /* GeofencedRegionsListController.swift */; };
@@ -24,7 +36,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
+		6401DB9125555F4B0017BD91 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
+		6401DB95255563220017BD91 /* IPLocationController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = IPLocationController.storyboard; sourceTree = "<group>"; };
+		6401DBDE255564460017BD91 /* StandardCellSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardCellSettings.swift; sourceTree = "<group>"; };
+		6401DBE1255564590017BD91 /* StandardCellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardCellButton.swift; sourceTree = "<group>"; };
+		6401DBE4255566D60017BD91 /* ResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultController.swift; sourceTree = "<group>"; };
+		6401DBE9255566F30017BD91 /* ResultController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ResultController.storyboard; sourceTree = "<group>"; };
+		6401DBEF25556CEE0017BD91 /* GPSController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GPSController.storyboard; sourceTree = "<group>"; };
+		6401DBF625556E010017BD91 /* VisitsController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = VisitsController.storyboard; sourceTree = "<group>"; };
+		6401DBFA25556E690017BD91 /* GeofenceController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GeofenceController.storyboard; sourceTree = "<group>"; };
+		6401DBFE25556EFB0017BD91 /* AutocompleteController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AutocompleteController.storyboard; sourceTree = "<group>"; };
 		642076B3254DB3E500D0BB09 /* IPLocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPLocationController.swift; sourceTree = "<group>"; };
+		642076BF254DD20D00D0BB09 /* AutocompleteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteController.swift; sourceTree = "<group>"; };
 		64425DFC2539C3B500953D49 /* GPSController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSController.swift; sourceTree = "<group>"; };
 		646A339B253706E0006B822B /* UIKit+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Extensions.swift"; sourceTree = "<group>"; };
 		646A33E925386117006B822B /* GeofencedRegionsListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofencedRegionsListController.swift; sourceTree = "<group>"; };
@@ -54,33 +78,92 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6401DBDC255564370017BD91 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				6401DB9125555F4B0017BD91 /* ActionCell.swift */,
+				6401DBDE255564460017BD91 /* StandardCellSettings.swift */,
+				6401DBE1255564590017BD91 /* StandardCellButton.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		6401DBE7255566E40017BD91 /* Result Controller */ = {
+			isa = PBXGroup;
+			children = (
+				6401DBE9255566F30017BD91 /* ResultController.storyboard */,
+				6401DBE4255566D60017BD91 /* ResultController.swift */,
+			);
+			path = "Result Controller";
+			sourceTree = "<group>";
+		};
+		6401DBED25556CDF0017BD91 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				642076BC254DD1FB00D0BB09 /* Location by IP */,
+				642076BB254DD1F600D0BB09 /* Location by GPS */,
+				646A33F42538A001006B822B /* Relevant Visits */,
+				64867CB22534A4780017EF83 /* Geofence */,
+				642076C2254DD22000D0BB09 /* Autocomplete */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		642076BB254DD1F600D0BB09 /* Location by GPS */ = {
+			isa = PBXGroup;
+			children = (
+				6401DBEF25556CEE0017BD91 /* GPSController.storyboard */,
+				64425DFC2539C3B500953D49 /* GPSController.swift */,
+			);
+			path = "Location by GPS";
+			sourceTree = "<group>";
+		};
+		642076BC254DD1FB00D0BB09 /* Location by IP */ = {
+			isa = PBXGroup;
+			children = (
+				6401DB95255563220017BD91 /* IPLocationController.storyboard */,
+				642076B3254DB3E500D0BB09 /* IPLocationController.swift */,
+			);
+			path = "Location by IP";
+			sourceTree = "<group>";
+		};
+		642076C2254DD22000D0BB09 /* Autocomplete */ = {
+			isa = PBXGroup;
+			children = (
+				6401DBFE25556EFB0017BD91 /* AutocompleteController.storyboard */,
+				642076BF254DD20D00D0BB09 /* AutocompleteController.swift */,
+			);
+			path = Autocomplete;
+			sourceTree = "<group>";
+		};
 		64425DFB2539C31500953D49 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				647BBFEC251C8265000EB5AC /* Main.storyboard */,
-				642076B3254DB3E500D0BB09 /* IPLocationController.swift */,
-				64425DFC2539C3B500953D49 /* GPSController.swift */,
-				646A33FA2538AC41006B822B /* Requests */,
-				646A33F42538A001006B822B /* Visits */,
-				64867CB22534A4780017EF83 /* Geofence */,
+				6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */,
+				646A33FA2538AC41006B822B /* Requests List */,
+				6401DBE7255566E40017BD91 /* Result Controller */,
+				6401DBED25556CDF0017BD91 /* Features */,
+				6401DBDC255564370017BD91 /* Cells */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
 		};
-		646A33F42538A001006B822B /* Visits */ = {
+		646A33F42538A001006B822B /* Relevant Visits */ = {
 			isa = PBXGroup;
 			children = (
+				6401DBF625556E010017BD91 /* VisitsController.storyboard */,
 				646A33F125389FFA006B822B /* VisitsController.swift */,
 			);
-			path = Visits;
+			path = "Relevant Visits";
 			sourceTree = "<group>";
 		};
-		646A33FA2538AC41006B822B /* Requests */ = {
+		646A33FA2538AC41006B822B /* Requests List */ = {
 			isa = PBXGroup;
 			children = (
 				646A33F72538AC3D006B822B /* RequestListController.swift */,
 			);
-			path = Requests;
+			path = "Requests List";
 			sourceTree = "<group>";
 		};
 		647BBFDA251C8265000EB5AC = {
@@ -125,6 +208,7 @@
 		64867CB22534A4780017EF83 /* Geofence */ = {
 			isa = PBXGroup;
 			children = (
+				6401DBFA25556E690017BD91 /* GeofenceController.storyboard */,
 				64922941252BA0740057932F /* GeofenceController.swift */,
 				646A33E925386117006B822B /* GeofencedRegionsListController.swift */,
 				64867CAF2534A39F0017EF83 /* MapDrawView.swift */,
@@ -193,7 +277,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6401DBEA255566F30017BD91 /* ResultController.storyboard in Resources */,
+				6401DBFF25556EFB0017BD91 /* AutocompleteController.storyboard in Resources */,
+				6401DB96255563220017BD91 /* IPLocationController.storyboard in Resources */,
 				647BBFF3251C8266000EB5AC /* LaunchScreen.storyboard in Resources */,
+				6401DBF725556E010017BD91 /* VisitsController.storyboard in Resources */,
+				6401DBFB25556E690017BD91 /* GeofenceController.storyboard in Resources */,
+				6401DBF025556CEE0017BD91 /* GPSController.storyboard in Resources */,
 				647BBFF0251C8266000EB5AC /* Assets.xcassets in Resources */,
 				647BBFEE251C8265000EB5AC /* Main.storyboard in Resources */,
 			);
@@ -208,9 +298,15 @@
 			files = (
 				646A33EA25386117006B822B /* GeofencedRegionsListController.swift in Sources */,
 				646A339C253706E0006B822B /* UIKit+Extensions.swift in Sources */,
+				6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */,
 				647BBFE7251C8265000EB5AC /* AppDelegate.swift in Sources */,
+				6401DBE5255566D60017BD91 /* ResultController.swift in Sources */,
 				647BBFE9251C8265000EB5AC /* SceneDelegate.swift in Sources */,
+				6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */,
+				6401DBDF255564460017BD91 /* StandardCellSettings.swift in Sources */,
 				64922942252BA0740057932F /* GeofenceController.swift in Sources */,
+				642076C0254DD20D00D0BB09 /* AutocompleteController.swift in Sources */,
+				6401DB9225555F4B0017BD91 /* ActionCell.swift in Sources */,
 				646A33F225389FFB006B822B /* VisitsController.swift in Sources */,
 				64867CB02534A39F0017EF83 /* MapDrawView.swift in Sources */,
 				64425DFD2539C3B500953D49 /* GPSController.swift in Sources */,

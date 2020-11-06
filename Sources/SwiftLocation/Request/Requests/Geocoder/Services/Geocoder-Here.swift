@@ -15,8 +15,6 @@ public extension Geocoder {
     /// See https://developer.here.com/documentation/geocoding-search-api/api-reference-swagger.html for more infos.
     class Here: JSONNetworkHelper, GeocoderServiceProtocol {
         
-        public private(set) var kind: GeocoderServiceKind = .here
-
         /// Operation to perform
         public private(set) var operation: GeocoderOperation
         
@@ -44,7 +42,6 @@ public extension Geocoder {
         
         public var description: String {
             JSONStringify([
-                "kind": kind.rawValue,
                 "APIKey": APIKey.trunc(length: 5),
                 "timeout": timeout,
                 "locale": locale ?? "",
@@ -153,38 +150,6 @@ public extension Geocoder {
         
         private static func parseRawData(_ data: Data) throws -> [GeoLocation] {
             return try GeoLocation.fromOpenStreetList(data)
-        }
-        
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case operation, APIKey, timeout, limit, locale, limitToCountries, proximityCoordinates
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            
-            try container.encode(operation, forKey: .operation)
-            try container.encode(APIKey, forKey: .APIKey)
-            try container.encode(timeout, forKey: .timeout)
-            try container.encodeIfPresent(limit, forKey: .limit)
-            try container.encodeIfPresent(locale, forKey: .locale)
-            try container.encodeIfPresent(limitToCountries, forKey: .limitToCountries)
-            try container.encodeIfPresent(proximityCoordinates, forKey: .proximityCoordinates)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.operation = try container.decode(GeocoderOperation.self, forKey: .operation)
-            self.APIKey = try container.decode(String.self, forKey: .APIKey)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
-            self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-            self.locale = try container.decodeIfPresent(String.self, forKey: .locale)
-            self.limitToCountries = try container.decodeIfPresent([String].self, forKey: .limitToCountries)
-            self.proximityCoordinates = try container.decodeIfPresent(CLLocationCoordinate2D.self, forKey: .proximityCoordinates)
         }
         
     }

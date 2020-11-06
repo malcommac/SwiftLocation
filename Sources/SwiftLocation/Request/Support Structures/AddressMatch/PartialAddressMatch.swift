@@ -21,7 +21,7 @@ public struct PartialAddressMatch {
     
     /// Some services may return an unique identifier for match (Google).
     /// You can use it to get place details with `init(detailsFor:APIKey:)` call in `GoogleAutocomplete`.
-    public let id: String?
+    public let id: String
     
     /// Highlight ranges for title.
     public let titleHighlightRanges: [NSRange]?

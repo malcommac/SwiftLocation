@@ -24,7 +24,7 @@ internal extension PartialAddressMatch {
         
         self.representedObject = json
        
-        self.id = json.valueForKeyPath(keyPath: "id")
+        self.id = json.valueForKeyPath(keyPath: "id") ?? ""
         self.title = title
         self.subtitle = json.valueForKeyPath(keyPath: "address.label") ?? ""
         self.titleHighlightRanges = nil

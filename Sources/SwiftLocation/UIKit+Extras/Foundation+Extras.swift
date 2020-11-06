@@ -137,7 +137,7 @@ extension CLLocationCoordinate2D: CustomStringConvertible {
 
 // MARK: - Other
 
-internal func JSONStringify(_ object: Any) -> String {
+internal func JSONStringify(_ object: [String: Any?]) -> String {
     do {
         let data = try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys])
         return String(data: data, encoding: .utf8) ?? ""

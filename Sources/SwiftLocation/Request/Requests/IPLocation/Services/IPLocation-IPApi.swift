@@ -11,9 +11,9 @@ public extension IPLocation {
     
     /// This is the implementation of IPStack location search by ip.
     /// https://ip-api.com (documentation: https://ip-api.com/docs/api:jsonfor)
-    class IPApi: IPServiceProtocol, Codable {
+    class IPApi: IPServiceProtocol {
         
-        public enum ReturnedFields: String, Codable {
+        public enum ReturnedFields: String {
             case continent, // Continent name ('North America')
                  continentCode, // Two-letter continent code ('NA')
                  country, // Country name ('United States')
@@ -118,32 +118,6 @@ public extension IPLocation {
             }
             
             return .other(String(httpResponse.statusCode))
-        }
-        
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case jsonServiceDecoder, targetIP, returnedFields, hostnameLookup, timeout
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(jsonServiceDecoder, forKey: .jsonServiceDecoder)
-            try container.encodeIfPresent(targetIP, forKey: .targetIP)
-            try container.encode(returnedFields, forKey: .returnedFields)
-            try container.encode(hostnameLookup, forKey: .hostnameLookup)
-            try container.encode(timeout, forKey: .timeout)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.jsonServiceDecoder = try container.decode(IPServiceDecoders.self, forKey: .jsonServiceDecoder)
-            self.targetIP = try container.decodeIfPresent(String.self, forKey: .targetIP)
-            self.returnedFields = try container.decode(Set<ReturnedFields>.self, forKey: .returnedFields)
-            self.hostnameLookup = try container.decode(Bool.self, forKey: .hostnameLookup)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
         }
         
     }

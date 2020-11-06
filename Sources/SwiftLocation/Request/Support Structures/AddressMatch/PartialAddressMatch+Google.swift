@@ -16,7 +16,7 @@ internal extension PartialAddressMatch {
         
         self.title = json.valueForKeyPath(keyPath: "structured_formatting.main_text") ?? ""
         self.subtitle = json.valueForKeyPath(keyPath: "structured_formatting.secondary_text") ?? ""
-        self.id = json.valueForKeyPath(keyPath: "place_id")
+        self.id = json.valueForKeyPath(keyPath: "place_id") ?? ""
         self.termsMatches = PartialAddressMatch.parseTermsMatches(json.valueForKeyPath(keyPath: "terms"))
 
         self.titleHighlightRanges = PartialAddressMatch.parseMatchingStrings(json.valueForKeyPath(keyPath: "structured_formatting.main_text_matched_substrings"))

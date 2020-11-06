@@ -15,7 +15,7 @@ internal extension PartialAddressMatch {
     init(apple data: MKLocalSearchCompletion) {
         self.representedObject = data
        
-        self.id = nil
+        self.id = "\(data.title) \(data.subtitle)"
         self.title = data.title
         self.subtitle = data.subtitle
         self.titleHighlightRanges = data.titleHighlightRanges.map( { $0.rangeValue })

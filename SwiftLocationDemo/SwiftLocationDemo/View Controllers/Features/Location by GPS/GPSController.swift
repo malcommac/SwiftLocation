@@ -65,6 +65,11 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     @IBAction public func clearText(_ sender: Any) {
         resultLog.text = ""
     }
+    
+    public static func create() -> GPSController {
+        let s = UIStoryboard(name: "GPSController", bundle: nil)
+        return s.instantiateInitialViewController() as! GPSController
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -259,7 +264,6 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
 
     private func enqueueGPSRequest() {
         let request = Locator.shared.gpsLocationWith(currentRequestOptions)
-        UIAlertController.showAlert(title: "Added request \(request.uuid)")
         
         currentRequestOptions = GPSLocationOptions()
         reloadData()

@@ -14,8 +14,6 @@ public extension Geocoder {
     /// https://docs.mapbox.com/api/search/#geocoding
     class MapBox: JSONNetworkHelper, GeocoderServiceProtocol {
         
-        public private(set) var kind: GeocoderServiceKind = .mapBox
-
         /// Operation to perform
         public private(set) var operation: GeocoderOperation
         
@@ -199,48 +197,6 @@ public extension Geocoder {
             return try GeoLocation.fromOpenStreetList(data)
         }
         
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case operation, APIKey, timeout, locale, country, limit, routing, types, reverseMode, proximityRegion, boundingBox, fuzzyMatch
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            
-            try container.encode(operation, forKey: .operation)
-            try container.encode(APIKey, forKey: .APIKey)
-            try container.encode(timeout, forKey: .timeout)
-            try container.encodeIfPresent(locale, forKey: .locale)
-            try container.encodeIfPresent(country, forKey: .country)
-            try container.encodeIfPresent(limit, forKey: .limit)
-            try container.encodeIfPresent(routing, forKey: .routing)
-            try container.encodeIfPresent(types, forKey: .types)
-            try container.encodeIfPresent(reverseMode, forKey: .reverseMode)
-            try container.encodeIfPresent(proximityRegion, forKey: .proximityRegion)
-            try container.encodeIfPresent(boundingBox, forKey: .boundingBox)
-            try container.encodeIfPresent(fuzzyMatch, forKey: .fuzzyMatch)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.operation = try container.decode(GeocoderOperation.self, forKey: .operation)
-            self.APIKey = try container.decode(String.self, forKey: .APIKey)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
-            self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-            self.locale = try container.decodeIfPresent(String.self, forKey: .locale)
-            self.country = try container.decodeIfPresent(String.self, forKey: .country)
-            self.routing = try container.decodeIfPresent(Bool.self, forKey: .routing)
-            self.types = try container.decodeIfPresent([ResultTypes].self, forKey: .types)
-            self.reverseMode = try container.decodeIfPresent(ReverseMode.self, forKey: .reverseMode)
-            self.proximityRegion = try container.decodeIfPresent(CLLocationCoordinate2D.self, forKey: .proximityRegion)
-            self.boundingBox = try container.decodeIfPresent(BoundingBox.self, forKey: .reverseMode)
-            self.fuzzyMatch = try container.decodeIfPresent(Bool.self, forKey: .fuzzyMatch)
-        }
-        
     }
     
 }
@@ -248,7 +204,7 @@ public extension Geocoder {
 public extension Geocoder.MapBox {
     
     /// Decides how results are sorted in a reverse geocoding query if multiple results are requested using a limit other than 1
-    enum ReverseMode: String, Codable, CustomStringConvertible {
+    enum ReverseMode: String, CustomStringConvertible {
         case distance
         case score
         
@@ -258,7 +214,7 @@ public extension Geocoder.MapBox {
     }
     
     /// A bounding box array in the form
-    struct BoundingBox: Codable, CustomStringConvertible {
+    struct BoundingBox: CustomStringConvertible {
         public let minLon: CLLocationDegrees
         public let minLat: CLLocationDegrees
         
@@ -276,7 +232,7 @@ public extension Geocoder.MapBox {
     }
     
     /// Filter results to include only a subset (one or more) of the available feature types.
-    enum ResultTypes: String, Codable, CustomStringConvertible {
+    enum ResultTypes: String, CustomStringConvertible {
         case country,
              region,
              postcode,

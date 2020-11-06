@@ -10,7 +10,7 @@ import CoreLocation
 
 // MARK: - GeocoderServiceProtocol
 
-public protocol GeocoderServiceProtocol: class, Codable, CustomStringConvertible {
+public protocol GeocoderServiceProtocol: class, CustomStringConvertible {
     
     /// Operastion.
     var operation: GeocoderOperation { get }
@@ -25,25 +25,6 @@ public protocol GeocoderServiceProtocol: class, Codable, CustomStringConvertible
     /// Is operation cancelled.
     var isCancelled: Bool { get }
     
-    /// Kind of geocoder
-    var kind: GeocoderServiceKind { get }
-    
-}
-
-// MARK: - GeocoderServiceKind
-
-public enum GeocoderServiceKind: Int, Codable, CustomStringConvertible {
-    case apple, google, here, mapBox, openStreet
-    
-    public var description: String {
-        switch self {
-        case .apple: return "apple"
-        case .google: return "google"
-        case .here: return "here"
-        case .mapBox: return "mapBox"
-        case .openStreet: return "openStreet"
-        }
-    }
 }
 
 // MARK: - GeocoderOperation

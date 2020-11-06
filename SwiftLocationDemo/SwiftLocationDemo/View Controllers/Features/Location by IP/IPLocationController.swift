@@ -9,70 +9,25 @@ import UIKit
 import SwiftLocation
 
 public class IPLocationController: UIViewController, UITableViewDelegate, UITableViewDataSource {
- 
-    enum RowKind {
-        case service
-        case targetIP
-        case locale
-        case hostnameLookup
-        case timeout
-        case apiKey
-        case createRequest
-        
-        var title: String {
-            switch self {
-            case .service:
-                return "Service"
-            case .targetIP:
-                return "Target IP"
-            case .locale:
-                return "Language"
-            case .hostnameLookup:
-                return "Hostname Lookup"
-            case .timeout:
-                return "Timeout"
-            case .apiKey:
-                return "API Key"
-            default:
-                return ""
-            }
-        }
-        
-        var subtitle: String {
-            switch self {
-            case .service:
-                return "Service to use for request"
-            case .targetIP:
-                return "If not set it uses current machine IP"
-            case .locale:
-                return "If not set the device's language is used"
-            case .hostnameLookup:
-                return "Hostname info of the given IP"
-            case .timeout:
-                return "Timeout of call in seconds"
-            case .apiKey:
-                return "Required for this service. See doc."
-            default:
-                return ""
-            }
-        }
-        
-    }
     
     @IBOutlet public var tableView: UITableView!
     @IBOutlet public var resultLog: UITextView!
 
-    var rows: [RowKind] = [.service, .createRequest]
-    
+    var rows: [SettingsRow] = [.service, .createRequest]
     var service: IPServiceProtocol?
-    
     var currentRequest: IPLocationRequest?
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         resultLog.text = ""
-        self.navigationItem.title = "IP Location"
+        tableView.tableFooterView = UIView()
+        self.navigationItem.title = "Coordinates By IP"
+    }
+    
+    public static func create() -> IPLocationController {
+        let s = UIStoryboard(name: "IPLocationController", bundle: nil)
+        return s.instantiateInitialViewController() as! IPLocationController
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -139,12 +94,7 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
-    private func reloadData() {
-        setupRowsForService()
-        tableView.reloadData()
-    }
-    
-    private func didSelectRow(_ kind: RowKind) {
+    private func didSelectRow(_ kind: SettingsRow) {
         guard let service = service else { return }
         
         switch kind {
@@ -201,81 +151,10 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         return rows[indexPath.row] != .createRequest
     }
     
-    private func valueForCell(_ cell: StandardCellSetting, kind: RowKind) {
-        cell.titleLabel.text = kind.title
-        cell.subtitleLabel.text = kind.subtitle
-        
-        if let service = service {
-            switch service {
-            case let ipApi as IPLocation.IPApi:
-                cell.valueLabel.text = ipApi_valueForKind(ipApi, kind: kind)
-                
-            case let ipStack as IPLocation.IPStack:
-                cell.valueLabel.text = ipStack_valueForKind(ipStack, kind: kind)
-                
-            default:
-                cell.valueLabel.text = sharedService_valueForKind(service, kind: kind)
-            }
-        } else {
-            cell.valueLabel.text = "None"
-        }
-    }
-
-    private func ipApi_valueForKind(_ service: IPLocation.IPApi, kind: RowKind) -> String {
-        switch kind {
-        case .hostnameLookup:
-            return service.hostnameLookup ? "Yes" : "No"
-        default:
-            return sharedService_valueForKind(service, kind: kind)
-        }
-    }
-    
-    private func ipStack_valueForKind(_ service: IPLocation.IPStack, kind: RowKind) -> String {
-        switch kind {
-        case .hostnameLookup:
-            return service.hostnameLookup ? "Yes" : "No"
-        default:
-            return sharedService_valueForKind(service, kind: kind)
-        }
-    }
-    
-    private func sharedService_valueForKind(_ service: IPServiceProtocol, kind: RowKind) -> String {
-        switch kind {
-        case .targetIP:
-            return service.targetIP ?? "Current"
-        case .locale:
-            return service.locale ?? "Current"
-        case .timeout:
-            return "\(service.timeout)s"
-        case .service:
-            return service.jsonServiceDecoder.rawValue
-        case .apiKey:
-            return (service.APIKey?.isEmpty ?? true) ? "Not Set" : service.APIKey!
-        default:
-            return ""
-        }
-    }
-    
-    private func createRequest() {
-        guard let service = service else {
-            return
-        }
-        
-        currentRequest = Locator.shared.ipLocationWith(service)
-        currentRequest?.then(queue: .main, { result in
-            switch result {
-            case .failure(let error):
-                print(error.localizedDescription)
-                self.resultLog.text = error.localizedDescription
-            case .success(let data):
-                print(data)
-                self.resultLog.text = data.description
-            }
-        })
-    }
+    // MARK: - Settings Formatter
     
     private func setupRowsForService() {
-        var serviceRows = [RowKind]([.service])
+        var serviceRows = [SettingsRow]([.service])
         
         if let service = service {
             switch service {
@@ -289,6 +168,7 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
              
             case _ as IPLocation.IPStack:
                 serviceRows.append(contentsOf: [
+                    .apiKey,
                     .targetIP,
                     .locale,
                     .hostnameLookup,
@@ -310,28 +190,110 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         self.rows = serviceRows
     }
     
-}
-
-public class StandardCellButton: UITableViewCell {
-    static let ID = "StandardCellButton"
-    static let Height: CGFloat = 67
-    
-    public var onAction: (() -> Void)?
-    
-    @IBOutlet public var buttonAction: UIButton!
-    
-    @IBAction public func performAction(_ sender: Any?) {
-        onAction?()
+    private func valueForCell(_ cell: StandardCellSetting, kind: SettingsRow) {
+        cell.titleLabel.text = kind.title
+        cell.subtitleLabel.text = kind.subtitle
+        
+        if let service = service {
+            switch service {
+            case let ipApi as IPLocation.IPApi:
+                cell.valueLabel.text = ipApi_valueForKind(ipApi, kind: kind)
+                
+            case let ipStack as IPLocation.IPStack:
+                cell.valueLabel.text = ipStack_valueForKind(ipStack, kind: kind)
+                
+            default:
+                cell.valueLabel.text = sharedService_valueForKind(service, kind: kind)
+            }
+        } else {
+            cell.valueLabel.text = "None"
+        }
     }
 
+    private func ipApi_valueForKind(_ service: IPLocation.IPApi, kind: SettingsRow) -> String {
+        switch kind {
+        case .hostnameLookup:   return service.hostnameLookup ? "Yes" : "No"
+        default:                return sharedService_valueForKind(service, kind: kind)
+        }
+    }
+    
+    private func ipStack_valueForKind(_ service: IPLocation.IPStack, kind: SettingsRow) -> String {
+        switch kind {
+        case .hostnameLookup:   return service.hostnameLookup ? "Yes" : "No"
+        default:                return sharedService_valueForKind(service, kind: kind)
+        }
+    }
+    
+    private func sharedService_valueForKind(_ service: IPServiceProtocol, kind: SettingsRow) -> String {
+        switch kind {
+        case .targetIP:     return service.targetIP ?? "Current"
+        case .locale:       return service.locale ?? "Current"
+        case .timeout:      return "\(service.timeout)s"
+        case .service:      return service.jsonServiceDecoder.rawValue
+        case .apiKey:       return (service.APIKey?.isEmpty ?? true) ? "Not Set" : service.APIKey!
+        default:            return ""
+        }
+    }
+    
+    // MARK: - Actions
+    
+    private func reloadData() {
+        setupRowsForService()
+        tableView.reloadData()
+    }
+    
+    private func createRequest() {
+        guard let service = service else {
+            UIAlertController.showAlert(title: "Select a valid service before using this tool.")
+            return
+        }
+        
+        let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
+        
+        currentRequest = Locator.shared.ipLocationWith(service)
+        currentRequest?.then(queue: .main, { result in
+            loader.dismiss(animated: true, completion: nil)
+            ResultController.showWithResult(result, in: self)
+        })
+    }
+    
 }
 
-public class StandardCellSetting: UITableViewCell {
-    static let ID = "StandardCellSetting"
-    static let Height: CGFloat = 50
+public extension IPLocationController {
     
-    @IBOutlet public var titleLabel: UILabel!
-    @IBOutlet public var subtitleLabel: UILabel!
-    @IBOutlet public var valueLabel: UILabel!
-
+    enum SettingsRow {
+        case service
+        case targetIP
+        case locale
+        case hostnameLookup
+        case timeout
+        case apiKey
+        case createRequest
+        
+        var title: String {
+            switch self {
+            case .service:          return "Select Service"
+            case .targetIP:         return "Target IP"
+            case .locale:           return "Language"
+            case .hostnameLookup:   return "Hostname Lookup"
+            case .timeout:          return "Timeout"
+            case .apiKey:           return "API Key"
+            default:                return ""
+            }
+        }
+        
+        var subtitle: String {
+            switch self {
+            case .service:          return "Service to use for request"
+            case .targetIP:         return "If not set it uses current machine IP"
+            case .locale:           return "If not set the device's language is used"
+            case .hostnameLookup:   return "Hostname info of the given IP"
+            case .timeout:          return "Timeout of call in seconds"
+            case .apiKey:           return "Required for this service. See doc."
+            default:                return ""
+            }
+        }
+        
+    }
+    
 }

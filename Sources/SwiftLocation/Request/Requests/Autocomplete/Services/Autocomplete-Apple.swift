@@ -12,8 +12,9 @@ import MapKit
 public extension Autocomplete {
     
     class Apple: NSObject, AutocompleteProtocol {
-        
-        public private(set) var kind: AutocompleteKind = .apple
+          
+        /// Type of autocomplete operation
+        public var operation: AutocompleteOp
         
         /// Is operation cancelled.
         public var isCancelled: Bool = false
@@ -23,19 +24,13 @@ public extension Autocomplete {
         /// The default value is nil which for `AppleOptions` means a region that spans the entire world.
         /// For other services when nil the entire parameter will be ignored.
         public var proximityRegion: MKCoordinateRegion?
-        
-        // Use this property to determine whether you want completions that represent points-of-interest
-        // or whether completions might yield additional relevant query strings.
-        // The default value is set to `.locationAndQueries`:
-        // Points of interest and query suggestions.
-        /// Specify this value when you want both map-based points of interest and common
-        /// query terms used to find locations. For example, the search string “cof” yields a completion for “coffee”.
-        public var dataFilter: MKLocalSearchCompleter.FilterType = .locationsAndQueries
+                
+        /// The types of search completions to include.
+        /// By default all values are included `[.address, .pointOfInterest, .query]`.
+        /// NOTE: `.pointOfInterest` is not available below iOS 13.
+        public var resultType: Apple.ResultType = ResultType.all
         
         // MARK: - Private Properties
-        
-        /// Type of autocomplete operation
-        private let operation: AutocompleteOp
         
         /// Partial searcher.
         private var partialQuerySearcher: MKLocalSearchCompleter?
@@ -76,9 +71,21 @@ public extension Autocomplete {
             super.init()
         }
         
+        /// Initialize with request to get details for given result item.
+        /// - Parameter resultItem: result item.
+        public init?(detailsFor resultItem: Autocomplete.Data?) {
+            guard let id = resultItem?.partialAddress?.id else {
+                return nil
+            }
+            
+            self.operation = .addressDetail(id)
+            
+            super.init()
+        }
+        
         // MARK: - Public Functions
         
-        public func execute(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)) {
+        public func executeAutocompleter(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)) {
             self.callback = completion
             
             switch operation {
@@ -111,7 +118,8 @@ public extension Autocomplete {
             if let proximityRegion = self.proximityRegion {
                 partialQuerySearcher?.region = proximityRegion
             }
-            partialQuerySearcher?.filterType = dataFilter
+            
+            resultType.applyToCompleter(partialQuerySearcher)
             partialQuerySearcher?.delegate = self
         }
         
@@ -135,35 +143,7 @@ public extension Autocomplete {
                 self.callback?(.success(places))
             })
         }
-        
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case proximityRegionCenter, proximityRegionSpan, dataFilter, operation
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encodeIfPresent(proximityRegion?.center, forKey: .proximityRegionCenter)
-            try container.encodeIfPresent(proximityRegion?.span, forKey: .proximityRegionSpan)
-            try container.encode(dataFilter.rawValue, forKey: .dataFilter)
-            try container.encode(operation, forKey: .operation)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            if let proximityCenter = try container.decodeIfPresent(CLLocationCoordinate2D.self, forKey: .proximityRegionCenter),
-               let proximitySpan = try container.decodeIfPresent(MKCoordinateSpan.self, forKey: .proximityRegionSpan) {
-                self.proximityRegion = MKCoordinateRegion(center: proximityCenter, span: proximitySpan)
-            }
-            
-            self.dataFilter = try MKLocalSearchCompleter.FilterType(rawValue: container.decode(Int.self, forKey: .dataFilter))!
-            self.operation = try container.decode(AutocompleteOp.self, forKey: .operation)
-        }
-        
+    
     }
     
 }
@@ -181,6 +161,71 @@ extension Autocomplete.Apple: MKLocalSearchCompleterDelegate {
     
     public func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
         callback?(.failure(.other(error.localizedDescription)))
+    }
+    
+}
+
+
+extension Autocomplete.Apple {
+    
+    public struct ResultType: OptionSet, CustomStringConvertible {
+        public var rawValue: Int
+        
+        /// Value indicating that address completions should be included in results.
+        public static let address = ResultType(rawValue: 1 << 0)
+        
+        // Value indicating that point of interest completions should be included in results.
+        // NOTE: It will be ignored with iOS < 13
+        public static let pointOfInterest = ResultType(rawValue: 1 << 1)
+        
+        /// Value indicating that query completions should be included in results.
+        public static let query = ResultType(rawValue: 1 << 2)
+        
+        public static let all : ResultType = [.address, .pointOfInterest, .query]
+        
+        public var allSelected: Bool {
+            return self.rawValue == ResultType.all.rawValue
+        }
+
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        fileprivate func applyToCompleter(_ completer: MKLocalSearchCompleter?) {
+            guard let completer = completer else { return }
+            
+            if #available(iOS 13.0, *) {
+                completer.resultTypes = resultTypes()
+            } else {
+                completer.filterType = filterTypes()
+            }
+        }
+        
+        @available(iOS 13.0, *)
+        private func resultTypes() -> MKLocalSearchCompleter.ResultType {
+            var value = MKLocalSearchCompleter.ResultType()
+            if contains(.address) { value.insert(.address) }
+            if contains(.pointOfInterest) { value.insert(.pointOfInterest) }
+            if contains(.query) { value.insert(.query) }
+            return value
+        }
+        
+        private func filterTypes() -> MKLocalSearchCompleter.FilterType {
+            if contains(.query) {
+                return .locationsAndQueries
+            } else {
+                return .locationsOnly
+            }
+        }
+        
+        public var description: String {
+            var options = [String]()
+            if contains(.address) { options.append("address") }
+            if contains(.pointOfInterest) { options.append("pointOfInterest") }
+            if contains(.query) { options.append("query") }
+            return options.joined(separator: ",")
+        }
+        
     }
     
 }

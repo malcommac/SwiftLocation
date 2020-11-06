@@ -11,7 +11,7 @@ public extension IPLocation {
     
     /// This is the implementation of IPStack location search by ip.
     /// https://ipstack.com
-    class IPStack: IPServiceProtocol, Codable {
+    class IPStack: IPServiceProtocol {
         
         /// Used to retrive data from json.
         public var jsonServiceDecoder: IPServiceDecoders = .ipstack
@@ -76,6 +76,10 @@ public extension IPLocation {
         }
         
         public func buildRequest() throws -> URLRequest {
+            guard let APIKey = self.APIKey, !APIKey.isEmpty else {
+                throw LocatorErrors.invalidAPIKey
+            }
+            
             var urlComponents = URLComponents(string: serviceURL().absoluteString)
             urlComponents?.queryItems = [
                 URLQueryItem(name: "access_key", value: APIKey),
@@ -106,32 +110,6 @@ public extension IPLocation {
             }
         }
      
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case jsonServiceDecoder, targetIP, APIKey, timeout, locale, hostnameLookup
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(jsonServiceDecoder, forKey: .jsonServiceDecoder)
-            try container.encodeIfPresent(targetIP, forKey: .targetIP)
-            try container.encode(APIKey, forKey: .APIKey)
-            try container.encode(hostnameLookup, forKey: .hostnameLookup)
-            try container.encode(timeout, forKey: .timeout)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.jsonServiceDecoder = try container.decode(IPServiceDecoders.self, forKey: .jsonServiceDecoder)
-            self.targetIP = try container.decodeIfPresent(String.self, forKey: .targetIP)
-            self.APIKey = try container.decode(String.self, forKey: .APIKey)
-            self.hostnameLookup = try container.decode(Bool.self, forKey: .hostnameLookup)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
-        }
-        
     }
     
 }

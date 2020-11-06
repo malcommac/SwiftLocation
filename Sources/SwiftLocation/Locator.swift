@@ -30,16 +30,16 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
     public var onRestoreGPS: (([GPSLocationRequest]) -> Void)?
     
     /// Called when a new set of ip requests has been restored.
-    public var onRestoreIP: (([IPLocationRequest]) -> Void)?
+    //public var onRestoreIP: (([IPLocationRequest]) -> Void)?
     
     /// Called when a new set of visits requests has been restored.
     public var onRestoreVisits: (([VisitsRequest]) -> Void)?
     
     /// Called when a new set of autocomplete requests has been restored.
-    public var onRestoreAutocomplete: (([AutocompleteRequest]) -> Void)?
+    //public var onRestoreAutocomplete: (([AutocompleteRequest]) -> Void)?
     
     /// Called when a new set of geocoder requests has been restored.
-    public var onRestoreGeocode: (([GeocoderRequest]) -> Void)?
+    //public var onRestoreGeocode: (([GeocoderRequest]) -> Void)?
     
     /// Shared instance.
     public static let shared = Locator()
@@ -169,9 +169,9 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
             let defaults = UserDefaults.standard
             defaults.setValue(try JSONEncoder().encode(geofenceRequests.list), forKey: UserDefaultsKeys.GeofenceRequests)
             defaults.setValue(try JSONEncoder().encode(gpsRequests.list), forKey: UserDefaultsKeys.GPSRequests)
-            defaults.setValue(try JSONEncoder().encode(ipRequests.list), forKey: UserDefaultsKeys.IPRequests)
-            defaults.setValue(try JSONEncoder().encode(autocompleteRequests.list), forKey: UserDefaultsKeys.AutocompleteRequests)
-            defaults.setValue(try JSONEncoder().encode(geocoderRequests.list), forKey: UserDefaultsKeys.GeocoderRequests)
+            //defaults.setValue(try JSONEncoder().encode(ipRequests.list), forKey: UserDefaultsKeys.IPRequests)
+            //defaults.setValue(try JSONEncoder().encode(autocompleteRequests.list), forKey: UserDefaultsKeys.AutocompleteRequests)
+            //defaults.setValue(try JSONEncoder().encode(geocoderRequests.list), forKey: UserDefaultsKeys.GeocoderRequests)
             defaults.setValue(try JSONEncoder().encode(visitsRequest.list), forKey: UserDefaultsKeys.VisitsRequests)
 
             return true
@@ -196,9 +196,9 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
         // Others (not to be evaluated)
         onRestoreGPS?(gpsRequests.add(decodeSavedQueue(UserDefaultsKeys.GPSRequests), silent: true))
         onRestoreVisits?(visitsRequest.add(decodeSavedQueue(UserDefaultsKeys.VisitsRequests), silent: true))
-        onRestoreIP?(ipRequests.add(decodeSavedQueue(UserDefaultsKeys.IPRequests), silent: true))
-        onRestoreAutocomplete?(autocompleteRequests.add(decodeSavedQueue(UserDefaultsKeys.AutocompleteRequests), silent: true))
-        onRestoreGeocode?(geocoderRequests.add(decodeSavedQueue(UserDefaultsKeys.GeocoderRequests), silent: true))
+        //onRestoreIP?(ipRequests.add(decodeSavedQueue(UserDefaultsKeys.IPRequests), silent: true))
+        //onRestoreAutocomplete?(autocompleteRequests.add(decodeSavedQueue(UserDefaultsKeys.AutocompleteRequests), silent: true))
+        //onRestoreGeocode?(geocoderRequests.add(decodeSavedQueue(UserDefaultsKeys.GeocoderRequests), silent: true))
         
         saveState()
     }
@@ -479,7 +479,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
 
 public extension Locator {
     
-    class RequestQueue<Value: RequestProtocol & Codable>: Codable, CustomStringConvertible {
+    class RequestQueue<Value: RequestProtocol>: CustomStringConvertible {
         
         // MARK: - Public Properties
         
@@ -580,22 +580,6 @@ public extension Locator {
             }
         }
         
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case list
-        }
-        
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(list, forKey: .list)
-        }
-        
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.list = try container.decode(Set<Value>.self, forKey: .list)
-        }
-        
     }
     
 }
@@ -606,7 +590,4 @@ fileprivate enum UserDefaultsKeys {
     static let GeofenceRequests = "com.swiftlocation.requests.geofence"
     static let GPSRequests = "com.swiftlocation.requests.gps"
     static let VisitsRequests = "com.swiftlocation.visits.gps"
-    static let IPRequests = "com.swiftlocation.requests.ip"
-    static let AutocompleteRequests = "com.swiftlocation.requests.autocomplete"
-    static let GeocoderRequests = "com.swiftlocation.requests.geocoder"
 }

@@ -25,10 +25,15 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "Visits Monitor"
+        self.navigationItem.title = "Visits Monitoring"
         
         tableView?.delegate = self
         tableView?.dataSource = self
+    }
+    
+    public static func create() -> VisitsController {
+        let s = UIStoryboard(name: "VisitsController", bundle: nil)
+        return s.instantiateInitialViewController() as! VisitsController
     }
     
     override func viewWillAppear(_ animated: Bool) {

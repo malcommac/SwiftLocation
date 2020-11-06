@@ -13,8 +13,6 @@ public extension Geocoder {
     class Apple: GeocoderServiceProtocol {
         
         // MARK: - Public Properties
-        
-        public private(set) var kind: GeocoderServiceKind = .apple
 
         /// Is request cancelled.
         public var isCancelled = false
@@ -35,7 +33,6 @@ public extension Geocoder {
         
         public var description: String {
             JSONStringify([
-                "kind": kind.rawValue,
                 "operation": operation.description,
                 "proximityRegion": proximityRegion?.description ?? "",
                 "locale": locale?.description ?? ""
@@ -100,40 +97,6 @@ public extension Geocoder {
         public func cancel() {
             self.isCancelled = true
             geocoder.cancelGeocode()
-        }
-        
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case kind, isCancelled, locale, operation, proximityRegionCenter, proximityRegionRadius, proximityRegionUUID
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            
-            try container.encode(kind, forKey: .kind)
-            try container.encode(locale, forKey: .locale)
-            try container.encode(operation, forKey: .operation)
-            
-            try container.encodeIfPresent(proximityRegion?.center, forKey: .proximityRegionCenter)
-            try container.encodeIfPresent(proximityRegion?.radius, forKey: .proximityRegionRadius)
-            try container.encodeIfPresent(proximityRegion?.identifier, forKey: .proximityRegionUUID)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.kind = try container.decode(GeocoderServiceKind.self, forKey: .kind)
-            self.locale = try container.decode(Locale.self, forKey: .locale)
-            self.operation = try container.decode(GeocoderOperation.self, forKey: .operation)
-            
-            if let center = try container.decodeIfPresent(CLLocationCoordinate2D.self, forKey: .proximityRegionCenter),
-               let radius = try container.decodeIfPresent(CLLocationDegrees.self, forKey: .proximityRegionCenter),
-               let identifier = try container.decodeIfPresent(String.self, forKey: .proximityRegionUUID) {
-                self.proximityRegion = CLCircularRegion(center: center, radius: radius, identifier: identifier)
-            }
         }
         
     }

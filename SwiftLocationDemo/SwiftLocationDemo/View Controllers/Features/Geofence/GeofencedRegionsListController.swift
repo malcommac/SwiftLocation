@@ -15,7 +15,7 @@ class GeofencedRegionsListController: UIViewController, UITableViewDataSource, U
     @IBOutlet private var tableView: UITableView!
     
     public static func create() -> GeofencedRegionsListController {
-        let s = UIStoryboard(name: "Main", bundle: nil)
+        let s = UIStoryboard(name: "GeofenceController", bundle: nil)
         let vc = s.instantiateViewController(identifier: "GeofencedRegionsListController") as! GeofencedRegionsListController
         return vc
     }
@@ -123,7 +123,7 @@ public extension CLLocationCoordinate2D {
     var formattedValue: String {
         let numberFormatter = NumberFormatter()
         numberFormatter.maximumFractionDigits = 3
-        return "{\(numberFormatter.string(from: NSNumber(value: latitude)) ?? ""),\(numberFormatter.string(from: NSNumber(value: longitude)) ?? "")}"
+        return "{lat=\(numberFormatter.string(from: NSNumber(value: latitude)) ?? ""),lng=\(numberFormatter.string(from: NSNumber(value: longitude)) ?? "")}"
     }
     
 }

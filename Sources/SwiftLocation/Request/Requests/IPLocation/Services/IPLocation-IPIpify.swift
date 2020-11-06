@@ -11,7 +11,7 @@ public extension IPLocation {
     
     /// This is the implementation of IPify location search by ip.
     /// https://www.ipify.org
-    class IPify: IPServiceProtocol, Codable {
+    class IPify: IPServiceProtocol {
         
         /// Used to retrive data from json.
         public var jsonServiceDecoder: IPServiceDecoders = .ipify
@@ -88,30 +88,6 @@ public extension IPLocation {
             }
             
             return .other(String(httpResponse.statusCode))
-        }
-        
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case jsonServiceDecoder, targetIP, APIKey, timeout
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(jsonServiceDecoder, forKey: .jsonServiceDecoder)
-            try container.encodeIfPresent(targetIP, forKey: .targetIP)
-            try container.encode(APIKey, forKey: .APIKey)
-            try container.encode(timeout, forKey: .timeout)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.jsonServiceDecoder = try container.decode(IPServiceDecoders.self, forKey: .jsonServiceDecoder)
-            self.targetIP = try container.decodeIfPresent(String.self, forKey: .targetIP)
-            self.APIKey = try container.decode(String.self, forKey: .APIKey)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
         }
         
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AutocompleteRequest: RequestProtocol, Codable {
+public class AutocompleteRequest: RequestProtocol {
     public typealias ProducedData = [Autocomplete.Data]
     
     /// Service used to perform the request.
@@ -76,50 +76,13 @@ public class AutocompleteRequest: RequestProtocol, Codable {
     }
     
     public func didAddInQueue() {
-        service.execute { [weak self] result in
+        service.executeAutocompleter { [weak self] result in
             self?.dispatchData(result)
         }
     }
     
     public func didRemovedFromQueue() {
         service.cancel()
-    }
-    
-    // MARK: - Codable
-    
-    enum CodingKeys: String, CodingKey {
-        case uuid, isEnabled, serviceKind, service, name
-    }
-    
-    // Encodable protocol
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
-        try container.encode(uuid, forKey: .uuid)
-        try container.encode(isEnabled, forKey: .isEnabled)
-        try container.encode(service.kind, forKey: .serviceKind)
-        try container.encodeIfPresent(name, forKey: .name)
-        
-        switch service.kind {
-        case .apple:    try container.encode((service as! Autocomplete.Apple), forKey: .service)
-        case .google:   try container.encode((service as! Autocomplete.Google), forKey: .service)
-        case .here:     try container.encode((service as! Autocomplete.Here), forKey: .service)
-        }
-    }
-    
-    // Decodable protocol
-    required public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        self.uuid = try container.decode(String.self, forKey: .uuid)
-        self.isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        
-        switch try container.decode(AutocompleteKind.self, forKey: .serviceKind) {
-        case .apple:    self.service = try container.decode(Autocomplete.Apple.self, forKey: .service)
-        case .google:   self.service = try container.decode(Autocomplete.Google.self, forKey: .service)
-        case .here:     self.service = try container.decode(Autocomplete.Here.self, forKey: .service)
-        }
     }
 
 }

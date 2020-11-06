@@ -12,11 +12,11 @@ public enum Autocomplete { }
 
 // MARK: - AutocompleteProtocol
 
-public protocol AutocompleteProtocol: class, Codable, CustomStringConvertible {
+public protocol AutocompleteProtocol: class, CustomStringConvertible {
     
     /// Execute the search.
     /// - Parameter completion: completion callback.
-    func execute(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void))
+    func executeAutocompleter(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void))
     
     /// Cancel the operation.
     func cancel()
@@ -24,23 +24,9 @@ public protocol AutocompleteProtocol: class, Codable, CustomStringConvertible {
     /// Return `true` if operation was cancelled.
     var isCancelled: Bool { get }
     
-    /// Kind of the request.
-    var kind: AutocompleteKind { get }
+    /// Type of autocomplete operation
+    var operation: AutocompleteOp { get set }
     
-}
-
-public extension AutocompleteProtocol {
-    
-    var description: String {
-        JSONStringify(["kind": kind.rawValue])
-    }
-    
-}
-
-// MARK: - AutocompleteKind
-
-public enum AutocompleteKind: Int, Codable {
-    case apple, google, here
 }
 
 // MARK: - Autocomplete.Data
@@ -50,7 +36,7 @@ public extension Autocomplete {
     /// Type of results for autocomplete call.
     /// - `partial`: result for partial address search.
     /// - `place`: result for full address detail returned from partial search.
-    enum Data {
+    enum Data: CustomStringConvertible {
         case partial(PartialAddressMatch)
         case place(GeoLocation)
         
@@ -68,6 +54,13 @@ public extension Autocomplete {
             }
         }
         
+        public var description: String {
+            switch self {
+            case .partial(let address): return address.id
+            case .place(let place): return place.description
+            }
+        }
+        
     }
     
 }
@@ -75,7 +68,7 @@ public extension Autocomplete {
 // MARK: - Internal
 
 /// Autocomplete search type based upon the search type.
-internal enum AutocompleteOp: Codable {
+public enum AutocompleteOp {
     case partialMatch(String)
     case addressDetail(String)
     
@@ -92,31 +85,6 @@ internal enum AutocompleteOp: Codable {
         switch self {
         case .partialMatch(let a):     return a
         case .addressDetail(let a):    return a
-        }
-    }
-    
-    // MARK: - Codable
-    
-    enum CodingKeys: String, CodingKey {
-        case kind, value
-    }
-    
-    // Encodable protocol
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(kind, forKey: .kind)
-        try container.encode(value, forKey: .value)
-    }
-    
-    // Decodable protocol
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let value = try container.decode(String.self, forKey: .value)
-        
-        switch try container.decode(Int.self, forKey: .kind) {
-        case 0: self = .addressDetail(value)
-        case 1: self = .partialMatch(value)
-        default: fatalError("Failed to decode AutocompleteOp")
         }
     }
 

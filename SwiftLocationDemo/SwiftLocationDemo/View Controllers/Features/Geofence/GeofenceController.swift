@@ -47,9 +47,14 @@ class GeofenceController: UIViewController {
     
     var points = [CLLocationCoordinate2D]() {
         didSet {
-               print(points)
-           }
-       }
+            print(points)
+        }
+    }
+    
+    public static func create() -> GeofenceController {
+        let s = UIStoryboard(name: "GeofenceController", bundle: nil)
+        return s.instantiateInitialViewController() as! GeofenceController
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

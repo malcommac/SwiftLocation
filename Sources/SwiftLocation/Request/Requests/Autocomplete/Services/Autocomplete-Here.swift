@@ -13,9 +13,10 @@ public extension Autocomplete {
     
     class Here: JSONNetworkHelper, AutocompleteProtocol {
         
-        public private(set) var kind: AutocompleteKind = .here
-
         // MARK: - Public Properties
+        
+        /// Type of autocomplete operation
+        public var operation: AutocompleteOp
         
         /// Timeout interval for request.
         public var timeout: TimeInterval = 5
@@ -40,10 +41,15 @@ public extension Autocomplete {
         /// Callback to call at the end of the operation.
         private var callback: ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)?
         
-        // MARK: - Private Properties
-        
-        /// Type of autocomplete operation
-        private let operation: AutocompleteOp
+        /// Description
+        public var description: String {
+            return JSONStringify([
+                "apiKey": APIKey.trunc(length: 5),
+                "limitResults": limit?.description,
+                "locale": locale
+            ])
+        }
+                
         
         // MARK: - Initialization
         
@@ -51,9 +57,10 @@ public extension Autocomplete {
         /// Returned values is an array of `Autocomplete.AutocompleteResult.partial`.
         ///
         /// - Parameters:
-        ///   - partialMatch: partial match of the address.
-        ///   - region: Use this property to limit search results to the specified geographic area.
-        public init(partialMatches partialAddress: String, limit: Limit, APIKey: String) {
+        ///   - partialAddress:  partial match of the address.
+        ///   - APIKey: API Key.
+        ///   - limit: limit options.
+        public init(partialMatches partialAddress: String, APIKey: String, limit: Limit? = nil) {
             self.operation = .partialMatch(partialAddress)
             self.limitResults = limit
             self.APIKey = APIKey
@@ -87,7 +94,7 @@ public extension Autocomplete {
         
         // MARK: - Public Functions
         
-        public func execute(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)) {
+        public func executeAutocompleter(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)) {
             do {
                 
                 self.callback = completion
@@ -220,35 +227,6 @@ public extension Autocomplete {
             return request
         }
         
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case operation, timeout, APIKey, limitResults, limit, locale
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(operation, forKey: .operation)
-            try container.encode(timeout, forKey: .timeout)
-            try container.encode(APIKey, forKey: .APIKey)
-            try container.encodeIfPresent(limitResults, forKey: .limitResults)
-            try container.encodeIfPresent(limit, forKey: .limit)
-            try container.encodeIfPresent(locale, forKey: .locale)
-        }
-        
-        // Decodable protocol
-        required public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.operation = try container.decode(AutocompleteOp.self, forKey: .operation)
-            self.timeout = try container.decode(TimeInterval.self, forKey: .timeout)
-            self.APIKey = try container.decode(String.self, forKey: .APIKey)
-            self.limitResults = try container.decodeIfPresent(Limit.self, forKey: .limitResults)
-            self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-            self.locale = try container.decodeIfPresent(String.self, forKey: .locale)
-        }
-        
     }
     
 }
@@ -261,7 +239,7 @@ public extension Autocomplete.Here {
     /// - `countryCodes`: a country (or multiple countries), provided as comma-separated ISO 3166-1 alpha-3 country codes.
     /// - `circle`: a circular area, provided as latitude, longitude, and radius (in meters).
     /// - `boundingBox`: a bounding box, provided as west longitude, south latitude, east longitude, north latitude.
-    enum Limit: Codable {
+    enum Limit {
         case countryCodes([String])
         case circle(CLCircularRegion)
         case boundingBox(HereBoundingBox)
@@ -295,63 +273,9 @@ public extension Autocomplete.Here {
             }
         }
         
-        // MARK: - Codable
-        
-        enum CodingKeys: String, CodingKey {
-            case kind, countryCodes, circularRegionCenter, circularRegionRadius, circularRegionID, boundingBox, proximityCoordinates
-        }
-        
-        // Encodable protocol
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(kind, forKey: .kind)
-
-            switch self {
-            case .countryCodes(let cCodes):
-                try container.encode(cCodes, forKey: .countryCodes)
-            case .circle(let region):
-                try container.encode(region.center, forKey: .circularRegionCenter)
-                try container.encode(region.radius, forKey: .circularRegionRadius)
-                try container.encode(region.identifier, forKey: .circularRegionID)
-            case .boundingBox(let bbox):
-                try container.encode(bbox, forKey: .boundingBox)
-            case .proximity(let coordinates):
-                try container.encode(coordinates, forKey: .proximityCoordinates)
-            }
-            
-        }
-        
-        // Decodable protocol
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-         
-            switch try container.decode(Int.self, forKey: .kind) {
-            case 0:
-                let cCodes = try container.decode([String].self, forKey: .countryCodes)
-                self = .countryCodes(cCodes)
-                
-            case 1:
-                let cCenter = try container.decode(CLLocationCoordinate2D.self, forKey: .circularRegionCenter)
-                let cRadius = try container.decode(CLLocationDegrees.self, forKey: .circularRegionRadius)
-                let cIdentifier = try container.decode(String.self, forKey: .circularRegionID)
-                self = .circle(CLCircularRegion(center: cCenter, radius: cRadius, identifier: cIdentifier))
-            
-            case 2:
-                let bBox = try container.decode(HereBoundingBox.self, forKey: .boundingBox)
-                self = .boundingBox(bBox)
-                
-            case 3:
-                let coordinates = try container.decode(CLLocationCoordinate2D.self, forKey: .proximityCoordinates)
-                self = .proximity(coordinates)
-                
-            default:
-                fatalError("Failed to decode Here Limit")
-            }
-        }
-        
     }
     
-    struct HereBoundingBox: Codable {
+    struct HereBoundingBox {
         let westLong: CLLocationDegrees
         let southLat: CLLocationDegrees
         let eastLong: CLLocationDegrees

@@ -61,7 +61,8 @@ extension UIAlertController {
     public static func showAlert(title: String, message: String? = nil,
                                  defaultTitle: String = "OK",
                                  defaultAction: ((UIAlertAction) -> Void)? = nil,
-                                 alternateTitle: String? = nil, alternateAction: ((UIAlertAction) -> Void)? = nil) -> UIAlertController {
+                                 alternateTitle: String? = nil, alternateAction: ((UIAlertAction) -> Void)? = nil,
+                                 controller: UIViewController? = nil) -> UIAlertController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let defaultButton = UIAlertAction(title: defaultTitle, style: .default, handler: defaultAction)
         alert.addAction(defaultButton)
@@ -71,7 +72,7 @@ extension UIAlertController {
             alert.addAction(altButton)
         }
         
-        guard let topMost = UIViewController.topMostController() else {
+        guard let topMost = controller ?? UIViewController.topMostController() else {
             print("Failed to retrive topmost controller to show alert")
             return alert
         }
@@ -158,6 +159,17 @@ extension UIAlertController {
         })
         alert.addAction(cancelButton)
         
+        guard let topMost = UIViewController.topMostController() else {
+            print("Failed to retrive topmost controller to show alert")
+            return alert
+        }
+        
+        topMost.present(alert, animated: true, completion: nil)
+        return alert
+    }
+    
+    public static func showLoader(title: String = "Executing Request", message: String?) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         guard let topMost = UIViewController.topMostController() else {
             print("Failed to retrive topmost controller to show alert")
             return alert

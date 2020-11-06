@@ -10,7 +10,7 @@ import CoreLocation
 
 internal let IPServiceDecoder = CodingUserInfoKey(rawValue: "decoder")!
 
-public enum IPServiceDecoders: String, Codable, CaseIterable {
+public enum IPServiceDecoders: String, CaseIterable {
     case ipstack // IPStackService
     case ipdata // IPDataService
     case ipinfo // IPInfoService
@@ -19,7 +19,7 @@ public enum IPServiceDecoders: String, Codable, CaseIterable {
     case ipify // IPIpifyService
 }
 
-public protocol IPServiceProtocol: class, Codable, CustomStringConvertible {
+public protocol IPServiceProtocol: class, CustomStringConvertible {
     
     /// Decoder userd to read data from service.
     var jsonServiceDecoder: IPServiceDecoders { get }
@@ -102,7 +102,7 @@ public extension IPServiceProtocol {
             }
             task?.resume()
         } catch {
-            completion(.failure(.internalError))
+            completion(.failure( (error as? LocatorErrors) ?? .internalError ))
         }
     }
     
