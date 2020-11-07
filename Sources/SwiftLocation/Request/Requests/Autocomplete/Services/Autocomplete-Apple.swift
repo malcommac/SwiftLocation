@@ -19,6 +19,9 @@ public extension Autocomplete {
         /// Is operation cancelled.
         public var isCancelled: Bool = false
         
+        /// NOTE: This is not applicable to this service and value is ignored.
+        public var timeout: TimeInterval?
+        
         /// The region that defines the geographic scope of the search.
         /// Use this property to limit search results to the specified geographic area.
         /// The default value is nil which for `AppleOptions` means a region that spans the entire world.

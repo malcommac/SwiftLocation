@@ -123,8 +123,12 @@ internal extension Bool {
 
 extension CLLocationCoordinate2D: CustomStringConvertible {
     
-    var serverValue: String {
+    var commaLngLat: String {
         "\(longitude),\(latitude)"
+    }
+    
+    var commaLatLng: String {
+        "\(latitude),\(longitude)"
     }
     
     public var description: String {

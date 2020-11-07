@@ -19,7 +19,7 @@ public extension Autocomplete {
         public var operation: AutocompleteOp
         
         /// Timeout interval for request.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval? = 5
         
         /// API Key
         /// See https://developers.google.com/places/web-service/get-api-key.
@@ -34,6 +34,9 @@ public extension Autocomplete {
         /// More info: https://developers.google.com/places/web-service/autocomplete#location_biasing
         /// and https://developers.google.com/places/web-service/autocomplete#location_restrict.
         public var radius: Float? = nil
+        
+        /// The point around which you wish to retrieve place information
+        public var location: CLLocationCoordinate2D?
         
         /// Returns only those places that are strictly within the region defined by location and radius.
         /// This is a restriction, rather than a bias, meaning that results outside this region will
@@ -55,6 +58,7 @@ public extension Autocomplete {
                 "timeout": timeout,
                 "placeTypes": placeTypes,
                 "radius": radius,
+                "location": location,
                 "strictBounds": strictBounds,
                 "locale": locale,
                 "countries": countries
@@ -186,8 +190,9 @@ public extension Autocomplete {
             var queryItems = [URLQueryItem]()
             queryItems.append(URLQueryItem(name: "key", value: APIKey))
             queryItems.appendIfNotNil(URLQueryItem(name: "types", optional: placeTypes?.map { $0.rawValue }.joined(separator: ",")))
+            queryItems.appendIfNotNil(URLQueryItem(name: "location", optional: location?.commaLatLng))
             queryItems.appendIfNotNil(URLQueryItem(name: "radius", optional: (radius != nil ? String(radius!) : nil)))
-            
+
             if strictBounds {
                 queryItems.append(URLQueryItem(name: "strictbounds", value: nil))
             }
@@ -211,7 +216,7 @@ public extension Autocomplete {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? 3600)
             return request
         }
         
@@ -231,12 +236,16 @@ public extension Autocomplete.Google {
     /// - establishment: return only business results.
     /// - regions: return any result matching the following types: `locality, sublocality, postal_code, country, administrative_area_level_1, administrative_area_level_2`
     /// - cities: return results that match `locality` or `administrative_area_level_3`.
-    enum PlaceTypes: String {
+    enum PlaceTypes: String, CustomStringConvertible {
         case geocode
         case address
         case establishment
         case regions
         case cities
+        
+        public var description: String {
+            rawValue
+        }
     }
     
 }

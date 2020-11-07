@@ -19,7 +19,7 @@ public extension Autocomplete {
         public var operation: AutocompleteOp
         
         /// Timeout interval for request.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval? = 5
         
         /// API Key
         /// See https://developers.google.com/places/web-service/get-api-key.
@@ -222,7 +222,7 @@ public extension Autocomplete {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? 3600)
             print(request)
             return request
         }
@@ -257,7 +257,7 @@ public extension Autocomplete.Here {
                 return bbox.serverValue
                 
             case .proximity(let coordinates):
-                return coordinates.serverValue
+                return coordinates.commaLngLat
                 
             }
         }

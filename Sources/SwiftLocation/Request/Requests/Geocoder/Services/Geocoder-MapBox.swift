@@ -171,7 +171,7 @@ public extension Geocoder {
                 queryItems.append(URLQueryItem(name: "autocomplete", value: "true"))
                 queryItems.appendIfNotNil(URLQueryItem(name: "bbox", optional: boundingBox?.rawValue))
                 queryItems.appendIfNotNil(URLQueryItem(name: "fuzzyMatch", optional: fuzzyMatch?.serverValue))
-                queryItems.appendIfNotNil(URLQueryItem(name: "proximity", optional: proximityRegion?.serverValue))
+                queryItems.appendIfNotNil(URLQueryItem(name: "proximity", optional: proximityRegion?.commaLngLat))
                 
                 url = URL(string: "https://api.mapbox.com/geocoding/v5/mapbox.places/\(address.urlEncoded).json")!
                 

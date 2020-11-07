@@ -27,6 +27,9 @@ public protocol AutocompleteProtocol: class, CustomStringConvertible {
     /// Type of autocomplete operation
     var operation: AutocompleteOp { get set }
     
+    /// Timeout interval.
+    var timeout: TimeInterval? { get set }
+ 
 }
 
 // MARK: - Autocomplete.Data

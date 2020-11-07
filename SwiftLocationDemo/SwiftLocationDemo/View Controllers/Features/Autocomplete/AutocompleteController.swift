@@ -10,6 +10,18 @@ import SwiftLocation
 import MapKit
 import CoreLocation
 
+fileprivate extension AutocompleteProtocol {
+    
+    var asGoogle: Autocomplete.Google? {
+        return (self as? Autocomplete.Google)
+    }
+    
+    var asApple: Autocomplete.Apple? {
+        return (self as? Autocomplete.Apple)
+    }
+    
+}
+
 public class AutocompleteController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     private var rows = [RowSetting]([.service])
@@ -17,8 +29,8 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     @IBOutlet public var settingsTableView: UITableView!
     @IBOutlet public var resultsTableView: UITableView!
 
-    private var autocompleteService: AutocompleteProtocol?
-    private var autocompleteResults: AutocompleteRequest.ProducedData?
+    private var currentService: AutocompleteProtocol?
+    private var requestResults: AutocompleteRequest.ProducedData?
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +47,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     }
     
     @IBAction public func clearResults(_ sender: Any?) {
-        autocompleteResults?.removeAll()
+        requestResults?.removeAll()
         resultsTableView.reloadData()
     }
     
@@ -68,11 +80,11 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     // MARK: - Results TableView Data Source
 
     private func resultsTableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        autocompleteResults?.count ?? 0
+        requestResults?.count ?? 0
     }
     
     private func resultsTableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let result = autocompleteResults![indexPath.row]
+        let result = requestResults![indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.ID) as! StandardCellSetting
         cell.titleLabel.text = result.partialAddress?.title
@@ -85,7 +97,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func resultsTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let result = autocompleteResults?[indexPath.row],
+        guard let result = requestResults?[indexPath.row],
               let detailService = createRequestToGetDetailForResult(result) else {
             return
         }
@@ -98,7 +110,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     }
     
     private func createRequestToGetDetailForResult(_ result: Autocomplete.Data?) -> AutocompleteProtocol? {
-        switch autocompleteService {
+        switch currentService {
         case is Autocomplete.Apple:
             return Autocomplete.Apple(detailsFor: result)
         default:
@@ -152,13 +164,23 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
             selectProximityRegion()
         case .filterType:
             selectFilterType()
+        case .APIKey:
+            selectAPIKey()
+        case .timeout:
+            setTimeoutInterval()
+        case .googlePlaceTypes:
+            selectGooglePlaceTypes()
+        case .location:
+            selectGoogleLocation()
+        case .radius:
+            selectRadius()
         default:
             break
         }
     }
     
     private func createRequest() {
-        guard let service = self.autocompleteService else {
+        guard let service = self.currentService else {
             return
         }
 
@@ -172,7 +194,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
                 UIAlertController.showAlert(title: "Error Occurred", message: error.localizedDescription)
                 break
             case .success(let data):
-                self.autocompleteResults = data
+                self.requestResults = data
                 self.resultsTableView.reloadData()
                 break
             }
@@ -184,7 +206,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
             settingsTableView.reloadData()
         }
         
-        guard let service = autocompleteService else {
+        guard let service = currentService else {
             self.rows = [.service]
             return
         }
@@ -192,8 +214,91 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         switch service {
         case is Autocomplete.Apple:
             self.rows = [.service, .addressValue, .proximityRegion, .filterType, .createRequest]
+        case is Autocomplete.Google:
+            self.rows = [.service, .APIKey, .addressValue, .locale, .timeout, .googlePlaceTypes, .location, .radius, .createRequest]
         default:
             break
+        }
+    }
+    
+    private func selectRadius() {
+        UIAlertController.showInputFieldSheet(title: "Radius", message: "The distance (in meters) within which to return place results.") { [weak self] value in
+            self?.currentService?.asGoogle?.radius = (value != nil ? Float(value!) : nil)
+            self?.reloadData()
+        }
+    }
+    
+    private func selectGoogleLocation() {
+        UIAlertController.showInputFieldSheet(title: "Proximity Location",
+                                              message: "as 'latitude,longitude'") { [weak self] value in
+            
+            guard let rawCoordinates = value?.components(separatedBy: ",").compactMap({ CLLocationDegrees($0) }),
+                  rawCoordinates.count == 2 else {
+                self?.currentService?.asGoogle?.location = nil
+                self?.reloadData()
+                return
+            }
+            
+            let coordinates = CLLocationCoordinate2D(latitude: rawCoordinates[0], longitude: rawCoordinates[1])
+            self?.currentService?.asGoogle?.location = coordinates
+            self?.reloadData()
+        }
+    }
+    
+    private func selectGooglePlaceTypes() {
+        let filterTypes: [UIAlertController.ActionSheetOption] = [
+            ("None (Ignore)", { [weak self] _ in
+                self?.currentService?.asGoogle?.placeTypes = nil
+                self?.reloadData()
+            }),
+            ("All", { [weak self] _ in
+                self?.currentService?.asGoogle?.placeTypes = [.geocode, .address, .establishment, .cities]
+                self?.reloadData()
+            }),
+            ("Address", { [weak self] _ in
+                (self?.currentService?.asGoogle)?.placeTypes = [.address]
+                self?.reloadData()
+            }),
+            ("Establishment", { [weak self] _ in
+                (self?.currentService?.asGoogle)?.placeTypes = [.establishment]
+                self?.reloadData()
+            }),
+            ("Regions", { [weak self] _ in
+                (self?.currentService?.asGoogle)?.placeTypes = [.cities]
+                self?.reloadData()
+            })
+        ]
+        UIAlertController.showActionSheet(title: "Select type of result", message: "(A more fine tuned configuration is available via code)", options: filterTypes)
+
+    }
+    
+    private func setTimeoutInterval() {
+        let subscriptionTypes: [UIAlertController.ActionSheetOption] = ([
+            nil, 3, 5, 10, 15
+        ] as [Int?]
+        ).map { [weak self] item in
+            let title = (item == nil ? "Not Set" : "\(item!)s")
+            return (title, { _ in
+                self?.currentService?.timeout = (item != nil ? TimeInterval(item!) : nil)
+                self?.reloadData()
+            })
+        }
+        
+        UIAlertController.showActionSheet(title: "Select Subscription",
+                                          message: "Delayed starts only after the necessary authorization will be granted",
+                                          options: subscriptionTypes)
+    }
+    
+    private func selectAPIKey() {
+        UIAlertController.showInputFieldSheet(title: "API Key",
+                                              message: "See the documentation to get t") { [weak self] value in
+            
+            guard let APIKey = value, !APIKey.isEmpty else {
+                return
+            }
+            
+            self?.currentService?.asGoogle?.APIKey = APIKey
+            self?.reloadData()
         }
     }
     
@@ -202,17 +307,29 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         case .service:
             return serviceName()
         case .addressValue:
-            return autocompleteService?.operation.value ?? "Not Set"
+            return currentService?.operation.value ?? "Not Set"
         case .proximityRegion:
-            return (autocompleteService as? Autocomplete.Apple)?.proximityRegion?.description ?? "Not Set"
+            return currentService?.asApple?.proximityRegion?.description ?? "Not Set"
         case .filterType:
-            return (autocompleteService as? Autocomplete.Apple)?.resultType.description ?? "Not Set"
+            return currentService?.asApple?.resultType.description ?? "Not Set"
         case .locale:
             return ""
         case .limit:
             return "Limit"
         case .APIKey:
-            return "API Key"
+            if let google = currentService?.asGoogle, !google.APIKey.isEmpty {
+                return google.APIKey
+            }
+            
+            return "Not Set"
+        case .timeout:
+            return (currentService?.timeout != nil ? "\(currentService!.timeout!)s" : "Not Set")
+        case .googlePlaceTypes:
+            return currentService?.asGoogle?.placeTypes?.description ?? "None"
+        case .location:
+            return currentService?.asGoogle?.location?.description ?? "Not Set"
+        case .radius:
+            return currentService?.asGoogle?.radius?.description ?? "Not Set"
         default:
             return ""
         }
@@ -221,7 +338,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func selectProximityRegion() {
         UIAlertController.showInputFieldSheet(title: "Insert proximity region using the forma below",
                                               message: "{LAT},{LNG},{LAT. METERS},{LONG. METERS}") { [weak self] value in
-            (self?.autocompleteService as? Autocomplete.Apple)?.proximityRegion = MKCoordinateRegion.fromRawString(value)
+            self?.currentService?.asApple?.proximityRegion = MKCoordinateRegion.fromRawString(value)
             self?.reloadData()
         }
     }
@@ -229,7 +346,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func selectAutocompleteAddress() {
         UIAlertController.showInputFieldSheet(title: "Insert address to autocomplete", message: nil) { [weak self] value in
             guard let value = value, !value.isEmpty else { return }
-            self?.autocompleteService?.operation = AutocompleteOp.partialMatch(value)
+            self?.currentService?.operation = AutocompleteOp.partialMatch(value)
             self?.reloadData()
         }
     }
@@ -237,19 +354,19 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func selectFilterType() {
         let filterTypes: [UIAlertController.ActionSheetOption] = [
             ("All", { [weak self] _ in
-                (self?.autocompleteService as? Autocomplete.Apple)?.resultType = .all
+                self?.currentService?.asApple?.resultType = .all
                 self?.reloadData()
             }),
             ("Address", { [weak self] _ in
-                (self?.autocompleteService as? Autocomplete.Apple)?.resultType = .address
+                self?.currentService?.asApple?.resultType = .address
                 self?.reloadData()
             }),
             ("Point of Interest", { [weak self] _ in
-                (self?.autocompleteService as? Autocomplete.Apple)?.resultType = .pointOfInterest
+                self?.currentService?.asApple?.resultType = .pointOfInterest
                 self?.reloadData()
             }),
             ("Query", { [weak self] _ in
-                (self?.autocompleteService as? Autocomplete.Apple)?.resultType = .query
+                self?.currentService?.asApple?.resultType = .query
                 self?.reloadData()
             })
         ]
@@ -259,15 +376,15 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func selectService() {
         let servicesList: [UIAlertController.ActionSheetOption] = [
             ("Apple", { [weak self] _ in
-                self?.autocompleteService = Autocomplete.Apple(partialMatches: "")
+                self?.currentService = Autocomplete.Apple(partialMatches: "")
                 self?.reloadData()
             }),
             ("Google", { [weak self] _ in
-                self?.autocompleteService = Autocomplete.Google(partialMatches: "", APIKey: "")
+                self?.currentService = Autocomplete.Google(partialMatches: "", APIKey: "")
                 self?.reloadData()
             }),
             ("Here", { [weak self] _ in
-                self?.autocompleteService = Autocomplete.Here(partialMatches: "", APIKey: "")
+                self?.currentService = Autocomplete.Here(partialMatches: "", APIKey: "")
                 self?.reloadData()
             })
         ]
@@ -275,7 +392,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     }
     
     private func serviceName() -> String {
-        guard let service = autocompleteService else {
+        guard let service = currentService else {
             self.rows = [.service]
             return "No Set"
         }
@@ -301,6 +418,10 @@ public extension AutocompleteController {
         case limit
         case APIKey
         case createRequest
+        case timeout
+        case googlePlaceTypes
+        case location
+        case radius
         
         public var title: String {
             switch self {
@@ -311,6 +432,10 @@ public extension AutocompleteController {
             case .locale: return "Locale"
             case .limit: return "Limit"
             case .APIKey: return "API Key"
+            case .timeout: return "Timeout"
+            case .googlePlaceTypes: return "Place Types"
+            case .location: return "Location"
+            case .radius: return "Radius (mts)"
             default: return "Execute Request"
             }
         }
@@ -324,6 +449,10 @@ public extension AutocompleteController {
             case .locale: return "Language of the results"
             case .limit: return "Limit the number of data"
             case .APIKey: return "Required"
+            case .timeout: return "Network call timeout (in secs)"
+            case .googlePlaceTypes: return "Get only specified place types"
+            case .location: return "Proximity location to get better results"
+            case .radius: return "Distance within which to return place results"
             default: return ""
             }
         }
