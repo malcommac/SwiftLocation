@@ -33,6 +33,7 @@
 		647BC004251C85FD000EB5AC /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 647BC003251C85FD000EB5AC /* SwiftLocation */; };
 		64867CB02534A39F0017EF83 /* MapDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64867CAF2534A39F0017EF83 /* MapDrawView.swift */; };
 		64922942252BA0740057932F /* GeofenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64922941252BA0740057932F /* GeofenceController.swift */; };
+		64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		647BBFFE251C85EE000EB5AC /* SwiftLocation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftLocation; path = ../..; sourceTree = "<group>"; };
 		64867CAF2534A39F0017EF83 /* MapDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDrawView.swift; sourceTree = "<group>"; };
 		64922941252BA0740057932F /* GeofenceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceController.swift; sourceTree = "<group>"; };
+		64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +134,7 @@
 			children = (
 				6401DBFE25556EFB0017BD91 /* AutocompleteController.storyboard */,
 				642076BF254DD20D00D0BB09 /* AutocompleteController.swift */,
+				64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */,
 			);
 			path = Autocomplete;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 				6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */,
 				647BBFE7251C8265000EB5AC /* AppDelegate.swift in Sources */,
 				6401DBE5255566D60017BD91 /* ResultController.swift in Sources */,
+				64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */,
 				647BBFE9251C8265000EB5AC /* SceneDelegate.swift in Sources */,
 				6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */,
 				6401DBDF255564460017BD91 /* StandardCellSettings.swift in Sources */,

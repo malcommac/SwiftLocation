@@ -107,6 +107,21 @@ public extension Autocomplete {
             super.init()
         }
         
+        /// Initialize with request to get details for given result item.
+        /// - Parameters:
+        ///   - resultItem: result item.
+        ///   - APIKey: API Key.
+        public init?(detailsFor resultItem: Autocomplete.Data?, APIKey: String) {
+            guard let id = resultItem?.partialAddress?.id else {
+                return nil
+            }
+            
+            self.operation = .addressDetail(id)
+            self.APIKey = APIKey
+            
+            super.init()
+        }
+        
         // MARK: - Public Functions
         
         public func executeAutocompleter(_ completion: @escaping ((Result<[Autocomplete.Data], LocatorErrors>) -> Void)) {

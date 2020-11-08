@@ -276,3 +276,23 @@ extension UIView {
     }
     
 }
+
+extension MKCoordinateRegion: CustomStringConvertible {
+    
+    static func fromRawString(_ rawString: String?) -> MKCoordinateRegion? {
+        guard let values = rawString?.components(separatedBy: ",").compactMap({ CLLocationDegrees($0) }), values.count == 4 else {
+            return nil
+        }
+        
+        let coords = CLLocationCoordinate2D(latitude: values[0], longitude: values[1])
+        let region = MKCoordinateRegion(center: coords,
+                                        latitudinalMeters: CLLocationDistance(values[2]),
+                                        longitudinalMeters: CLLocationDistance(values[3]))
+        return region
+    }
+    
+    public var description: String {
+        "\(center.formattedValue)"
+    }
+    
+}

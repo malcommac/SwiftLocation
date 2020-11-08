@@ -28,7 +28,7 @@ public extension Autocomplete {
         /// Search within a geographic area. This is a hard filter. Results will be returned if they are located within the specified area.
         ///
         /// NOTE: Value is not applicable for `.addressDetail`
-        public var limitResults: Limit?
+        public var proximityArea: ProximityArea?
         
         /// Maximum number of results to be returned.
         ///
@@ -46,10 +46,10 @@ public extension Autocomplete {
             return JSONStringify([
                 "apiKey": APIKey.trunc(length: 5),
                 "limitResults": limit?.description,
-                "locale": locale
+                "locale": locale,
+                "area": proximityArea
             ])
         }
-                
         
         // MARK: - Initialization
         
@@ -59,10 +59,10 @@ public extension Autocomplete {
         /// - Parameters:
         ///   - partialAddress:  partial match of the address.
         ///   - APIKey: API Key.
-        ///   - limit: limit options.
-        public init(partialMatches partialAddress: String, APIKey: String, limit: Limit? = nil) {
+        ///   - proximityArea: contextual area options.
+        public init(partialMatches partialAddress: String, APIKey: String, proximityArea: ProximityArea? = nil) {
             self.operation = .partialMatch(partialAddress)
-            self.limitResults = limit
+            self.proximityArea = proximityArea
             self.APIKey = APIKey
             
             super.init()
@@ -75,6 +75,21 @@ public extension Autocomplete {
         ///   - region: Use this property to limit search results to the specified geographic area.
         public init(detailsFor fullAddress: String, APIKey: String) {
             self.operation = .addressDetail(fullAddress)
+            self.APIKey = APIKey
+            
+            super.init()
+        }
+        
+        /// Initialize with request to get details for given result item.
+        /// - Parameters:
+        ///   - resultItem: result item.
+        ///   - APIKey: API Key.
+        public init?(detailsFor resultItem: Autocomplete.Data?, APIKey: String) {
+            guard let id = resultItem?.partialAddress?.id else {
+                return nil
+            }
+            
+            self.operation = .addressDetail(id)
             self.APIKey = APIKey
             
             super.init()
@@ -194,11 +209,11 @@ public extension Autocomplete {
             var queryItems = [URLQueryItem]()
             queryItems.append(URLQueryItem(name: "apiKey", value: APIKey))
             
-            if let limit = limitResults { // at/in are mutually exclusive
-                if case .proximity = limit {
-                    queryItems.appendIfNotNil(URLQueryItem(name: "at", optional: limitResults?.serverValue))
+            if let limit = proximityArea { // at/in are mutually exclusive
+                if case .coordinates = limit {
+                    queryItems.appendIfNotNil(URLQueryItem(name: "at", optional: proximityArea?.serverValue))
                 } else {
-                    queryItems.appendIfNotNil(URLQueryItem(name: "in", optional: limitResults?.serverValue))
+                    queryItems.appendIfNotNil(URLQueryItem(name: "in", optional: proximityArea?.serverValue))
                 }
             }
             queryItems.appendIfNotNil(URLQueryItem(name: "limit", optional: (limit != nil ? String(limit!) : nil)))
@@ -239,11 +254,12 @@ public extension Autocomplete.Here {
     /// - `countryCodes`: a country (or multiple countries), provided as comma-separated ISO 3166-1 alpha-3 country codes.
     /// - `circle`: a circular area, provided as latitude, longitude, and radius (in meters).
     /// - `boundingBox`: a bounding box, provided as west longitude, south latitude, east longitude, north latitude.
-    enum Limit {
+    /// - `proximity`:
+    enum ProximityArea: CustomStringConvertible {
         case countryCodes([String])
         case circle(CLCircularRegion)
-        case boundingBox(HereBoundingBox)
-        case proximity(CLLocationCoordinate2D)
+        case boundingBox(BoundingBox)
+        case coordinates(CLLocationCoordinate2D)
         
         internal var serverValue: String {
             switch self {
@@ -256,7 +272,7 @@ public extension Autocomplete.Here {
             case .boundingBox(let bbox):
                 return bbox.serverValue
                 
-            case .proximity(let coordinates):
+            case .coordinates(let coordinates):
                 return coordinates.commaLngLat
                 
             }
@@ -269,22 +285,43 @@ public extension Autocomplete.Here {
             case .countryCodes: return 0
             case .circle:       return 1
             case .boundingBox:  return 2
-            case .proximity:    return 3
+            case .coordinates:    return 3
+            }
+        }
+        
+        public var description: String {
+            switch self {
+            case .countryCodes(let c):  return "Countries=\(c.joined(separator: ","))"
+            case .circle(let c):        return "Circle=\(c.description)"
+            case .boundingBox(let b):   return "BBox=\(b.description)"
+            case .coordinates(let c):   return "Coords=\(c.description)"
             }
         }
         
     }
     
-    struct HereBoundingBox {
+    struct BoundingBox: CustomStringConvertible {
         let westLong: CLLocationDegrees
         let southLat: CLLocationDegrees
         let eastLong: CLLocationDegrees
         let northLat: CLLocationDegrees
         
+        public init(wLng: CLLocationDegrees, sLat: CLLocationDegrees,
+                    eLng: CLLocationDegrees, nLat: CLLocationDegrees) {
+            self.westLong = wLng
+            self.southLat = sLat
+            self.eastLong = eLng
+            self.northLat = nLat
+        }
+        
         internal var serverValue: String {
             // format: bbox:{west longitude},{south latitude},{east longitude},{north latitude}
             // Example: bbox:13.08836,52.33812,13.761,52.6755
-            return "bbox:\(westLong),\(southLat),\(eastLong),\(northLat)"
+            "bbox:\(westLong),\(southLat),\(eastLong),\(northLat)"
+        }
+        
+        public var description: String {
+            "\(westLong),\(southLat),\(eastLong),\(northLat)"
         }
         
     }
