@@ -49,7 +49,7 @@ public struct GeoLocation: CustomStringConvertible {
         case POI // area of interests separated by |.
         case osmID // OSM identifier
         case osmType// OSM type
-        case placeRank // P
+        case placeRank // Ranking
     }
     
     /// Coordinates of the location.

@@ -30,7 +30,7 @@ public class IPLocationRequest: RequestProtocol {
     // MARK: - Private Functions
 
     /// Service used to get the ip data.
-    private var service: IPServiceProtocol
+    public private(set) var service: IPServiceProtocol
     
     // MARK: - Public Properties
 

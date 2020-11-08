@@ -72,8 +72,8 @@ public enum GeocoderOperation: CustomStringConvertible, Codable {
     
     public var description: String {
         switch self {
-        case .geoAddress(let c): return "Address from coordinates: \(c)"
-        case .getCoordinates(let a): return "Coordinates from address: \(a)"
+        case .geoAddress(let c):        return "geocode: \(c)"
+        case .getCoordinates(let a):    return "r.geocode: \(a)"
         }
     }
     

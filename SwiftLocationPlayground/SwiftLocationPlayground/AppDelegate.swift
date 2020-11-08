@@ -26,6 +26,8 @@ import UIKit
 import SwiftLocation
 import UserNotifications
 
+public let NOT_SET = "Not Set"
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 

@@ -88,7 +88,7 @@ public extension Autocomplete {
 // MARK: - Internal
 
 /// Autocomplete search type based upon the search type.
-public enum AutocompleteOp {
+public enum AutocompleteOp: CustomStringConvertible {
     case partialMatch(String)
     case addressDetail(String)
     
@@ -105,6 +105,13 @@ public enum AutocompleteOp {
         switch self {
         case .partialMatch(let a):     return a
         case .addressDetail(let a):    return a
+        }
+    }
+    
+    public var description: String {
+        switch self {
+        case .partialMatch(let a):     return "PART \(a)"
+        case .addressDetail(let a):    return "DETL \(a)"
         }
     }
 

@@ -356,13 +356,13 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         case .service:
             return serviceName()
         case .addressValue:
-            return currentService?.operation.value ?? "Not Set"
+            return currentService?.operation.value ?? NOT_SET
         case .proximityRegion:
-            return currentService?.asApple?.proximityRegion?.description ?? "Not Set"
+            return currentService?.asApple?.proximityRegion?.description ?? NOT_SET
         case .filterType:
-            return currentService?.asApple?.resultType.description ?? "Not Set"
+            return currentService?.asApple?.resultType.description ?? NOT_SET
         case .locale:
-            return currentService?.asGoogle?.locale ?? currentService?.asHere?.locale ?? "Not Set"
+            return currentService?.asGoogle?.locale ?? currentService?.asHere?.locale ?? NOT_SET
         case .limit:
             return "Limit"
         case .APIKey:
@@ -370,19 +370,19 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
                 return google.APIKey
             }
             
-            return "Not Set"
+            return NOT_SET
         case .timeout:
-            return (currentService?.timeout != nil ? "\(currentService!.timeout!)s" : "Not Set")
+            return (currentService?.timeout != nil ? "\(currentService!.timeout!)s" : NOT_SET)
         case .googlePlaceTypes:
             return currentService?.asGoogle?.placeTypes?.description ?? "None"
         case .location:
-            return currentService?.asGoogle?.location?.description ?? "Not Set"
+            return currentService?.asGoogle?.location?.description ?? NOT_SET
         case .radius:
-            return currentService?.asGoogle?.radius?.description ?? "Not Set"
+            return currentService?.asGoogle?.radius?.description ?? NOT_SET
         case .limitResultsCount:
-            return currentService?.asHere?.limit?.description ?? "Not Set"
+            return currentService?.asHere?.limit?.description ?? NOT_SET
         case .proximityArea:
-            return currentService?.asHere?.proximityArea?.description ?? "Not Set"
+            return currentService?.asHere?.proximityArea?.description ?? NOT_SET
         default:
             return ""
         }

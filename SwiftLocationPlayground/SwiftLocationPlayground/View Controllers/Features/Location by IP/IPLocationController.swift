@@ -249,7 +249,7 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         case .locale:       return service.locale ?? "Current"
         case .timeout:      return "\(service.timeout)s"
         case .service:      return service.jsonServiceDecoder.rawValue
-        case .apiKey:       return (service.APIKey?.isEmpty ?? true) ? "Not Set" : service.APIKey!
+        case .apiKey:       return (service.APIKey?.isEmpty ?? true) ? NOT_SET : service.APIKey!
         default:            return ""
         }
     }

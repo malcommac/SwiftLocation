@@ -39,7 +39,6 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     
     // MARK: - Public Properties
     
-    
     /// Called when a new set of geofences requests has been restored.
     public var onRestoreGeofences: (([GeofencingRequest]) -> Void)?
     

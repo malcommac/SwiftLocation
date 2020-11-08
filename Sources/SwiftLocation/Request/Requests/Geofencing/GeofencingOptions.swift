@@ -34,7 +34,7 @@ public struct GeofencingOptions: Codable, CustomStringConvertible {
     public let region: Region
     
     /// Set `true` to be notified on enter in region events (by default is `true`).
-    public var notifyOnEntry: Bool {
+    public var notifyOnEnter: Bool {
         set {
             region.circularRegion.notifyOnEntry = newValue
         }
@@ -56,7 +56,7 @@ public struct GeofencingOptions: Codable, CustomStringConvertible {
     public var description: String {
         JSONStringify([
             "region": region.description,
-            "notifyOnEntry": notifyOnEntry,
+            "notifyOnEntry": notifyOnEnter,
             "notifyOnExit": notifyOnExit
         ])
     }
@@ -77,7 +77,7 @@ public struct GeofencingOptions: Codable, CustomStringConvertible {
         self.region = .polygon(polygon, outerCircleRegion)
         
         defer {
-            self.notifyOnEntry = true
+            self.notifyOnEnter = true
             self.notifyOnExit = true
         }
     }
@@ -92,7 +92,7 @@ public struct GeofencingOptions: Codable, CustomStringConvertible {
         self.region = .circle(circle)
         
         defer {
-            self.notifyOnEntry = true
+            self.notifyOnEnter = true
             self.notifyOnExit = true
         }
     }

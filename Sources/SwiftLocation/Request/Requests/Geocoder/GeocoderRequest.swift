@@ -49,10 +49,9 @@ public class GeocoderRequest: RequestProtocol {
     
     /// Last received response.
     public var lastReceivedValue: (Result<[GeoLocation], LocationError>)?
-
-    // MARK: - Private Properties
-
-    private var service: GeocoderServiceProtocol
+    
+    /// Service used.
+    public var service: GeocoderServiceProtocol
     
     // MARK: - Public Functions
     

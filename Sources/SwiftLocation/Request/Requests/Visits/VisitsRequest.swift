@@ -116,7 +116,7 @@ public class VisitsRequest: RequestProtocol, Codable {
 
 // MARK: Result<CLVisit,LocatorErrors>
 
-extension Result where Success == CLVisit, Failure == LocationError {
+public extension Result where Success == CLVisit, Failure == LocationError {
     
     var description: String {
         switch self {

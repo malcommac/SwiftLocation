@@ -239,7 +239,7 @@ extension UIAlertController {
             nil, 3, 5, 10, 15
         ] as [Int?]
         ).map { item in
-            let title = (item == nil ? "Not Set" : "\(item!)s")
+            let title = (item == nil ? NOT_SET : "\(item!)s")
             return (title, { _ in
                 handler((item != nil ? TimeInterval(item!) : nil))
             })

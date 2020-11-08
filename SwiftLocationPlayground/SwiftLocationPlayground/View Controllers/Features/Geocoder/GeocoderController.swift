@@ -209,51 +209,51 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         case .coordinates:
             return service?.operation.coordinates.description
         case .addressValue:
-            return (service?.operation.address.isEmpty ?? true ? "Not Set" : service?.operation.address)
+            return (service?.operation.address.isEmpty ?? true ? NOT_SET : service?.operation.address)
         case .proximityRegion:
-            return service?.asApple?.proximityRegion?.description ?? "Not Set"
+            return service?.asApple?.proximityRegion?.description ?? NOT_SET
         case .locale:
-            return service?.locale ?? "Not Set"
+            return service?.locale ?? NOT_SET
         case .APIKey:
             return [
                 service?.asGoogle?.APIKey,
                 service?.asHere?.APIKey,
                 service?.asMapBox?.APIKey
-            ].firstNonNilOrFallback("Not Set")
+            ].firstNonNilOrFallback(NOT_SET)
         case .timeout:
-            return service?.timeout?.description ?? "Not Set"
+            return service?.timeout?.description ?? NOT_SET
         case .countryCode:
             return [
                 service?.asGoogle?.countryCode,
                 service?.asHere?.countryCodes?.joined(separator: ","),
                 service?.asMapBox?.countryCode
-            ].firstNonNilOrFallback("Not Set")
+            ].firstNonNilOrFallback(NOT_SET)
         case .googleResultFilters:
-            return service?.asGoogle?.locationTypes?.description ?? "Not Set"
+            return service?.asGoogle?.locationTypes?.description ?? NOT_SET
         case .limitResultCount:
-            return service?.asHere?.limit?.description ?? "Not Set"
+            return service?.asHere?.limit?.description ?? NOT_SET
         case .proximityCoordinates:
-            return service?.asHere?.proximityCoordinates?.description ?? "Not Set"
+            return service?.asHere?.proximityCoordinates?.description ?? NOT_SET
         case .includeRoutingData:
-            return service?.asMapBox?.includeRoutingData?.description ?? "Not Set"
+            return service?.asMapBox?.includeRoutingData?.description ?? NOT_SET
         case .reverseMode:
-            return service?.asMapBox?.reverseMode?.description ?? "Not Set"
+            return service?.asMapBox?.reverseMode?.description ?? NOT_SET
         case .boundingBox:
-            return service?.asMapBox?.boundingBox?.description ?? "Not Set"
+            return service?.asMapBox?.boundingBox?.description ?? NOT_SET
         case .useFuzzyMatch:
-            return service?.asMapBox?.useFuzzyMatch?.description ?? "Not Set"
+            return service?.asMapBox?.useFuzzyMatch?.description ?? NOT_SET
         case .mapBoxResultTypes:
-            return service?.asMapBox?.resultTypes?.description ?? "Not Set"
+            return service?.asMapBox?.resultTypes?.description ?? NOT_SET
         case .includeAddressDetails:
-            return service?.asOpenStreet?.includeAddressDetails.description ?? "Not Set"
+            return service?.asOpenStreet?.includeAddressDetails.description ?? NOT_SET
         case .includeExtraTags:
-            return service?.asOpenStreet?.includeExtraTags.description ?? "Not Set"
+            return service?.asOpenStreet?.includeExtraTags.description ?? NOT_SET
         case .includeNameDetails:
-            return service?.asOpenStreet?.includeNameDetails.description ?? "Not Set"
+            return service?.asOpenStreet?.includeNameDetails.description ?? NOT_SET
         case .zoomLevel:
-            return service?.asOpenStreet?.zoomLevel.description ?? "Not Set"
+            return service?.asOpenStreet?.zoomLevel.description ?? NOT_SET
         case .polygonThreshold:
-            return service?.asOpenStreet?.polygonThreshold.description ?? "Not Set"
+            return service?.asOpenStreet?.polygonThreshold.description ?? NOT_SET
         default:
             return nil
         }

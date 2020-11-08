@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EfL-bU-gZq">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EfL-bU-gZq">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -47,7 +47,7 @@
         <!--Playground Controller-->
         <scene sceneID="dhL-DF-fQ7">
             <objects>
-                <viewController storyboardIdentifier="PlaygroundController" id="YrX-i6-yeb" customClass="PlaygroundController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PlaygroundController" id="YrX-i6-yeb" customClass="PlaygroundController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="al8-nn-xJ5">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -56,7 +56,7 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="725"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="68" id="Qq5-Vo-NEQ" customClass="ActionCell" customModule="SwiftLocationDemo" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="68" id="Qq5-Vo-NEQ" customClass="ActionCell" customModule="SwiftLocationPlayground" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="68"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Qq5-Vo-NEQ" id="3hO-Tx-I7t">
@@ -138,59 +138,25 @@
         <!--Request List Controller-->
         <scene sceneID="sbw-mk-7Fc">
             <objects>
-                <viewController id="NTr-d2-cjU" customClass="RequestListController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="NTr-d2-cjU" customClass="RequestListController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Hu7-Lg-PcY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ez2-UI-Q3i">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="547"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="725"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="NTr-d2-cjU" id="t9I-fa-aPO"/>
                                     <outlet property="delegate" destination="NTr-d2-cjU" id="1uu-PB-A1M"/>
                                 </connections>
                             </tableView>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bwL-tn-46U">
-                                <rect key="frame" x="0.0" y="575" width="414" height="150"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="kdy-yk-bxy"/>
-                                </constraints>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="10"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hfy-tB-6B2">
-                                <rect key="frame" x="0.0" y="547" width="414" height="28"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CLLocationManager Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cU8-8T-fRv">
-                                        <rect key="frame" x="115.5" y="6" width="183" height="16"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="13"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" red="0.91924384715025909" green="0.91924384715025909" blue="0.91924384715025909" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="28" id="QEG-mZ-zof"/>
-                                    <constraint firstItem="cU8-8T-fRv" firstAttribute="centerY" secondItem="hfy-tB-6B2" secondAttribute="centerY" id="oae-op-RRw"/>
-                                    <constraint firstItem="cU8-8T-fRv" firstAttribute="centerX" secondItem="hfy-tB-6B2" secondAttribute="centerX" id="zU1-98-A7e"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Zq4-6K-eFK"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Zq4-6K-eFK" firstAttribute="bottom" secondItem="bwL-tn-46U" secondAttribute="bottom" id="36L-LZ-Od7"/>
-                            <constraint firstItem="Zq4-6K-eFK" firstAttribute="trailing" secondItem="bwL-tn-46U" secondAttribute="trailing" id="A5H-hX-IRc"/>
                             <constraint firstItem="ez2-UI-Q3i" firstAttribute="top" secondItem="Zq4-6K-eFK" secondAttribute="top" id="BMl-cj-q0g"/>
-                            <constraint firstItem="hfy-tB-6B2" firstAttribute="top" secondItem="ez2-UI-Q3i" secondAttribute="bottom" id="CLi-5v-GwZ"/>
-                            <constraint firstItem="hfy-tB-6B2" firstAttribute="leading" secondItem="Zq4-6K-eFK" secondAttribute="leading" id="KiV-9L-TOd"/>
-                            <constraint firstItem="Zq4-6K-eFK" firstAttribute="trailing" secondItem="hfy-tB-6B2" secondAttribute="trailing" id="Zb4-iE-vQ8"/>
-                            <constraint firstItem="bwL-tn-46U" firstAttribute="leading" secondItem="Zq4-6K-eFK" secondAttribute="leading" id="dWs-tv-Dpa"/>
-                            <constraint firstItem="bwL-tn-46U" firstAttribute="top" secondItem="hfy-tB-6B2" secondAttribute="bottom" id="lgd-ZB-zfT"/>
+                            <constraint firstItem="Zq4-6K-eFK" firstAttribute="bottom" secondItem="ez2-UI-Q3i" secondAttribute="bottom" id="elw-HK-YFv"/>
                             <constraint firstItem="ez2-UI-Q3i" firstAttribute="trailing" secondItem="Zq4-6K-eFK" secondAttribute="trailing" id="nOr-F1-zI4"/>
                             <constraint firstItem="ez2-UI-Q3i" firstAttribute="leading" secondItem="Zq4-6K-eFK" secondAttribute="leading" id="vw4-Jm-Bf6"/>
                         </constraints>
@@ -203,7 +169,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="statusText" destination="bwL-tn-46U" id="hg4-LQ-xrW"/>
                         <outlet property="tableView" destination="ez2-UI-Q3i" id="w8u-hf-wcE"/>
                     </connections>
                 </viewController>
@@ -211,11 +176,11 @@
             </objects>
             <point key="canvasLocation" x="-1700" y="-715"/>
         </scene>
-        <!--Active Requests-->
+        <!--Status-->
         <scene sceneID="4fJ-g8-hS6">
             <objects>
                 <navigationController id="wC9-ti-Hi3" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Active Requests" image="tabbar_list" id="Wat-28-ipz"/>
+                    <tabBarItem key="tabBarItem" title="Status" image="tabbar_list" id="Wat-28-ipz"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="y19-t1-0ZV">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -233,9 +198,6 @@
         <image name="polygon" width="25" height="25"/>
         <image name="tabbar_list" width="25" height="25"/>
         <image name="tabbar_playground" width="25" height="25"/>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -138,16 +138,16 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     // MARK: - Public Properties
     
     /// Active CoreLocation services to activate.
-    var activeServices = Set<Services>()
+    public internal(set) var activeServices = Set<Services>()
     
     /// Accuracy needed.
-    var accuracy: GPSLocationOptions.Accuracy = .any
+    public internal(set) var accuracy: GPSLocationOptions.Accuracy = .any
     
     /// Minimum distance.
-    var minDistance: CLLocationDistance?
+    public internal(set) var minDistance: CLLocationDistance?
     
     /// Activity type.
-    var activityType: CLActivityType = .other
+    public internal(set) var activityType: CLActivityType = .other
     
     public func requireLocationUpdates() -> Bool {
         return activeServices.contains(.continousLocation) ||
