@@ -42,12 +42,11 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             tableView.reloadData()
         }
         
+        settings = [.service]
         guard let service = self.service else {
-            settings = [.service]
             return
         }
         
-        settings.removeAll()
         settings.append((service.operation.isReverseGeocoder ? .coordinates : .addressValue))
 
         switch service {
@@ -89,6 +88,17 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
                 .proximityRegion,
                 .boundingBox,
                 .useFuzzyMatch
+            ])
+            
+        case is Geocoder.OpenStreet:
+            settings.append(contentsOf: [
+                .timeout,
+                .locale,
+                .includeAddressDetails,
+                .includeExtraTags,
+                .includeNameDetails,
+                .zoomLevel,
+                .polygonThreshold
             ])
             
         default:
@@ -145,6 +155,11 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         case .mapBoxResultTypes:        selectMapBoxResultTypes()
         case .reverseMode:              selectReverseMode()
         case .useFuzzyMatch:            selectMapBoxFuzzyMatch()
+        case .includeAddressDetails:    selectIncludeAddressDetails()
+        case .includeExtraTags:         selectIncludeExtraTags()
+        case .includeNameDetails:       selectIncludeNameDetails()
+        case .zoomLevel:                selectZoomLevel()
+        case .polygonThreshold:         selectPolygonThreshold()
         default:
             break
         }
@@ -217,12 +232,72 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             return service?.asMapBox?.useFuzzyMatch?.description ?? "Not Set"
         case .mapBoxResultTypes:
             return service?.asMapBox?.resultTypes?.description ?? "Not Set"
+        case .includeAddressDetails:
+            return service?.asOpenStreet?.includeAddressDetails.description ?? "Not Set"
+        case .includeExtraTags:
+            return service?.asOpenStreet?.includeExtraTags.description ?? "Not Set"
+        case .includeNameDetails:
+            return service?.asOpenStreet?.includeNameDetails.description ?? "Not Set"
+        case .zoomLevel:
+            return service?.asOpenStreet?.zoomLevel.description ?? "Not Set"
+        case .polygonThreshold:
+            return service?.asOpenStreet?.polygonThreshold.description ?? "Not Set"
         default:
             return nil
         }
     }
     
     // MARK: - Select Settings
+    
+    private func selectZoomLevel() {
+        let zoomOptions: [UIAlertController.ActionSheetOption] = [
+            ("Country", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .country
+                self?.reloadData()
+            }),
+            ("State", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .state
+                self?.reloadData()
+            }),
+            ("County", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .county
+                self?.reloadData()
+            }),
+            ("City", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .city
+                self?.reloadData()
+            }),
+            ("Suburb", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .suburb
+                self?.reloadData()
+            }),
+            ("Major Streets", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .majorStreets
+                self?.reloadData()
+            }),
+            ("Major & Minor Streets", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .majorAndMinorStreets
+                self?.reloadData()
+            }),
+            ("Building", { [weak self] _ in
+                self?.service?.asOpenStreet?.zoomLevel = .building
+                self?.reloadData()
+            })
+        ]
+        UIAlertController.showActionSheet(title: "Zoom Level",
+                                          message: "Level of detail required for the address", options: zoomOptions)
+    }
+    
+    private func selectPolygonThreshold() {
+        UIAlertController.showInputFieldSheet(title: "Polygon Threshold Level", message: "Simplify the output geometry before returning") { [weak self] value in
+            guard let value = value, let threshold = Double(value) else {
+                return
+            }
+            
+            self?.service?.asOpenStreet?.polygonThreshold = threshold
+            self?.reloadData()
+        }
+    }
     
     private func selectReverseMode() {
         let reverseOptions: [UIAlertController.ActionSheetOption] = [
@@ -262,6 +337,30 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
     private func selectProximityCoordinates() {
         UIAlertController.showInputCoordinates(title: "Proximity Coordinates") { [weak self] coords in
             self?.service?.asHere?.proximityCoordinates = coords
+            self?.reloadData()
+        }
+    }
+    
+    private func selectIncludeAddressDetails() {
+        UIAlertController.showBoolSheet(title: "Include Address Details",
+                                        message: "Include a breakdown of the address into elements.") { [weak self] value in
+            self?.service?.asOpenStreet?.includeAddressDetails = value
+            self?.reloadData()
+        }
+    }
+    
+    private func selectIncludeExtraTags() {
+        UIAlertController.showBoolSheet(title: "Include Extra Tags",
+                                        message: "Include additional information in the result if available, e.g. wikipedia link, opening hours.") { [weak self] value in
+            self?.service?.asOpenStreet?.includeAddressDetails = value
+            self?.reloadData()
+        }
+    }
+    
+    private func selectIncludeNameDetails() {
+        UIAlertController.showBoolSheet(title: "Include Name Details",
+                                        message: "Include a list of alternative names in the results. These may include language variants, references, operator and brand.") { [weak self] value in
+            self?.service?.asOpenStreet?.includeNameDetails = value
             self?.reloadData()
         }
     }
@@ -476,6 +575,16 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             }),
             ("MapBox Reverse Geocoder", { [weak self] _ in
                 self?.service = Geocoder.MapBox(coordinates: CLLocationCoordinate2D(latitude: 0,longitude: 0), APIKey: "")
+                self?.selectCoordinates()
+                self?.reloadData()
+            }),
+            ("OpenStreet Geocoder", { [weak self] _ in
+                self?.service = Geocoder.OpenStreet(address: "")
+                self?.selectAddressToReverse()
+                self?.reloadData()
+            }),
+            ("OpenStreet Reverse Geocoder", { [weak self] _ in
+                self?.service = Geocoder.OpenStreet(coordinates: CLLocationCoordinate2D(latitude: 0,longitude: 0))
                 self?.selectCoordinates()
                 self?.reloadData()
             })
