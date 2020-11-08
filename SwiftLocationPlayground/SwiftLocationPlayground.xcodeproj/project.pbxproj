@@ -59,7 +59,7 @@
 		646A33E925386117006B822B /* GeofencedRegionsListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofencedRegionsListController.swift; sourceTree = "<group>"; };
 		646A33F125389FFA006B822B /* VisitsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsController.swift; sourceTree = "<group>"; };
 		646A33F72538AC3D006B822B /* RequestListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestListController.swift; sourceTree = "<group>"; };
-		647BBFE3251C8265000EB5AC /* SwiftLocationDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocationDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		647BBFE3251C8265000EB5AC /* SwiftLocationPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocationPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		647BBFE6251C8265000EB5AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		647BBFE8251C8265000EB5AC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		647BBFED251C8265000EB5AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -181,7 +181,7 @@
 		647BBFDA251C8265000EB5AC = {
 			isa = PBXGroup;
 			children = (
-				647BBFE5251C8265000EB5AC /* SwiftLocationDemo */,
+				647BBFE5251C8265000EB5AC /* SwiftLocationPlayground */,
 				647BBFE4251C8265000EB5AC /* Products */,
 				647BC002251C85FD000EB5AC /* Frameworks */,
 			);
@@ -190,12 +190,12 @@
 		647BBFE4251C8265000EB5AC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				647BBFE3251C8265000EB5AC /* SwiftLocationDemo.app */,
+				647BBFE3251C8265000EB5AC /* SwiftLocationPlayground.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		647BBFE5251C8265000EB5AC /* SwiftLocationDemo */ = {
+		647BBFE5251C8265000EB5AC /* SwiftLocationPlayground */ = {
 			isa = PBXGroup;
 			children = (
 				647BBFE6251C8265000EB5AC /* AppDelegate.swift */,
@@ -207,7 +207,7 @@
 				647BBFF4251C8266000EB5AC /* Info.plist */,
 				647BBFFE251C85EE000EB5AC /* SwiftLocation */,
 			);
-			path = SwiftLocationDemo;
+			path = SwiftLocationPlayground;
 			sourceTree = "<group>";
 		};
 		647BC002251C85FD000EB5AC /* Frameworks */ = {
@@ -258,9 +258,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		647BBFE2251C8265000EB5AC /* SwiftLocationDemo */ = {
+		647BBFE2251C8265000EB5AC /* SwiftLocationPlayground */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 647BBFF7251C8266000EB5AC /* Build configuration list for PBXNativeTarget "SwiftLocationDemo" */;
+			buildConfigurationList = 647BBFF7251C8266000EB5AC /* Build configuration list for PBXNativeTarget "SwiftLocationPlayground" */;
 			buildPhases = (
 				647BBFDF251C8265000EB5AC /* Sources */,
 				647BBFE0251C8265000EB5AC /* Frameworks */,
@@ -271,12 +271,12 @@
 			dependencies = (
 				647BC001251C85F9000EB5AC /* PBXTargetDependency */,
 			);
-			name = SwiftLocationDemo;
+			name = SwiftLocationPlayground;
 			packageProductDependencies = (
 				647BC003251C85FD000EB5AC /* SwiftLocation */,
 			);
 			productName = SwiftLocationDemo;
-			productReference = 647BBFE3251C8265000EB5AC /* SwiftLocationDemo.app */;
+			productReference = 647BBFE3251C8265000EB5AC /* SwiftLocationPlayground.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -293,7 +293,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 647BBFDE251C8265000EB5AC /* Build configuration list for PBXProject "SwiftLocationDemo" */;
+			buildConfigurationList = 647BBFDE251C8265000EB5AC /* Build configuration list for PBXProject "SwiftLocationPlayground" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -306,7 +306,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				647BBFE2251C8265000EB5AC /* SwiftLocationDemo */,
+				647BBFE2251C8265000EB5AC /* SwiftLocationPlayground */,
 			);
 		};
 /* End PBXProject section */
@@ -511,7 +511,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E5DU3FA699;
-				INFOPLIST_FILE = SwiftLocationDemo/Info.plist;
+				INFOPLIST_FILE = SwiftLocationPlayground/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -531,7 +531,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E5DU3FA699;
-				INFOPLIST_FILE = SwiftLocationDemo/Info.plist;
+				INFOPLIST_FILE = SwiftLocationPlayground/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -547,7 +547,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		647BBFDE251C8265000EB5AC /* Build configuration list for PBXProject "SwiftLocationDemo" */ = {
+		647BBFDE251C8265000EB5AC /* Build configuration list for PBXProject "SwiftLocationPlayground" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				647BBFF5251C8266000EB5AC /* Debug */,
@@ -556,7 +556,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		647BBFF7251C8266000EB5AC /* Build configuration list for PBXNativeTarget "SwiftLocationDemo" */ = {
+		647BBFF7251C8266000EB5AC /* Build configuration list for PBXNativeTarget "SwiftLocationPlayground" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				647BBFF8251C8266000EB5AC /* Debug */,

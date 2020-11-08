@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "647BBFE2251C8265000EB5AC"
-               BuildableName = "SwiftLocationDemo.app"
-               BlueprintName = "SwiftLocationDemo"
-               ReferencedContainer = "container:SwiftLocationDemo.xcodeproj">
+               BuildableName = "SwiftLocationPlayground.app"
+               BlueprintName = "SwiftLocationPlayground"
+               ReferencedContainer = "container:SwiftLocationPlayground.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "647BBFE2251C8265000EB5AC"
-            BuildableName = "SwiftLocationDemo.app"
-            BlueprintName = "SwiftLocationDemo"
-            ReferencedContainer = "container:SwiftLocationDemo.xcodeproj">
+            BuildableName = "SwiftLocationPlayground.app"
+            BlueprintName = "SwiftLocationPlayground"
+            ReferencedContainer = "container:SwiftLocationPlayground.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <LocationScenarioReference
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "647BBFE2251C8265000EB5AC"
-            BuildableName = "SwiftLocationDemo.app"
-            BlueprintName = "SwiftLocationDemo"
-            ReferencedContainer = "container:SwiftLocationDemo.xcodeproj">
+            BuildableName = "SwiftLocationPlayground.app"
+            BlueprintName = "SwiftLocationPlayground"
+            ReferencedContainer = "container:SwiftLocationPlayground.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
