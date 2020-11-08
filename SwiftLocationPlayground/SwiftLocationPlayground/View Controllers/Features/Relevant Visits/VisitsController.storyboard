@@ -12,7 +12,7 @@
         <!--Visits-->
         <scene sceneID="blC-W1-PCs">
             <objects>
-                <viewController storyboardIdentifier="VisitsController" id="fF7-Ha-kw8" customClass="VisitsController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="VisitsController" id="fF7-Ha-kw8" customClass="VisitsController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DKt-7w-bzk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -21,7 +21,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="VisitsControllerCell" rowHeight="109" id="VdH-W0-xsb" customClass="VisitsControllerCell" customModule="SwiftLocationDemo" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="VisitsControllerCell" rowHeight="109" id="VdH-W0-xsb" customClass="VisitsControllerCell" customModule="SwiftLocationPlayground" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="109"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="VdH-W0-xsb" id="MtF-sS-gZI">
@@ -136,7 +136,7 @@
                                     <action selector="clearHistory:" destination="fF7-Ha-kw8" id="v3d-ZR-Sb2"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Enable/Disable" id="zDE-Zc-yAp">
+                            <barButtonItem title="Start" id="zDE-Zc-yAp">
                                 <connections>
                                     <action selector="toggleVisits:" destination="fF7-Ha-kw8" id="BTc-Oa-zqI"/>
                                 </connections>

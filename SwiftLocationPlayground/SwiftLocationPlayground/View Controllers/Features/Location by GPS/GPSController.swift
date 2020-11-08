@@ -26,62 +26,18 @@ import UIKit
 import SwiftLocation
 import CoreLocation
 
-fileprivate enum GPSSection: CaseIterable {
-    case subscription
-    case timeoutInterval
-    case accuracy
-    case activityType
-    case minDistance
-    case minTimeInterval
-    
-    var title: String {
-        switch self {
-        case .subscription:
-            return "Subscription Type"
-        case .timeoutInterval:
-            return "Timeout Interval"
-        case .accuracy:
-            return "Accuracy"
-        case .activityType:
-            return "Activity Type"
-        case .minDistance:
-            return "Min Distance"
-        case .minTimeInterval:
-            return "Min Time Interval"
-        }
-    }
-    
-    var subtitle: String {
-        switch self {
-        case .subscription:
-            return "How often update locations"
-        case .timeoutInterval:
-            return "Time with no response before abort"
-        case .accuracy:
-            return "High levels may lead to timeout in some cases"
-        case .activityType:
-            return "Helps GPS  to get better  result"
-        case .minDistance:
-            return "Min horizontal distance to report new data"
-        case .minTimeInterval:
-            return "Minimum time interval to report new data"
-        }
-    }
-    
-}
-
 class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    private let sections: [GPSSection] = GPSSection.allCases
-    
-    @IBOutlet public var tableView: UITableView!
-    @IBOutlet public var resultLog: UITextView!
-    
-    var currentRequestOptions = GPSLocationOptions()
+        
+    // MARK: - IBOutlets
 
-    @IBAction public func clearText(_ sender: Any) {
-        resultLog.text = ""
-    }
+    @IBOutlet public var tableView: UITableView!
+    
+    // MARK: - Private Properties
+
+    private var serviceOptions = GPSLocationOptions()
+    private let settings: [RowSetting] = RowSetting.allCases
+
+    // MARK: - Initialize
     
     public static func create() -> GPSController {
         let s = UIStoryboard(name: "GPSController", bundle: nil)
@@ -99,61 +55,46 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
         self.navigationItem.title = "GPS Location"
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(newNotificationReceived), name: Notification.Name(AppDelegate.NOTIFICATION_GPS_DATA), object: nil)
-    }
-    
-    @objc func newNotificationReceived(_ notification: Notification) {
-        guard let data = notification.object as? Result<GPSLocationRequest.ProducedData, LocationError> else {
-            return
-        }
-        
-        switch data {
-        case .failure(let error):
-            resultLog.addOnTop("- \(error.localizedDescription)")
-
-        case .success(let data):
-            resultLog.addOnTop("- \(data.description)")
-
-        }
     }
     
     private func reloadData() {
         tableView.reloadData()
     }
     
+    // MARK: - TableView DataSource
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        sections.count + 1
+        settings.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == sections.count {
+        if indexPath.row == settings.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.defaultReuseIdentifier, for: indexPath) as! StandardCellButton
             cell.onAction = { [weak self] in
-                self?.enqueueGPSRequest()
+                self?.createRequest()
             }
             return cell
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier, for: indexPath) as! StandardCellSetting
-        let item = sections[indexPath.row]
+        let item = settings[indexPath.row]
         
         cell.titleLabel.text = item.title
         cell.subtitleLabel.text = item.subtitle
         
         switch item {
         case .accuracy:
-            cell.valueLabel.text = currentRequestOptions.accuracy.description
+            cell.valueLabel.text = serviceOptions.accuracy.description
         case .activityType:
-            cell.valueLabel.text = currentRequestOptions.activityType.description
+            cell.valueLabel.text = serviceOptions.activityType.description
         case .minDistance:
-            cell.valueLabel.text = currentRequestOptions.minDistance?.formattedValue ?? "any"
+            cell.valueLabel.text = serviceOptions.minDistance?.formattedValue ?? NOT_SET
         case .minTimeInterval:
-            cell.valueLabel.text = currentRequestOptions.minTimeInterval?.format() ?? "any"
+            cell.valueLabel.text = serviceOptions.minTimeInterval?.format() ?? NOT_SET
         case .subscription:
-            cell.valueLabel.text = currentRequestOptions.subscription.description
+            cell.valueLabel.text = serviceOptions.subscription.description
         case .timeoutInterval:
-            cell.valueLabel.text = currentRequestOptions.minTimeInterval?.format() ?? "any"
+            cell.valueLabel.text = serviceOptions.minTimeInterval?.format() ?? NOT_SET
         }
         
         return cell
@@ -161,26 +102,22 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let item = sections[indexPath.row]
+        let item = settings[indexPath.row]
 
         switch item {
-        case .accuracy:
-            showAccuracyMenu()
-        case .activityType:
-            showActivityMenu()
-        case .minDistance:
-            showMinDistanceMenu()
-        case .minTimeInterval:
-            showMinIntervalMenu()
-        case .subscription:
-            showSubscriptionMenu()
-        case .timeoutInterval:
-            showTimeoutIntervalMenu()
+        case .accuracy:         selectAccuracy()
+        case .activityType:     selectActivityType()
+        case .minDistance:      selectMinDistance()
+        case .minTimeInterval:  selectMinInterval()
+        case .subscription:     selectSubscriptionType()
+        case .timeoutInterval:  selectTimeout()
         }
         
     }
     
-    private func showAccuracyMenu() {
+    // MARK: - Settings
+    
+    private func selectAccuracy() {
         let accuracyLevels: [UIAlertController.ActionSheetOption] = [
             GPSLocationOptions.Accuracy.any,
             GPSLocationOptions.Accuracy.city,
@@ -190,7 +127,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
             GPSLocationOptions.Accuracy.room
         ].map { [weak self] item in
             (item.description, { _ in
-                self?.currentRequestOptions.accuracy = item
+                self?.serviceOptions.accuracy = item
                 self?.reloadData()
             })
         }
@@ -198,16 +135,16 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         UIAlertController.showActionSheet(title: "Select Accuracy", message: nil, options: accuracyLevels)
     }
     
-    private func showActivityMenu() {
+    private func selectActivityType() {
         let accuracyLevels: [UIAlertController.ActionSheetOption] = [
+            CLActivityType.other,
             CLActivityType.airborne,
             CLActivityType.automotiveNavigation,
             CLActivityType.fitness,
-            CLActivityType.other,
             CLActivityType.otherNavigation,
         ].map { [weak self] item in
             (item.description, { _ in
-                self?.currentRequestOptions.activityType = item
+                self?.serviceOptions.activityType = item
                 self?.reloadData()
             })
         }
@@ -215,36 +152,28 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         UIAlertController.showActionSheet(title: "Select Activity Type", message: nil, options: accuracyLevels)
     }
     
-    private func showMinDistanceMenu() {
-        UIAlertController.showInputFieldSheet(title: "Select Minimum Distance",
-                                              message: "Minimum horizontal distance to report new fresh data (meters)") { value in
-            if let value = value {
-                self.currentRequestOptions.minDistance = CLLocationDistance(value)
-            } else {
-                self.currentRequestOptions.minDistance = nil
-            }
+    private func selectMinDistance() {
+        UIAlertController.showDoubleInput(title: "Select Minimum Distance", message: "Minimum horizontal distance to report new fresh data (meters)") { [weak self] value in
+            self?.serviceOptions.minDistance = (value != nil ? CLLocationDistance(value!) : nil)
+            self?.reloadData()
         }
     }
     
-    private func showMinIntervalMenu() {
-        UIAlertController.showInputFieldSheet(title: "Select Minimum Interval",
-                                              message: "Minimum interval to report new fresh data (seconds)") { value in
-            if let value = value {
-                self.currentRequestOptions.minTimeInterval = TimeInterval(value)
-            } else {
-                self.currentRequestOptions.minTimeInterval = nil
-            }
+    private func selectMinInterval() {
+        UIAlertController.showDoubleInput(title: "Select Minimum Interval", message: "Minimum interval to report new fresh data (seconds)") { [weak self] value in
+            self?.serviceOptions.minTimeInterval = (value != nil ? TimeInterval(value!) : nil)
+            self?.reloadData()
         }
     }
     
-    private func showSubscriptionMenu() {
+    private func selectSubscriptionType() {
         let subscriptionTypes: [UIAlertController.ActionSheetOption] = [
             GPSLocationOptions.Subscription.single,
             GPSLocationOptions.Subscription.continous,
             GPSLocationOptions.Subscription.significant
         ].map { [weak self] item in
             (item.description, { _ in
-                self?.currentRequestOptions.subscription = item
+                self?.serviceOptions.subscription = item
                 self?.reloadData()
             })
         }
@@ -252,7 +181,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         UIAlertController.showActionSheet(title: "Select Subscription", message: nil, options: subscriptionTypes)
     }
     
-    private func showTimeoutIntervalMenu() {
+    private func selectTimeout() {
         let subscriptionTypes: [UIAlertController.ActionSheetOption] = ([
             nil, -5, -10, 5, 10
         ] as [Int?]
@@ -261,12 +190,12 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
             return (title, { _ in
                 if let value = item {
                     if value < 0 {
-                        self?.currentRequestOptions.timeout = GPSLocationOptions.Timeout.delayed(TimeInterval(value))
+                        self?.serviceOptions.timeout = GPSLocationOptions.Timeout.delayed(TimeInterval(value))
                     } else {
-                        self?.currentRequestOptions.timeout = GPSLocationOptions.Timeout.immediate(TimeInterval(value))
+                        self?.serviceOptions.timeout = GPSLocationOptions.Timeout.immediate(TimeInterval(value))
                     }
                 } else {
-                    self?.currentRequestOptions.timeout = nil
+                    self?.serviceOptions.timeout = nil
                 }
                 self?.reloadData()
             })
@@ -276,11 +205,13 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
                                           message: "Delayed starts only after the necessary authorization will be granted",
                                           options: subscriptionTypes)
     }
+    
+    // MARK: - Helper
 
-    private func enqueueGPSRequest() {
-        let request = LocationManager.shared.gpsLocationWith(currentRequestOptions)
+    private func createRequest() {
+        let request = LocationManager.shared.gpsLocationWith(serviceOptions)
         
-        currentRequestOptions = GPSLocationOptions()
+        serviceOptions = GPSLocationOptions()
         reloadData()
         
         AppDelegate.attachSubscribersToGPS([request])
@@ -288,48 +219,40 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     
 }
 
+// MARK: - RowSetting
 
-public class GPSControllerCell: UITableViewCell {
-    public static let cellIdentifier = "GPSControllerCell"
+extension GPSController {
     
-    @IBOutlet public var titleLabel: UILabel!
-    @IBOutlet public var subtitleLabel: UILabel!
-    @IBOutlet public var valueLabel: UILabel!
-    
-}
-
-public class GPSActionCell: UITableViewCell {
-    public static let cellIdentifier = "GPSActionCell"
-
-    @IBOutlet public var actionButton: UIButton!
-    
-    public var onTap: (() -> Void)?
-
-    @IBAction public func callAction(_ sender: Any?) {
-        onTap?()
-    }
-    
-}
-
-extension TimeInterval {
-
-    func format() -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.second]
-        formatter.unitsStyle = .abbreviated
-        formatter.maximumUnitCount = 1
-
-        return formatter.string(from: self)!
-    }
-    
-}
-
-extension UITextView {
-    
-    public func addOnTop(_ text: String) {
-        if let position = textRange(from: beginningOfDocument, to: beginningOfDocument) {
-            replace(position, withText: text)
+    fileprivate enum RowSetting: CaseIterable {
+        case subscription
+        case timeoutInterval
+        case accuracy
+        case activityType
+        case minDistance
+        case minTimeInterval
+        
+        var title: String {
+            switch self {
+            case .subscription:     return "Subscription Type"
+            case .timeoutInterval:  return "Timeout Interval (s)"
+            case .accuracy:         return "Accuracy"
+            case .activityType:     return "Activity Type"
+            case .minDistance:      return "Min Distance (mt)"
+            case .minTimeInterval:  return "Min Time Interval (s)"
+            }
         }
+        
+        var subtitle: String {
+            switch self {
+            case .subscription:     return "How often update locations"
+            case .timeoutInterval:  return "Time with no response before abort"
+            case .accuracy:         return "High levels may lead to timeout in some cases"
+            case .activityType:     return "Helps GPS  to get better  result"
+            case .minDistance:      return "Min horizontal distance to report new data"
+            case .minTimeInterval:  return "Minimum time interval to report new data"
+            }
+        }
+        
     }
     
 }

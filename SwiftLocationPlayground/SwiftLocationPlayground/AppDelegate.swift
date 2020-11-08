@@ -26,7 +26,9 @@ import UIKit
 import SwiftLocation
 import UserNotifications
 
-public let NOT_SET = "Not Set"
+public let NOT_SET = "not set"
+public let NOTIFICATION_GPS_DATA = Notification.Name("NOTIFICATION_GPS_DATA")
+public let NOTIFICATION_VISITS_DATA = Notification.Name("NOTIFICATION_VISITS_DATA")
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -86,9 +88,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             request.then(queue: .main) { result in
                 switch result {
                 case .failure(let error):
-                    sendLocalPushNotification(title: "Geofence Error", subtitle: error.localizedDescription)
+                    sendLocalPushNotification(title: "Geofence (Error)", subtitle: error.localizedDescription)
                 case .success(let event):
-                    sendLocalPushNotification(title: "Geofence Event", subtitle: event.description)
+                    sendLocalPushNotification(title: "Geofence (Event)", subtitle: event.description)
                 }
             }
         }
@@ -98,24 +100,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for request in requests {
             if let unwrappedRequest = request {
                 unwrappedRequest.then(queue: .main) { result in
+                    NotificationCenter.default.post(name: NOTIFICATION_VISITS_DATA, object: result, userInfo: nil)
+
                     switch result {
                     case .success(let visit):
                         VisitsController.addVisitToHistory(visit)
-                        sendLocalPushNotification(title: "Visits Event", subtitle: visit.description)
+                        sendLocalPushNotification(title: "Visits (Event)", subtitle: visit.description)
                     case .failure(let error):
-                        sendLocalPushNotification(title: "Visits Error", subtitle: error.localizedDescription)
+                        sendLocalPushNotification(title: "Visits (Error)", subtitle: error.localizedDescription)
                     }
                 }
             }
         }
     }
-    
-    public static let NOTIFICATION_GPS_DATA = "NOTIFICATION_GPS_DATA"
-    
+        
     public static func attachSubscribersToGPS(_ requests: [GPSLocationRequest]) {
         for request in requests {
             request.then(queue: .main) { result in
-                NotificationCenter.default.post(name: Notification.Name(NOTIFICATION_GPS_DATA), object: result, userInfo: nil)
+                NotificationCenter.default.post(name: NOTIFICATION_GPS_DATA, object: result, userInfo: nil)
+                
+                switch result {
+                case .success(let visit):
+                    sendLocalPushNotification(title: "GPS (Event)", subtitle: visit.description)
+                case .failure(let error):
+                    sendLocalPushNotification(title: "GPS (Error)", subtitle: error.localizedDescription)
+                }
             }
         }
     }

@@ -98,11 +98,6 @@ class GeofenceController: UIViewController {
     
     // MARK: - IBActions
     
-    @IBAction public func didTapList(_ sender: Any?) {
-        let vc = GeofencedRegionsListController.create()
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
     @IBAction public func didTapCancelButton(_ sender: Any?) {
         currentRequest?.cancelRequest()
         currentOverlay = nil

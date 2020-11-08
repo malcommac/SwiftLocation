@@ -250,6 +250,17 @@ extension UIAlertController {
                                           options: subscriptionTypes)
     }
     
+    public static func showDoubleInput(title: String, message: String = "", _ handler: @escaping ((Double?) -> Void)) {
+        UIAlertController.showInputFieldSheet(title: title,  message: message) { value in
+            guard let value = value, let doubleValue = Double(value) else {
+                handler(nil)
+                return
+            }
+            
+            handler(doubleValue)
+        }
+    }
+    
 }
 
 
@@ -398,4 +409,46 @@ public extension UITableViewCell {
        UINib(nibName: defaultReuseIdentifier, bundle: .main)
     }
     
+}
+
+public extension CLLocationCoordinate2D {
+
+    var formattedValue: String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 3
+        return "{lat=\(numberFormatter.string(from: NSNumber(value: latitude)) ?? ""),lng=\(numberFormatter.string(from: NSNumber(value: longitude)) ?? "")}"
+    }
+    
+}
+
+public extension CLLocationDistance {
+    
+    var formattedValue: String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 0
+        return "\(numberFormatter.string(for: self) ?? "-") m"
+    }
+    
+}
+
+extension TimeInterval {
+
+    func format() -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.second]
+        formatter.unitsStyle = .abbreviated
+        formatter.maximumUnitCount = 1
+
+        return formatter.string(from: self)!
+    }
+    
+}
+
+extension UITextView {
+    
+    public func addOnTop(_ text: String) {
+        if let position = textRange(from: beginningOfDocument, to: beginningOfDocument) {
+            replace(position, withText: text)
+        }
+    }
 }

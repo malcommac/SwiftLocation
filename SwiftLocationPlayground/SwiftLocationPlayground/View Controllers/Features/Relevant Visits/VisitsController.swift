@@ -42,10 +42,15 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "Visits Monitoring"
+        self.navigationItem.title = "Visits Locations"
         
         tableView?.delegate = self
         tableView?.dataSource = self
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NOTIFICATION_VISITS_DATA, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NOTIFICATION_VISITS_DATA, object: nil)
     }
     
     public static func create() -> VisitsController {
@@ -59,13 +64,8 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
         reloadData()
     }
     
-    private func reloadData() {
-        toggleButton?.title = (hasVisitsEnabled ? "Disable" : "Enable")
-        
-        activeRequest = LocationManager.shared.visitsRequest.list.first
-        activeRequest?.cancelAllSubscriptions()
-        AppDelegate.attachSubscribersToVisitsRegions([activeRequest])
-        
+    @objc func reloadData() {
+        toggleButton?.title = (hasVisitsEnabled ? "Stop" : "Start")
         history = VisitsController.getVisitsFromHistory()
         tableView?.reloadData()
     }
@@ -96,7 +96,17 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     
     private func startVisitsMonitoringWithActivityType(_ type: CLActivityType) {
         activeRequest = LocationManager.shared.visits(activityType: type)
+        AppDelegate.attachSubscribersToVisitsRegions([activeRequest])
         reloadData()
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = UIColor.lightGray.withAlphaComponent(0.1)
+
+        // swiftlint:disable force_cast
+        let header : UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+        header.textLabel?.textColor = UIColor.darkGray
+        header.textLabel?.font = UIFont.systemFont(ofSize: 15, weight: .medium)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -114,7 +124,7 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "VISITS HISTORY"
+        return "Visited Location History"
     }
     
     // MARK: - History

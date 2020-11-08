@@ -374,7 +374,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         case .timeout:
             return (currentService?.timeout != nil ? "\(currentService!.timeout!)s" : NOT_SET)
         case .googlePlaceTypes:
-            return currentService?.asGoogle?.placeTypes?.description ?? "None"
+            return currentService?.asGoogle?.placeTypes?.description ?? NOT_SET
         case .location:
             return currentService?.asGoogle?.location?.description ?? NOT_SET
         case .radius:
@@ -392,7 +392,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     private func serviceName() -> String {
         guard let service = currentService else {
             self.settings = [.service]
-            return "No Set"
+            return NOT_SET
         }
         
         switch service {
@@ -407,7 +407,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
 
 // MARK: - AutocompleteController Rows
 
-public extension AutocompleteController {
+fileprivate extension AutocompleteController {
     
     enum RowSetting: CellRepresentableItem {
         case service

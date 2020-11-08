@@ -184,7 +184,7 @@ public class GPSLocationRequest: RequestProtocol, Codable {
 
 // MARK: - Result<CLLocation,LocatorErrors>
 
-extension Result where Success == CLLocation, Failure == LocationError {
+public extension Result where Success == CLLocation, Failure == LocationError {
     
     var description: String {
         switch self {

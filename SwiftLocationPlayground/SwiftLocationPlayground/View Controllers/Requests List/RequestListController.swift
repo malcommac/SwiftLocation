@@ -51,6 +51,14 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         tableView?.delegate = self
         tableView?.dataSource = self
         tableView?.tableFooterView = UIView()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: NOTIFICATION_GPS_DATA, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: NOTIFICATION_VISITS_DATA, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NOTIFICATION_GPS_DATA, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NOTIFICATION_VISITS_DATA, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -91,6 +99,7 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         }
             
         cell.valueLabel?.text = ""
+        cell.accessoryType = .none
         switch indexPath.section {
         case 1:
             cell.titleLabel?.text = listData.visits[indexPath.row].uuid
@@ -147,7 +156,9 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         
         return [
             UITableViewRowAction(style: .destructive, title: "Stop Monitor", handler: { [weak self] (_, indexPath) in
-                self?.cancelRequestAtIndexPath(indexPath)
+                DispatchQueue.main.async {
+                    self?.cancelRequestAtIndexPath(indexPath)
+                }
             })
         ]
     }
@@ -169,12 +180,12 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
     
     private func cancelRequestAtIndexPath(_ indexPath: IndexPath) {
         switch indexPath.section {
-        case 0: return listData.visits[indexPath.row].cancelRequest()
-        case 1: return listData.gps[indexPath.row].cancelRequest()
-        case 2: return listData.ip[indexPath.row].cancelRequest()
-        case 3: return listData.geocode[indexPath.row].cancelRequest()
-        case 4: return listData.autocomplete[indexPath.row].cancelRequest()
-        case 5: return listData.geofencing[indexPath.row].cancelRequest()
+        case 1: listData.visits[indexPath.row].cancelRequest()
+        case 2: listData.gps[indexPath.row].cancelRequest()
+        case 3: listData.ip[indexPath.row].cancelRequest()
+        case 4: listData.geocode[indexPath.row].cancelRequest()
+        case 5: listData.autocomplete[indexPath.row].cancelRequest()
+        case 6: listData.geofencing[indexPath.row].cancelRequest()
         default: break
         }
         
@@ -204,9 +215,9 @@ fileprivate class ListData {
         
         let settings = LocationManager.shared.currentSettings
         managerSettings = [
-            (.activeServices, settings.activeServices.isEmpty ? "inactive" : settings.activeServices.description),
+            (.activeServices, settings.activeServices.isEmpty ? NOT_SET : settings.activeServices.description),
             (.accuracy, settings.accuracy.description),
-            (.minDistance, settings.minDistance?.description ?? "any"),
+            (.minDistance, settings.minDistance?.formattedValue ?? NOT_SET),
             (.activityType, settings.activityType.description)
         ]
     }
@@ -225,8 +236,8 @@ extension RequestListController {
         
         var title: String {
             switch self {
-            case .activeServices: return "Active Services"
-            case .accuracy: return "Accuracy"
+            case .activeServices: return "Running Services"
+            case .accuracy: return "Accuracy Level"
             case .minDistance: return "Min Distance"
             case .activityType: return "Activity Type"
             }
@@ -252,39 +263,41 @@ fileprivate extension RequestProtocol {
         switch self {
         case let gps as GPSLocationRequest:
             return [
-                "type: \(gps.options.subscription.description)",
-                "accuracy: \(gps.options.accuracy.description)",
-                "activity: \(gps.options.activityType.description)",
-                "minDist: \(gps.options.minDistance?.description ?? NOT_SET)",
-                "minInterval: \(gps.options.minTimeInterval?.description ?? NOT_SET)"
+                "› last: \(gps.lastReceivedValue?.description ?? "-")",
+                "› type: \(gps.options.subscription.description)",
+                "› accuracy: \(gps.options.accuracy.description)",
+                "› activity: \(gps.options.activityType.description)",
+                "› minDist: \(gps.options.minDistance?.description ?? NOT_SET)",
+                "› minInterval: \(gps.options.minTimeInterval?.description ?? NOT_SET)"
             ].joined(separator: "\n")
             
         case let ip as IPLocationRequest:
             return [
-                "type: \(ip.service.jsonServiceDecoder.rawValue)",
-                "ip: \(ip.service.targetIP ?? "current")"
+                "› type: \(ip.service.jsonServiceDecoder.rawValue)",
+                "› ip: \(ip.service.targetIP ?? "current")"
             ].joined(separator: "\n")
             
         case let geofence as GeofencingRequest:
             return [
-                "region: \(geofence.options.region.shortDecription)",
-                "onEnter: \(geofence.options.notifyOnEnter.description)",
-                "onExit: \(geofence.options.notifyOnExit.description)"
+                "› last: \(geofence.lastReceivedValue?.description ?? "-")",
+                "› region: \(geofence.options.region.shortDecription)",
+                "› onEnter: \(geofence.options.notifyOnEnter.description)",
+                "› onExit: \(geofence.options.notifyOnExit.description)"
             ].joined(separator: "\n")
             
         case let visit as VisitsRequest:
             return [
-                "last: \(visit.lastReceivedValue?.description ?? "-")"
+                "› last: \(visit.lastReceivedValue?.description ?? "-")"
             ].joined(separator: "\n")
             
         case let autocomplete as AutocompleteRequest:
             return [
-                "value: \(autocomplete.service.operation.description)"
+                "› value: \(autocomplete.service.operation.description)"
             ].joined(separator: "\n")
             
         case let geocoder as GeocoderRequest:
             return [
-                "value: \(geocoder.service.operation.description)"
+                "› value: \(geocoder.service.operation.description)"
             ].joined(separator: "\n")
             
         default:

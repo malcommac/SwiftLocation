@@ -21,6 +21,7 @@
                     <connections>
                         <segue destination="VCT-Th-B4r" kind="relationship" relationship="viewControllers" id="bNg-bN-pzO"/>
                         <segue destination="wC9-ti-Hi3" kind="relationship" relationship="viewControllers" id="byF-E5-3Cf"/>
+                        <segue destination="H6k-dA-0Ri" kind="relationship" relationship="viewControllers" id="uCQ-KD-Ge9"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QeA-XN-vIx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -68,14 +69,14 @@
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monitored Polygon" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="euN-Lw-57P">
                                                             <rect key="frame" x="0.0" y="0.0" width="290" height="20.5"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="254 with center in location" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyK-IP-dpd">
                                                             <rect key="frame" x="0.0" y="20.5" width="290" height="16"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <nil key="textColor"/>
+                                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
@@ -162,7 +163,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="tCd-ky-887">
-                        <barButtonItem key="rightBarButtonItem" title="Reload" id="PBf-Fg-8zA">
+                        <barButtonItem key="rightBarButtonItem" title="Reload" image="arrow.clockwise" catalog="system" id="PBf-Fg-8zA">
                             <connections>
                                 <action selector="reloadData:" destination="NTr-d2-cjU" id="yYj-nr-zGH"/>
                             </connections>
@@ -193,9 +194,27 @@
             </objects>
             <point key="canvasLocation" x="-2457" y="-715"/>
         </scene>
+        <!--About-->
+        <scene sceneID="89a-Bf-6LF">
+            <objects>
+                <viewController id="H6k-dA-0Ri" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1Wa-lC-c9W">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="S7S-0r-x8k"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="About" image="tabbar_about" id="rgx-xs-rkY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d3o-Wg-9gn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2459" y="605"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="arrow.clockwise" catalog="system" width="115" height="128"/>
         <image name="polygon" width="25" height="25"/>
+        <image name="tabbar_about" width="25" height="25"/>
         <image name="tabbar_list" width="25" height="25"/>
         <image name="tabbar_playground" width="25" height="25"/>
         <systemColor name="systemBackgroundColor">

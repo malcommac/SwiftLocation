@@ -22,7 +22,6 @@
 		642076C0254DD20D00D0BB09 /* AutocompleteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642076BF254DD20D00D0BB09 /* AutocompleteController.swift */; };
 		64425DFD2539C3B500953D49 /* GPSController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64425DFC2539C3B500953D49 /* GPSController.swift */; };
 		646A339C253706E0006B822B /* UIKit+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A339B253706E0006B822B /* UIKit+Extensions.swift */; };
-		646A33EA25386117006B822B /* GeofencedRegionsListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A33E925386117006B822B /* GeofencedRegionsListController.swift */; };
 		646A33F225389FFB006B822B /* VisitsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A33F125389FFA006B822B /* VisitsController.swift */; };
 		646A33F82538AC3D006B822B /* RequestListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646A33F72538AC3D006B822B /* RequestListController.swift */; };
 		647BBFE7251C8265000EB5AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647BBFE6251C8265000EB5AC /* AppDelegate.swift */; };
@@ -56,7 +55,6 @@
 		642076BF254DD20D00D0BB09 /* AutocompleteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteController.swift; sourceTree = "<group>"; };
 		64425DFC2539C3B500953D49 /* GPSController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSController.swift; sourceTree = "<group>"; };
 		646A339B253706E0006B822B /* UIKit+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Extensions.swift"; sourceTree = "<group>"; };
-		646A33E925386117006B822B /* GeofencedRegionsListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofencedRegionsListController.swift; sourceTree = "<group>"; };
 		646A33F125389FFA006B822B /* VisitsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsController.swift; sourceTree = "<group>"; };
 		646A33F72538AC3D006B822B /* RequestListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestListController.swift; sourceTree = "<group>"; };
 		647BBFE3251C8265000EB5AC /* SwiftLocationPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftLocationPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -222,7 +220,6 @@
 			children = (
 				6401DBFA25556E690017BD91 /* GeofenceController.storyboard */,
 				64922941252BA0740057932F /* GeofenceController.swift */,
-				646A33E925386117006B822B /* GeofencedRegionsListController.swift */,
 				64867CAF2534A39F0017EF83 /* MapDrawView.swift */,
 			);
 			path = Geofence;
@@ -338,7 +335,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				646A33EA25386117006B822B /* GeofencedRegionsListController.swift in Sources */,
 				646A339C253706E0006B822B /* UIKit+Extensions.swift in Sources */,
 				6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */,
 				647BBFE7251C8265000EB5AC /* AppDelegate.swift in Sources */,
