@@ -1,8 +1,25 @@
 //
-//  File.swift
-//  
+//  IPServiceProtocol.swift
 //
-//  Created by daniele on 26/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -51,13 +68,13 @@ public protocol IPServiceProtocol: class, CustomStringConvertible {
     
     /// Execute network request and produce result.
     /// - Parameter completion: completion block.
-    func execute(_ completion: @escaping ((Result<IPLocation.Data, LocatorErrors>) -> Void))
+    func execute(_ completion: @escaping ((Result<IPLocation.Data, LocationError>) -> Void))
     
     /// Validate json response for specific errors.
     /// - Parameters:
     ///   - data: data received.
     ///   - httpResponse: http response received
-    func validateResponse(data: IPLocation.Data, httpResponse: HTTPURLResponse) -> LocatorErrors?
+    func validateResponse(data: IPLocation.Data, httpResponse: HTTPURLResponse) -> LocationError?
     
     /// Cancel active request.
     func cancel()
@@ -68,7 +85,7 @@ public protocol IPServiceProtocol: class, CustomStringConvertible {
 
 public extension IPServiceProtocol {
     
-    func execute(_ completion: @escaping ((Result<IPLocation.Data, LocatorErrors>) -> Void)) {
+    func execute(_ completion: @escaping ((Result<IPLocation.Data, LocationError>) -> Void)) {
         do {
             let request = try buildRequest()
             self.task = session.dataTask(with: request) { [weak self] (data, response, error) in
@@ -102,7 +119,7 @@ public extension IPServiceProtocol {
             }
             task?.resume()
         } catch {
-            completion(.failure( (error as? LocatorErrors) ?? .internalError ))
+            completion(.failure( (error as? LocationError) ?? .internalError ))
         }
     }
     

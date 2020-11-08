@@ -1,5 +1,5 @@
 //
-//  PartialAddressMatch+Apple.swift
+//  SwiftLocationPlayground
 //
 //  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
 //
@@ -22,27 +22,17 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import MapKit
+import UIKit
 
-internal extension PartialAddressMatch {
+public class StandardCellButton: UITableViewCell {
+    static let Height: CGFloat = 67
     
-    /// Initialize a new address match from Apple.
-    /// - Parameter data: data.
-    init(apple data: MKLocalSearchCompletion) {
-        self.representedObject = data
-       
-        self.id = "\(data.title) \(data.subtitle)"
-        self.title = data.title
-        self.subtitle = data.subtitle
-        self.titleHighlightRanges = data.titleHighlightRanges.map( { $0.rangeValue })
-        self.subtitleHighlightRanges = data.subtitleHighlightRanges.map( { $0.rangeValue })
-        self.termsMatches = nil
-        self.types = nil
+    public var onAction: (() -> Void)?
+    
+    @IBOutlet public var buttonAction: UIButton!
+    
+    @IBAction public func performAction(_ sender: Any?) {
+        onAction?()
     }
-    
-    static func fromAppleList(_ completer: MKLocalSearchCompleter) -> [Autocomplete.Data] {
-        completer.results.map( { .partial(PartialAddressMatch(apple: $0)) })
-    }
-    
+
 }

@@ -1,19 +1,36 @@
 //
-//  CLDeviceLocationManager.swift
-//  SwiftLocation
+//  DeviceLocationManager.swift
 //
-//  Created by Daniele Margutti on 17/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
 import CoreLocation
 
-public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocationManagerDelegate {
+public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLocationManagerDelegate {
     
     // MARK: - Private Properties
     
     /// Parent locator manager.
-    private weak var locator: Locator?
+    private weak var locator: LocationManager?
     
     /// Internal device comunication object.
     private var manager: CLLocationManager
@@ -37,7 +54,7 @@ public class DeviceLocationManager: NSObject, LocationManagerProtocol, CLLocatio
     
     // MARK: - Initialization
     
-    required public init(locator: Locator) throws {
+    required public init(locator: LocationManager) throws {
         self.locator = locator
         self.manager = CLLocationManager()
         super.init()

@@ -1,8 +1,25 @@
 //
-//  Locator.swift
-//  SwiftLocation
+//  LocationManager.swift
 //
-//  Created by Daniele Margutti on 17/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -14,11 +31,11 @@ import AppKit
 import UIKit
 #endif
 
-public class Locator: LocationManagerDelegate, CustomStringConvertible {
+public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         
     // MARK: - Private Properties
 
-    private var manager: LocationManagerProtocol?
+    private var manager: LocationManagerImpProtocol?
     
     // MARK: - Public Properties
     
@@ -26,23 +43,14 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
     /// Called when a new set of geofences requests has been restored.
     public var onRestoreGeofences: (([GeofencingRequest]) -> Void)?
     
-    /// Called when a new set of gps requests has been restored.
+    /// Called when a new set of gps requests has been restored from relaunched app instance.
     public var onRestoreGPS: (([GPSLocationRequest]) -> Void)?
     
-    /// Called when a new set of ip requests has been restored.
-    //public var onRestoreIP: (([IPLocationRequest]) -> Void)?
-    
-    /// Called when a new set of visits requests has been restored.
+    /// Called when a new set of visits requests has been restored from relaunched app instance.
     public var onRestoreVisits: (([VisitsRequest]) -> Void)?
-    
-    /// Called when a new set of autocomplete requests has been restored.
-    //public var onRestoreAutocomplete: (([AutocompleteRequest]) -> Void)?
-    
-    /// Called when a new set of geocoder requests has been restored.
-    //public var onRestoreGeocode: (([GeocoderRequest]) -> Void)?
-    
+
     /// Shared instance.
-    public static let shared = Locator()
+    public static let shared = LocationManager()
     
     /// Authorization mode. By default the best authorization to get is based upon the plist file.
     /// If plist contains always usage description the always mode is used, otherwise only whenInUse is preferred.
@@ -153,7 +161,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
     /// object is used (`DeviceLocationManager`); this function should not be called directly but it's used for unit test.
     /// - Parameter manager: manager to use.
     /// - Throws: throw an exception if something fail.
-    public func setUnderlyingManager(_ manager: LocationManagerProtocol) throws {
+    public func setUnderlyingManager(_ manager: LocationManagerImpProtocol) throws {
         resetAll() // reset all queues
         
         self.manager = try DeviceLocationManager(locator: self)
@@ -169,11 +177,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
             let defaults = UserDefaults.standard
             defaults.setValue(try JSONEncoder().encode(geofenceRequests.list), forKey: UserDefaultsKeys.GeofenceRequests)
             defaults.setValue(try JSONEncoder().encode(gpsRequests.list), forKey: UserDefaultsKeys.GPSRequests)
-            //defaults.setValue(try JSONEncoder().encode(ipRequests.list), forKey: UserDefaultsKeys.IPRequests)
-            //defaults.setValue(try JSONEncoder().encode(autocompleteRequests.list), forKey: UserDefaultsKeys.AutocompleteRequests)
-            //defaults.setValue(try JSONEncoder().encode(geocoderRequests.list), forKey: UserDefaultsKeys.GeocoderRequests)
             defaults.setValue(try JSONEncoder().encode(visitsRequest.list), forKey: UserDefaultsKeys.VisitsRequests)
-
             return true
         } catch {
             LocatorLogger.log("Failed to save the state of the requests: \(error.localizedDescription)")
@@ -187,19 +191,11 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
         let restorableGeofences: [GeofencingRequest] = decodeSavedQueue(UserDefaultsKeys.GeofenceRequests).filter {
             manager?.monitoredRegions.map({ $0.identifier }).contains($0.uuid) ?? false
         }
+        
         onRestoreGeofences?(geofenceRequests.add(restorableGeofences, silent: true))
-        
-        // SIGNIFICANT LOCATIONS
-        
-        // VISITS
-       
-        // Others (not to be evaluated)
         onRestoreGPS?(gpsRequests.add(decodeSavedQueue(UserDefaultsKeys.GPSRequests), silent: true))
         onRestoreVisits?(visitsRequest.add(decodeSavedQueue(UserDefaultsKeys.VisitsRequests), silent: true))
-        //onRestoreIP?(ipRequests.add(decodeSavedQueue(UserDefaultsKeys.IPRequests), silent: true))
-        //onRestoreAutocomplete?(autocompleteRequests.add(decodeSavedQueue(UserDefaultsKeys.AutocompleteRequests), silent: true))
-        //onRestoreGeocode?(geocoderRequests.add(decodeSavedQueue(UserDefaultsKeys.GeocoderRequests), silent: true))
-        
+
         saveState()
     }
     
@@ -415,7 +411,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
     // MARK: - Location Delegate Evenets
     
     public func locationManager(didFailWithError error: Error) {
-        let error = LocatorErrors.generic(error)
+        let error = LocationError.generic(error)
         
         dispatchDataToQueue(gpsRequests, data: .failure(error))
         dispatchDataToQueue(visitsRequest, data: .failure(error))
@@ -439,7 +435,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
         geofenceRequestForRegion(event.region)?.receiveData(.success(event))
     }
     
-    public func locationManager(geofenceError error: LocatorErrors, region: CLRegion?) {
+    public func locationManager(geofenceError error: LocationError, region: CLRegion?) {
         if let region = region { // specific error for a region
             geofenceRequestForRegion(region)?.receiveData(.failure(.generic(error)))
         } else { // generic error, will discard all monitored regions
@@ -462,7 +458,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
     
     private func dispatchDataToQueue<T: RequestProtocol>(_ queue: RequestQueue<T>,
                                                          filter: ((T) -> Bool)? = nil,
-                                                         data: Result<T.ProducedData, LocatorErrors>) {
+                                                         data: Result<T.ProducedData, LocationError>) {
         let copyList = queue.list
         copyList.forEach { request in
             if filter?(request) ?? true {
@@ -477,7 +473,7 @@ public class Locator: LocationManagerDelegate, CustomStringConvertible {
 
 // MARK: - RequestQueue
 
-public extension Locator {
+public extension LocationManager {
     
     class RequestQueue<Value: RequestProtocol>: CustomStringConvertible {
         

@@ -10,7 +10,7 @@
 		6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */; };
 		6401DB9225555F4B0017BD91 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB9125555F4B0017BD91 /* ActionCell.swift */; };
 		6401DB96255563220017BD91 /* IPLocationController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DB95255563220017BD91 /* IPLocationController.storyboard */; };
-		6401DBDF255564460017BD91 /* StandardCellSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBDE255564460017BD91 /* StandardCellSettings.swift */; };
+		6401DBDF255564460017BD91 /* StandardCellSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBDE255564460017BD91 /* StandardCellSetting.swift */; };
 		6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBE1255564590017BD91 /* StandardCellButton.swift */; };
 		6401DBE5255566D60017BD91 /* ResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DBE4255566D60017BD91 /* ResultController.swift */; };
 		6401DBEA255566F30017BD91 /* ResultController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DBE9255566F30017BD91 /* ResultController.storyboard */; };
@@ -36,13 +36,15 @@
 		64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */; };
 		64AECC6F2557E71400D01330 /* GeocoderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AECC6E2557E71400D01330 /* GeocoderController.swift */; };
 		64AECC722557E71A00D01330 /* GeocoderController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC712557E71A00D01330 /* GeocoderController.storyboard */; };
+		64AECC7725582D0100D01330 /* StandardCellSetting.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC7625582D0100D01330 /* StandardCellSetting.xib */; };
+		64AECC7E25582EA200D01330 /* StandardCellButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC7D25582EA200D01330 /* StandardCellButton.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
 		6401DB9125555F4B0017BD91 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		6401DB95255563220017BD91 /* IPLocationController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = IPLocationController.storyboard; sourceTree = "<group>"; };
-		6401DBDE255564460017BD91 /* StandardCellSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardCellSettings.swift; sourceTree = "<group>"; };
+		6401DBDE255564460017BD91 /* StandardCellSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardCellSetting.swift; sourceTree = "<group>"; };
 		6401DBE1255564590017BD91 /* StandardCellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardCellButton.swift; sourceTree = "<group>"; };
 		6401DBE4255566D60017BD91 /* ResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultController.swift; sourceTree = "<group>"; };
 		6401DBE9255566F30017BD91 /* ResultController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ResultController.storyboard; sourceTree = "<group>"; };
@@ -70,6 +72,8 @@
 		64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteResultsController.swift; sourceTree = "<group>"; };
 		64AECC6E2557E71400D01330 /* GeocoderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderController.swift; sourceTree = "<group>"; };
 		64AECC712557E71A00D01330 /* GeocoderController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GeocoderController.storyboard; sourceTree = "<group>"; };
+		64AECC7625582D0100D01330 /* StandardCellSetting.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StandardCellSetting.xib; sourceTree = "<group>"; };
+		64AECC7D25582EA200D01330 /* StandardCellButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StandardCellButton.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,8 +92,8 @@
 			isa = PBXGroup;
 			children = (
 				6401DB9125555F4B0017BD91 /* ActionCell.swift */,
-				6401DBDE255564460017BD91 /* StandardCellSettings.swift */,
-				6401DBE1255564590017BD91 /* StandardCellButton.swift */,
+				64AECC7B25582E9300D01330 /* Settings Cell */,
+				64AECC8025582EA500D01330 /* Button Cell */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -233,6 +237,24 @@
 			path = Geocoder;
 			sourceTree = "<group>";
 		};
+		64AECC7B25582E9300D01330 /* Settings Cell */ = {
+			isa = PBXGroup;
+			children = (
+				64AECC7625582D0100D01330 /* StandardCellSetting.xib */,
+				6401DBDE255564460017BD91 /* StandardCellSetting.swift */,
+			);
+			path = "Settings Cell";
+			sourceTree = "<group>";
+		};
+		64AECC8025582EA500D01330 /* Button Cell */ = {
+			isa = PBXGroup;
+			children = (
+				64AECC7D25582EA200D01330 /* StandardCellButton.xib */,
+				6401DBE1255564590017BD91 /* StandardCellButton.swift */,
+			);
+			path = "Button Cell";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -296,11 +318,13 @@
 			files = (
 				6401DBEA255566F30017BD91 /* ResultController.storyboard in Resources */,
 				6401DBFF25556EFB0017BD91 /* AutocompleteController.storyboard in Resources */,
+				64AECC7725582D0100D01330 /* StandardCellSetting.xib in Resources */,
 				6401DB96255563220017BD91 /* IPLocationController.storyboard in Resources */,
 				647BBFF3251C8266000EB5AC /* LaunchScreen.storyboard in Resources */,
 				6401DBF725556E010017BD91 /* VisitsController.storyboard in Resources */,
 				6401DBFB25556E690017BD91 /* GeofenceController.storyboard in Resources */,
 				6401DBF025556CEE0017BD91 /* GPSController.storyboard in Resources */,
+				64AECC7E25582EA200D01330 /* StandardCellButton.xib in Resources */,
 				647BBFF0251C8266000EB5AC /* Assets.xcassets in Resources */,
 				64AECC722557E71A00D01330 /* GeocoderController.storyboard in Resources */,
 				647BBFEE251C8265000EB5AC /* Main.storyboard in Resources */,
@@ -323,7 +347,7 @@
 				64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */,
 				647BBFE9251C8265000EB5AC /* SceneDelegate.swift in Sources */,
 				6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */,
-				6401DBDF255564460017BD91 /* StandardCellSettings.swift in Sources */,
+				6401DBDF255564460017BD91 /* StandardCellSetting.swift in Sources */,
 				64922942252BA0740057932F /* GeofenceController.swift in Sources */,
 				642076C0254DD20D00D0BB09 /* AutocompleteController.swift in Sources */,
 				6401DB9225555F4B0017BD91 /* ActionCell.swift in Sources */,

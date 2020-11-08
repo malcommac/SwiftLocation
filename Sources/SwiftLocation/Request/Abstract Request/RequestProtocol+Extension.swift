@@ -1,8 +1,25 @@
 //
-//  File.swift
-//  
+//  RequestProtocol+Extension.swift
 //
-//  Created by daniele on 25/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -38,7 +55,7 @@ public extension RequestProtocol {
         return subscriptions.first(where: { $0.identifier == identifier }) as? RequestDataCallback<ProducedData>
     }
     
-    func dispatchData(_ result: Result<ProducedData, LocatorErrors>, toSubscriptions: [RequestDataCallback<DataCallback>]? = nil) {
+    func dispatchData(_ result: Result<ProducedData, LocationError>, toSubscriptions: [RequestDataCallback<DataCallback>]? = nil) {
         (toSubscriptions ?? subscriptions).forEach { subscription in
             subscription.queue.async { // dispatch on passed queue.
                 subscription.callback(result)
@@ -47,11 +64,11 @@ public extension RequestProtocol {
     }
     
     func cancelRequest() {
-        Locator.shared.cancel(request: self)
+        LocationManager.shared.cancel(request: self)
     }
     
     @discardableResult
-    func receiveData(_ data: Result<ProducedData, LocatorErrors>) -> DataDiscardReason? {
+    func receiveData(_ data: Result<ProducedData, LocationError>) -> DataDiscardReason? {
         lastReceivedValue = data
         
         switch data {
@@ -65,7 +82,7 @@ public extension RequestProtocol {
     
     // MARK: - Private Functions
     
-    private func receiveError(_ error: LocatorErrors) {
+    private func receiveError(_ error: LocationError) {
         guard !error.isDataDiscarded else {
             // discarded data do not produce any error.
             return

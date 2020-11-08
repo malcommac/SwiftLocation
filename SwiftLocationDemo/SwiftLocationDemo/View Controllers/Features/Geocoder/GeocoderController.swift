@@ -1,10 +1,26 @@
 //
-//  GeocoderController.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele on 08/11/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
 //
-
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 import UIKit
 import SwiftLocation
 import CoreLocation
@@ -31,6 +47,8 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.registerUINibForClass(StandardCellSetting.self)
+        tableView.registerUINibForClass(StandardCellButton.self)
         navigationItem.title = "Geocoder/Reverse Geocoder"
         reloadData()
     }
@@ -119,7 +137,7 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         
         switch row {
         case .createRequest:
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.ID) as! StandardCellButton
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.defaultReuseIdentifier) as! StandardCellButton
             cell.buttonAction.setTitle(row.title, for: .normal)
             cell.onAction = { [weak self] in
                 self?.createRequest()
@@ -127,7 +145,7 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             return cell
             
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.ID) as! StandardCellSetting
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier) as! StandardCellSetting
             cell.item = settings[indexPath.row]
             cell.valueLabel.text = valueForKind(settings[indexPath.row])
             return cell
@@ -169,21 +187,15 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
     
     private func createRequest() {
         guard let service = self.service else {
+            UIAlertController.showAlert(title: "You must select a service first")
             return
         }
 
         let loader = UIAlertController.showLoader(message: "Geocoding in progress...")
-        let request = Locator.shared.geocodeWith(service)
+        let request = LocationManager.shared.geocodeWith(service)
         request.then(queue: .main) { result in
             loader.dismiss(animated: false, completion: {
-                switch result {
-                case .failure(let error):
-                    UIAlertController.showAlert(title: "Error Occurred", message: error.localizedDescription)
-                    break
-                case .success(let data):
-                        print(data)
-                //ResultController.showWithResult(data, in: self)
-                }
+                ResultController.showWithResult(result, in: self)
             })
         }
     }

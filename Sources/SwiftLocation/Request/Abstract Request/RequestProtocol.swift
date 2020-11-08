@@ -1,8 +1,25 @@
 //
-//  Request.swift
-//  SwiftLocation
+//  RequestProtocol.swift
 //
-//  Created by Daniele Margutti on 18/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -15,7 +32,7 @@ public typealias Identifier = String
 public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     associatedtype ProducedData
     
-    typealias DataCallback = ((Result<ProducedData, LocatorErrors>) -> Void)
+    typealias DataCallback = ((Result<ProducedData, LocationError>) -> Void)
     
     // MARK: - Public Properties
     
@@ -36,7 +53,7 @@ public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     var isEnabled: Bool { get set }
     
     /// Last value received from the server. Any new attached subscriber will receive these values.
-    var lastReceivedValue: (Result<ProducedData, LocatorErrors>)? { get set }
+    var lastReceivedValue: (Result<ProducedData, LocationError>)? { get set }
     
     /// Count received valid data.
     var countReceivedData: Int { get set }
@@ -53,7 +70,7 @@ public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     ///
     /// - Parameter data: data received.
     /// - Returns: `nil` if data is used `nil` is returned, otherwise a valid reason (`DataDiscardReason`).
-    func receiveData(_ data: Result<ProducedData, LocatorErrors>) -> DataDiscardReason?
+    func receiveData(_ data: Result<ProducedData, LocationError>) -> DataDiscardReason?
     
     /// This method is called to verify received data from underlying manager is valid and can be
     /// dispatched to the register subscriptions. Usually you don't need to override it but if you want
@@ -71,7 +88,7 @@ public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     /// - Parameters:
     ///   - result: data to dispatch.
     ///   - toSubscriptions: if passed a custom list of subscriptions. If `nil` is passed the internal list of subscriptions.
-    func dispatchData(_ result: Result<ProducedData, LocatorErrors>, toSubscriptions: [RequestDataCallback<DataCallback>]?)
+    func dispatchData(_ result: Result<ProducedData, LocationError>, toSubscriptions: [RequestDataCallback<DataCallback>]?)
 
     // MARK: - Subscription Management
     

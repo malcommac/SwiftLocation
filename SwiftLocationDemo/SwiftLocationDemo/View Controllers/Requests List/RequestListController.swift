@@ -1,8 +1,25 @@
 //
-//  RequestListController.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele margutti on 15/10/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -19,12 +36,12 @@ public class ListData {
     var autocomplete = [AutocompleteRequest]()
 
     public init() {
-        visits = Array(Locator.shared.visitsRequest.list)
-        gps = Array(Locator.shared.gpsRequests.list)
-        ip = Array(Locator.shared.ipRequests.list)
-        geofencing = Array(Locator.shared.geofenceRequests.list)
-        geocode = Array(Locator.shared.geocoderRequests.list)
-        autocomplete = Array(Locator.shared.autocompleteRequests.list)
+        visits = Array(LocationManager.shared.visitsRequest.list)
+        gps = Array(LocationManager.shared.gpsRequests.list)
+        ip = Array(LocationManager.shared.ipRequests.list)
+        geofencing = Array(LocationManager.shared.geofenceRequests.list)
+        geocode = Array(LocationManager.shared.geocoderRequests.list)
+        autocomplete = Array(LocationManager.shared.autocompleteRequests.list)
     }
     
 }
@@ -62,7 +79,7 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         tableView?.estimatedRowHeight = 80
         tableView?.reloadData()
         
-        statusText?.text = Locator.shared.description
+        statusText?.text = LocationManager.shared.description
     }
     
     @IBAction public func reloadData(_ sender: Any?) {

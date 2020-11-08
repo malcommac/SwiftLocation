@@ -1,8 +1,25 @@
 //
-//  ViewController.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele on 24/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -191,14 +208,14 @@ class GeofenceController: UIViewController {
         do {
             if let circle = shape as? MKCircle {
                 let options = GeofencingOptions(circle: circle)
-                currentRequest = Locator.shared.geofenceWith(options)
+                currentRequest = LocationManager.shared.geofenceWith(options)
                 
             } else if let polygon = shape as? MKPolygon {
                 let options = try GeofencingOptions(polygon: polygon)
-                currentRequest = Locator.shared.geofenceWith(options)
+                currentRequest = LocationManager.shared.geofenceWith(options)
                 
             } else {
-                throw LocatorErrors.other("Shape is not supported and cannot be monitored: \(shape.description)")
+                throw LocationError.other("Shape is not supported and cannot be monitored: \(shape.description)")
             }
             
             reloadGeofencedRegions()
@@ -211,7 +228,7 @@ class GeofenceController: UIViewController {
         // Draw polygons
         mapView.removeOverlays(mapView.overlays)
         
-        for request in Locator.shared.geofenceRequests.list {
+        for request in LocationManager.shared.geofenceRequests.list {
             switch request.options.region {
             case .circle(let circularRegion):
                 let circle = MKCircle(center: circularRegion.center, radius: circularRegion.radius)
@@ -229,7 +246,7 @@ class GeofenceController: UIViewController {
         
         if reattachSubscribers {
             // Attach event subscribers
-            AppDelegate.attachSubscribersToGeofencedRegions(Array(Locator.shared.geofenceRequests.list))
+            AppDelegate.attachSubscribersToGeofencedRegions(Array(LocationManager.shared.geofenceRequests.list))
         }
     }
     

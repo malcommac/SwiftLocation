@@ -1,8 +1,25 @@
 //
-//  File.swift
-//  
+//  GeofencingRequest.swift
 //
-//  Created by daniele on 30/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -38,7 +55,7 @@ public class GeofencingRequest: RequestProtocol, Codable {
     public var isEnabled = true
     
     /// Last received valid value.
-    public var lastReceivedValue: (Result<GeofenceEvent, LocatorErrors>)?
+    public var lastReceivedValue: (Result<GeofenceEvent, LocationError>)?
     
     /// Number of events received.
     public var countReceivedData = 0
@@ -97,7 +114,7 @@ public class GeofencingRequest: RequestProtocol, Codable {
         if event.isEntered && options.region.polygon != nil {
             // if we are monitoring a custom polygon and we received the didEntered event in the outer
             // region of the polygon we need to start monitoring the inner region for continous locations.
-            polygonLocationRequest = Locator.shared.gpsLocationWith({
+            polygonLocationRequest = LocationManager.shared.gpsLocationWith({
                 $0.accuracy = .block
                 $0.minTimeInterval = 5
             })
@@ -122,7 +139,7 @@ public class GeofencingRequest: RequestProtocol, Codable {
         return nil
     }
     
-    private func monitorCustomPolygonLocationUpdates(_ result: Result<CLLocation, LocatorErrors>) {
+    private func monitorCustomPolygonLocationUpdates(_ result: Result<CLLocation, LocationError>) {
         // We are monitoring a custom polygon so we need to check if the current position is inside
         // this polygon to send the event
         
@@ -216,7 +233,7 @@ public enum GeofenceEvent: CustomStringConvertible {
 
 // MARK: - Result Extension
 
-extension Result where Success == CLLocation, Failure == LocatorErrors {
+extension Result where Success == CLLocation, Failure == LocationError {
     
     /// Get the current location if result is success.
     public var location: CLLocation? {
@@ -228,7 +245,7 @@ extension Result where Success == CLLocation, Failure == LocatorErrors {
     
 }
 
-extension Result where Success == GeofenceEvent, Failure == LocatorErrors {
+extension Result where Success == GeofenceEvent, Failure == LocationError {
     
     /// Get the current location if result is success.
     public var description: String? {

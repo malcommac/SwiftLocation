@@ -1,8 +1,25 @@
 //
-//  CLLocationManagerAware.swift
-//  SwiftLocation
+//  LocationManagerImpProtocol.swift
 //
-//  Created by Daniele Margutti on 17/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -20,7 +37,7 @@ public protocol LocationManagerDelegate: class {
     // MARK: - Geofencing
     
     func locationManager(geofenceEvent event: GeofenceEvent)
-    func locationManager(geofenceError error: LocatorErrors, region: CLRegion?)
+    func locationManager(geofenceError error: LocationError, region: CLRegion?)
     
     // MARK: - Visits
     
@@ -29,7 +46,7 @@ public protocol LocationManagerDelegate: class {
 
 // MARK: - LocationManagerProtocol
 
-public protocol LocationManagerProtocol: class {
+public protocol LocationManagerImpProtocol: class {
     typealias AuthorizationCallback = ((CLAuthorizationStatus) -> Void)
 
     var authorizationStatus: CLAuthorizationStatus { get }
@@ -37,7 +54,7 @@ public protocol LocationManagerProtocol: class {
     
     /// Initialize with a new locator.
     /// - Parameter locator: locator.
-    init(locator: Locator) throws
+    init(locator: LocationManager) throws
     
     /// Request authorization.
     /// - Parameters:

@@ -1,8 +1,25 @@
 //
-//  Locator+Error.swift
-//  SwiftLocation
+//  LocationError.swift
 //
-//  Created by Daniele Margutti on 17/09/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -23,7 +40,7 @@ import Foundation
 /// - `reserved`: for geolocation service this means queried IP address is a bogon (reserved) IP address like private, multicast, etc.
 /// - `notSupported`: functionality is not supported on this device.
 /// - `invalidPolygon`: invalid polygon passed.
-public enum LocatorErrors: LocalizedError, Equatable {
+public enum LocationError: LocalizedError, Equatable {
     case discardedData(DataDiscardReason)
     case timeout
     case generic(Error)
@@ -69,7 +86,7 @@ public enum LocatorErrors: LocalizedError, Equatable {
         }
     }
     
-    public static func == (lhs: LocatorErrors, rhs: LocatorErrors) -> Bool {
+    public static func == (lhs: LocationError, rhs: LocationError) -> Bool {
         switch (lhs, rhs) {
         case (.generic(let e1), .generic(let e2)):      return e1.localizedDescription == e2.localizedDescription
         case (.other(let l), .other(let r)):            return (l.lowercased() == r.lowercased())

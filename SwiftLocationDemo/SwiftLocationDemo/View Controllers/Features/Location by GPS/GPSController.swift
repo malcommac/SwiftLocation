@@ -1,8 +1,25 @@
 //
-//  GPSController.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele margutti on 16/10/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -74,6 +91,8 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.registerUINibForClass(StandardCellSetting.self)
+        tableView.registerUINibForClass(StandardCellButton.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
         tableView.delegate = self
@@ -85,7 +104,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     }
     
     @objc func newNotificationReceived(_ notification: Notification) {
-        guard let data = notification.object as? Result<GPSLocationRequest.ProducedData, LocatorErrors> else {
+        guard let data = notification.object as? Result<GPSLocationRequest.ProducedData, LocationError> else {
             return
         }
         
@@ -109,14 +128,14 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == sections.count {
-            let cell = tableView.dequeueReusableCell(withIdentifier: GPSActionCell.cellIdentifier, for: indexPath) as! GPSActionCell
-            cell.onTap = { [weak self] in
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.defaultReuseIdentifier, for: indexPath) as! StandardCellButton
+            cell.onAction = { [weak self] in
                 self?.enqueueGPSRequest()
             }
             return cell
         }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: GPSControllerCell.cellIdentifier, for: indexPath) as! GPSControllerCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier, for: indexPath) as! StandardCellSetting
         let item = sections[indexPath.row]
         
         cell.titleLabel.text = item.title
@@ -259,7 +278,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     }
 
     private func enqueueGPSRequest() {
-        let request = Locator.shared.gpsLocationWith(currentRequestOptions)
+        let request = LocationManager.shared.gpsLocationWith(currentRequestOptions)
         
         currentRequestOptions = GPSLocationOptions()
         reloadData()

@@ -1,8 +1,25 @@
 //
-//  IPLocationController.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele on 31/10/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -21,6 +38,8 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         super.viewDidLoad()
         
         resultLog.text = ""
+        tableView.registerUINibForClass(StandardCellSetting.self)
+        tableView.registerUINibForClass(StandardCellButton.self)
         tableView.tableFooterView = UIView()
         self.navigationItem.title = "Coordinates By IP"
     }
@@ -38,13 +57,13 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         let kind = rows[indexPath.row]
         
         if kind == .createRequest {
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.ID) as! StandardCellButton
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.defaultReuseIdentifier) as! StandardCellButton
             cell.onAction = {
                 self.createRequest()
             }
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.ID) as! StandardCellSetting
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier) as! StandardCellSetting
             self.valueForCell(cell, kind: kind)
             return cell
         }
@@ -239,18 +258,19 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
     
     private func reloadData() {
         setupRowsForService()
+        
         tableView.reloadData()
     }
     
     private func createRequest() {
         guard let service = service else {
-            UIAlertController.showAlert(title: "Select a valid service before using this tool.")
+            UIAlertController.showAlert(title: "You must select a service first")
             return
         }
         
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
         
-        currentRequest = Locator.shared.ipLocationWith(service)
+        currentRequest = LocationManager.shared.ipLocationWith(service)
         currentRequest?.then(queue: .main, { result in
             loader.dismiss(animated: true, completion: nil)
             ResultController.showWithResult(result, in: self)

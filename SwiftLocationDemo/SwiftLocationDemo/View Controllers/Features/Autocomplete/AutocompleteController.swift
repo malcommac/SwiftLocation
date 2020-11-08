@@ -1,8 +1,25 @@
 //
-//  Autocomplete.swift
-//  SwiftLocationDemo
+//  SwiftLocationPlayground
 //
-//  Created by daniele on 31/10/2020.
+//  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -32,6 +49,8 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         super.viewDidLoad()
         
         navigationItem.title = "Autocomplete Address"
+        settingsTableView.registerUINibForClass(StandardCellSetting.self)
+        settingsTableView.registerUINibForClass(StandardCellButton.self)
         settingsTableView.tableFooterView = UIView()
     }
     
@@ -46,7 +65,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         
         switch row {
         case .createRequest:
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.ID) as! StandardCellButton
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellButton.defaultReuseIdentifier) as! StandardCellButton
             cell.buttonAction.setTitle(row.title, for: .normal)
             cell.onAction = { [weak self] in
                 self?.createRequest()
@@ -54,7 +73,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
             return cell
             
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.ID) as! StandardCellSetting
+            let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier) as! StandardCellSetting
             cell.item = settings[indexPath.row]
             cell.valueLabel.text = valueForKind(settings[indexPath.row])
             return cell
@@ -93,11 +112,12 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     
     private func createRequest() {
         guard let service = self.currentService else {
+            UIAlertController.showAlert(title: "You must select a service first")
             return
         }
 
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
-        let request = Locator.shared.autocompleteWith(service)
+        let request = LocationManager.shared.autocompleteWith(service)
         request.then(queue: .main) { result in
             loader.dismiss(animated: false, completion: {
                 switch result {
