@@ -29,12 +29,12 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
     @IBOutlet public var featuresTableView: UITableView!
     
     private let featuresList: [Feature] = [
-        .ipLocation,
         .gpsLocation,
-        .visitsMonitoring,
+        .ipLocation,
         .geofenceMonitoring,
-        .autocompleAddress,
-        .geocoder
+        .visitsMonitoring,
+        .geocoder,
+        .autocompleAddress
     ]
     
     public override func viewDidLoad() {
@@ -44,7 +44,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         featuresTableView.estimatedRowHeight = 45
         featuresTableView.dataSource = self
         featuresTableView.delegate = self
-        
+        featuresTableView.tableFooterView = UIView()
+
         self.navigationItem.title = "SwiftLocation Playground"
     }
     
@@ -94,12 +95,12 @@ fileprivate extension PlaygroundController {
 
         var title: String {
             switch self {
-            case .ipLocation: return "IP Location"
-            case .gpsLocation: return "GPS Location"
+            case .ipLocation: return "Location by IP"
+            case .gpsLocation: return "Location by GPS"
             case .visitsMonitoring: return "Visits"
-            case .geofenceMonitoring: return "Geofence"
+            case .geofenceMonitoring: return "Geofence Regions"
             case .autocompleAddress: return "Autocomplete Address"
-            case .geocoder: return "Geocoder/Reverse Geocoder"
+            case .geocoder: return "Geocoder & Reverse Geocoder"
             }
         }
         
@@ -108,8 +109,8 @@ fileprivate extension PlaygroundController {
             case .ipLocation: return "Get coordinates from IP Address"
             case .gpsLocation: return "Get coordinates from GPS"
             case .visitsMonitoring: return "Relevant visited locations"
-            case .geofenceMonitoring: return "Enter/Exit notifications from regions"
-            case .autocompleAddress: return "Suggest addresses, poi etc."
+            case .geofenceMonitoring: return "Enter/exit notifications from regions"
+            case .autocompleAddress: return "Suggest addresses, POI, activites..."
             case .geocoder: return "Get coordinates from address/address from coordinates"
             }
         }

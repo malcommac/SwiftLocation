@@ -138,13 +138,13 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Settings"
-        case 1: return "Visits Requests"
-        case 2: return "GPS Requests"
-        case 3: return "IP Requests"
-        case 4: return "Geocode Request"
-        case 5: return "Autocomplete Requests"
-        case 6: return "Geofence Requests"
+        case 0: return "Location Manager Settings"
+        case 1: return "Active Visits"
+        case 2: return "Active GPS"
+        case 3: return "Active IP"
+        case 4: return "Active Geocode"
+        case 5: return "Active Autocomplete"
+        case 6: return "Active Geofence"
         default: return ""
         }
     }

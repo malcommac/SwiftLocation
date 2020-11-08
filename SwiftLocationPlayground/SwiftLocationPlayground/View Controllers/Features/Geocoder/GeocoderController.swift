@@ -657,7 +657,7 @@ public extension GeocoderController {
             case .service:                  return "Service"
             case .addressValue:             return "Address"
             case .coordinates:              return "Coordinates"
-            case .timeout:                  return "Timeout"
+            case .timeout:                  return "Timeout (s)"
             case .proximityRegion:          return "Proximity Region"
             case .locale:                   return "Locale"
             case .countryCode:              return "Country/es Code/s"
@@ -683,7 +683,7 @@ public extension GeocoderController {
         
         public var subtitle: String {
             switch self {
-            case .service:                  return "Select service to use for geocoding/reverse"
+            case .service:                  return "[REQUIRED]Select service to use for geocoding/reverse"
             case .addressValue:             return "Address to geocode"
             case .coordinates:              return "Coordinates to reverse geocode"
             case .timeout:                  return "Request timeout interval (secs)"
@@ -692,7 +692,7 @@ public extension GeocoderController {
             case .countryCode:              return "Better contextualize received results"
             case .boundingBox:              return "To bias geocode results more prominently"
             case .resultTypes:              return "Type of results to get"
-            case .APIKey:                   return "[REQUIRED] API Key"
+            case .APIKey:                   return "[REQUIRED] API Service Key"
             case .limitResultCount:         return "Limit number of results"
             case .proximityCoordinates:     return "Center of the search context expressed as coordinates"
             case .includeRoutingData:       return "Additional metadata about the recommended navigation"

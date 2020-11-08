@@ -132,7 +132,9 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
             })
         }
         
-        UIAlertController.showActionSheet(title: "Select Accuracy", message: nil, options: accuracyLevels)
+        UIAlertController.showActionSheet(title: "Select Accuracy",
+                                          message: "Higher accuracy level may no return results depending the reachability of GPS satellities",
+                                          options: accuracyLevels)
     }
     
     private func selectActivityType() {
@@ -149,7 +151,8 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
             })
         }
         
-        UIAlertController.showActionSheet(title: "Select Activity Type", message: nil, options: accuracyLevels)
+        UIAlertController.showActionSheet(title: "Select Activity Type",
+                                          message: nil, options: accuracyLevels)
     }
     
     private func selectMinDistance() {
@@ -215,6 +218,9 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         reloadData()
         
         AppDelegate.attachSubscribersToGPS([request])
+        
+        UIAlertController.showAlert(title: "Request added successfully",
+                                    message: "Updates will be available through notifications and inside the status panel for recurring requests.")
     }
     
 }
@@ -235,7 +241,7 @@ extension GPSController {
             switch self {
             case .subscription:     return "Subscription Type"
             case .timeoutInterval:  return "Timeout Interval (s)"
-            case .accuracy:         return "Accuracy"
+            case .accuracy:         return "Accuracy Level"
             case .activityType:     return "Activity Type"
             case .minDistance:      return "Min Distance (mt)"
             case .minTimeInterval:  return "Min Time Interval (s)"
@@ -244,12 +250,12 @@ extension GPSController {
         
         var subtitle: String {
             switch self {
-            case .subscription:     return "How often update locations"
+            case .subscription:     return "[REQUIRED] How often update locations"
             case .timeoutInterval:  return "Time with no response before abort"
-            case .accuracy:         return "High levels may lead to timeout in some cases"
-            case .activityType:     return "Helps GPS  to get better  result"
+            case .accuracy:         return "High levels may fails depending GPS status"
+            case .activityType:     return "Helps GPS to get better results"
             case .minDistance:      return "Min horizontal distance to report new data"
-            case .minTimeInterval:  return "Minimum time interval to report new data"
+            case .minTimeInterval:  return "Min time interval to report new data"
             }
         }
         

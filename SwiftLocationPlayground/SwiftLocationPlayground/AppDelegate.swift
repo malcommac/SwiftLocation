@@ -62,6 +62,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+                    
+        AppDelegate.openResultController(response)
         completionHandler()
     }
 
@@ -70,6 +72,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     // MARK: - Private Helper
+    
+    private static func openResultController(_ response: UNNotificationResponse) {
+        guard let rootController = UIApplication.shared.windows.first?.rootViewController,
+              let rawData = response.notification.request.content.userInfo["result"] as? String else {
+            return
+        }
+        
+        ResultController.showWithData(rawData, in: rootController)
+    }
     
     private static func enablePushNotifications() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
@@ -87,10 +98,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // attach new ones
             request.then(queue: .main) { result in
                 switch result {
-                case .failure(let error):
-                    sendLocalPushNotification(title: "Geofence (Error)", subtitle: error.localizedDescription)
                 case .success(let event):
-                    sendLocalPushNotification(title: "Geofence (Event)", subtitle: event.description)
+                    sendLocalPushNotification(title: "New Geofence Event", subtitle: event.description, object: result.description)
+                case .failure(let error):
+                    sendLocalPushNotification(title: "Geofence Error", subtitle: error.localizedDescription, object: result.description)
                 }
             }
         }
@@ -105,9 +116,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     switch result {
                     case .success(let visit):
                         VisitsController.addVisitToHistory(visit)
-                        sendLocalPushNotification(title: "Visits (Event)", subtitle: visit.description)
+                        sendLocalPushNotification(title: "New Visit", subtitle: visit.description, object: result.description)
                     case .failure(let error):
-                        sendLocalPushNotification(title: "Visits (Error)", subtitle: error.localizedDescription)
+                        sendLocalPushNotification(title: "Visit Error", subtitle: error.localizedDescription, object: result.description)
                     }
                 }
             }
@@ -121,20 +132,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
                 switch result {
                 case .success(let visit):
-                    sendLocalPushNotification(title: "GPS (Event)", subtitle: visit.description)
+                    sendLocalPushNotification(title: "New GPS Location", subtitle: visit.description, object: result.description)
                 case .failure(let error):
-                    sendLocalPushNotification(title: "GPS (Error)", subtitle: error.localizedDescription)
+                    sendLocalPushNotification(title: "GPS Error", subtitle: error.localizedDescription, object: result.description)
                 }
             }
         }
     }
     
-    public static func sendLocalPushNotification(title: String, subtitle: String, afterInterval: TimeInterval = 3) {
+    public static func sendLocalPushNotification(title: String, subtitle: String, object: Any? = nil, afterInterval: TimeInterval = 3) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.subtitle = subtitle
         content.sound = UNNotificationSound.default
-
+        
+        if let object = object {
+            content.userInfo = ["result": object]
+        }
+        
         // show this notification five seconds from now
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: afterInterval, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)

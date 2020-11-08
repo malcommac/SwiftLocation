@@ -46,6 +46,7 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
         
         tableView?.delegate = self
         tableView?.dataSource = self
+        tableView?.tableFooterView = UIView()
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NOTIFICATION_VISITS_DATA, object: nil)
     }
 
@@ -98,6 +99,8 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
         activeRequest = LocationManager.shared.visits(activityType: type)
         AppDelegate.attachSubscribersToVisitsRegions([activeRequest])
         reloadData()
+        
+        UIAlertController.showAlert(title: "Request added successfully", message: "Updates will be available through notifications and inside the status panel.")
     }
     
     public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

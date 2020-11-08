@@ -44,4 +44,14 @@ public class ResultController: UIViewController {
         }
     }
     
+    public static func showWithData(_ rawData: String, in sourceController: UIViewController) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            let s = UIStoryboard(name: "ResultController", bundle: nil)
+            let vc = s.instantiateInitialViewController() as! ResultController
+            _ = vc.view
+            vc.resultTextView.text = rawData
+            sourceController.present(vc, animated: true, completion: nil)
+        }
+    }
+    
 }

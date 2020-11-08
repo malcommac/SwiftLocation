@@ -335,14 +335,17 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         let servicesList: [UIAlertController.ActionSheetOption] = [
             ("Apple", { [weak self] _ in
                 self?.currentService = Autocomplete.Apple(partialMatches: "")
+                self?.selectAutocompleteAddress()
                 self?.reloadData()
             }),
             ("Google", { [weak self] _ in
                 self?.currentService = Autocomplete.Google(partialMatches: "", APIKey: "")
+                self?.selectAutocompleteAddress()
                 self?.reloadData()
             }),
             ("Here", { [weak self] _ in
                 self?.currentService = Autocomplete.Here(partialMatches: "", APIKey: "")
+                self?.selectAutocompleteAddress()
                 self?.reloadData()
             })
         ]
@@ -434,10 +437,10 @@ fileprivate extension AutocompleteController {
             case .locale:               return "Locale"
             case .limit:                return "Limit"
             case .APIKey:               return "API Key"
-            case .timeout:              return "Timeout"
+            case .timeout:              return "Timeout (s)"
             case .googlePlaceTypes:     return "Place Types"
             case .location:             return "Location"
-            case .radius:               return "Radius (mts)"
+            case .radius:               return "Radius (mt)"
             case .limitResultsCount:    return "Limit Results"
             case .proximityArea:        return "Proximity Area"
             default:                    return "Execute Request"
@@ -452,7 +455,7 @@ fileprivate extension AutocompleteController {
             case .filterType:           return "Allowed results"
             case .locale:               return "Language of the results (see api doc)"
             case .limit:                return "Limit the number of data"
-            case .APIKey:               return "Required"
+            case .APIKey:               return "[REQUIRED] API Service key"
             case .timeout:              return "Network call timeout (in secs)"
             case .googlePlaceTypes:     return "Get only specified place types"
             case .location:             return "Proximity location to get better results"
