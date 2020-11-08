@@ -140,10 +140,6 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         return cell
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "NEW GPS REQUEST"
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = sections[indexPath.row]

@@ -12,8 +12,9 @@ public extension Geocoder {
     
     class Google: JSONNetworkHelper, GeocoderServiceProtocol {
 
-        /// Operation to perform
-        public private(set) var operation: GeocoderOperation
+        /// Operation to perform.
+        /// NOTE: Usually it's set via init and you should not change it.
+        public var operation: GeocoderOperation
         
         /// Service API Key (https://console.cloud.google.com/google/maps-apis/credentials)
         public var APIKey: String
@@ -25,23 +26,23 @@ public extension Geocoder {
         /// See https://developers.google.com/maps/faq#languagesupport for more informations.
         /// NOTE: If language is not supplied, the geocoder attempts to use the preferred language as specified in the Accept-Language header, or the native language of the domain from which the request is sent.
         /// More info: https://developers.google.com/maps/documentation/geocoding/overview
-        public var language: String?
+        public var locale: String?
         
         /// The region code, specified as a ccTLD ("top-level domain") two-character value.
         /// This parameter will only influence, not fully restrict, results from the geocoder.
         /// For more informations see https://developers.google.com/maps/documentation/geocoding/overview#RegionCodes.
-        public var region: String?
+        public var countryCode: String?
         
         /// The bounding box of the viewport within which to bias geocode results more prominently.
         /// This parameter will only influence, not fully restrict, results from the geocoder.
         /// See https://developers.google.com/maps/documentation/geocoding/overview#Viewports for more infos.
-        public var bounds: Viewport?
+        public var boundingBox: BoundingBox?
         
         /// A components filter with elements separated by a pipe (|).
         /// The components filter is required if the request doesn't include an address.
         /// Each element in the components filter consists of a component:value pair, and fully restricts the results from the geocoder.
         /// See https://developers.google.com/maps/documentation/geocoding/overview#component-filtering for more infos.
-        public var components: [String]?
+        public var resultTypes: [String]?
         
         /// A filter of one or more location types.
         /// By default is set to `nil`.
@@ -51,10 +52,10 @@ public extension Geocoder {
             JSONStringify([
                 "APIKey": APIKey.trunc(length: 5),
                 "timeout": timeout,
-                "language": language ?? "",
-                "region": region ?? "",
-                "bounds": bounds?.description ?? "",
-                "components": components ?? "",
+                "language": locale ?? "",
+                "region": countryCode ?? "",
+                "bounds": boundingBox?.description ?? "",
+                "components": resultTypes ?? "",
                 "locationTypes": locationTypes?.description ?? ""
             ])
         }
@@ -121,10 +122,10 @@ public extension Geocoder {
             }
             
             // Options
-            queryItems.appendIfNotNil(URLQueryItem(name: "language", optional: language))
-            queryItems.appendIfNotNil(URLQueryItem(name: "bounds", optional: bounds?.rawValue))
-            queryItems.appendIfNotNil(URLQueryItem(name: "region", optional: region))
-            queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: components?.joined(separator: "|")))
+            queryItems.appendIfNotNil(URLQueryItem(name: "language", optional: locale))
+            queryItems.appendIfNotNil(URLQueryItem(name: "bounds", optional: boundingBox?.rawValue))
+            queryItems.appendIfNotNil(URLQueryItem(name: "region", optional: countryCode))
+            queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: resultTypes?.joined(separator: "|")))
             queryItems.appendIfNotNil(URLQueryItem(name: "location_type", optional: locationTypes?.map({ $0.rawValue }).joined(separator: "|")))
             
             // Create
@@ -152,7 +153,7 @@ public extension Geocoder {
 public extension Geocoder.Google {
     
     /// The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners.
-    struct Viewport: Codable, CustomStringConvertible {
+    struct BoundingBox: Codable, CustomStringConvertible {
         var southwest: CLLocationCoordinate2D
         var northeast: CLLocationCoordinate2D
         

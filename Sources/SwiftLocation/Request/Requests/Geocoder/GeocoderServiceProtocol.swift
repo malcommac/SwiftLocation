@@ -13,7 +13,10 @@ import CoreLocation
 public protocol GeocoderServiceProtocol: class, CustomStringConvertible {
     
     /// Operastion.
-    var operation: GeocoderOperation { get }
+    var operation: GeocoderOperation { get set }
+    
+    /// Locale of the results.
+    var locale: String? { get set }
     
     /// Execute service operation.
     /// - Parameter completion: completion callback.
@@ -33,14 +36,14 @@ public enum GeocoderOperation: CustomStringConvertible, Codable {
     case getCoordinates(String)
     case geoAddress(CLLocationCoordinate2D)
     
-    internal var coordinates: CLLocationCoordinate2D {
+    public var coordinates: CLLocationCoordinate2D {
         switch self {
         case .getCoordinates:       return CLLocationCoordinate2D()
         case .geoAddress(let c):    return c
         }
     }
     
-    internal var address: String {
+    public var address: String {
         switch self {
         case .getCoordinates(let a):    return a
         case .geoAddress:               return ""
@@ -51,6 +54,14 @@ public enum GeocoderOperation: CustomStringConvertible, Codable {
         switch self {
         case .geoAddress(let c): return "Address from coordinates: \(c)"
         case .getCoordinates(let a): return "Coordinates from address: \(a)"
+        }
+    }
+    
+    /// Return `true` if operation is a reverse geocoding.
+    public var isReverseGeocoder: Bool {
+        switch self {
+        case .geoAddress:       return true
+        case .getCoordinates:   return false
         }
     }
     

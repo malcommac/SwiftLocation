@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fF7-Ha-kw8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fF7-Ha-kw8">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,11 +14,11 @@
             <objects>
                 <viewController storyboardIdentifier="VisitsController" id="fF7-Ha-kw8" customClass="VisitsController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DKt-7w-bzk">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="AOL-1L-2GT">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="VisitsControllerCell" rowHeight="109" id="VdH-W0-xsb" customClass="VisitsControllerCell" customModule="SwiftLocationDemo" customModuleProvider="target">
@@ -130,17 +130,20 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Visits" id="sTW-Bv-l91"/>
                     <navigationItem key="navigationItem" id="Sty-7s-Vcq">
-                        <barButtonItem key="leftBarButtonItem" title="Clear History" id="KuZ-c5-nBO">
-                            <connections>
-                                <action selector="clearHistory:" destination="fF7-Ha-kw8" id="v3d-ZR-Sb2"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Enable/Disable" id="zDE-Zc-yAp">
-                            <connections>
-                                <action selector="toggleVisits:" destination="fF7-Ha-kw8" id="BTc-Oa-zqI"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem title="Clear" id="KuZ-c5-nBO">
+                                <connections>
+                                    <action selector="clearHistory:" destination="fF7-Ha-kw8" id="v3d-ZR-Sb2"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Enable/Disable" id="zDE-Zc-yAp">
+                                <connections>
+                                    <action selector="toggleVisits:" destination="fF7-Ha-kw8" id="BTc-Oa-zqI"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="tableView" destination="AOL-1L-2GT" id="vUA-IH-Tjv"/>
                         <outlet property="toggleButton" destination="zDE-Zc-yAp" id="n7j-tv-Rh6"/>

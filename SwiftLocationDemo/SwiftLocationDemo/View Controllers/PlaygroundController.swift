@@ -59,7 +59,7 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         case .autocompleAddress:
             navigationController?.pushViewController(AutocompleteController.create(), animated: true)
         case .geocoder:
-            break
+            navigationController?.pushViewController(GeocoderController.create(), animated: true)
         }
     }
     
@@ -90,9 +90,9 @@ fileprivate extension PlaygroundController {
             switch self {
             case .ipLocation: return "Get coordinates from IP Address"
             case .gpsLocation: return "Get coordinates from GPS"
-            case .visitsMonitoring: return "Relevant visited locations monitoring"
-            case .geofenceMonitoring: return "Geofence polygon/circular region"
-            case .autocompleAddress: return "Autocomplete addresses"
+            case .visitsMonitoring: return "Relevant visited locations"
+            case .geofenceMonitoring: return "Enter/Exit notifications from regions"
+            case .autocompleAddress: return "Suggest addresses, poi etc."
             case .geocoder: return "Get coordinates from address/address from coordinates"
             }
         }
@@ -104,7 +104,7 @@ fileprivate extension PlaygroundController {
             case .visitsMonitoring: return UIImage(named: "tabbar_visits")
             case .geofenceMonitoring: return UIImage(named: "tabbar_geofence")
             case .autocompleAddress: return UIImage(named: "tabbar_autocomplete")
-            case .geocoder: return nil
+            case .geocoder: return UIImage(named: "tabbar_geocoder")
             }
         }
     }

@@ -14,8 +14,9 @@ public extension Geocoder {
     /// https://docs.mapbox.com/api/search/#geocoding
     class MapBox: JSONNetworkHelper, GeocoderServiceProtocol {
         
-        /// Operation to perform
-        public private(set) var operation: GeocoderOperation
+        /// Operation to perform.
+        /// NOTE: Usually it's set via init and you should not change it.
+        public var operation: GeocoderOperation
         
         /// API Key for service.
         /// https://account.mapbox.com
@@ -30,7 +31,7 @@ public extension Geocoder {
         
         /// Limit results to one or more countries. Permitted values are ISO 3166 alpha 2 country codes separated by commas.
         /// See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 for more info.
-        public var country: String?
+        public var countryCode: String?
         
         /// Specify the maximum number of results to return.
         /// The default is 1 and the maximum supported is 5.
@@ -40,11 +41,11 @@ public extension Geocoder {
         
         /// Specify whether to request additional metadata about the recommended navigation destination corresponding to the feature (true) or not (false, default).
         /// Only applicable for address features.
-        public var routing: Bool?
+        public var includeRoutingData: Bool?
         
         /// Filter results to include only a subset (one or more) of the available feature types.
         /// By default is `nil`.
-        public var types: [ResultTypes]?
+        public var resultTypes: [ResultTypes]?
         
         // MARK: - Reverse Geocoder Specific Properties
         
@@ -76,21 +77,21 @@ public extension Geocoder {
         /// For example, the default setting might return Washington, DC for a query of wahsington, even though the query was misspelled.
         ///
         /// NOTE: Applicable only for geocoder.
-        public var fuzzyMatch: Bool?
+        public var useFuzzyMatch: Bool?
         
         public var description: String {
             let data: [String: Any] = [
                 "APIKey": APIKey.trunc(length: 5),
                 "timeout": timeout,
                 "locale": locale ?? "",
-                "country": country ?? "",
+                "country": countryCode ?? "",
                 "limit": limit ?? 0,
-                "routing": routing ?? "",
-                "types": types?.description ?? "",
+                "routing": includeRoutingData ?? "",
+                "types": resultTypes?.description ?? "",
                 "reverseMode": reverseMode?.description ?? "",
                 "proximityRegion": proximityRegion?.description ?? "",
                 "boundingBox": boundingBox?.description ?? "",
-                "fuzzyMatch": fuzzyMatch ?? ""
+                "fuzzyMatch": useFuzzyMatch ?? ""
             ]
             return JSONStringify(data)
         }
@@ -160,17 +161,17 @@ public extension Geocoder {
             
             // Options
             queryItems.append(URLQueryItem(name: "access_token", value: APIKey))
-            queryItems.appendIfNotNil(URLQueryItem(name: "country", optional: country))
+            queryItems.appendIfNotNil(URLQueryItem(name: "country", optional: countryCode))
             queryItems.appendIfNotNil(URLQueryItem(name: "language", optional: locale))
             queryItems.appendIfNotNil(URLQueryItem(name: "limit", optional: (limit != nil ? String(limit!) : nil)))
-            queryItems.appendIfNotNil(URLQueryItem(name: "routing", optional: routing?.serverValue))
-            queryItems.appendIfNotNil(URLQueryItem(name: "types", optional: types?.map({ $0.rawValue }).joined(separator: ",")))
+            queryItems.appendIfNotNil(URLQueryItem(name: "routing", optional: includeRoutingData?.serverValue))
+            queryItems.appendIfNotNil(URLQueryItem(name: "types", optional: resultTypes?.map({ $0.rawValue }).joined(separator: ",")))
             
             switch operation {
             case .getCoordinates(let address):
                 queryItems.append(URLQueryItem(name: "autocomplete", value: "true"))
                 queryItems.appendIfNotNil(URLQueryItem(name: "bbox", optional: boundingBox?.rawValue))
-                queryItems.appendIfNotNil(URLQueryItem(name: "fuzzyMatch", optional: fuzzyMatch?.serverValue))
+                queryItems.appendIfNotNil(URLQueryItem(name: "fuzzyMatch", optional: useFuzzyMatch?.serverValue))
                 queryItems.appendIfNotNil(URLQueryItem(name: "proximity", optional: proximityRegion?.commaLngLat))
                 
                 url = URL(string: "https://api.mapbox.com/geocoding/v5/mapbox.places/\(address.urlEncoded).json")!

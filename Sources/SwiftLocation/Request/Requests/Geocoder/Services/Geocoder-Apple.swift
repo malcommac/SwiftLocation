@@ -17,14 +17,15 @@ public extension Geocoder {
         /// Is request cancelled.
         public var isCancelled = false
         
-        /// Underlying service operation.
-        public private(set) var operation: GeocoderOperation
+        /// Operation to perform.
+        /// NOTE: Usually it's set via init and you should not change it.
+        public var operation: GeocoderOperation
         
         /// Proximity region to better contextualize received results.
         public var proximityRegion: CLCircularRegion?
         
-        /// Language.
-        public var locale: Locale?
+        /// Language as Locale identifier string.
+        public var locale: String?
         
         // MARK: - Private Properties
         
@@ -48,7 +49,7 @@ public extension Geocoder {
         ///   - locale: language to use.
         public init(coordinates: CLLocationCoordinate2D, locale: Locale? = nil) {
             self.operation = .geoAddress(coordinates)
-            self.locale = locale
+            self.locale = locale?.identifier
         }
         
         /// Initialize to forward geocode a given address.
@@ -60,7 +61,7 @@ public extension Geocoder {
         public init(address: String, region: CLCircularRegion? = nil, locale: Locale? = nil) {
             self.operation = .getCoordinates(address)
             self.proximityRegion = region
-            self.locale = locale
+            self.locale = locale?.identifier
         }
         
         // MARK: - Service Functions
@@ -84,7 +85,8 @@ public extension Geocoder {
             switch operation {
             case .geoAddress(let coordinates):
                 let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-                geocoder.reverseGeocodeLocation(location, preferredLocale: locale, completionHandler: completionHandler)
+                let localeInstance = (locale != nil ? Locale(identifier: locale!) : nil)
+                geocoder.reverseGeocodeLocation(location, preferredLocale: localeInstance, completionHandler: completionHandler)
                 
             case .getCoordinates(let address):
                 geocoder.geocodeAddressString(address, in: proximityRegion, completionHandler: completionHandler)

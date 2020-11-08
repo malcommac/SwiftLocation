@@ -155,38 +155,17 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         }
         
         func selectCircle() {
-            UIAlertController.showInputFieldSheet(title: "Circular Region Proximity",
-                                                  message: "Provided as 'lat, long, radius' (in meters)") { [weak self] value in
-                
-                guard let values = value?.components(separatedBy: ",").compactMap({ Float($0 )}), values.count == 3 else {
-                    self?.currentService?.asHere?.proximityArea = nil
-                    self?.reloadData()
-                    return
-                }
-                
-                let coords = CLLocationCoordinate2D(latitude: CLLocationDegrees(values[0]), longitude: CLLocationDegrees(values[1]))
-                let cRegion = CLCircularRegion(center: coords, radius: CLLocationDistance(values[1]), identifier: "cRegion")
-                self?.currentService?.asHere?.proximityArea = .circle(cRegion)
+            UIAlertController.showCircularRegion(title: "Circular Region Proximity") { [weak self] region in
+                self?.currentService?.asHere?.proximityArea = nil
                 self?.reloadData()
             }
-            reloadData()
         }
         
         func selectCoordinates() {
-            UIAlertController.showInputFieldSheet(title: "Coordinates Proximity",
-                                                  message: "Provided as 'lat, long'") { [weak self] value in
-                
-                guard let values = value?.components(separatedBy: ",").compactMap({ CLLocationDegrees($0 )}), values.count == 4 else {
-                    self?.currentService?.asHere?.proximityArea = nil
-                    self?.reloadData()
-                    return
-                }
-                
-                let bbox = Autocomplete.Here.BoundingBox(wLng: values[0], sLat: values[1], eLng: values[2], nLat: values[3])
-                self?.currentService?.asHere?.proximityArea = .boundingBox(bbox)
+            UIAlertController.showInputCoordinates(title: "Coordinates Proximity") { [weak self] coords in
+                self?.currentService?.asHere?.proximityArea = nil
                 self?.reloadData()
             }
-            reloadData()
         }
         
         func selectBoundingBox() {
@@ -493,15 +472,15 @@ public extension AutocompleteController {
 public extension AutocompleteProtocol {
     
     var asGoogle: Autocomplete.Google? {
-        return (self as? Autocomplete.Google)
+        (self as? Autocomplete.Google)
     }
     
     var asApple: Autocomplete.Apple? {
-        return (self as? Autocomplete.Apple)
+        (self as? Autocomplete.Apple)
     }
     
     var asHere: Autocomplete.Here? {
-        return (self as? Autocomplete.Here)
+        (self as? Autocomplete.Here)
     }
     
 }

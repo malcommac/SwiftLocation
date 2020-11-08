@@ -107,7 +107,7 @@ extension UIAlertController {
     }
     
     @discardableResult
-    public static func showInputFieldSheet(title: String, message: String?,
+    public static func showInputFieldSheet(title: String, message: String? = nil,
                                            placeholder: String? = nil,
                                            cancelAction: (() -> Void)? = nil,
                                            confirmAction: ((String?) -> Void)?) -> UIAlertController {
@@ -177,6 +177,33 @@ extension UIAlertController {
         
         topMost.present(alert, animated: true, completion: nil)
         return alert
+    }
+    
+    public static func showInputCoordinates(title: String, message: String? = nil, _ handler: @escaping ((CLLocationCoordinate2D?) -> Void)) {
+        UIAlertController.showInputFieldSheet(title: title, message: message ?? "Use 'lat, long' format") {  value in
+            guard let values = value?.components(separatedBy: ",").compactMap({ CLLocationDegrees($0.trimmingCharacters(in: .whitespaces) )}), values.count == 2 else {
+                handler(nil)
+                return
+            }
+            
+            let coords = CLLocationCoordinate2D(latitude: values[0], longitude: values[1])
+            handler(coords)
+        }
+    }
+    
+    public static func showCircularRegion(title: String, message: String? = nil, _ handler: @escaping ((CLCircularRegion?) -> Void)) {
+        UIAlertController.showInputFieldSheet(title: title,
+                                              message: message ?? "Provided as 'lat, long, radius' (in meters)") { value in
+            
+            guard let values = value?.components(separatedBy: ",").compactMap({ Float($0 )}), values.count == 3 else {
+                handler(nil)
+                return
+            }
+            
+            let coords = CLLocationCoordinate2D(latitude: CLLocationDegrees(values[0]), longitude: CLLocationDegrees(values[1]))
+            let cRegion = CLCircularRegion(center: coords, radius: CLLocationDistance(values[1]), identifier: "cRegion")
+            handler(cRegion)
+        }
     }
     
 }

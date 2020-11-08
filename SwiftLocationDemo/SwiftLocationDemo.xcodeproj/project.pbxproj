@@ -34,6 +34,8 @@
 		64867CB02534A39F0017EF83 /* MapDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64867CAF2534A39F0017EF83 /* MapDrawView.swift */; };
 		64922942252BA0740057932F /* GeofenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64922941252BA0740057932F /* GeofenceController.swift */; };
 		64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */; };
+		64AECC6F2557E71400D01330 /* GeocoderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AECC6E2557E71400D01330 /* GeocoderController.swift */; };
+		64AECC722557E71A00D01330 /* GeocoderController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC712557E71A00D01330 /* GeocoderController.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +68,8 @@
 		64867CAF2534A39F0017EF83 /* MapDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDrawView.swift; sourceTree = "<group>"; };
 		64922941252BA0740057932F /* GeofenceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceController.swift; sourceTree = "<group>"; };
 		64AECC662557DC5700D01330 /* AutocompleteResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteResultsController.swift; sourceTree = "<group>"; };
+		64AECC6E2557E71400D01330 /* GeocoderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocoderController.swift; sourceTree = "<group>"; };
+		64AECC712557E71A00D01330 /* GeocoderController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GeocoderController.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,7 @@
 				646A33F42538A001006B822B /* Relevant Visits */,
 				64867CB22534A4780017EF83 /* Geofence */,
 				642076C2254DD22000D0BB09 /* Autocomplete */,
+				64AECC6D2557E70C00D01330 /* Geocoder */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -219,6 +224,15 @@
 			path = Geofence;
 			sourceTree = "<group>";
 		};
+		64AECC6D2557E70C00D01330 /* Geocoder */ = {
+			isa = PBXGroup;
+			children = (
+				64AECC712557E71A00D01330 /* GeocoderController.storyboard */,
+				64AECC6E2557E71400D01330 /* GeocoderController.swift */,
+			);
+			path = Geocoder;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -288,6 +302,7 @@
 				6401DBFB25556E690017BD91 /* GeofenceController.storyboard in Resources */,
 				6401DBF025556CEE0017BD91 /* GPSController.storyboard in Resources */,
 				647BBFF0251C8266000EB5AC /* Assets.xcassets in Resources */,
+				64AECC722557E71A00D01330 /* GeocoderController.storyboard in Resources */,
 				647BBFEE251C8265000EB5AC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,6 +319,7 @@
 				6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */,
 				647BBFE7251C8265000EB5AC /* AppDelegate.swift in Sources */,
 				6401DBE5255566D60017BD91 /* ResultController.swift in Sources */,
+				64AECC6F2557E71400D01330 /* GeocoderController.swift in Sources */,
 				64AECC672557DC5700D01330 /* AutocompleteResultsController.swift in Sources */,
 				647BBFE9251C8265000EB5AC /* SceneDelegate.swift in Sources */,
 				6401DBE2255564590017BD91 /* StandardCellButton.swift in Sources */,

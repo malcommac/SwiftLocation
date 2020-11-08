@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="lvn-tw-p0o">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="lvn-tw-p0o">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -15,11 +15,11 @@
             <objects>
                 <viewController storyboardIdentifier="GeofenceController" id="lvn-tw-p0o" customClass="GeofenceController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jgB-Q8-emr">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="CBJ-MM-SI5">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="774"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GEc-N5-JuS">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
@@ -39,10 +39,10 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2wq-Oa-dSa">
-                                        <rect key="frame" x="0.0" y="30" width="414" height="633"/>
+                                        <rect key="frame" x="0.0" y="30" width="414" height="589"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="jhB-qW-Ocl">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="633"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="589"/>
                                             </mapView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -54,7 +54,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zDV-hL-Yhq">
-                                        <rect key="frame" x="0.0" y="663" width="414" height="100"/>
+                                        <rect key="frame" x="0.0" y="619" width="414" height="100"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Adjust the radius of the circle:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ltm-H3-dzI">
                                                 <rect key="frame" x="15" y="15" width="204.5" height="18"/>
@@ -101,7 +101,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jvh-fa-wTD">
-                                        <rect key="frame" x="0.0" y="763" width="414" height="55"/>
+                                        <rect key="frame" x="0.0" y="719" width="414" height="55"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-hR-CET">
                                                 <rect key="frame" x="239" y="5.5" width="150" height="44"/>
@@ -157,12 +157,12 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Item" id="qTS-Ib-S9P"/>
                     <navigationItem key="navigationItem" id="And-9Y-gyC">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="location.fill" catalog="system" id="3CO-Af-QFW">
-                            <connections>
-                                <action selector="didTapCurrentLocation:" destination="lvn-tw-p0o" id="ho4-6P-yuG"/>
-                            </connections>
-                        </barButtonItem>
                         <rightBarButtonItems>
+                            <barButtonItem title="Item" image="location.fill" catalog="system" id="3CO-Af-QFW">
+                                <connections>
+                                    <action selector="didTapCurrentLocation:" destination="lvn-tw-p0o" id="ho4-6P-yuG"/>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem title="List" id="qCg-Ha-Nzi">
                                 <connections>
                                     <action selector="didTapList:" destination="lvn-tw-p0o" id="u1z-CP-kTX"/>
@@ -175,6 +175,7 @@
                             </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="cancelButton" destination="zpQ-hR-CET" id="T5r-iZ-3I5"/>
                         <outlet property="confirmButton" destination="lB3-02-fad" id="UWc-sH-aEL"/>

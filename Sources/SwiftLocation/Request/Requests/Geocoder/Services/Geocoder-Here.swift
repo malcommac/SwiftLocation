@@ -15,8 +15,9 @@ public extension Geocoder {
     /// See https://developer.here.com/documentation/geocoding-search-api/api-reference-swagger.html for more infos.
     class Here: JSONNetworkHelper, GeocoderServiceProtocol {
         
-        /// Operation to perform
-        public private(set) var operation: GeocoderOperation
+        /// Operation to perform.
+        /// NOTE: Usually it's set via init and you should not change it.
+        public var operation: GeocoderOperation
         
         /// API Key for service.
         /// https://account.mapbox.com
@@ -35,7 +36,7 @@ public extension Geocoder {
         /// See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3 for values.
         ///
         /// NOTE: This does not apply to reverse geocoder.
-        public var limitToCountries: [String]?
+        public var countryCodes: [String]?
         
         /// Specify the center of the search context expressed as coordinates.
         public var proximityCoordinates: CLLocationCoordinate2D?
@@ -47,7 +48,7 @@ public extension Geocoder {
                 "locale": locale ?? "",
                 "limit": limit ?? "",
                 "locale": locale ?? "",
-                "limitToCountries": limitToCountries ?? "",
+                "limitToCountries": countryCodes ?? "",
                 "proximityCoordinates": proximityCoordinates?.description  ?? ""
             ])
         }
@@ -118,7 +119,7 @@ public extension Geocoder {
             queryItems.appendIfNotNil(URLQueryItem(name: "limit", optional: (limit != nil ? String(limit!) : nil)))
             queryItems.appendIfNotNil(URLQueryItem(name: "lang", optional: locale))
             
-            if let limitToCountries = self.limitToCountries {
+            if let limitToCountries = self.countryCodes {
                 let limitToCountriesValue = "countryCode:\(limitToCountries.joined(separator: ","))"
                 queryItems.appendIfNotNil(URLQueryItem(name: "in", value: limitToCountriesValue))
             }

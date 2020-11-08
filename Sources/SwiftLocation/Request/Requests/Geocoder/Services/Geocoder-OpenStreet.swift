@@ -14,8 +14,9 @@ public extension Geocoder {
     /// https://nominatim.org/release-docs/develop/api/Overview/)
     class OpenStreet: JSONNetworkHelper, GeocoderServiceProtocol {
         
-        /// Operation to perform
-        public private(set) var operation: GeocoderOperation
+        /// Operation to perform.
+        /// NOTE: Usually it's set via init and you should not change it.
+        public var operation: GeocoderOperation
         
         /// Request timeout.
         public var timeout: TimeInterval = 5
@@ -38,7 +39,7 @@ public extension Geocoder {
         
         /// Preferred language order for showing search results, overrides the value specified in the "Accept-Language" HTTP header.
         /// Either use a standard RFC2616 accept-language string or a simple comma-separated list of language codes.
-        public var locale: Locale?
+        public var locale: String?
         
         /// Simplify the output geometry before returning. The parameter is the tolerance in degrees with which the geometry may differ from the original geometry. Topology is preserved in the result.
         /// Default is 0.
@@ -104,8 +105,9 @@ public extension Geocoder {
         private func buildRequest() throws -> URLRequest {
             var url: URL!
             var queryItems = [
-                URLQueryItem(name: "format", value: "jsonv2")
-            ]
+                URLQueryItem(name: "format", value: "jsonv2"),
+                URLQueryItem(name: "language", optional: locale)
+            ].compactMap({ $0 })
             
             // Options
             queryItems.append(URLQueryItem(name: "addressdetails", value: String(includeAddressDetails)))
