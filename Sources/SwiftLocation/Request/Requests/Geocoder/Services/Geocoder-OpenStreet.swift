@@ -19,7 +19,7 @@ public extension Geocoder {
         public var operation: GeocoderOperation
         
         /// Request timeout.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval?
         
         /// Include a breakdown of the address into elements.
         /// By default is set `true`
@@ -136,7 +136,7 @@ public extension Geocoder {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
             return request
         }
         

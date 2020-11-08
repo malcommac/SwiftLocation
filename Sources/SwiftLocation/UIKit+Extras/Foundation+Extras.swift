@@ -149,3 +149,11 @@ internal func JSONStringify(_ object: [String: Any?]) -> String {
         return ""
     }
 }
+
+internal extension TimeInterval {
+    
+    static var highInterval: TimeInterval {
+        3600
+    }
+    
+}

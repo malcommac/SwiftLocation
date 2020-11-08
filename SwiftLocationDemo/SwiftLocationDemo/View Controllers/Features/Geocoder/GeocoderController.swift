@@ -12,11 +12,17 @@ import MapKit
 
 public class GeocoderController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    // MARK: - Private Properties
+
     private var settings = [RowSetting]()
     private var service: GeocoderServiceProtocol?
     
+    // MARK: - IBOutlets
+
     @IBOutlet public var tableView: UITableView!
     
+    // MARK: - Initialization
+
     public static func create() -> GeocoderController {
         let s = UIStoryboard(name: "GeocoderController", bundle: nil)
         return s.instantiateInitialViewController() as! GeocoderController
@@ -29,7 +35,9 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         reloadData()
     }
     
-    private func reloadData() {
+    // MARK: - Public Functions
+
+    public func reloadData() {
         defer {
             tableView.reloadData()
         }
@@ -39,19 +47,58 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             return
         }
         
+        settings.removeAll()
+        settings.append((service.operation.isReverseGeocoder ? .coordinates : .addressValue))
+
         switch service {
         case is Geocoder.Apple:
-            if service.operation.isReverseGeocoder {
-                settings = [.service, .coordinates, .createRequest]
-            } else {
-                settings = [.service, .addressValue, .proximityRegion, .locale, .createRequest]
+            if !service.operation.isReverseGeocoder {
+                settings.append(contentsOf: [.proximityRegion, .locale])
             }
             
+        case is Geocoder.Google:
+            settings.append(contentsOf: [
+                .APIKey,
+                .timeout,
+                .countryCode,
+                .boundingBox,
+                .googleResultFilters,
+                .resultTypes
+            ])
+            
+        case is Geocoder.Here:
+            settings.append(contentsOf: [
+                .APIKey,
+                .timeout,
+                .locale,
+                .limitResultCount,
+                .countryCode,
+                .proximityCoordinates
+            ])
+            
+        case is Geocoder.MapBox:
+            settings.append(contentsOf: [
+                .APIKey,
+                .timeout,
+                .locale,
+                .limitResultCount,
+                .countryCode,
+                .includeRoutingData,
+                .mapBoxResultTypes,
+                .reverseMode,
+                .proximityRegion,
+                .boundingBox,
+                .useFuzzyMatch
+            ])
+            
         default:
-            settings = [.service]
+            break
         }
         
+        settings.append(.createRequest)
     }
+    
+    // MARK: - TableView DataSource & Delegate
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         settings.count
@@ -81,20 +128,29 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch settings[indexPath.row] {
-        case .service:
-            selectService()
-        case .coordinates:
-            selectCoordinates()
-        case .addressValue:
-            selectAddressToReverse()
-        case .locale:
-            selectLocale()
-        case .proximityRegion:
-            selectProximityRegion()
+        case .service:                  selectService()
+        case .coordinates:              selectCoordinates()
+        case .addressValue:             selectAddressToReverse()
+        case .locale:                   selectLocale()
+        case .proximityRegion:          selectProximityRegion()
+        case .APIKey:                   selectAPIKey()
+        case .timeout:                  selectTimeout()
+        case .countryCode:              selectCountryCodes()
+        case .boundingBox:              selectBoundingBox()
+        case .googleLocationTypes:      selectLocationTypes()
+        case .googleResultFilters:      selectResultFilters()
+        case .limitResultCount:         selectLimitResults()
+        case .proximityCoordinates:     selectProximityCoordinates()
+        case .includeRoutingData:       selectIncludeRoutingData()
+        case .mapBoxResultTypes:        selectMapBoxResultTypes()
+        case .reverseMode:              selectReverseMode()
+        case .useFuzzyMatch:            selectMapBoxFuzzyMatch()
         default:
             break
         }
     }
+    
+    // MARK: - Actions
     
     private func createRequest() {
         guard let service = self.service else {
@@ -117,6 +173,8 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    // MARK: - Get Settings
+    
     private func valueForKind(_ row: RowSetting) -> String? {
         switch row {
         case .service:
@@ -129,8 +187,197 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
             return service?.asApple?.proximityRegion?.description ?? "Not Set"
         case .locale:
             return service?.locale ?? "Not Set"
+        case .APIKey:
+            return [
+                service?.asGoogle?.APIKey,
+                service?.asHere?.APIKey,
+                service?.asMapBox?.APIKey
+            ].firstNonNilOrFallback("Not Set")
+        case .timeout:
+            return service?.timeout?.description ?? "Not Set"
+        case .countryCode:
+            return [
+                service?.asGoogle?.countryCode,
+                service?.asHere?.countryCodes?.joined(separator: ","),
+                service?.asMapBox?.countryCode
+            ].firstNonNilOrFallback("Not Set")
+        case .googleResultFilters:
+            return service?.asGoogle?.locationTypes?.description ?? "Not Set"
+        case .limitResultCount:
+            return service?.asHere?.limit?.description ?? "Not Set"
+        case .proximityCoordinates:
+            return service?.asHere?.proximityCoordinates?.description ?? "Not Set"
+        case .includeRoutingData:
+            return service?.asMapBox?.includeRoutingData?.description ?? "Not Set"
+        case .reverseMode:
+            return service?.asMapBox?.reverseMode?.description ?? "Not Set"
+        case .boundingBox:
+            return service?.asMapBox?.boundingBox?.description ?? "Not Set"
+        case .useFuzzyMatch:
+            return service?.asMapBox?.useFuzzyMatch?.description ?? "Not Set"
+        case .mapBoxResultTypes:
+            return service?.asMapBox?.resultTypes?.description ?? "Not Set"
         default:
             return nil
+        }
+    }
+    
+    // MARK: - Select Settings
+    
+    private func selectReverseMode() {
+        let reverseOptions: [UIAlertController.ActionSheetOption] = [
+            ("Not Specified", { [weak self] _ in
+                self?.service?.asMapBox?.reverseMode = nil
+                self?.reloadData()
+            }),
+            ("By Distance", { [weak self] _ in
+                self?.service?.asMapBox?.reverseMode = .distance
+                self?.reloadData()
+            }),
+            ("By Score", { [weak self] _ in
+                self?.service?.asMapBox?.reverseMode = .score
+                self?.reloadData()
+            })
+        ]
+        UIAlertController.showActionSheet(title: "Reverse Mode",
+                                          message: "Decides how results are sorted in a reverse geocoding query if multiple results are requested using a limit other than 1.", options: reverseOptions)
+    }
+    
+    private func selectMapBoxFuzzyMatch() {
+        UIAlertController.showBoolSheet(title: "Fuzzy Match",
+                                        message: "Specify whether the Geocoding API should attempt approximate matches.") { [weak self] value in
+            self?.service?.asMapBox?.useFuzzyMatch = value
+            self?.reloadData()
+        }
+    }
+    
+    private func selectIncludeRoutingData() {
+        UIAlertController.showBoolSheet(title: "Include Routing Data",
+                                        message: "Specify whether to request additional metadata about the recommended navigation destination corresponding to the feature") { [weak self] value in
+            self?.service?.asMapBox?.includeRoutingData = value
+            self?.reloadData()
+        }
+    }
+    
+    private func selectProximityCoordinates() {
+        UIAlertController.showInputCoordinates(title: "Proximity Coordinates") { [weak self] coords in
+            self?.service?.asHere?.proximityCoordinates = coords
+            self?.reloadData()
+        }
+    }
+    
+    private func selectMapBoxResultTypes() {
+        let servicesList: [UIAlertController.ActionSheetOption] = [
+            ("Not Specified", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = nil
+                self?.reloadData()
+            }),
+            ("All", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = Geocoder.MapBox.ResultTypes.all
+                self?.reloadData()
+            }),
+            ("Country & Region", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = [.country, .region]
+                self?.reloadData()
+            }),
+            ("Postcode & District", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = [.postcode, .district]
+                self?.reloadData()
+            }),
+            ("Place & Locality", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = [.place, .locality]
+                self?.reloadData()
+            }),
+            ("Neighborhood & Address", { [weak self] _ in
+                self?.service?.asMapBox?.resultTypes = [.neighborhood, .address]
+                self?.reloadData()
+            })
+        ]
+        UIAlertController.showActionSheet(title: "Filter Types", message: "A more fine graded managment is available trough the APIs", options: servicesList)
+    }
+    
+    private func selectResultFilters() {
+        let servicesList: [UIAlertController.ActionSheetOption] = [
+            ("None", { [weak self] _ in
+                self?.service?.asGoogle?.resultFilters = nil
+                self?.reloadData()
+            }),
+            ("All", { [weak self] _ in
+                self?.service?.asGoogle?.resultFilters = Geocoder.Google.FilterTypes.all
+                self?.reloadData()
+            }),
+            ("Only Route", { [weak self] _ in
+                self?.service?.asGoogle?.resultFilters = [.route]
+                self?.reloadData()
+            }),
+            ("Only Locality", { [weak self] _ in
+                self?.service?.asGoogle?.resultFilters = [.locality]
+                self?.reloadData()
+            }),
+            ("Only Administrative Area", { [weak self] _ in
+                self?.service?.asGoogle?.resultFilters = [.administrativeArea]
+                self?.reloadData()
+            })
+        ]
+        UIAlertController.showActionSheet(title: "Filter Types", message: "A more fine graded managment is available trough the APIs", options: servicesList)
+    }
+    
+    private func selectLimitResults() {
+        UIAlertController.showInputFieldSheet(title: "Limit result count", message: "Empty to remove limit count.") { [weak self] limit in
+            guard let limit = limit, let value = Int(limit) else {
+                self?.service?.asHere?.limit = nil
+                self?.service?.asMapBox?.limit = nil
+                return
+            }
+            self?.service?.asHere?.limit = value
+            self?.service?.asHere?.limit = value
+            self?.reloadData()
+        }
+    }
+    
+    private func selectLocationTypes() {
+        let servicesList: [UIAlertController.ActionSheetOption] = [
+            ("None", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = nil
+                self?.reloadData()
+            }),
+            ("All", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = Geocoder.Google.LocationTypes.all
+                self?.reloadData()
+            }),
+            ("Only Rooftop", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = [.rooftop]
+                self?.reloadData()
+            }),
+            ("Only Range Interpolated", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = [.rangeInterpolated]
+                self?.reloadData()
+            }),
+            ("Only Geometric Center", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = [.geometricCenter]
+                self?.reloadData()
+            }),
+            ("Only Approximate", { [weak self] _ in
+                self?.service?.asGoogle?.locationTypes = [.approximate]
+                self?.reloadData()
+            }),
+        ]
+        UIAlertController.showActionSheet(title: "Location Types", message: "A more fine graded managment is available trough the APIs", options: servicesList)
+    }
+    
+    private func selectBoundingBox() {
+        UIAlertController.showInputFieldSheet(title: "Bounding Box", message: "As 'swLat,swLng,neLat,neLng' string") { [weak self] value in
+            guard let coords = value?.components(separatedBy: ",").compactMap({ CLLocationDegrees($0) }),
+                  coords.count == 4 else {
+                self?.service?.asGoogle?.boundingBox = nil
+                self?.reloadData()
+                return
+            }
+            
+            let southWestCoord = CLLocationCoordinate2D(latitude: coords[0], longitude: coords[1])
+            let northEastCoord = CLLocationCoordinate2D(latitude: coords[2], longitude: coords[3])
+            self?.service?.asGoogle?.boundingBox = .init(southwest: southWestCoord, northeast: northEastCoord)
+            self?.reloadData()
         }
     }
     
@@ -164,6 +411,32 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    private func selectAPIKey() {
+        UIAlertController.showAPIKey { [weak self] APIKey in
+            self?.service?.asHere?.APIKey = APIKey
+            self?.service?.asGoogle?.APIKey = APIKey
+            self?.service?.asMapBox?.APIKey = APIKey
+            self?.reloadData()
+        }
+    }
+    
+    private func selectCountryCodes() {
+        UIAlertController.showInputFieldSheet(title: "Select Country Code/s Filter",
+                                              message: "Read the doc for each service about allowed data types.") { [weak self] value in
+            self?.service?.asGoogle?.countryCode = value
+            self?.service?.asMapBox?.countryCode = value
+            self?.service?.asHere?.countryCodes = value?.components(separatedBy: ",")
+            self?.reloadData()
+        }
+    }
+    
+    private func selectTimeout() {
+        UIAlertController.showTimeout { [weak self] interval in
+            self?.service?.timeout = interval
+            self?.reloadData()
+        }
+    }
+    
     private func selectService() {
         let servicesList: [UIAlertController.ActionSheetOption] = [
             ("Apple Geocoder", { [weak self] _ in
@@ -176,16 +449,34 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
                 self?.selectCoordinates()
                 self?.reloadData()
             }),
-            ("Here", { [weak self] _ in
-
+            ("Google Geocoder", { [weak self] _ in
+                self?.service = Geocoder.Google(address: "", APIKey: "")
+                self?.selectAddressToReverse()
                 self?.reloadData()
             }),
-            ("MapBox", { [weak self] _ in
-
+            ("Google Reverse Geocoder", { [weak self] _ in
+                self?.service = Geocoder.Apple(coordinates: CLLocationCoordinate2D(latitude: 0,longitude: 0))
+                self?.selectCoordinates()
                 self?.reloadData()
             }),
-            ("OpenStreet", { [weak self] _ in
-
+            ("Here Geocoder", { [weak self] _ in
+                self?.service = Geocoder.Here(address: "", APIKey: "")
+                self?.selectAddressToReverse()
+                self?.reloadData()
+            }),
+            ("Here Reverse Geocoder", { [weak self] _ in
+                self?.service = Geocoder.Here(coordinates: CLLocationCoordinate2D(latitude: 0,longitude: 0), APIKey: "")
+                self?.selectCoordinates()
+                self?.reloadData()
+            }),
+            ("MapBox Geocoder", { [weak self] _ in
+                self?.service = Geocoder.MapBox(address: "", APIKey: "")
+                self?.selectAddressToReverse()
+                self?.reloadData()
+            }),
+            ("MapBox Reverse Geocoder", { [weak self] _ in
+                self?.service = Geocoder.MapBox(coordinates: CLLocationCoordinate2D(latitude: 0,longitude: 0), APIKey: "")
+                self?.selectCoordinates()
                 self?.reloadData()
             })
         ]
@@ -236,7 +527,10 @@ public extension GeocoderController {
         case zoomLevel
         case polygonThreshold
         case createRequest
-        
+        case googleResultFilters
+        case googleLocationTypes
+        case mapBoxResultTypes
+
         public var title: String {
             switch self {
             case .service:                  return "Service"
@@ -260,6 +554,9 @@ public extension GeocoderController {
             case .zoomLevel:                return "Zoom Level"
             case .polygonThreshold:         return "Polygon Threshold"
             case .createRequest:            return "Create Request"
+            case .googleResultFilters:      return "Result Filters"
+            case .googleLocationTypes:      return "Location Filters"
+            case .mapBoxResultTypes:        return "Result Types"
             }
         }
         
@@ -285,6 +582,9 @@ public extension GeocoderController {
             case .includeNameDetails:       return "Include a list of alternative names in the results"
             case .zoomLevel:                return "Level of detail required for the address"
             case .polygonThreshold:         return "Simplify the output geometry before returning"
+            case .googleResultFilters:      return "A filter of one or more location types"
+            case .googleLocationTypes:      return "Acts as a post-search filter"
+            case .mapBoxResultTypes:        return "Filter results to include only a subsets of available feature types"
             default:                        return ""
             }
         }

@@ -237,7 +237,7 @@ public extension Autocomplete {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? 3600)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
             print(request)
             return request
         }

@@ -12,6 +12,9 @@ import CoreLocation
 
 public protocol GeocoderServiceProtocol: class, CustomStringConvertible {
     
+    /// Timeout interval for request. `nil` to ignore it.
+    var timeout: TimeInterval? { get set }
+    
     /// Operastion.
     var operation: GeocoderOperation { get set }
     

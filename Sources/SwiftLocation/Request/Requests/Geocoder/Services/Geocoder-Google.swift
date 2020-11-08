@@ -20,7 +20,7 @@ public extension Geocoder {
         public var APIKey: String
         
         /// Request timeout.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval?
         
         /// The language in which to return results.
         /// See https://developers.google.com/maps/faq#languagesupport for more informations.
@@ -38,16 +38,16 @@ public extension Geocoder {
         /// See https://developers.google.com/maps/documentation/geocoding/overview#Viewports for more infos.
         public var boundingBox: BoundingBox?
         
-        /// A components filter with elements separated by a pipe (|).
-        /// The components filter is required if the request doesn't include an address.
-        /// Each element in the components filter consists of a component:value pair, and fully restricts the results from the geocoder.
+        /// Type of results.
         /// See https://developers.google.com/maps/documentation/geocoding/overview#component-filtering for more infos.
-        public var resultTypes: [String]?
+        public var resultFilters: [FilterTypes]?
         
-        /// A filter of one or more location types.
-        /// By default is set to `nil`.
+        /// It does not restrict the search to the specified location type(s). Rather, the location type acts as a post-search filter: the API fetches all results for the specified latlng,
+        /// then discards those results that do not match the specified location type(s). Note:
+        /// This parameter is available only for requests that include an API key or a client ID. The following values are supported:
         public var locationTypes: [LocationTypes]?
         
+        /// Description.
         public var description: String {
             JSONStringify([
                 "APIKey": APIKey.trunc(length: 5),
@@ -55,8 +55,9 @@ public extension Geocoder {
                 "language": locale ?? "",
                 "region": countryCode ?? "",
                 "bounds": boundingBox?.description ?? "",
-                "components": resultTypes ?? "",
-                "locationTypes": locationTypes?.description ?? ""
+                "components": resultFilters ?? "",
+                "locationTypes": locationTypes?.description ?? "",
+                "resultFilters": resultFilters?.description ?? ""
             ])
         }
         
@@ -125,7 +126,7 @@ public extension Geocoder {
             queryItems.appendIfNotNil(URLQueryItem(name: "language", optional: locale))
             queryItems.appendIfNotNil(URLQueryItem(name: "bounds", optional: boundingBox?.rawValue))
             queryItems.appendIfNotNil(URLQueryItem(name: "region", optional: countryCode))
-            queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: resultTypes?.joined(separator: "|")))
+            queryItems.appendIfNotNil(URLQueryItem(name: "components", optional: resultFilters?.map({ $0.rawValue }).joined(separator: "|")))
             queryItems.appendIfNotNil(URLQueryItem(name: "location_type", optional: locationTypes?.map({ $0.rawValue }).joined(separator: "|")))
             
             // Create
@@ -136,7 +137,7 @@ public extension Geocoder {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
             return request
         }
         
@@ -157,6 +158,11 @@ public extension Geocoder.Google {
         var southwest: CLLocationCoordinate2D
         var northeast: CLLocationCoordinate2D
         
+        public init(southwest: CLLocationCoordinate2D, northeast: CLLocationCoordinate2D) {
+            self.southwest = southwest
+            self.northeast = northeast
+        }
+        
         fileprivate var rawValue: String {
             "\(southwest.latitude),\(southwest.longitude)|\(northeast.latitude),\(northeast.longitude)"
         }
@@ -173,11 +179,35 @@ public extension Geocoder.Google {
     ///                       An interpolated range generally indicates that rooftop geocodes are unavailable for a street address.
     /// - `geometricCenter`: returns only geometric centers of a location such as a polyline (for example, a street) or polygon (region).
     /// - `approximate`: returns only the addresses that are characterized as approximate.
-    enum LocationTypes: String, Codable {
+    enum LocationTypes: String, Codable, CustomStringConvertible {
         case rooftop = "ROOFTOP"
         case rangeInterpolated = "RANGE_INTERPOLATED"
         case geometricCenter = "GEOMETRIC_CENTER"
         case approximate = "APPROXIMATE"
+        
+        public static let all: [LocationTypes] = [.rooftop, .rangeInterpolated, .geometricCenter, approximate]
+
+        public var description: String {
+            rawValue.lowercased().replacingOccurrences(of: "_", with: "")
+        }
+    }
+    
+    /// In a Geocoding response, the Geocoding API can return address results restricted to a specific area.
+    /// You can specify the restriction using the components filter.
+    /// The following components may be used to influence results, but will not be enforced:
+    /// - `route`: matches the long or short name of a route.
+    /// - `locality`: matches against locality and sublocality types.
+    /// - `administrativeArea` matches all the administrative_area levels.
+    enum FilterTypes: String, CustomStringConvertible {
+        case route = "route"
+        case locality = "locality"
+        case administrativeArea = "administrative_area"
+        
+        public static let all: [FilterTypes] = [.route, .locality, .administrativeArea]
+        
+        public var description: String {
+            rawValue
+        }
     }
     
 }

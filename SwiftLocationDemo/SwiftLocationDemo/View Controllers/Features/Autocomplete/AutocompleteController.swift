@@ -260,30 +260,14 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
     }
     
     private func selectTimeoutInterval() {
-        let subscriptionTypes: [UIAlertController.ActionSheetOption] = ([
-            nil, 3, 5, 10, 15
-        ] as [Int?]
-        ).map { [weak self] item in
-            let title = (item == nil ? "Not Set" : "\(item!)s")
-            return (title, { _ in
-                self?.currentService?.timeout = (item != nil ? TimeInterval(item!) : nil)
-                self?.reloadData()
-            })
+        UIAlertController.showTimeout { [weak self] interval in
+            self?.currentService?.timeout = interval
+            self?.reloadData()
         }
-        
-        UIAlertController.showActionSheet(title: "Select Subscription",
-                                          message: "Delayed starts only after the necessary authorization will be granted",
-                                          options: subscriptionTypes)
     }
     
     private func selectAPIKey() {
-        UIAlertController.showInputFieldSheet(title: "API Key",
-                                              message: "See the documentation to get t") { [weak self] value in
-            
-            guard let APIKey = value, !APIKey.isEmpty else {
-                return
-            }
-            
+        UIAlertController.showAPIKey { [weak self] APIKey in
             self?.currentService?.asGoogle?.APIKey = APIKey
             self?.reloadData()
         }

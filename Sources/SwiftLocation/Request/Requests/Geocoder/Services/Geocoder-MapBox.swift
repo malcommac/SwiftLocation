@@ -23,7 +23,7 @@ public extension Geocoder {
         public var APIKey: String
         
         /// Request timeout.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval?
         
         /// Specify the user’s language. This parameter controls the language of the text supplied in responses.
         /// See https://docs.mapbox.com/api/search/#language-coverage for more info.
@@ -79,10 +79,11 @@ public extension Geocoder {
         /// NOTE: Applicable only for geocoder.
         public var useFuzzyMatch: Bool?
         
+        /// Description.
         public var description: String {
             let data: [String: Any] = [
                 "APIKey": APIKey.trunc(length: 5),
-                "timeout": timeout,
+                "timeout": timeout ?? "",
                 "locale": locale ?? "",
                 "country": countryCode ?? "",
                 "limit": limit ?? 0,
@@ -190,7 +191,7 @@ public extension Geocoder {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
             return request
         }
         
@@ -243,6 +244,8 @@ public extension Geocoder.MapBox {
              neighborhood,
              address,
              poi
+        
+        public static let all: [ResultTypes] = [.country, .region, .postcode, .district, .place, .locality, .neighborhood, .address, .poi]
         
         public var description: String {
             rawValue

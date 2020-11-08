@@ -13,6 +13,9 @@ public extension Geocoder {
     class Apple: GeocoderServiceProtocol {
         
         // MARK: - Public Properties
+        
+        /// NOTE: It's ignored for this service.
+        public var timeout: TimeInterval?
 
         /// Is request cancelled.
         public var isCancelled = false

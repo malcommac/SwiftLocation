@@ -206,6 +206,33 @@ extension UIAlertController {
         }
     }
     
+    public static func showAPIKey(_ handler: @escaping ((String) -> Void)) {
+        UIAlertController.showInputFieldSheet(title: "API Key", message: "See the documentation to get it") { value in
+            guard let APIKey = value, !APIKey.isEmpty else {
+                handler("")
+                return
+            }
+            
+            handler(APIKey)
+        }
+    }
+    
+    public static func showTimeout(title: String? = nil, message: String? = nil, _ handler: @escaping ((TimeInterval?) -> Void)) {
+        let subscriptionTypes: [UIAlertController.ActionSheetOption] = ([
+            nil, 3, 5, 10, 15
+        ] as [Int?]
+        ).map { item in
+            let title = (item == nil ? "Not Set" : "\(item!)s")
+            return (title, { _ in
+                handler((item != nil ? TimeInterval(item!) : nil))
+            })
+        }
+        
+        UIAlertController.showActionSheet(title: title ?? "Select Timeout",
+                                          message: message ?? "It's used to cancel the request automatically when expired",
+                                          options: subscriptionTypes)
+    }
+    
 }
 
 
@@ -320,6 +347,17 @@ extension MKCoordinateRegion: CustomStringConvertible {
     
     public var description: String {
         "\(center.formattedValue)"
+    }
+    
+}
+
+public extension Array where Element == Optional<String> {
+    
+    func firstNonNilOrFallback(_ fallback: String) -> String {
+        guard let valueIdx = firstIndex(where: { $0 != nil && !($0?.isEmpty ?? true) }) else {
+            return fallback
+        }
+        return self[valueIdx]!
     }
     
 }

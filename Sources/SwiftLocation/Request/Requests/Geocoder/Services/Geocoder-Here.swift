@@ -24,7 +24,7 @@ public extension Geocoder {
         public var APIKey: String
         
         /// Request timeout.
-        public var timeout: TimeInterval = 5
+        public var timeout: TimeInterval?
         
         /// Maximum number of results to be returned. If not specified 20 is used.
         public var limit: Int?
@@ -41,6 +41,7 @@ public extension Geocoder {
         /// Specify the center of the search context expressed as coordinates.
         public var proximityCoordinates: CLLocationCoordinate2D?
         
+        /// Description.
         public var description: String {
             JSONStringify([
                 "APIKey": APIKey.trunc(length: 5),
@@ -145,7 +146,7 @@ public extension Geocoder {
                 throw LocatorErrors.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout)
+            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
             return request
         }
         
