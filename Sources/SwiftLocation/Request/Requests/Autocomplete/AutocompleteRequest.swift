@@ -94,7 +94,7 @@ public class AutocompleteRequest: RequestProtocol {
     
     public func didAddInQueue() {
         service.executeAutocompleter { [weak self] result in
-            self?.dispatchData(result)
+            self?.receiveData(result)
         }
     }
     

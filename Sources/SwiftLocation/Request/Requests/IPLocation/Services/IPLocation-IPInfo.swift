@@ -86,6 +86,10 @@ public extension IPLocation {
         }
         
         public func buildRequest() throws -> URLRequest {
+            guard let APIKey = self.APIKey, !APIKey.isEmpty else {
+                throw LocationError.invalidAPIKey
+            }
+            
             var urlComponents = URLComponents(string: serviceURL().absoluteString)
             urlComponents?.queryItems = [
                 URLQueryItem(name: "token", value: APIKey)

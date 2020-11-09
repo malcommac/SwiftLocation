@@ -47,6 +47,7 @@ public enum LocationError: LocalizedError, Equatable {
     case authorizationNeeded
     case internalError
     case parsingError
+    case networkError(HTTPURLResponse?)
     case cancelled
     case invalidAPIKey
     case usageLimitReached
@@ -82,6 +83,7 @@ public enum LocationError: LocalizedError, Equatable {
         case .reserved:             return "Reserved IP"
         case .notSupported:         return "Not Supported"
         case .invalidPolygon:       return "Invalid polygon. Must be 1 or more points"
+        case .networkError(let r):  return "Network error: \(r?.statusCode ?? 0)"
         case .other(let e):         return e
         }
     }
@@ -102,6 +104,7 @@ public enum LocationError: LocalizedError, Equatable {
         case (.reserved, .reserved):                    return true
         case (.notSupported, .notSupported):            return true
         case (.invalidPolygon, .invalidPolygon):        return true
+        case (.networkError(let a), .networkError(let b)): return a == b
 
         default:                                        return false
         }

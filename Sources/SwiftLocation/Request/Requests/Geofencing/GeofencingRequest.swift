@@ -162,8 +162,9 @@ public class GeofencingRequest: RequestProtocol, Codable {
     /// Custom dispatcher for polygon monitoring.
     /// - Parameter event: event to dispatch.
     private func dispatchGeofenceEvent(_ event: GeofenceEvent) {
-        lastReceivedValue = .success(event) // save
-        dispatchData(.success(event)) // dispatch
+        let data: Result<ProducedData, LocationError> = .success(event)
+        lastReceivedValue = data
+        receiveData(data)
     }
         
     public func startTimeoutIfNeeded() {

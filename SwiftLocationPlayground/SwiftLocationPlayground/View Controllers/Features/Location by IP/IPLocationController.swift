@@ -281,10 +281,19 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
         
         runningRequest = LocationManager.shared.ipLocationWith(service)
-        runningRequest?.then(queue: .main, { result in
+        runningRequest?.then(queue: .main, { [weak self] result in
+            guard let self = self else { return }
+            
             loader.dismiss(animated: true, completion: nil)
             ResultController.showWithResult(result, in: self)
+            //self.resetService()
         })
+    }
+    
+    private func resetService() {
+        runningRequest = nil
+        service = nil
+        reloadData()
     }
     
 }

@@ -121,6 +121,7 @@ public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
     func didAddInQueue()
     
     /// Request was removed from the queue.
+    /// You should use this method to reset the state of the request.
     func didRemovedFromQueue()
     
 }

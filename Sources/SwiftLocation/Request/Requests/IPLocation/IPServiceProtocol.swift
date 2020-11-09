@@ -79,6 +79,9 @@ public protocol IPServiceProtocol: class, CustomStringConvertible {
     /// Cancel active request.
     func cancel()
     
+    /// Reset the initial setate of the service.
+    func resetState()
+    
 }
 
 // MARK: - IPService Extension
@@ -89,6 +92,7 @@ public extension IPServiceProtocol {
         do {
             let request = try buildRequest()
             self.task = session.dataTask(with: request) { [weak self] (data, response, error) in
+                print(self?.isCancelled)
                 guard let self = self, self.isCancelled == false else {
                     completion(.failure(.cancelled))
                     return
@@ -100,10 +104,10 @@ public extension IPServiceProtocol {
                 }
                 
                 // not expected response
-                guard let response = response as? HTTPURLResponse,
-                      response.statusCode == 200,
+                guard let httpResponse = response as? HTTPURLResponse,
+                      httpResponse.statusCode == 200,
                       let data = data else {
-                    completion(.failure(.internalError))
+                    completion(.failure(.networkError(response as? HTTPURLResponse)))
                     return
                 }
                 
@@ -130,6 +134,12 @@ public extension IPServiceProtocol {
         
         isCancelled = true
         task?.cancel()
+        task = nil
+    }
+    
+    func resetState() {
+        cancel()
+        isCancelled = false
     }
     
 }

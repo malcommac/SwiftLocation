@@ -82,6 +82,10 @@ public extension IPLocation {
         }
         
         public func buildRequest() throws -> URLRequest {
+            guard let APIKey = self.APIKey, !APIKey.isEmpty else {
+                throw LocationError.invalidAPIKey
+            }
+            
             let serviceURL = URL(string: "https://api.ipgeolocation.io/ipgeo")!
             var urlComponents = URLComponents(string: serviceURL.absoluteString)
             

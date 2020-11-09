@@ -89,7 +89,7 @@ public class IPLocationRequest: RequestProtocol {
     }
     
     public func didRemovedFromQueue() {
-        service.cancel()
+        service.resetState()
     }
     
     public var description: String {
