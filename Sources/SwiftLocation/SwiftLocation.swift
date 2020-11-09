@@ -1,5 +1,5 @@
 //
-//  LocationManager.swift
+//  SwiftLocation.swift
 //
 //  Copyright (c) 2020 Daniele Margutti (hello@danielemargutti.com).
 //
@@ -31,7 +31,7 @@ import AppKit
 import UIKit
 #endif
 
-public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
+public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
         
     // MARK: - Private Properties
 
@@ -49,7 +49,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     public var onRestoreVisits: (([VisitsRequest]) -> Void)?
 
     /// Shared instance.
-    public static let shared = LocationManager()
+    public static let shared = SwiftLocation()
     
     /// Return true if beacon foreground broadcasting is active or not.
     public static var isBeaconBroadcastActive: Bool {
@@ -75,7 +75,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         didSet {
             guard currentSettings != oldValue else { return } // same settings, no needs to perform any change
 
-            LocatorLogger.log("CLLocationManager: \(currentSettings)")
+            SwiftLocation.Logger.log("CLLocationManager: \(currentSettings)")
             manager?.updateSettings(currentSettings)
         }
     }
@@ -328,7 +328,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             beaconsRequests.remove(beacon)
             
         default:
-            LocatorLogger.log("Failed to remove request: '\(request)'")
+            SwiftLocation.Logger.log("Failed to remove request: '\(request)'")
         }
     }
     
@@ -363,7 +363,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             defaults.setValue(try JSONEncoder().encode(visitsRequest.list), forKey: UserDefaultsKeys.VisitsRequests)
             return true
         } catch {
-            LocatorLogger.log("Failed to save the state of the requests: \(error.localizedDescription)")
+            SwiftLocation.Logger.log("Failed to save the state of the requests: \(error.localizedDescription)")
             return false
         }
     }
@@ -390,7 +390,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         do {
             return try JSONDecoder().decode([T].self, from: data)
         } catch {
-            LocatorLogger.log("Failed to restore saved queue for \(String(describing: T.self)): \(error.localizedDescription)")
+            SwiftLocation.Logger.log("Failed to restore saved queue for \(String(describing: T.self)): \(error.localizedDescription)")
             return []
         }
     }
@@ -593,7 +593,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         copyList.forEach { request in
             if filter?(request) ?? true {
                 if let discardReason = request.receiveData(data) {
-                    LocatorLogger.log("𝗑 Location discarded from \(request.uuid): \(discardReason.description)")
+                    SwiftLocation.Logger.log("𝗑 Location discarded from \(request.uuid): \(discardReason.description)")
                 }
             }
         }
@@ -603,7 +603,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
 
 // MARK: - RequestQueue
 
-public extension LocationManager {
+public extension SwiftLocation {
     
     class RequestQueue<Value: RequestProtocol>: CustomStringConvertible {
         
@@ -635,7 +635,7 @@ public extension LocationManager {
         /// - Returns: Self
         @discardableResult
         internal func add(_ request: Value, silent: Bool = false) -> Value {
-            LocatorLogger.log("+ Add new request: \(request.uuid)")
+            SwiftLocation.Logger.log("+ Add new request: \(request.uuid)")
             
             list.insert(request)
             request.didAddInQueue()
@@ -662,7 +662,7 @@ public extension LocationManager {
         internal func add(_ requests: [Value], silent: Bool = false) -> [Value] {
             guard requests.isEmpty == false else { return [] }
             
-            LocatorLogger.log("+ Add requests: \(requests.map({ $0.uuid }).joined(separator: ","))")
+            SwiftLocation.Logger.log("+ Add requests: \(requests.map({ $0.uuid }).joined(separator: ","))")
             
             requests.forEach {
                 list.insert($0)
@@ -680,7 +680,7 @@ public extension LocationManager {
         /// - Returns: Self
         @discardableResult
         internal func remove(_ request: Value, silent: Bool = false) -> Value {
-            LocatorLogger.log("- Remove request: \(request.uuid)")
+            SwiftLocation.Logger.log("- Remove request: \(request.uuid)")
             
             list.remove(request)
             request.didRemovedFromQueue()
@@ -696,7 +696,7 @@ public extension LocationManager {
             guard !list.isEmpty else { return }
             
             let removedRequests = list
-            LocatorLogger.log("- Remove all \(list.count) requests")
+            SwiftLocation.Logger.log("- Remove all \(list.count) requests")
             list.removeAll()
             
             removedRequests.forEach({ $0.didRemovedFromQueue() })

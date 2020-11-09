@@ -38,10 +38,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Setup locator
-        LocationManager.shared.onRestoreGeofences = AppDelegate.onRestoreGeofencedRequests
-        LocationManager.shared.onRestoreGPS = AppDelegate.onRestoreGPSRequests
-        LocationManager.shared.onRestoreVisits = AppDelegate.onRestoreVisitsRequests
-        LocationManager.shared.restoreState()
+        SwiftLocation.shared.onRestoreGeofences = AppDelegate.onRestoreGeofencedRequests
+        SwiftLocation.shared.onRestoreGPS = AppDelegate.onRestoreGPSRequests
+        SwiftLocation.shared.onRestoreVisits = AppDelegate.onRestoreVisitsRequests
+        SwiftLocation.shared.restoreState()
 
         // Enable push notifications
         UNUserNotificationCenter.current().delegate = self

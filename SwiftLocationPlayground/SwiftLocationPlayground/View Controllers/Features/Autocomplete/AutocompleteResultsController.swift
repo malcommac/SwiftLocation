@@ -82,7 +82,7 @@ public class AutocompleteResultsController: UIViewController, UITableViewDelegat
         }
                 
         let loader = UIAlertController.showLoader(message: "Getting details for place \(result.description)...")
-        LocationManager.shared.autocompleteWith(detailService).then(queue: .main) { result in
+        SwiftLocation.shared.autocompleteWith(detailService).then(queue: .main) { result in
             loader.dismiss(animated: true, completion: nil)
             ResultController.showWithResult(result, in: self)
         }

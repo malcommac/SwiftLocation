@@ -36,7 +36,7 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     private var activeRequest: VisitsRequest?
 
     private var hasVisitsEnabled: Bool {
-        LocationManager.shared.visitsRequest.hasActiveRequests
+        SwiftLocation.shared.visitsRequest.hasActiveRequests
     }
     
     override func viewDidLoad() {
@@ -96,7 +96,7 @@ class VisitsController: UIViewController, UITableViewDelegate, UITableViewDataSo
     }
     
     private func startVisitsMonitoringWithActivityType(_ type: CLActivityType) {
-        activeRequest = LocationManager.shared.visits(activityType: type)
+        activeRequest = SwiftLocation.shared.visits(activityType: type)
         AppDelegate.attachSubscribersToVisitsRegions([activeRequest])
         reloadData()
         
@@ -184,7 +184,7 @@ public class VisitsControllerCell: UITableViewCell {
         didSet {
             coordinatesLabel.text = visit?.coordinate.formattedValue ?? "-"
             if let coordinates = visit?.coordinate {
-                 LocationManager.shared.geocodeWith(Geocoder.Apple(coordinates: coordinates)).then(queue: .main, { [weak self] result in
+                 SwiftLocation.shared.geocodeWith(Geocoder.Apple(coordinates: coordinates)).then(queue: .main, { [weak self] result in
                     switch result {
                     case .failure(let error):
                         self?.detailTextLabel?.text = error.localizedDescription

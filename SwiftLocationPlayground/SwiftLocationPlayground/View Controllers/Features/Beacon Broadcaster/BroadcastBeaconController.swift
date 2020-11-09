@@ -69,7 +69,7 @@ public class BroadcastBeaconController: UIViewController, UITableViewDelegate, U
         if item == .enable {
             let cell = tableView.dequeueReusableCell(withIdentifier: ToggleCell.defaultReuseIdentifier, for: indexPath) as! ToggleCell
             cell.titleLabel.text = item.title
-            cell.toggleButton.isOn = LocationManager.isBeaconBroadcastActive
+            cell.toggleButton.isOn = SwiftLocation.isBeaconBroadcastActive
             cell.accessoryType = .none
             cell.onToggle = { [weak self] isOn in
                 self?.setToggleStateTo(isOn)
@@ -147,7 +147,7 @@ public class BroadcastBeaconController: UIViewController, UITableViewDelegate, U
                     return
                 }
                 
-                LocationManager.shared.broadcastAsBeacon(newBeacon) { error in
+                SwiftLocation.shared.broadcastAsBeacon(newBeacon) { error in
                     self?.tableView?.reloadData()
                     if let error = error {
                         UIAlertController.showAlert(title: "Failed to broadcast",
@@ -161,7 +161,7 @@ public class BroadcastBeaconController: UIViewController, UITableViewDelegate, U
             
         } else {
             UIAlertController.showBoolSheet(title: "Stop broadcasting?", message: nil) { [weak self] value in
-                LocationManager.shared.stopBroadcasting()
+                SwiftLocation.shared.stopBroadcasting()
                 self?.broadcastBeacon = nil
                 self?.tableView?.reloadData()
             }

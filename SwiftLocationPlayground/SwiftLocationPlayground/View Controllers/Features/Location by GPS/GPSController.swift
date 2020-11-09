@@ -212,7 +212,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     // MARK: - Helper
 
     private func createRequest() {
-        let request = LocationManager.shared.gpsLocationWith(serviceOptions)
+        let request = SwiftLocation.shared.gpsLocationWith(serviceOptions)
         
         serviceOptions = GPSLocationOptions()
         reloadData()

@@ -77,7 +77,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         internal var canFireTimer: Bool {
             switch self {
             case .immediate: return true
-            case .delayed:   return LocationManager.shared.authorizationStatus.isAuthorized
+            case .delayed:   return SwiftLocation.shared.authorizationStatus.isAuthorized
             }
         }
         

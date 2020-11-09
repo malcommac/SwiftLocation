@@ -73,19 +73,19 @@ internal class BeaconBroadcaster: NSObject, CBPeripheralManagerDelegate {
         switch peripheral.state {
         case .poweredOn:
             guard let region = beacon?.region else {
-                LocatorLogger.log("Failed to get region from broadcast beacon passed.")
+                SwiftLocation.Logger.log("Failed to get region from broadcast beacon passed.")
                 return
             }
             
             let data = ((region.peripheralData(withMeasuredPower: nil)) as NSDictionary) as! Dictionary<String, Any>
             peripheral.startAdvertising(data)
-            LocatorLogger.log("Bluetooth peripheral on, start adveristing")
+            SwiftLocation.Logger.log("Bluetooth peripheral on, start adveristing")
             
         case .poweredOff:
             peripheral.stopAdvertising()
-            LocatorLogger.log("Bluetooth peripheral off, stop adveristing")
+            SwiftLocation.Logger.log("Bluetooth peripheral off, stop adveristing")
         default:
-            LocatorLogger.log("Bluetooth peripheral \(peripheral.description)")
+            SwiftLocation.Logger.log("Bluetooth peripheral \(peripheral.description)")
             break
         }
     }
@@ -94,9 +94,9 @@ internal class BeaconBroadcaster: NSObject, CBPeripheralManagerDelegate {
         onStatusDidChange?(nil)
 
         if let error = error {
-            LocatorLogger.log("Error bluetooth advertising \(error.localizedDescription)")
+            SwiftLocation.Logger.log("Error bluetooth advertising \(error.localizedDescription)")
         } else {
-            LocatorLogger.log("Bluetooth advertising started successfully")
+            SwiftLocation.Logger.log("Bluetooth advertising started successfully")
         }
     }
     

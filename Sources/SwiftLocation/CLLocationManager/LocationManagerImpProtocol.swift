@@ -57,7 +57,7 @@ public protocol LocationManagerImpProtocol: class {
     
     /// Initialize with a new locator.
     /// - Parameter locator: locator.
-    init(locator: LocationManager) throws
+    init(locator: SwiftLocation) throws
     
     /// Request authorization.
     /// - Parameters:

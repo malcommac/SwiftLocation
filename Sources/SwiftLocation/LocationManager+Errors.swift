@@ -114,17 +114,26 @@ public enum LocationError: LocalizedError, Equatable {
 
 // MARK: - LocatorLogger
 
-public class LocatorLogger {
+public extension SwiftLocation {
     
-    static var isEnabled = true
-    private static var queue = DispatchQueue(label: "locator.logger", qos: .background)
-    
-    static func log(_ message: String) {
-        guard isEnabled else { return }
+    class Logger {
         
-        queue.sync {
-            print(message)
+        /// enable or disable logger.
+        static var isEnabled = true
+        
+        /// Queue.
+        private static var queue = DispatchQueue(label: "locator.logger", qos: .background)
+        
+        /// Log a message.
+        /// - Parameter message: message to log.
+        static func log(_ message: String) {
+            guard isEnabled else { return }
+            
+            queue.sync {
+                print(message)
+            }
         }
+        
     }
     
 }

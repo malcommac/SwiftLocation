@@ -31,7 +31,7 @@ extension MKMapView {
     public func zoomToUserLocation(_ accuracy: GPSLocationOptions.Accuracy = .block,
                                    distance: CLLocationDistance = 3000,
                                    onError: ((Error) -> Void)? = nil) {
-        LocationManager.shared.gpsLocationWith {
+        SwiftLocation.shared.gpsLocationWith {
             $0.accuracy = accuracy
         }.then(queue: .main) { [weak self] result in
             switch result {

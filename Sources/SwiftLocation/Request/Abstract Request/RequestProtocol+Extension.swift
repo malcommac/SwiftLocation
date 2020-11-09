@@ -64,7 +64,7 @@ public extension RequestProtocol {
     }
     
     func cancelRequest() {
-        LocationManager.shared.cancel(request: self)
+        SwiftLocation.shared.cancel(request: self)
     }
     
     @discardableResult
@@ -106,7 +106,7 @@ public extension RequestProtocol {
         dispatchData(.success(data))
         
         if shouldRemoveRequest() { // if first data invalidate the request
-            LocatorLogger.log("Request '\(uuid)' will be removed due to eviction policy \(evictionPolicy)")
+            SwiftLocation.Logger.log("Request '\(uuid)' will be removed due to eviction policy \(evictionPolicy)")
             cancelRequest()
         }
         

@@ -30,7 +30,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     // MARK: - Private Properties
     
     /// Parent locator manager.
-    private weak var locator: LocationManager?
+    private weak var locator: SwiftLocation?
     
     /// Internal device comunication object.
     private var manager: CLLocationManager
@@ -54,7 +54,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     
     // MARK: - Initialization
     
-    required public init(locator: LocationManager) throws {
+    required public init(locator: SwiftLocation) throws {
         self.locator = locator
         self.manager = CLLocationManager()
         super.init()
@@ -101,12 +101,12 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         }
         
         regionToStopMonitoring.forEach { [weak self] in
-            LocatorLogger.log("Stop monitoring region: \($0)")
+            SwiftLocation.Logger.log("Stop monitoring region: \($0)")
             self?.manager.stopMonitoring(for: $0)
         }
         
         requests.forEach { [weak self] in
-            LocatorLogger.log("Start monitoring region: \($0.monitoredRegion)")
+            SwiftLocation.Logger.log("Start monitoring region: \($0.monitoredRegion)")
             self?.manager.startMonitoring(for: $0.monitoredRegion)
         }
     }
@@ -127,17 +127,17 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // This method is called only on iOS 13 or lower, for iOS14 we are using `locationManagerDidChangeAuthorization` below.
-        LocatorLogger.log("Authorization is set to = \(status)")
+        SwiftLocation.Logger.log("Authorization is set to = \(status)")
         didChangeAuthorizationStatus(status)
     }
     
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        LocatorLogger.log("Failed to receive new locations: \(error.localizedDescription)")
+        SwiftLocation.Logger.log("Failed to receive new locations: \(error.localizedDescription)")
         delegate?.locationManager(didFailWithError: error)
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        LocatorLogger.log("Received new locations: \(locations)")
+        SwiftLocation.Logger.log("Received new locations: \(locations)")
         delegate?.locationManager(didReceiveLocations: locations)
     }
     
@@ -149,7 +149,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
             return
         }
         
-        LocatorLogger.log("Did enter in region: \(region.identifier)")
+        SwiftLocation.Logger.log("Did enter in region: \(region.identifier)")
         delegate?.locationManager(geofenceEvent: .didEnteredRegion(region))
     }
     
@@ -159,17 +159,17 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
             return
         }
         
-        LocatorLogger.log("Did exit from region: \(region.identifier)")
+        SwiftLocation.Logger.log("Did exit from region: \(region.identifier)")
         delegate?.locationManager(geofenceEvent: .didExitedRegion(region))
     }
     
     public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        LocatorLogger.log("Did fail to monitoring region: \(region?.identifier ?? "all"). \(error.localizedDescription)")
+        SwiftLocation.Logger.log("Did fail to monitoring region: \(region?.identifier ?? "all"). \(error.localizedDescription)")
         delegate?.locationManager(geofenceError: .generic(error), region: region)
     }
     
     public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
-        LocatorLogger.log("Did fail to monitoring visit: \(visit.description)")
+        SwiftLocation.Logger.log("Did fail to monitoring visit: \(visit.description)")
         delegate?.locationManager(didVisits: visit)
     }
     
@@ -191,18 +191,18 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     }
     
     public func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        LocatorLogger.log("Did range beacons: \(beacons) in \(region.description)")
+        SwiftLocation.Logger.log("Did range beacons: \(beacons) in \(region.description)")
         let allBeacons = beacons.filter{ $0.proximity != CLProximity.unknown }
         delegate?.locationManager(didRangeBeacons: allBeacons, in: region)
     }
     
     private func locationManager(_ manager: CLLocationManager, didEnterBeaconRegion region: CLBeaconRegion) {
-        LocatorLogger.log("Did enter in beacon region: \(region.identifier)")
+        SwiftLocation.Logger.log("Did enter in beacon region: \(region.identifier)")
         delegate?.locationManager(didEnterBeaconRegion: region)
     }
     
     private func locationManager(_ manager: CLLocationManager, didExitBeaconRegion region: CLBeaconRegion) {
-        LocatorLogger.log("Did exit from beacon region: \(region.identifier)")
+        SwiftLocation.Logger.log("Did exit from beacon region: \(region.identifier)")
         delegate?.locationManager(didExitBeaconRegion: region)
     }
     

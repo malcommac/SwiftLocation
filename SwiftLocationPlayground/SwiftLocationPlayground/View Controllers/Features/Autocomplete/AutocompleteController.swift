@@ -117,7 +117,7 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
         }
 
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
-        let request = LocationManager.shared.autocompleteWith(service)
+        let request = SwiftLocation.shared.autocompleteWith(service)
         request.then(queue: .main) { result in
             loader.dismiss(animated: false, completion: {
                 switch result {
