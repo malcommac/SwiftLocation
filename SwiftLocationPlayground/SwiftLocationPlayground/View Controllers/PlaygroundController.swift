@@ -26,8 +26,12 @@ import UIKit
 
 public class PlaygroundController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    // MARK: - IBOutlets
+
     @IBOutlet public var featuresTableView: UITableView!
     
+    // MARK: - Private Properties
+
     private let featuresList: [Feature] = [
         .gpsLocation,
         .ipLocation,
@@ -38,6 +42,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         .beaconBroadcast,
         .beaconRanging
     ]
+    
+    // MARK: - Initialization
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +56,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
 
         self.navigationItem.title = "SwiftLocation Playground"
     }
+    
+    // MARK: - TableView DataSource & Delegates
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         featuresList.count
@@ -66,6 +74,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         openFeatureScreen(featuresList[indexPath.row])
     }
     
+    // MARK: - Private Functions
+
     private func openFeatureScreen(_ feature: Feature) {
         switch feature {
         case .ipLocation:
@@ -88,6 +98,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
     }
     
 }
+
+// MARK: - PlaygroundController Feature
 
 fileprivate extension PlaygroundController {
     

@@ -109,13 +109,13 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		6401DBE7255566E40017BD91 /* Result Controller */ = {
+		6401DBE7255566E40017BD91 /* Result */ = {
 			isa = PBXGroup;
 			children = (
 				6401DBE9255566F30017BD91 /* ResultController.storyboard */,
 				6401DBE4255566D60017BD91 /* ResultController.swift */,
 			);
-			path = "Result Controller";
+			path = Result;
 			sourceTree = "<group>";
 		};
 		6401DBED25556CDF0017BD91 /* Features */ = {
@@ -188,15 +188,24 @@
 			path = "Beacons Monitor";
 			sourceTree = "<group>";
 		};
+		6436C7552559C1E6008C9545 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				646A339B253706E0006B822B /* UIKit+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		64425DFB2539C31500953D49 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				647BBFEC251C8265000EB5AC /* Main.storyboard */,
 				6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */,
 				646A33FA2538AC41006B822B /* Requests List */,
-				6401DBE7255566E40017BD91 /* Result Controller */,
+				6401DBE7255566E40017BD91 /* Result */,
 				6401DBED25556CDF0017BD91 /* Features */,
 				6401DBDC255564370017BD91 /* Cells */,
+				6436C7552559C1E6008C9545 /* Extensions */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -240,7 +249,6 @@
 			children = (
 				647BBFE6251C8265000EB5AC /* AppDelegate.swift */,
 				647BBFE8251C8265000EB5AC /* SceneDelegate.swift */,
-				646A339B253706E0006B822B /* UIKit+Extensions.swift */,
 				64425DFB2539C31500953D49 /* View Controllers */,
 				647BBFEF251C8266000EB5AC /* Assets.xcassets */,
 				647BBFF1251C8266000EB5AC /* LaunchScreen.storyboard */,
