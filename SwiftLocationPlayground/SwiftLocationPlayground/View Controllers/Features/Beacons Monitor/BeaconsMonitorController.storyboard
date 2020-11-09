@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2ut-PT-96b">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Beacons Monitor Controller-->
+        <scene sceneID="SYp-ey-oJD">
+            <objects>
+                <viewController storyboardIdentifier="BeaconsMonitorController" id="2ut-PT-96b" customClass="BeaconsMonitorController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lGB-xB-8eY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Lgg-Kb-83L">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="306.5"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="2ut-PT-96b" id="bRb-6g-sXc"/>
+                                    <outlet property="delegate" destination="2ut-PT-96b" id="hYD-vf-gUA"/>
+                                </connections>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ranging Events" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dbO-k1-cH6">
+                                <rect key="frame" x="15" y="321.5" width="140" height="23"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Latest 10 events received from the latest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xKg-Lb-Reb">
+                                <rect key="frame" x="15" y="344.5" width="234" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EWb-jJ-QjB">
+                                <rect key="frame" x="352" y="321" width="47" height="30"/>
+                                <state key="normal" title="CLEAR"/>
+                                <connections>
+                                    <action selector="clear" destination="2ut-PT-96b" eventType="touchUpInside" id="e8l-7b-IGb"/>
+                                </connections>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ASK-VG-N3W">
+                                <rect key="frame" x="0.0" y="369" width="414" height="405"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="405" id="E2e-ME-YuH"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="dataSource" destination="2ut-PT-96b" id="QZj-Ag-EhD"/>
+                                    <outlet property="delegate" destination="2ut-PT-96b" id="RsK-OA-AEl"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Pzn-Sb-90J"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ASK-VG-N3W" firstAttribute="top" secondItem="EWb-jJ-QjB" secondAttribute="bottom" constant="18" id="0rh-yA-0cS"/>
+                            <constraint firstItem="xKg-Lb-Reb" firstAttribute="top" secondItem="dbO-k1-cH6" secondAttribute="bottom" id="237-Eb-ZuT"/>
+                            <constraint firstItem="ASK-VG-N3W" firstAttribute="bottom" secondItem="Pzn-Sb-90J" secondAttribute="bottom" id="6uL-3C-ZMc"/>
+                            <constraint firstItem="ASK-VG-N3W" firstAttribute="trailing" secondItem="Pzn-Sb-90J" secondAttribute="trailing" id="FIM-4R-gWf"/>
+                            <constraint firstItem="dbO-k1-cH6" firstAttribute="top" secondItem="Lgg-Kb-83L" secondAttribute="bottom" constant="15" id="I52-vv-2Re"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="trailing" secondItem="Pzn-Sb-90J" secondAttribute="trailing" id="Nmw-SH-a9Q"/>
+                            <constraint firstItem="dbO-k1-cH6" firstAttribute="leading" secondItem="Pzn-Sb-90J" secondAttribute="leading" constant="15" id="PsR-ib-Oct"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="top" secondItem="Pzn-Sb-90J" secondAttribute="top" id="REk-PT-Nqg"/>
+                            <constraint firstItem="Pzn-Sb-90J" firstAttribute="trailing" secondItem="EWb-jJ-QjB" secondAttribute="trailing" constant="15" id="Xee-yc-569"/>
+                            <constraint firstItem="xKg-Lb-Reb" firstAttribute="leading" secondItem="Pzn-Sb-90J" secondAttribute="leading" constant="15" id="d4c-dk-vaM"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="leading" secondItem="Pzn-Sb-90J" secondAttribute="leading" id="dHY-hC-Y4s"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="trailing" secondItem="Pzn-Sb-90J" secondAttribute="trailing" id="kNW-za-SjR"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="leading" secondItem="Pzn-Sb-90J" secondAttribute="leading" id="nb5-kT-S2k"/>
+                            <constraint firstItem="ASK-VG-N3W" firstAttribute="leading" secondItem="Pzn-Sb-90J" secondAttribute="leading" id="no3-A8-Psu"/>
+                            <constraint firstItem="ASK-VG-N3W" firstAttribute="top" secondItem="xKg-Lb-Reb" secondAttribute="bottom" constant="10" id="v2E-OT-nJ7"/>
+                            <constraint firstItem="Lgg-Kb-83L" firstAttribute="top" secondItem="Pzn-Sb-90J" secondAttribute="top" id="yPM-mj-OtP"/>
+                        </constraints>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <connections>
+                        <outlet property="logsTableView" destination="ASK-VG-N3W" id="d7U-br-eoo"/>
+                        <outlet property="monitoredBeaconsTableView" destination="Lgg-Kb-83L" id="bCm-sW-KnY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5XD-ax-OZi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-291.304347826087" y="22.767857142857142"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

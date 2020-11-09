@@ -143,6 +143,9 @@ public extension Autocomplete {
         
         public func executeAutocompleter(_ completion: @escaping ((Result<[Autocomplete.Data], LocationError>) -> Void)) {
             do {
+                guard !APIKey.isEmpty else {
+                    throw LocationError.invalidAPIKey
+                }
                 
                 self.callback = completion
                 let request = try buildRequest()
@@ -152,7 +155,7 @@ public extension Autocomplete {
                 case .addressDetail:    executeAddressDetails(request)
                 }
             } catch {
-                completion(.failure(LocationError.internalError))
+                completion(.failure(error as? LocationError ?? LocationError.internalError))
             }
         }
         
@@ -182,7 +185,7 @@ public extension Autocomplete {
                         self.callback?(.success(places))
                     }
                 } catch {
-                    self.callback?(.failure(.other(error.localizedDescription)))
+                    self.callback?(.failure(.generic(error)))
                 }
             }
         }

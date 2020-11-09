@@ -250,7 +250,7 @@ extension GPSController {
         
         var subtitle: String {
             switch self {
-            case .subscription:     return "[REQUIRED] How often update locations"
+            case .subscription:     return "How often update locations"
             case .timeoutInterval:  return "Time with no response before abort"
             case .accuracy:         return "High levels may fails depending GPS status"
             case .activityType:     return "Helps GPS to get better results"

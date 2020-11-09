@@ -313,7 +313,7 @@ fileprivate extension IPLocationController {
         
         var title: String {
             switch self {
-            case .service:          return "Select Service"
+            case .service:          return "Service"
             case .targetIP:         return "Target IP"
             case .locale:           return "Language"
             case .hostnameLookup:   return "Hostname Lookup"
@@ -325,7 +325,7 @@ fileprivate extension IPLocationController {
         
         var subtitle: String {
             switch self {
-            case .service:          return "[REQUIRED] Service to use for request"
+            case .service:          return "Service to use for request"
             case .targetIP:         return "If not set it uses current machine IP"
             case .locale:           return "If not set the device's language is used"
             case .hostnameLookup:   return "Hostname info of the given IP"

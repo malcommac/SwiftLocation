@@ -30,18 +30,21 @@ import CoreLocation
 public protocol LocationManagerDelegate: class {
     
     // MARK: - Location Manager
-    
     func locationManager(didFailWithError error: Error)
     func locationManager(didReceiveLocations locations: [CLLocation])
     
     // MARK: - Geofencing
-    
     func locationManager(geofenceEvent event: GeofenceEvent)
     func locationManager(geofenceError error: LocationError, region: CLRegion?)
     
     // MARK: - Visits
-    
     func locationManager(didVisits visit: CLVisit)
+    
+    // MARK: - Beacons
+    func locationManager(didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion)
+    func locationManager(didEnterBeaconRegion region: CLBeaconRegion)
+    func locationManager(didExitBeaconRegion region: CLBeaconRegion)
+
 }
 
 // MARK: - LocationManagerProtocol
@@ -69,6 +72,10 @@ public protocol LocationManagerImpProtocol: class {
     /// Activate geofence per requests.
     /// - Parameter requests: requests.
     func geofenceRegions(_ requests: [GeofencingRequest])
+    
+    /// Start monitoring beacon regions.
+    /// - Parameter regions: regions.
+    func monitorBeaconRegions(_ regions: [CLBeaconRegion])
     
     /// Currently monitored regions
     var monitoredRegions: Set<CLRegion> { get }
@@ -129,6 +136,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
         case continousLocation
         case significantLocation
         case visits
+        case beacon
 
         public var description: String {
             rawValue
@@ -150,8 +158,9 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     public internal(set) var activityType: CLActivityType = .other
     
     public func requireLocationUpdates() -> Bool {
-        return activeServices.contains(.continousLocation) ||
-                activeServices.contains(.significantLocation) ||
+        return
+            activeServices.contains(.continousLocation) ||
+            activeServices.contains(.significantLocation) ||
             activeServices.contains(.visits)
     }
     

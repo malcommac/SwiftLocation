@@ -104,6 +104,10 @@ public extension Geocoder {
         
         public func execute(_ completion: @escaping ((Result<[GeoLocation], LocationError>) -> Void)) {
             do {
+                guard !APIKey.isEmpty else {
+                    throw LocationError.invalidAPIKey
+                }
+                
                 let request = try buildRequest()
                 executeDataRequest(request: request) { result in
                     switch result {
@@ -119,7 +123,7 @@ public extension Geocoder {
                     }
                 }
             } catch {
-                completion(.failure(.generic(error)))
+                completion(.failure(error as? LocationError ?? .generic(error)))
             }
         }
         

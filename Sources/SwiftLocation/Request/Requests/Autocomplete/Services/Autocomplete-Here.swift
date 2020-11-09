@@ -148,6 +148,10 @@ public extension Autocomplete {
                 guard let self = self else { return }
                 
                 do {
+                    guard !self.APIKey.isEmpty else {
+                        throw LocationError.invalidAPIKey
+                    }
+                    
                     switch result {
                     case .failure(let error):
                         self.callback?(.failure(error))
@@ -167,7 +171,7 @@ public extension Autocomplete {
                         self.callback?(.success(places))
                     }
                 } catch {
-                    self.callback?(.failure(.other(error.localizedDescription)))
+                    self.callback?(.failure(error as? LocationError ?? .generic(error)))
                 }
             }
         }

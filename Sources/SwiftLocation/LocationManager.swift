@@ -51,6 +51,16 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// Shared instance.
     public static let shared = LocationManager()
     
+    /// Return true if beacon foreground broadcasting is active or not.
+    public static var isBeaconBroadcastActive: Bool {
+        BeaconBroadcaster.shared.isBroadcastingActive
+    }
+    
+    /// Return non `nil` values when broadcasting is active.
+    public static var broadcastingBeacon: BroadcastedBeacon? {
+        BeaconBroadcaster.shared.beacon
+    }
+    
     /// Authorization mode. By default the best authorization to get is based upon the plist file.
     /// If plist contains always usage description the always mode is used, otherwise only whenInUse is preferred.
     public var preferredAuthorizationMode: AuthorizationMode = .plist
@@ -75,6 +85,16 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// Location requests.
     public lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
         let queue = RequestQueue<GPSLocationRequest>()
+        queue.onUpdateSettings = { [weak self] in
+            self?.updateCoreLocationManagerSettings()
+            self?.saveState()
+        }
+        return queue
+    }()
+    
+    /// Beacon requests.
+    public lazy var beaconsRequests: RequestQueue<BeaconRequest> = {
+        let queue = RequestQueue<BeaconRequest>()
         queue.onUpdateSettings = { [weak self] in
             self?.updateCoreLocationManagerSettings()
             self?.saveState()
@@ -154,6 +174,170 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         saveState()
     }
     
+    // MARK: - Create GPS Requests
+
+    /// Get the location with GPS module with given options.
+    ///
+    /// - Parameter optionsBuilder: options for search.
+    /// - Returns: `LocationRequest`
+    @discardableResult
+    public func gpsLocationWith(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
+        let newRequest = GPSLocationRequest()
+        optionsBuilder(newRequest.options)
+        return gpsRequests.add(newRequest)
+    }
+    
+    /// Get the location with GPS module with given options.
+    ///
+    /// - Parameter options: options to use.
+    /// - Returns: `LocationRequest`
+    @discardableResult
+    public func gpsLocationWith(_ options: GPSLocationOptions) -> GPSLocationRequest {
+        gpsRequests.add(GPSLocationRequest(options))
+    }
+    
+    // MARK: - Create IP Location Requests
+
+    /// Get the current approximate location by asking to the passed service.
+    /// - Parameter service: service to use.
+    /// - Returns: `IPLocationRequest`
+    @discardableResult
+    public func ipLocationWith(_ service: IPServiceProtocol) -> IPLocationRequest {
+        ipRequests.add(IPLocationRequest(service))
+    }
+    
+    // MARK: - Create Geocode/Reverse Geocoder Requests
+
+    /// Geocoding is the process of converting addresses (like "1600 Amphitheatre Parkway, Mountain View, CA") into geographic coordinates (like latitude 37.423021 and longitude -122.083739),
+    /// which you can use to place markers on a map, or position the map.
+    /// Reverse geocoding is the process of converting geographic coordinates into a human-readable address.
+    /// This service allows you to perform both operations.
+    ///
+    /// - Parameter service: service to use.
+    /// - Returns: GeocoderRequest
+    @discardableResult
+    public func geocodeWith(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
+        geocoderRequests.add(GeocoderRequest(service: service))
+    }
+    
+    // MARK: - Create Autocomplete Requests
+    
+    /// Prepare a new request for address autocomplete.
+    ///
+    /// - Parameter service: service to use.
+    /// - Returns: AutocompleteRequest
+    @discardableResult
+    public func autocompleteWith(_ service: AutocompleteProtocol) -> AutocompleteRequest {
+        autocompleteRequests.add(AutocompleteRequest(service))
+    }
+    
+    // MARK: - Create Geofence Requests
+
+    /// Create a new geofence request.
+    ///
+    /// - Parameter options: settings for geofence.
+    /// - Returns: GeofenceRequest
+    @discardableResult
+    public func geofenceWith(_ options: GeofencingOptions) -> GeofencingRequest {
+        geofenceRequests.add(GeofencingRequest(options: options))
+    }
+    
+    // MARK: - Create Visits Requests
+    
+    /// Create a new visits request.
+    ///
+    /// - Parameter activityType: To help the system determine when to pause updates, you must also assign an appropriate value to the activityType property of your location manager.
+    /// - Returns: VisitsRequest
+    public func visits(activityType: CLActivityType) -> VisitsRequest {
+        visitsRequest.add(VisitsRequest(activityType: activityType))
+    }
+    
+    // MARK: - Create Beacon Requests
+    
+    /// Init the BeaconMonitor and listen to the given Beacon.
+    /// - Parameter beacon: Beacon instance the BeaconMonitor is listening for and it will be used to create a concrete CLBeaconRegion.
+    /// - Returns: BeaconRequest
+    public func beacon(_ beacon: BeaconRequest.Beacon) -> BeaconRequest {
+        beaconsRequests.add(BeaconRequest(beacon: beacon))
+    }
+    
+    /// Init the request and listen only to the given Beacons.
+    /// The UUID(s) for the regions will be extracted from the Beacon Array. When Beacons with different UUIDs are defined multiple regions will be created.
+    /// - Parameter beacons: Beacon instances the BeaconMonitor is listening for
+    /// - Returns: BeaconRequest
+    public func beacons(_ beacons: [BeaconRequest.Beacon]) -> BeaconRequest {
+        beaconsRequests.add(BeaconRequest(beacons: beacons))
+    }
+    
+    /// Init the request and listen only to the given UUID.
+    /// - Parameter UUID: NSUUID for the region the locationManager is listening to.
+    /// - Returns: BeaconRequest
+    public func beaconsWithUUID(_ UUID: UUID) -> BeaconRequest {
+        beaconsRequests.add(BeaconRequest(UUID: UUID))
+    }
+    
+    /// Init the request and listen to multiple UUIDs.
+    /// - Parameter UUIDs: Array of UUIDs for the regions the locationManager should listen to.
+    /// - Returns: BeaconRequest
+    public func beaconsWithUUIDs(_ UUIDs: [UUID]) -> BeaconRequest {
+        beaconsRequests.add(BeaconRequest(UUIDs: UUIDs))
+    }
+    
+    /// Start broadcasting beacon. This works only in foreground.
+    /// NOTE: Broadcaster does not work when app is killed or is in background.
+    ///
+    /// - Parameters:
+    ///   - UUID: UUID.
+    ///   - majorID: major ID.
+    ///   - minorID: minor ID.
+    ///   - identifier: identifier of the beacon.
+    ///   - onStatusDidChange: callback to receive the advertising result process.
+    public func broadcastAsBeacon(_ beacon: BroadcastedBeacon, onStatusDidChange: ((Error?) -> Void)? = nil) {
+        BeaconBroadcaster.shared.startBroadcastingAs(beacon, onStatusDidChange: onStatusDidChange)
+    }
+    
+    /// Stop running broadcast.
+    public func stopBroadcasting() {
+        BeaconBroadcaster.shared.stopBroadcasting()
+    }
+    
+    /// Cancel passed request from queue.
+    ///
+    /// - Parameter request: request.
+    public func cancel(request: Any) {
+        switch request {
+        case let location as GPSLocationRequest:
+            gpsRequests.remove(location)
+            
+        case let geofence as GeofencingRequest:
+            geofenceRequests.remove(geofence)
+            
+        case let autocomplete as AutocompleteRequest:
+            autocompleteRequests.remove(autocomplete)
+            
+        case let ipLocation as IPLocationRequest:
+            ipRequests.remove(ipLocation)
+            
+        case let geocode as GeocoderRequest:
+            geocoderRequests.remove(geocode)
+            
+        case let visits as VisitsRequest:
+            visitsRequest.remove(visits)
+            
+        case let beacon as BeaconRequest:
+            beaconsRequests.remove(beacon)
+            
+        default:
+            LocatorLogger.log("Failed to remove request: '\(request)'")
+        }
+    }
+    
+    /// Cancel subscription token with given id from their associated request.
+    /// - Parameter tokenID: token identifier.
+    public func cancel(subscription identifier: Identifier) {
+        gpsRequests.list.first(where: { $0.subscriptionWithID(identifier) != nil })?.cancel(subscription: identifier)
+    }
+    
     // MARK: - Setting up
     
     /// This functiction change the underlying manager which manage the hardware. By default the `CLLocationManager` based
@@ -211,108 +395,6 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         }
     }
     
-    // MARK: - Public Properties
-    
-    /// Get the location with GPS module with given options.
-    ///
-    /// - Parameter optionsBuilder: options for search.
-    /// - Returns: `LocationRequest`
-    @discardableResult
-    public func gpsLocationWith(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
-        let newRequest = GPSLocationRequest()
-        optionsBuilder(newRequest.options)
-        return gpsRequests.add(newRequest)
-    }
-    
-    /// Get the location with GPS module with given options.
-    ///
-    /// - Parameter options: options to use.
-    /// - Returns: `LocationRequest`
-    @discardableResult
-    public func gpsLocationWith(_ options: GPSLocationOptions) -> GPSLocationRequest {
-        gpsRequests.add(GPSLocationRequest(options))
-    }
-    
-    /// Get the current approximate location by asking to the passed service.
-    /// - Parameter service: service to use.
-    /// - Returns: `IPLocationRequest`
-    @discardableResult
-    public func ipLocationWith(_ service: IPServiceProtocol) -> IPLocationRequest {
-        ipRequests.add(IPLocationRequest(service))
-    }
-    
-    /// Geocoding is the process of converting addresses (like "1600 Amphitheatre Parkway, Mountain View, CA") into geographic coordinates (like latitude 37.423021 and longitude -122.083739),
-    /// which you can use to place markers on a map, or position the map.
-    /// Reverse geocoding is the process of converting geographic coordinates into a human-readable address.
-    /// This service allows you to perform both operations.
-    ///
-    /// - Parameter service: service to use.
-    /// - Returns: GeocoderRequest
-    @discardableResult
-    public func geocodeWith(_ service: GeocoderServiceProtocol) -> GeocoderRequest {
-        geocoderRequests.add(GeocoderRequest(service: service))
-    }
-    
-    /// Prepare a new request for address autocomplete.
-    ///
-    /// - Parameter service: service to use.
-    /// - Returns: AutocompleteRequest
-    @discardableResult
-    public func autocompleteWith(_ service: AutocompleteProtocol) -> AutocompleteRequest {
-        autocompleteRequests.add(AutocompleteRequest(service))
-    }
-    
-    /// Create a new geofence request.
-    ///
-    /// - Parameter options: settings for geofence.
-    /// - Returns: GeofenceRequest
-    @discardableResult
-    public func geofenceWith(_ options: GeofencingOptions) -> GeofencingRequest {
-        geofenceRequests.add(GeofencingRequest(options: options))
-    }
-    
-    /// Create a new visits request.
-    ///
-    /// - Parameter activityType: To help the system determine when to pause updates, you must also assign an appropriate value to the activityType property of your location manager.
-    /// - Returns: VisitsRequest
-    public func visits(activityType: CLActivityType) -> VisitsRequest {
-        visitsRequest.add(VisitsRequest(activityType: activityType))
-    }
-    
-    /// Cancel passed request from queue.
-    ///
-    /// - Parameter request: request.
-    public func cancel(request: Any) {
-        switch request {
-        case let location as GPSLocationRequest:
-            gpsRequests.remove(location)
-            
-        case let geofence as GeofencingRequest:
-            geofenceRequests.remove(geofence)
-            
-        case let autocomplete as AutocompleteRequest:
-            autocompleteRequests.remove(autocomplete)
-            
-        case let ipLocation as IPLocationRequest:
-            ipRequests.remove(ipLocation)
-            
-        case let geocode as GeocoderRequest:
-            geocoderRequests.remove(geocode)
-            
-        case let visits as VisitsRequest:
-            visitsRequest.remove(visits)
-            
-        default:
-            LocatorLogger.log("Failed to remove request: '\(request)'")
-        }
-    }
-    
-    /// Cancel subscription token with given id from their associated request.
-    /// - Parameter tokenID: token identifier.
-    public func cancel(subscription identifier: Identifier) {
-        gpsRequests.list.first(where: { $0.subscriptionWithID(identifier) != nil })?.cancel(subscription: identifier)
-    }
-    
     // MARK: - Private Functions
     
     /// Reset all location requests and manager's settings.
@@ -329,8 +411,9 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         
         let updatedSettings = bestSettingsForCoreLocationManager()
         guard updatedSettings.requireLocationUpdates() else {
-            self.currentSettings = updatedSettings
-            self.updateGeofencing()
+            currentSettings = updatedSettings
+            updateGeofencing()
+            updateBeaconMonitoring()
             return
         }
         
@@ -338,19 +421,35 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         
         /// If at least one geofencing request is in progress we want to ask for always authorization,
         /// otherwise we can use the preferred authorization mode specified.
-        let authMode: AuthorizationMode = (geofenceRequests.hasActiveRequests || visitsRequest.hasActiveRequests ? .always : preferredAuthorizationMode)
+        let hasRequestsWithAlwaysAuthRequired = (
+            geofenceRequests.hasActiveRequests ||
+            visitsRequest.hasActiveRequests ||
+            beaconsRequests.hasActiveRequests
+        )
+        let authMode: AuthorizationMode = (hasRequestsWithAlwaysAuthRequired ? .always : preferredAuthorizationMode)
         manager?.requestAuthorization(authMode) { [weak self] auth in
             guard auth.isAuthorized else {
                 return
             }
+            
             self?.currentSettings = updatedSettings
             self?.updateGeofencing()
+            self?.updateBeaconMonitoring()
             return
         }
     }
     
     private func updateGeofencing() {
         manager?.geofenceRegions(Array(geofenceRequests.list))
+    }
+    
+    private func updateBeaconMonitoring() {
+        // Get the list of all regions to monitor.
+        let allRegions = beaconsRequests.list.reduce(into: [CLBeaconRegion]()) { (list, req) in
+            list.append(contentsOf: req.monitoredRegions)
+        }
+        
+        manager?.monitorBeaconRegions(allRegions)
     }
     
     private func failWeakAuthorizationRequests() {
@@ -378,6 +477,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         var services = Set<LocationManagerSettings.Services>()
         var settings = LocationManagerSettings(activeServices: services)
         
+        // GPS
         enumerateQueue(gpsRequests) { request in
             services.insert(request.options.subscription.service)
             
@@ -386,7 +486,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.options.activityType.rawValue)) ?? .other
         }
         
-        // Geofence requests
+        // Geofence
         enumerateQueue(geofenceRequests) { request in
             if let circularRegion = request.monitoredRegion as? CLCircularRegion {
                 settings.accuracy = min(settings.accuracy, GPSLocationOptions.Accuracy(rawValue: circularRegion.radius))
@@ -399,6 +499,11 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             enumerateQueue(visitsRequest) { request in
                 settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.activityType.rawValue)) ?? .other
             }
+        }
+        
+        // Beacons
+        if beaconsRequests.hasActiveRequests {
+            services.insert(.beacon)
         }
         
         if settings.minDistance == -1 { settings.minDistance = nil }
@@ -440,6 +545,32 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         } else { // generic error, will discard all monitored regions
             enumerateQueue(geofenceRequests) { request in
                 request.receiveData(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - Beacons Delegate Events
+
+    public func locationManager(didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        enumerateQueue(beaconsRequests) { request in
+            if let matchedBeacons = request.matchingBeacons(beacons, inRegion: region) {
+                request.receiveData(.success(.rangingBeacons(matchedBeacons)))
+            }
+        }
+    }
+    
+    public func locationManager(didEnterBeaconRegion region: CLBeaconRegion) {
+        enumerateQueue(beaconsRequests) { request in
+            if request.matchingRegion(region) {
+                request.receiveData(.success(.didEnterRegion(region)))
+            }
+        }
+    }
+    
+    public func locationManager(didExitBeaconRegion region: CLBeaconRegion) {
+        enumerateQueue(beaconsRequests) { request in
+            if request.matchingRegion(region) {
+                request.receiveData(.success(.didExitRegion(region)))
             }
         }
     }

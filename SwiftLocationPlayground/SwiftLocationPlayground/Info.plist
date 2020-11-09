@@ -25,6 +25,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bluetooth is used to test the broadcaster and beacon monitoring features.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ALWAYS</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -52,6 +54,9 @@
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
 		<string>fetch</string>
 		<string>location</string>
 		<string>processing</string>

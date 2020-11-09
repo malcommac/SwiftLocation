@@ -42,6 +42,28 @@ internal extension CLLocationManager {
     
     // MARK: - Internal Functions
     
+    /// Stop monitoring beacon region and ranging beacons in regions.
+    /// - Parameter regions: regions.
+    func stopMonitoringBeaconRegions(_ regions: [CLRegion]) {
+        for region in regions {
+            stopMonitoring(for: region)
+            
+            if let beaconRegion = region as? CLBeaconRegion {
+                stopRangingBeacons(in: beaconRegion)
+            }
+        }
+    }
+    
+    /// Start monitoring regions for beacons.
+    /// - Parameter regions: regions.
+    func startMonitoringBeaconRegions(_ regions: [CLBeaconRegion]) {
+        for region in regions {
+            startMonitoring(for: region)
+        }
+    }
+    
+    /// Ask for authorization.
+    /// - Parameter mode: style.
     func requestAuthorization(_ mode: AuthorizationMode) {
         switch mode {
         case .always:
@@ -53,13 +75,13 @@ internal extension CLLocationManager {
         }
     }
     
+    /// Apply settings to location manager.
+    /// - Parameter settings: settings.
     func setSettings(_ settings: LocationManagerSettings) {
         self.desiredAccuracy = settings.accuracy.value
         self.activityType = settings.activityType
         self.distanceFilter = settings.minDistance ?? kCLLocationAccuracyThreeKilometers
-        
-        debugPrint("SETTING DESIDERED ACCURACY \(settings.accuracy.value)")
-        
+                
         // Location updates
         let hasContinousLocation = settings.activeServices.contains(.continousLocation)
         if hasContinousLocation {
@@ -86,6 +108,7 @@ internal extension CLLocationManager {
     
     // MARK: - Private Functions
     
+    /// Check the authorization based upon the plist.
     private func requestPlistAuthorization() {
         if #available(iOS 14.0, *) {
             guard authorizationStatus == .notDetermined else {

@@ -144,7 +144,11 @@ extension UIAlertController {
         alert.addAction(confirmButton)
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            cancelAction?()
+            if let cancelAction = cancelAction {
+                cancelAction()
+            } else {
+                confirmAction?(nil)
+            }
         })
         alert.addAction(cancelButton)
         
@@ -163,18 +167,20 @@ extension UIAlertController {
                                      confirmAction: ((Bool) -> Void)?) -> UIAlertController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { _ in
             confirmAction?(true)
         }))
         
-        alert.addAction(UIAlertAction(title: "NO", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "No", style: .default, handler: { _ in
             confirmAction?(false)
         }))
         
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            cancelAction?()
-        })
-        alert.addAction(cancelButton)
+        if let cancelAction = cancelAction {
+            let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                cancelAction()
+            })
+            alert.addAction(cancelButton)
+        }
         
         guard let topMost = UIViewController.topMostController() else {
             print("Failed to retrive topmost controller to show alert")

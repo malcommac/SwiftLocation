@@ -29,6 +29,9 @@ import UserNotifications
 public let NOT_SET = "not set"
 public let NOTIFICATION_GPS_DATA = Notification.Name("NOTIFICATION_GPS_DATA")
 public let NOTIFICATION_VISITS_DATA = Notification.Name("NOTIFICATION_VISITS_DATA")
+public let NOTIFICATION_BEACONS_DATA = Notification.Name("NOTIFICATION_BEACONS_DATA")
+
+public var beaconsLogItems = [Result<BeaconRequest.ProducedData, LocationError>]()
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -43,6 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Enable push notifications
         UNUserNotificationCenter.current().delegate = self
         AppDelegate.enablePushNotifications()
+        
+        print(UUID().uuidString)
         
         return true
     }
@@ -105,6 +110,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         }
+    }
+    
+    public static func attachSubscribersToBeacons(_ requests: [BeaconRequest]) {
+        for request in requests {
+            request.cancelAllSubscriptions() // remove previous subscribers
+            
+            // attach new ones
+            request.then(queue: .main) { result in
+                NotificationCenter.default.post(name: NOTIFICATION_BEACONS_DATA, object: result, userInfo: nil)
+                AppDelegate.addToBeaconLog(result)
+                
+                if UIApplication.shared.applicationState == .background {
+                    switch result {
+                    case .success(let event):
+                        sendLocalPushNotification(title: "New Beacon Event", subtitle: event.description, object: result.description)
+                    case .failure(let error):
+                        sendLocalPushNotification(title: "Beacon Error", subtitle: error.localizedDescription, object: result.description)
+                    }
+                }
+            }
+        }
+    }
+    
+    private static func addToBeaconLog(_ item: Result<BeaconRequest.ProducedData, LocationError>) {
+        beaconsLogItems.insert(item, at: 0)
+        beaconsLogItems = Array(beaconsLogItems.prefix(10))
     }
     
     public static func attachSubscribersToVisitsRegions(_ requests: [VisitsRequest?]) {

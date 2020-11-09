@@ -92,7 +92,6 @@ public extension IPServiceProtocol {
         do {
             let request = try buildRequest()
             self.task = session.dataTask(with: request) { [weak self] (data, response, error) in
-                print(self?.isCancelled)
                 guard let self = self, self.isCancelled == false else {
                     completion(.failure(.cancelled))
                     return

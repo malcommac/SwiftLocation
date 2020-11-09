@@ -34,7 +34,9 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         .geofenceMonitoring,
         .visitsMonitoring,
         .geocoder,
-        .autocompleAddress
+        .autocompleAddress,
+        .beaconBroadcast,
+        .beaconRanging
     ]
     
     public override func viewDidLoad() {
@@ -78,6 +80,10 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
             navigationController?.pushViewController(AutocompleteController.create(), animated: true)
         case .geocoder:
             navigationController?.pushViewController(GeocoderController.create(), animated: true)
+        case .beaconBroadcast:
+            navigationController?.pushViewController(BroadcastBeaconController.create(), animated: true)
+        case .beaconRanging:
+            navigationController?.pushViewController(BeaconsMonitorController.create(), animated: true)
         }
     }
     
@@ -92,6 +98,8 @@ fileprivate extension PlaygroundController {
         case geofenceMonitoring
         case autocompleAddress
         case geocoder
+        case beaconBroadcast
+        case beaconRanging
 
         var title: String {
             switch self {
@@ -101,6 +109,8 @@ fileprivate extension PlaygroundController {
             case .geofenceMonitoring: return "Geofence Regions"
             case .autocompleAddress: return "Autocomplete Address"
             case .geocoder: return "Geocoder & Reverse Geocoder"
+            case .beaconBroadcast: return "Beacon Broadcaster"
+            case .beaconRanging: return "Beacons Monitor"
             }
         }
         
@@ -112,6 +122,8 @@ fileprivate extension PlaygroundController {
             case .geofenceMonitoring: return "Enter/exit notifications from regions"
             case .autocompleAddress: return "Suggest addresses, POI, activites..."
             case .geocoder: return "Get coordinates from address/address from coordinates"
+            case .beaconBroadcast: return "Act as beacon (only foreground)"
+            case .beaconRanging: return "Monitor beacons ranging"
             }
         }
         
@@ -123,6 +135,8 @@ fileprivate extension PlaygroundController {
             case .geofenceMonitoring: return UIImage(named: "tabbar_geofence")
             case .autocompleAddress: return UIImage(named: "tabbar_autocomplete")
             case .geocoder: return UIImage(named: "tabbar_geocoder")
+            case .beaconBroadcast: return UIImage(named: "tabbar_broadcaster")
+            case .beaconRanging: return UIImage(named: "tabbar_beacon")
             }
         }
     }

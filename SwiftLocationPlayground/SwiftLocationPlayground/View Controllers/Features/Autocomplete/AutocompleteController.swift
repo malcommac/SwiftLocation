@@ -449,13 +449,13 @@ fileprivate extension AutocompleteController {
         
         public var subtitle: String {
             switch self {
-            case .service:              return "[REQUIRED] Service to use to perform autocomplete"
-            case .addressValue:         return "[REQUIRED] Address to autocomplete"
+            case .service:              return "Service to use to perform autocomplete"
+            case .addressValue:         return "Address to autocomplete"
             case .proximityRegion:      return "To get better contextualized results"
             case .filterType:           return "Allowed results"
             case .locale:               return "Language of the results (see api doc)"
             case .limit:                return "Limit the number of data"
-            case .APIKey:               return "[REQUIRED] API Service key"
+            case .APIKey:               return "API Service key"
             case .timeout:              return "Network call timeout (in secs)"
             case .googlePlaceTypes:     return "Get only specified place types"
             case .location:             return "Proximity location to get better results"

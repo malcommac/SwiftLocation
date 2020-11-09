@@ -71,7 +71,7 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Table View DataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        6
+        8
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -83,13 +83,15 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         case 4: return listData.geocode.count
         case 5: return listData.autocomplete.count
         case 6: return listData.geofencing.count
+        case 7: return listData.beacons.count
         default: return 0
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: StandardCellSetting.defaultReuseIdentifier, for: indexPath) as! StandardCellSetting
-        
+        cell.titleLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
+
         if indexPath.section == 0 {
             cell.accessoryType = .none
             cell.titleLabel?.text = listData.managerSettings[indexPath.row].key.title
@@ -102,28 +104,38 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         cell.accessoryType = .none
         switch indexPath.section {
         case 1:
-            cell.titleLabel?.text = listData.visits[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.visits[indexPath.row].shortDescription
+            let req = listData.visits[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         case 2:
-            cell.titleLabel?.text = listData.gps[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.gps[indexPath.row].shortDescription
+            let req = listData.gps[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         case 3:
-            cell.titleLabel?.text = listData.ip[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.ip[indexPath.row].shortDescription
+            let req = listData.ip[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         case 4:
-            cell.titleLabel?.text = listData.geocode[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.geocode[indexPath.row].shortDescription
+            let req = listData.geocode[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         case 5:
-            cell.titleLabel?.text = listData.autocomplete[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.autocomplete[indexPath.row].shortDescription
+            let req = listData.autocomplete[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         case 6:
-            cell.titleLabel?.text = listData.geofencing[indexPath.row].uuid
-            cell.subtitleLabel?.text = listData.geofencing[indexPath.row].shortDescription
+            let req = listData.geofencing[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
+        case 7:
+            let req = listData.beacons[indexPath.row]
+            cell.titleLabel?.text = req.name ?? req.uuid
+            cell.subtitleLabel?.text = req.shortDescription
         default:
             cell.titleLabel?.text = ""
             cell.subtitleLabel?.text = ""
         }
-        
+                
         return cell
     }
     
@@ -139,12 +151,13 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "Location Manager Settings"
-        case 1: return "Active Visits"
-        case 2: return "Active GPS"
-        case 3: return "Active IP"
-        case 4: return "Active Geocode"
-        case 5: return "Active Autocomplete"
-        case 6: return "Active Geofence"
+        case 1: return "Visits"
+        case 2: return "GPS"
+        case 3: return "IP"
+        case 4: return "Geocode"
+        case 5: return "Autocomplete"
+        case 6: return "Geofence"
+        case 7: return "Beacons"
         default: return ""
         }
     }
@@ -162,9 +175,24 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
             })
         ]
     }
-    
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        false
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        UIAlertController.showInputFieldSheet(title: "Assign a name") { [weak self] value in
+            guard let self = self else { return }
+            
+            switch indexPath.section {
+            case 1: self.listData.visits[indexPath.row].name = value
+            case 2: self.listData.gps[indexPath.row].name = value
+            case 3: self.listData.ip[indexPath.row].name = value
+            case 4: self.listData.geocode[indexPath.row].name = value
+            case 5: self.listData.autocomplete[indexPath.row].name = value
+            case 6: self.listData.geofencing[indexPath.row].name = value
+            case 7: self.listData.beacons[indexPath.row].name = value
+            default: break
+            }
+            
+            self.reloadTable()
+        }
     }
     
     // MARK: - Private Functions
@@ -186,6 +214,7 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         case 4: listData.geocode[indexPath.row].cancelRequest()
         case 5: listData.autocomplete[indexPath.row].cancelRequest()
         case 6: listData.geofencing[indexPath.row].cancelRequest()
+        case 7: listData.beacons[indexPath.row].cancelRequest()
         default: break
         }
         
@@ -203,6 +232,7 @@ fileprivate class ListData {
     var geofencing = [GeofencingRequest]()
     var geocode = [GeocoderRequest]()
     var autocomplete = [AutocompleteRequest]()
+    var beacons = [BeaconRequest]()
     var managerSettings: [(key: RequestListController.ManagerSettingsKey, value: String)]
 
     public init() {
@@ -212,7 +242,8 @@ fileprivate class ListData {
         geofencing = Array(LocationManager.shared.geofenceRequests.list)
         geocode = Array(LocationManager.shared.geocoderRequests.list)
         autocomplete = Array(LocationManager.shared.autocompleteRequests.list)
-        
+        beacons = Array(LocationManager.shared.beaconsRequests.list)
+
         let settings = LocationManager.shared.currentSettings
         managerSettings = [
             (.activeServices, settings.activeServices.isEmpty ? NOT_SET : settings.activeServices.description),
@@ -300,6 +331,11 @@ fileprivate extension RequestProtocol {
                 "› value: \(geocoder.service.operation.description)"
             ].joined(separator: "\n")
             
+        case let beacon as BeaconRequest:
+            return [
+                "› \(beacon.description)"
+            ].joined(separator: "\n")
+            
         default:
             return description
         }
@@ -317,6 +353,20 @@ fileprivate extension GeofencingOptions.Region {
             return "circle: \(cRegion.description)"
         case .polygon(let polygon, let cRegion):
             return "polygon: \(polygon.description)\nouter: \(cRegion.description)"
+        }
+    }
+    
+}
+
+// MARK: - BeaconRequest (Description)
+
+public extension BeaconRequest {
+    
+    var shortDescription: String {
+        if !monitoredBeacons.isEmpty {
+            return "\(monitoredBeacons.count) Beacons\n\(monitoredBeacons.description)"
+        } else {
+            return "\(monitoredRegions.count) Regions\n\(monitoredRegions.description)"
         }
     }
     
