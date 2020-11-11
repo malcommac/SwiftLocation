@@ -11,6 +11,8 @@ No more pain with delegates or callbacks but a simple request based architecture
 <a class="github-button" href="https://github.com/malcommac/swiftlocation" data-icon="octicon-star" data-size="large" aria-label="Star malcommac/swiftlocation on GitHub">Star</a>
 <a class="github-button" href="https://github.com/malcommac" data-size="large" aria-label="Follow @malcommac on GitHub">Follow @malcommac</a>
 
+<iframe src="https://ghbtns.com/github-btn.html?user=malcommac&type=sponsor" frameborder="0" scrolling="0" width="2000" height="20" title="GitHub"></iframe>
+
 |   | Feature  | Description  |
 |---|---|---|
 | 🛰 | **Location via GPS**  |  Monitor single, continous or significant location updates with fully configurable APIs.  |
