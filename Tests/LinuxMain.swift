@@ -1,6 +1,7 @@
 import XCTest
-@testable import SwiftLocationTests
 
-XCTMain([
-    testCase(SwiftLocationTests.allTests),
-])
+import SwiftLocationTests
+
+var tests = [XCTestCaseEntry]()
+tests += SwiftLocationTests.allTests()
+XCTMain(tests)

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="aNJ-Y7-m2J">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Autocomplete Controller-->
+        <scene sceneID="s2W-QM-Obe">
+            <objects>
+                <viewController storyboardIdentifier="AutocompleteController" id="aNJ-Y7-m2J" customClass="AutocompleteController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Fd9-vl-eRS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8MS-2W-Xfb">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="aNJ-Y7-m2J" id="tgT-Nk-NdY"/>
+                                    <outlet property="delegate" destination="aNJ-Y7-m2J" id="Hs3-uP-g1g"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Wy4-8J-lvZ"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="8MS-2W-Xfb" firstAttribute="top" secondItem="Wy4-8J-lvZ" secondAttribute="top" id="6pT-MQ-3cU"/>
+                            <constraint firstItem="8MS-2W-Xfb" firstAttribute="leading" secondItem="Wy4-8J-lvZ" secondAttribute="leading" id="E0J-yJ-msm"/>
+                            <constraint firstItem="Wy4-8J-lvZ" firstAttribute="trailing" secondItem="8MS-2W-Xfb" secondAttribute="trailing" id="GwH-KV-3nU"/>
+                            <constraint firstItem="Wy4-8J-lvZ" firstAttribute="bottom" secondItem="8MS-2W-Xfb" secondAttribute="bottom" id="keR-No-DyK"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Qte-QL-m8w"/>
+                    <connections>
+                        <outlet property="settingsTableView" destination="8MS-2W-Xfb" id="A49-lr-Ana"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WzS-Va-n9s" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-765.21739130434787" y="1090.8482142857142"/>
+        </scene>
+        <!--Autocomplete Results Controller-->
+        <scene sceneID="S0S-yY-oWc">
+            <objects>
+                <viewController storyboardIdentifier="AutocompleteResultsController" id="R0a-jc-8wc" customClass="AutocompleteResultsController" customModule="SwiftLocationDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6H5-fK-nLS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="EMO-q1-tKZ">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="R0a-jc-8wc" id="AG4-70-5Cy"/>
+                                    <outlet property="delegate" destination="R0a-jc-8wc" id="1uY-5j-4jW"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="M1v-1a-AQI"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="EMO-q1-tKZ" firstAttribute="top" secondItem="M1v-1a-AQI" secondAttribute="top" id="FFd-56-pmh"/>
+                            <constraint firstItem="M1v-1a-AQI" firstAttribute="trailing" secondItem="EMO-q1-tKZ" secondAttribute="trailing" id="TkR-Eq-O2j"/>
+                            <constraint firstItem="EMO-q1-tKZ" firstAttribute="leading" secondItem="M1v-1a-AQI" secondAttribute="leading" id="a1d-oD-oqk"/>
+                            <constraint firstItem="M1v-1a-AQI" firstAttribute="bottom" secondItem="EMO-q1-tKZ" secondAttribute="bottom" id="zP3-Ha-1sp"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="4wZ-wU-dJs"/>
+                    <connections>
+                        <outlet property="resultsTableView" destination="EMO-q1-tKZ" id="drx-yR-HHz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x3S-k1-Dde" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-112" y="1091"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EfL-bU-gZq">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Tab Bar Controller-->
+        <scene sceneID="1bp-B1-zym">
+            <objects>
+                <tabBarController id="EfL-bU-gZq" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="spq-Ld-aA8">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="VCT-Th-B4r" kind="relationship" relationship="viewControllers" id="bNg-bN-pzO"/>
+                        <segue destination="wC9-ti-Hi3" kind="relationship" relationship="viewControllers" id="byF-E5-3Cf"/>
+                        <segue destination="H6k-dA-0Ri" kind="relationship" relationship="viewControllers" id="uCQ-KD-Ge9"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QeA-XN-vIx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3364" y="-405"/>
+        </scene>
+        <!--Playground-->
+        <scene sceneID="g5E-Wa-9Uj">
+            <objects>
+                <navigationController id="VCT-Th-B4r" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Playground" image="tabbar_playground" id="7iV-Jj-J9t"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="mqw-S4-Gtz">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="YrX-i6-yeb" kind="relationship" relationship="rootViewController" id="d2p-gJ-Pdu"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QFE-Zi-uWN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2458" y="-56"/>
+        </scene>
+        <!--Playground Controller-->
+        <scene sceneID="dhL-DF-fQ7">
+            <objects>
+                <viewController storyboardIdentifier="PlaygroundController" id="YrX-i6-yeb" customClass="PlaygroundController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="al8-nn-xJ5">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="JCR-SF-M9T">
+                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ActionCell" rowHeight="68" id="Qq5-Vo-NEQ" customClass="ActionCell" customModule="SwiftLocationPlayground" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="68"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Qq5-Vo-NEQ" id="3hO-Tx-I7t">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="68"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YPY-Ey-tYz">
+                                                    <rect key="frame" x="60" y="16" width="290" height="36"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monitored Polygon" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="euN-Lw-57P">
+                                                            <rect key="frame" x="0.0" y="0.0" width="290" height="20.5"/>
+                                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="254 with center in location" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyK-IP-dpd">
+                                                            <rect key="frame" x="0.0" y="20.5" width="290" height="16"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstItem="euN-Lw-57P" firstAttribute="top" secondItem="YPY-Ey-tYz" secondAttribute="top" id="9Wc-PA-X3V"/>
+                                                        <constraint firstItem="wyK-IP-dpd" firstAttribute="leading" secondItem="YPY-Ey-tYz" secondAttribute="leading" id="Rc2-t0-A7H"/>
+                                                        <constraint firstItem="euN-Lw-57P" firstAttribute="leading" secondItem="YPY-Ey-tYz" secondAttribute="leading" id="Z2k-M1-9pT"/>
+                                                        <constraint firstAttribute="bottom" secondItem="wyK-IP-dpd" secondAttribute="bottom" constant="-0.5" id="eGg-si-5Pr"/>
+                                                        <constraint firstAttribute="trailing" secondItem="wyK-IP-dpd" secondAttribute="trailing" id="gfE-z8-E5d"/>
+                                                        <constraint firstItem="wyK-IP-dpd" firstAttribute="top" secondItem="euN-Lw-57P" secondAttribute="bottom" id="pG0-xe-R9k"/>
+                                                        <constraint firstAttribute="trailing" secondItem="euN-Lw-57P" secondAttribute="trailing" id="pqM-jo-SvX"/>
+                                                    </constraints>
+                                                </view>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="polygon" translatesAutoresizingMaskIntoConstraints="NO" id="fHR-F8-uPg">
+                                                    <rect key="frame" x="20" y="21.5" width="25" height="25"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="25" id="apg-GF-KaV"/>
+                                                        <constraint firstAttribute="height" constant="25" id="zGH-wh-XTH"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="fHR-F8-uPg" firstAttribute="leading" secondItem="3hO-Tx-I7t" secondAttribute="leadingMargin" id="8DD-81-9Lk"/>
+                                                <constraint firstItem="YPY-Ey-tYz" firstAttribute="top" secondItem="3hO-Tx-I7t" secondAttribute="top" constant="16" id="AzM-EZ-XDL"/>
+                                                <constraint firstItem="YPY-Ey-tYz" firstAttribute="centerY" secondItem="3hO-Tx-I7t" secondAttribute="centerY" id="EbG-XR-BIs"/>
+                                                <constraint firstItem="YPY-Ey-tYz" firstAttribute="leading" secondItem="fHR-F8-uPg" secondAttribute="trailing" constant="15" id="ZZ2-Te-osT"/>
+                                                <constraint firstAttribute="bottom" secondItem="YPY-Ey-tYz" secondAttribute="bottom" constant="16" id="dDt-QP-Szp"/>
+                                                <constraint firstItem="fHR-F8-uPg" firstAttribute="centerY" secondItem="3hO-Tx-I7t" secondAttribute="centerY" id="kMD-wi-hmg"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="YPY-Ey-tYz" secondAttribute="trailing" constant="25" id="oa5-Qy-q32"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="iconImageView" destination="fHR-F8-uPg" id="kbl-ex-vmt"/>
+                                            <outlet property="subtitleLabel" destination="wyK-IP-dpd" id="qQh-q8-B20"/>
+                                            <outlet property="titleLabel" destination="euN-Lw-57P" id="0O1-vu-LM1"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="lBt-jN-EOe"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="JCR-SF-M9T" firstAttribute="top" secondItem="lBt-jN-EOe" secondAttribute="top" id="5nD-Ib-Yua"/>
+                            <constraint firstItem="lBt-jN-EOe" firstAttribute="trailing" secondItem="JCR-SF-M9T" secondAttribute="trailing" id="PXY-9Q-Aju"/>
+                            <constraint firstItem="JCR-SF-M9T" firstAttribute="leading" secondItem="lBt-jN-EOe" secondAttribute="leading" id="iEb-3B-puh"/>
+                            <constraint firstItem="lBt-jN-EOe" firstAttribute="bottom" secondItem="JCR-SF-M9T" secondAttribute="bottom" id="iIT-KX-g6d"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="gvc-LX-UJY"/>
+                    <connections>
+                        <outlet property="featuresTableView" destination="JCR-SF-M9T" id="E8w-cL-89K"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pqj-iq-brA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1700" y="-56"/>
+        </scene>
+        <!--Request List Controller-->
+        <scene sceneID="sbw-mk-7Fc">
+            <objects>
+                <viewController id="NTr-d2-cjU" customClass="RequestListController" customModule="SwiftLocationPlayground" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Hu7-Lg-PcY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ez2-UI-Q3i">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="725"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="NTr-d2-cjU" id="t9I-fa-aPO"/>
+                                    <outlet property="delegate" destination="NTr-d2-cjU" id="1uu-PB-A1M"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Zq4-6K-eFK"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ez2-UI-Q3i" firstAttribute="top" secondItem="Zq4-6K-eFK" secondAttribute="top" id="BMl-cj-q0g"/>
+                            <constraint firstItem="Zq4-6K-eFK" firstAttribute="bottom" secondItem="ez2-UI-Q3i" secondAttribute="bottom" id="elw-HK-YFv"/>
+                            <constraint firstItem="ez2-UI-Q3i" firstAttribute="trailing" secondItem="Zq4-6K-eFK" secondAttribute="trailing" id="nOr-F1-zI4"/>
+                            <constraint firstItem="ez2-UI-Q3i" firstAttribute="leading" secondItem="Zq4-6K-eFK" secondAttribute="leading" id="vw4-Jm-Bf6"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="tCd-ky-887">
+                        <barButtonItem key="rightBarButtonItem" title="Reload" image="arrow.clockwise" catalog="system" id="PBf-Fg-8zA">
+                            <connections>
+                                <action selector="reloadData:" destination="NTr-d2-cjU" id="yYj-nr-zGH"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="ez2-UI-Q3i" id="w8u-hf-wcE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Pz-fT-oM8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1700" y="-715"/>
+        </scene>
+        <!--Status-->
+        <scene sceneID="4fJ-g8-hS6">
+            <objects>
+                <navigationController id="wC9-ti-Hi3" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Status" image="tabbar_list" id="Wat-28-ipz"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="y19-t1-0ZV">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="NTr-d2-cjU" kind="relationship" relationship="rootViewController" id="wqh-hy-32S"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g5p-aq-b2c" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2457" y="-715"/>
+        </scene>
+        <!--About-->
+        <scene sceneID="89a-Bf-6LF">
+            <objects>
+                <viewController id="H6k-dA-0Ri" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1Wa-lC-c9W">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftLocation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jeQ-Dy-SFm">
+                                <rect key="frame" x="126" y="84" width="162" height="30"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location Manager Made Easy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fb0-aX-axY">
+                                <rect key="frame" x="95" y="114" width="224" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6gS-ic-cWF">
+                                <rect key="frame" x="25" y="388" width="364" height="405"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment>
+                                        <string key="content">Licensed under MIT License.
+</string>
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Helvetica-Bold"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                <tabStops>
+                                                    <textTab alignment="left" location="28.299999237060547">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="56.650001525878906">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="85">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="113.34999847412109">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="141.69999694824219">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="170.05000305175781">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="198.39999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="226.75">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="255.10000610351562">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="283.45001220703125">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="311.79998779296875">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="340.14999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                </tabStops>
+                                            </paragraphStyle>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content">
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</string>
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Helvetica"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                <tabStops>
+                                                    <textTab alignment="left" location="28.299999237060547">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="56.650001525878906">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="85">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="113.34999847412109">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="141.69999694824219">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="170.05000305175781">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="198.39999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="226.75">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="255.10000610351562">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="283.45001220703125">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="311.79998779296875">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="340.14999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                </tabStops>
+                                            </paragraphStyle>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qru-pj-3t7">
+                                <rect key="frame" x="25" y="145" width="364" height="80"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="6EW-wz-I19"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment>
+                                        <string key="content">Written and maintained by:
+</string>
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Helvetica-Bold"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                <tabStops>
+                                                    <textTab alignment="left" location="28.299999237060547">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="56.650001525878906">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="85">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="113.34999847412109">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="141.69999694824219">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="170.05000305175781">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="198.39999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="226.75">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="255.10000610351562">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="283.45001220703125">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="311.79998779296875">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="340.14999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                </tabStops>
+                                            </paragraphStyle>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content">Daniele Margutti
+hello@danielemargutti.com
+danielemargutti.com</string>
+                                        <attributes>
+                                            <font key="NSFont" size="12" name="Helvetica"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                <tabStops>
+                                                    <textTab alignment="left" location="28.299999237060547">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="56.650001525878906">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="85">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="113.34999847412109">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="141.69999694824219">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="170.05000305175781">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="198.39999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="226.75">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="255.10000610351562">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="283.45001220703125">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="311.79998779296875">
+                                                        <options/>
+                                                    </textTab>
+                                                    <textTab alignment="left" location="340.14999389648438">
+                                                        <options/>
+                                                    </textTab>
+                                                </tabStops>
+                                            </paragraphStyle>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                            </textView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="5Fg-5p-vko">
+                                <rect key="frame" x="87" y="235" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="5Fg-5p-vko" secondAttribute="height" multiplier="15:8" id="g66-3T-MaL"/>
+                                    <constraint firstAttribute="height" constant="128" id="pSh-3o-xJu"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="S7S-0r-x8k"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fb0-aX-axY" firstAttribute="top" secondItem="jeQ-Dy-SFm" secondAttribute="bottom" id="0OZ-4N-fbI"/>
+                            <constraint firstItem="fb0-aX-axY" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="Ju7-XF-vc1"/>
+                            <constraint firstItem="6gS-ic-cWF" firstAttribute="leading" secondItem="S7S-0r-x8k" secondAttribute="leading" constant="25" id="LSL-l7-a02"/>
+                            <constraint firstItem="S7S-0r-x8k" firstAttribute="bottom" secondItem="6gS-ic-cWF" secondAttribute="bottom" constant="20" id="N1e-QR-oyc"/>
+                            <constraint firstItem="5Fg-5p-vko" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="P44-sD-l1y"/>
+                            <constraint firstItem="jeQ-Dy-SFm" firstAttribute="top" secondItem="S7S-0r-x8k" secondAttribute="top" constant="40" id="Xkc-bv-HAf"/>
+                            <constraint firstItem="qru-pj-3t7" firstAttribute="top" secondItem="fb0-aX-axY" secondAttribute="bottom" constant="10" id="Xsl-c7-3WL"/>
+                            <constraint firstItem="qru-pj-3t7" firstAttribute="leading" secondItem="S7S-0r-x8k" secondAttribute="leading" constant="25" id="bVX-W3-YWo"/>
+                            <constraint firstItem="jeQ-Dy-SFm" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="dWm-W5-VCK"/>
+                            <constraint firstItem="6gS-ic-cWF" firstAttribute="top" secondItem="5Fg-5p-vko" secondAttribute="bottom" constant="25" id="gz9-Au-SLO"/>
+                            <constraint firstItem="S7S-0r-x8k" firstAttribute="trailing" secondItem="6gS-ic-cWF" secondAttribute="trailing" constant="25" id="ioS-nu-glE"/>
+                            <constraint firstItem="5Fg-5p-vko" firstAttribute="top" secondItem="qru-pj-3t7" secondAttribute="bottom" constant="10" id="kfO-d1-BcB"/>
+                            <constraint firstItem="S7S-0r-x8k" firstAttribute="trailing" secondItem="qru-pj-3t7" secondAttribute="trailing" constant="25" id="ttL-Qc-fEM"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="About" image="tabbar_about" id="rgx-xs-rkY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d3o-Wg-9gn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2459.4202898550725" y="604.6875"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.clockwise" catalog="system" width="115" height="128"/>
+        <image name="logo" width="261" height="233"/>
+        <image name="polygon" width="25" height="25"/>
+        <image name="tabbar_about" width="25" height="25"/>
+        <image name="tabbar_list" width="25" height="25"/>
+        <image name="tabbar_playground" width="25" height="25"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
