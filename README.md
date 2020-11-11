@@ -20,7 +20,7 @@ No more pain with delegates or callbacks but a simple request based architecture
 
 SwiftLocation comes with a playground application you can use to learn how to use the lib or just play with each supported feature!
 
-<center><img src="SwiftLocation.png"  alt="drawing" width="230"/></center>
+<center><img src="SwiftLocationPlayground.png"  alt="drawing" width="900"/></center>
 
 <a name="support"/>
 
