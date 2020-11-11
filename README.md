@@ -1,4 +1,6 @@
-![SwiftLocation: Location Manager Made Easy](banner.png)
+<p align="center" >
+  <img src="banner.png" width=300px alt="SwiftLocation" title="SwiftLocation">
+</p>
 
 <p align="center"><strong>Location Manager Made Easy</strong></p>
 
