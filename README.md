@@ -1,17 +1,9 @@
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-
 ![SwiftLocation: Location Manager Made Easy](banner.png)
 
 <p align="center"><strong>Location Manager Made Easy</strong></p>
 
 SwiftLocation is a lightweight Swift Library which provides an easy way to work with location related functionalities. 
 No more pain with delegates or callbacks but a simple request based architecture with multiple subscriptions and automatic tuning of the core location manager's settings.
-
-<a class="github-button" href="https://github.com/sponsors/malcommac" data-icon="octicon-heart" data-size="large" aria-label="Sponsor @malcommac on GitHub">Sponsor</a>
-<a class="github-button" href="https://github.com/malcommac/swiftlocation" data-icon="octicon-star" data-size="large" aria-label="Star malcommac/swiftlocation on GitHub">Star</a>
-<a class="github-button" href="https://github.com/malcommac" data-size="large" aria-label="Follow @malcommac on GitHub">Follow @malcommac</a>
-
-<iframe src="https://ghbtns.com/github-btn.html?user=malcommac&type=sponsor" frameborder="0" scrolling="0" width="2000" height="20" title="GitHub"></iframe>
 
 |   | Feature  | Description  |
 |---|---|---|
@@ -39,8 +31,10 @@ You know, maintaing and developing tools consumes resources and time. While I en
 
 If you are using SwiftLocation or any other of my creations please consider the following options:
 
-- Make a [donation with PayPal](https://www.paypal.com/paypalme/danielemargutti/20)
-- Become a sponsor <a class="github-button" href="https://github.com/sponsors/malcommac" data-icon="octicon-heart" data-size="large" aria-label="Sponsor @malcommac on GitHub">Sponsor</a>
+- [**Make a donation with PayPal**](https://www.paypal.com/paypalme/danielemargutti/20)
+- [**Become a Sponsor**](https://github.com/sponsors/malcommac)
+
+- [Follow Me](https://github.com/malcommac)
 
 ## Introduction
 
