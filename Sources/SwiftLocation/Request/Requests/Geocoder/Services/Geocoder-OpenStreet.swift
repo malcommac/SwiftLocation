@@ -85,6 +85,16 @@ public extension Geocoder {
             self.operation = .geoAddress(coordinates)
         }
         
+        /// Initialize to reverse geocode a pair of coordinates.
+        /// - Parameters:
+        ///   - lat: latitude.
+        ///   - lng: longitude.
+        ///   - APIKey: API Key.
+        public convenience init(lat: CLLocationDegrees, lng: CLLocationDegrees) {
+            let coordinates = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            self.init(coordinates: coordinates)
+        }
+        
         /// Initialize to geocode given address and obtain coordinates.
         ///
         /// - Parameters:

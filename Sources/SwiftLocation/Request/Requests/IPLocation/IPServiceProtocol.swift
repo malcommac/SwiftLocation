@@ -143,6 +143,6 @@ public extension IPServiceProtocol {
     
 }
 
-public enum IPLocation {
-    
-}
+// MARK: - IPLocation Umbrella
+
+public enum IPLocation { }

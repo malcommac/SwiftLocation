@@ -192,7 +192,7 @@ public class GeocoderController: UIViewController, UITableViewDelegate, UITableV
         }
 
         let loader = UIAlertController.showLoader(message: "Geocoding in progress...")
-        let request = SwiftLocation.shared.geocodeWith(service)
+        let request = SwiftLocation.geocodeWith(service)
         request.then(queue: .main) { result in
             loader.dismiss(animated: false, completion: {
                 ResultController.showWithResult(result, in: self)

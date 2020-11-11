@@ -25,6 +25,7 @@
 import Foundation
 import CoreLocation
 
+/// This is the request class to monitor significant visits.
 public class VisitsRequest: RequestProtocol, Codable {
     public typealias ProducedData = CLVisit
     
@@ -124,6 +125,20 @@ public extension Result where Success == CLVisit, Failure == LocationError {
             return "Failure \(error.localizedDescription)"
         case .success(let visit):
             return "Success \(visit.description)"
+        }
+    }
+    
+    var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
+        }
+    }
+    
+    var data: CLVisit? {
+        switch self {
+        case .failure: return nil
+        case .success(let v): return v
         }
     }
     

@@ -76,7 +76,7 @@ public extension IPLocation {
         /// - Parameters:
         ///   - targetIP: IP to discover; ignore this parameter to get the location of the currently machine.
         ///   - APIKey: API Key for service. Signup at https://app.ipgeolocation.io.
-        public init(targetIP: String? = nil, APIKey: String) {
+        public init(targetIP: String? = nil, APIKey: String = SharedCredentials[.ipGeolocation]) {
             self.targetIP = targetIP
             self.APIKey = APIKey
         }

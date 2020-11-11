@@ -72,6 +72,16 @@ public extension Geocoder {
             self.locale = locale?.identifier
         }
         
+        /// Initialize to reverse geocode a pair of coordinates.
+        /// - Parameters:
+        ///   - lat: latitude.
+        ///   - lng: longitude.
+        ///   - locale: locale.
+        public convenience init(lat: CLLocationDegrees, lng: CLLocationDegrees, locale: Locale? = nil) {
+            let coordinates = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            self.init(coordinates: coordinates, locale: locale)
+        }
+        
         /// Initialize to forward geocode a given address.
         ///
         /// - Parameters:

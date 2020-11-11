@@ -31,7 +31,7 @@ extension MKMapView {
     public func zoomToUserLocation(_ accuracy: GPSLocationOptions.Accuracy = .block,
                                    distance: CLLocationDistance = 3000,
                                    onError: ((Error) -> Void)? = nil) {
-        SwiftLocation.shared.gpsLocationWith {
+        SwiftLocation.gpsLocationWith {
             $0.accuracy = accuracy
         }.then(queue: .main) { [weak self] result in
             switch result {
@@ -126,12 +126,14 @@ extension UIAlertController {
     @discardableResult
     public static func showInputFieldSheet(title: String, message: String? = nil,
                                            placeholder: String? = nil,
+                                           fieldValue: String? = nil,
                                            cancelAction: (() -> Void)? = nil,
                                            confirmAction: ((String?) -> Void)?) -> UIAlertController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         alert.addTextField { field in
             field.placeholder = placeholder ?? ""
+            field.text = fieldValue ?? ""
         }
         
         let confirmButton = UIAlertAction(title: "OK", style: .default, handler: { _ in

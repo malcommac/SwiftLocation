@@ -92,9 +92,9 @@ public extension Autocomplete {
         }
         
         /// Initialize with request to get details for given result item.
-        /// - Parameter resultItem: result item.
-        public init?(detailsFor resultItem: Autocomplete.Data?) {
-            guard let id = resultItem?.partialAddress?.id else {
+        /// - Parameter resultItem: PartialAddressMatch.
+        public init?(detailsFor resultItem: PartialAddressMatch?) {
+            guard let id = resultItem?.id else {
                 return nil
             }
             

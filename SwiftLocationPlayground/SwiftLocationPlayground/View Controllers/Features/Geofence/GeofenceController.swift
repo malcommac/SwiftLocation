@@ -203,11 +203,11 @@ class GeofenceController: UIViewController {
         do {
             if let circle = shape as? MKCircle {
                 let options = GeofencingOptions(circle: circle)
-                currentRequest = SwiftLocation.shared.geofenceWith(options)
+                currentRequest = SwiftLocation.geofenceWith(options)
                 
             } else if let polygon = shape as? MKPolygon {
                 let options = try GeofencingOptions(polygon: polygon)
-                currentRequest = SwiftLocation.shared.geofenceWith(options)
+                currentRequest = SwiftLocation.geofenceWith(options)
                 
             } else {
                 throw LocationError.other("Shape is not supported and cannot be monitored: \(shape.description)")
@@ -223,7 +223,7 @@ class GeofenceController: UIViewController {
         // Draw polygons
         mapView.removeOverlays(mapView.overlays)
         
-        for request in SwiftLocation.shared.geofenceRequests.list {
+        for request in SwiftLocation.geofenceRequests.list {
             switch request.options.region {
             case .circle(let circularRegion):
                 let circle = MKCircle(center: circularRegion.center, radius: circularRegion.radius)
@@ -241,7 +241,7 @@ class GeofenceController: UIViewController {
         
         if reattachSubscribers {
             // Attach event subscribers
-            AppDelegate.attachSubscribersToGeofencedRegions(Array(SwiftLocation.shared.geofenceRequests.list))
+            AppDelegate.attachSubscribersToGeofencedRegions(Array(SwiftLocation.geofenceRequests.list))
         }
     }
     

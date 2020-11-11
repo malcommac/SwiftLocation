@@ -112,4 +112,18 @@ public extension Result where Success == [GeoLocation], Failure == LocationError
         }
     }
     
+    var data: [GeoLocation]? {
+        switch self {
+        case .success(let locations): return locations
+        case .failure: return nil
+        }
+    }
+    
+    var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
+        }
+    }
+    
 }

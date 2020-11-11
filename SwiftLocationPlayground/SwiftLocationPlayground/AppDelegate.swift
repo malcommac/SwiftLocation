@@ -25,6 +25,8 @@
 import UIKit
 import SwiftLocation
 import UserNotifications
+import MapKit
+import CoreLocation
 
 public let NOT_SET = "not set"
 public let NOTIFICATION_GPS_DATA = Notification.Name("NOTIFICATION_GPS_DATA")
@@ -38,17 +40,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Setup locator
-        SwiftLocation.shared.onRestoreGeofences = AppDelegate.onRestoreGeofencedRequests
-        SwiftLocation.shared.onRestoreGPS = AppDelegate.onRestoreGPSRequests
-        SwiftLocation.shared.onRestoreVisits = AppDelegate.onRestoreVisitsRequests
-        SwiftLocation.shared.restoreState()
+        SwiftLocation.onRestoreGeofences = AppDelegate.onRestoreGeofencedRequests
+        SwiftLocation.onRestoreGPS = AppDelegate.onRestoreGPSRequests
+        SwiftLocation.onRestoreVisits = AppDelegate.onRestoreVisitsRequests
+        SwiftLocation.restoreState()
 
         // Enable push notifications
         UNUserNotificationCenter.current().delegate = self
         AppDelegate.enablePushNotifications()
-        
-        print(UUID().uuidString)
-        
+
         return true
     }
 

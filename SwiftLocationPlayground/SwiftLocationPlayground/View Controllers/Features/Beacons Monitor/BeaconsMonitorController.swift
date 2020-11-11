@@ -79,7 +79,7 @@ public class BeaconsMonitorController: UIViewController, UITableViewDataSource, 
                         return
                     }
                     
-                    let request = SwiftLocation.shared.beacon(beacon)
+                    let request = SwiftLocation.beacon(beacon)
                     AppDelegate.attachSubscribersToBeacons([request])
 
                     UIAlertController.showAlert(title: "Monitor Beacon",
@@ -94,7 +94,7 @@ public class BeaconsMonitorController: UIViewController, UITableViewDataSource, 
                         return
                     }
                     
-                    let request = SwiftLocation.shared.beaconsWithUUID(UUID)
+                    let request = SwiftLocation.beaconsWithUUID(UUID)
                     AppDelegate.attachSubscribersToBeacons([request])
                     
                     UIAlertController.showAlert(title: "Monitor Family",
@@ -140,7 +140,7 @@ public class BeaconsMonitorController: UIViewController, UITableViewDataSource, 
     }
     
     private func reloadData() {
-        beaconRequests = Array(SwiftLocation.shared.beaconsRequests.list)
+        beaconRequests = Array(SwiftLocation.beaconsRequests.list)
         monitoredBeaconsTableView.reloadData()
     }
     

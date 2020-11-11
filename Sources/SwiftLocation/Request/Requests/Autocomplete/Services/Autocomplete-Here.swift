@@ -77,7 +77,8 @@ public extension Autocomplete {
         ///   - partialAddress:  partial match of the address.
         ///   - APIKey: API Key.
         ///   - proximityArea: contextual area options.
-        public init(partialMatches partialAddress: String, APIKey: String, proximityArea: ProximityArea? = nil) {
+        public init(partialMatches partialAddress: String, APIKey: String = SharedCredentials[.google],
+                    proximityArea: ProximityArea? = nil) {
             self.operation = .partialMatch(partialAddress)
             self.proximityArea = proximityArea
             self.APIKey = APIKey
@@ -90,7 +91,7 @@ public extension Autocomplete {
         /// - Parameters:
         ///   - fullAddress: full address.
         ///   - region: Use this property to limit search results to the specified geographic area.
-        public init(detailsFor fullAddress: String, APIKey: String) {
+        public init(detailsFor fullAddress: String, APIKey: String = SharedCredentials[.google]) {
             self.operation = .addressDetail(fullAddress)
             self.APIKey = APIKey
             
@@ -99,10 +100,10 @@ public extension Autocomplete {
         
         /// Initialize with request to get details for given result item.
         /// - Parameters:
-        ///   - resultItem: result item.
+        ///   - resultItem: result item, PartialAddressMatch.
         ///   - APIKey: API Key.
-        public init?(detailsFor resultItem: Autocomplete.Data?, APIKey: String) {
-            guard let id = resultItem?.partialAddress?.id else {
+        public init?(detailsFor resultItem: PartialAddressMatch?, APIKey: String = SharedCredentials[.google]) {
+            guard let id = resultItem?.id else {
                 return nil
             }
             
@@ -117,7 +118,7 @@ public extension Autocomplete {
         /// - Parameters:
         ///   - lookupByID: identifier of the place.
         ///   - region: Use this property to limit search results to the specified geographic area.
-        public init(lookupByID hereID: String, APIKey: String) {
+        public init(lookupByID hereID: String, APIKey: String = SharedCredentials[.google]) {
             self.operation = .addressDetail(":ID:\(hereID)")
             self.APIKey = APIKey
             

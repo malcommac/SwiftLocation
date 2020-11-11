@@ -77,12 +77,12 @@ public class AutocompleteResultsController: UIViewController, UITableViewDelegat
         tableView.deselectRow(at: indexPath, animated: true)
         
         guard let result = list?[indexPath.row],
-              let detailService = createRequestToGetDetailForResult(result) else {
+              let detailService = createRequestToGetDetailForResult(result.partialAddress) else {
             return
         }
                 
         let loader = UIAlertController.showLoader(message: "Getting details for place \(result.description)...")
-        SwiftLocation.shared.autocompleteWith(detailService).then(queue: .main) { result in
+        SwiftLocation.autocompleteWith(detailService).then(queue: .main) { result in
             loader.dismiss(animated: true, completion: nil)
             ResultController.showWithResult(result, in: self)
         }
@@ -90,7 +90,7 @@ public class AutocompleteResultsController: UIViewController, UITableViewDelegat
     
     // MARK: - Private Functions
     
-    private func createRequestToGetDetailForResult(_ result: Autocomplete.Data?) -> AutocompleteProtocol? {
+    private func createRequestToGetDetailForResult(_ result: PartialAddressMatch?) -> AutocompleteProtocol? {
         switch service {
         case is Autocomplete.Apple:
             return Autocomplete.Apple(detailsFor: result)

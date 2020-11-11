@@ -99,7 +99,7 @@ public extension Autocomplete {
         /// - Parameters:
         ///   - partialMatch: partial match of the address.
         ///   - region: Use this property to limit search results to the specified geographic area.
-        public init(partialMatches partialAddress: String, APIKey: String) {
+        public init(partialMatches partialAddress: String, APIKey: String = SharedCredentials[.google]) {
             self.operation = .partialMatch(partialAddress)
             self.APIKey = APIKey
             
@@ -117,7 +117,7 @@ public extension Autocomplete {
         /// - Parameters:
         ///   - fullAddress: full address to search
         ///   - region: Use this property to limit search results to the specified geographic area.
-        public init(detailsFor fullAddress: String, APIKey: String) {
+        public init(detailsFor fullAddress: String, APIKey: String = SharedCredentials[.google]) {
             self.operation = .addressDetail(fullAddress)
             self.APIKey = APIKey
             
@@ -126,10 +126,10 @@ public extension Autocomplete {
         
         /// Initialize with request to get details for given result item.
         /// - Parameters:
-        ///   - resultItem: result item.
+        ///   - resultItem: result item, PartialAddressMatch.
         ///   - APIKey: API Key.
-        public init?(detailsFor resultItem: Autocomplete.Data?, APIKey: String) {
-            guard let id = resultItem?.partialAddress?.id else {
+        public init?(detailsFor resultItem: PartialAddressMatch?, APIKey: String = SharedCredentials[.google]) {
+            guard let id = resultItem?.id else {
                 return nil
             }
             

@@ -30,7 +30,7 @@ import CoreLocation
 public extension RequestProtocol {
 
     @discardableResult
-    func then(queue: DispatchQueue, _ callback: @escaping DataCallback) -> Identifier {
+    func then(queue: DispatchQueue = .main, _ callback: @escaping DataCallback) -> Identifier {
         let callbackContainer = RequestDataCallback(queue: queue, callback: callback)
         
         if let unwrappedLastValue = lastReceivedValue {
@@ -64,7 +64,7 @@ public extension RequestProtocol {
     }
     
     func cancelRequest() {
-        SwiftLocation.shared.cancel(request: self)
+        SwiftLocation.cancel(request: self)
     }
     
     @discardableResult
@@ -106,7 +106,7 @@ public extension RequestProtocol {
         dispatchData(.success(data))
         
         if shouldRemoveRequest() { // if first data invalidate the request
-            SwiftLocation.Logger.log("Request '\(uuid)' will be removed due to eviction policy \(evictionPolicy)")
+            LocationManager.Logger.log("Request '\(uuid)' will be removed due to eviction policy \(evictionPolicy)")
             cancelRequest()
         }
         

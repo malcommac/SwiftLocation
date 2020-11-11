@@ -114,7 +114,7 @@ public class GeofencingRequest: RequestProtocol, Codable {
         if event.isEntered && options.region.polygon != nil {
             // if we are monitoring a custom polygon and we received the didEntered event in the outer
             // region of the polygon we need to start monitoring the inner region for continous locations.
-            polygonLocationRequest = SwiftLocation.shared.gpsLocationWith({
+            polygonLocationRequest = SwiftLocation.gpsLocationWith({
                 $0.accuracy = .block
                 $0.minTimeInterval = 5
             })
@@ -244,6 +244,10 @@ extension Result where Success == CLLocation, Failure == LocationError {
         }
     }
     
+    public var data: CLLocation? {
+        location
+    }
+    
 }
 
 extension Result where Success == GeofenceEvent, Failure == LocationError {
@@ -253,6 +257,20 @@ extension Result where Success == GeofenceEvent, Failure == LocationError {
         switch self {
         case .failure(let e): return e.localizedDescription
         case .success(let e): return e.description
+        }
+    }
+    
+    public var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
+        }
+    }
+    
+    public var data: GeofenceEvent? {
+        switch self {
+        case .failure: return nil
+        case .success(let e): return e
         }
     }
     

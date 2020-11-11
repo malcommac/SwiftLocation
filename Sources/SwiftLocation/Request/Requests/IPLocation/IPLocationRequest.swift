@@ -107,7 +107,7 @@ public class IPLocationRequest: RequestProtocol {
 
 // MARK: - Result<,LocatorErrors>
 
-extension Result where Success == IPLocation.Data, Failure == LocationError {
+public extension Result where Success == IPLocation.Data, Failure == LocationError {
     
     var description: String {
         switch self {
@@ -115,6 +115,20 @@ extension Result where Success == IPLocation.Data, Failure == LocationError {
             return "Failure \(error.localizedDescription)"
         case .success(let data):
             return "Success \(data.description)"
+        }
+    }
+    
+    var data: IPLocation.Data? {
+        switch self {
+        case .failure: return nil
+        case .success(let l): return l
+        }
+    }
+    
+    var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
         }
     }
     

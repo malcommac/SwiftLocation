@@ -114,7 +114,7 @@ public enum LocationError: LocalizedError, Equatable {
 
 // MARK: - LocatorLogger
 
-public extension SwiftLocation {
+public extension LocationManager {
     
     class Logger {
         

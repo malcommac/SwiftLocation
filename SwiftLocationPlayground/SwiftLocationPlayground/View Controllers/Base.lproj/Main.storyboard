@@ -208,18 +208,15 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location Manage Made Easy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fb0-aX-axY">
-                                <rect key="frame" x="98" y="114" width="218" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location Manager Made Easy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fb0-aX-axY">
+                                <rect key="frame" x="95" y="114" width="224" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6gS-ic-cWF">
-                                <rect key="frame" x="25" y="493" width="364" height="300"/>
+                                <rect key="frame" x="25" y="388" width="364" height="405"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="dWK-cf-ePJ"/>
-                                </constraints>
                                 <attributedString key="attributedText">
                                     <fragment>
                                         <string key="content">Licensed under MIT License.
@@ -440,6 +437,13 @@ danielemargutti.com</string>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                 <dataDetectorType key="dataDetectorTypes" link="YES"/>
                             </textView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="5Fg-5p-vko">
+                                <rect key="frame" x="87" y="235" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="5Fg-5p-vko" secondAttribute="height" multiplier="15:8" id="g66-3T-MaL"/>
+                                    <constraint firstAttribute="height" constant="128" id="pSh-3o-xJu"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="S7S-0r-x8k"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -448,11 +452,14 @@ danielemargutti.com</string>
                             <constraint firstItem="fb0-aX-axY" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="Ju7-XF-vc1"/>
                             <constraint firstItem="6gS-ic-cWF" firstAttribute="leading" secondItem="S7S-0r-x8k" secondAttribute="leading" constant="25" id="LSL-l7-a02"/>
                             <constraint firstItem="S7S-0r-x8k" firstAttribute="bottom" secondItem="6gS-ic-cWF" secondAttribute="bottom" constant="20" id="N1e-QR-oyc"/>
+                            <constraint firstItem="5Fg-5p-vko" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="P44-sD-l1y"/>
                             <constraint firstItem="jeQ-Dy-SFm" firstAttribute="top" secondItem="S7S-0r-x8k" secondAttribute="top" constant="40" id="Xkc-bv-HAf"/>
                             <constraint firstItem="qru-pj-3t7" firstAttribute="top" secondItem="fb0-aX-axY" secondAttribute="bottom" constant="10" id="Xsl-c7-3WL"/>
                             <constraint firstItem="qru-pj-3t7" firstAttribute="leading" secondItem="S7S-0r-x8k" secondAttribute="leading" constant="25" id="bVX-W3-YWo"/>
                             <constraint firstItem="jeQ-Dy-SFm" firstAttribute="centerX" secondItem="1Wa-lC-c9W" secondAttribute="centerX" id="dWm-W5-VCK"/>
+                            <constraint firstItem="6gS-ic-cWF" firstAttribute="top" secondItem="5Fg-5p-vko" secondAttribute="bottom" constant="25" id="gz9-Au-SLO"/>
                             <constraint firstItem="S7S-0r-x8k" firstAttribute="trailing" secondItem="6gS-ic-cWF" secondAttribute="trailing" constant="25" id="ioS-nu-glE"/>
+                            <constraint firstItem="5Fg-5p-vko" firstAttribute="top" secondItem="qru-pj-3t7" secondAttribute="bottom" constant="10" id="kfO-d1-BcB"/>
                             <constraint firstItem="S7S-0r-x8k" firstAttribute="trailing" secondItem="qru-pj-3t7" secondAttribute="trailing" constant="25" id="ttL-Qc-fEM"/>
                         </constraints>
                     </view>
@@ -465,6 +472,7 @@ danielemargutti.com</string>
     </scenes>
     <resources>
         <image name="arrow.clockwise" catalog="system" width="115" height="128"/>
+        <image name="logo" width="261" height="233"/>
         <image name="polygon" width="25" height="25"/>
         <image name="tabbar_about" width="25" height="25"/>
         <image name="tabbar_list" width="25" height="25"/>

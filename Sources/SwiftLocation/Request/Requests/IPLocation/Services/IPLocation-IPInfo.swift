@@ -72,7 +72,7 @@ public extension IPLocation {
         /// - Parameters:
         ///   - IP: IP to discover; ignore this parameter to get the location of the currently machine.
         ///   - APIKey: APIKey to use service (go to https://ipdata.co/registration.html for more infos).
-        public init(targetIP: String? = nil, APIKey: String) {
+        public init(targetIP: String? = nil, APIKey: String = SharedCredentials[.ipInfo]) {
             self.targetIP = targetIP
             self.APIKey = APIKey
         }

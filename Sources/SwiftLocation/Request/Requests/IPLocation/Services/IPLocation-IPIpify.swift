@@ -74,7 +74,7 @@ public extension IPLocation {
         /// - Parameters:
         ///   - IP: IP to discover; ignore this parameter to get the location of the currently machine.
         ///   - APIKey: API key (see https://geo.ipify.org/subscriptions)
-        public init(targetIP: String? = nil, APIKey: String) {
+        public init(targetIP: String? = nil, APIKey: String = SharedCredentials[.ipify]) {
             self.targetIP = targetIP
             self.APIKey = APIKey
         }

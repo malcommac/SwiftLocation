@@ -236,15 +236,15 @@ fileprivate class ListData {
     var managerSettings: [(key: RequestListController.ManagerSettingsKey, value: String)]
 
     public init() {
-        visits = Array(SwiftLocation.shared.visitsRequest.list)
-        gps = Array(SwiftLocation.shared.gpsRequests.list)
-        ip = Array(SwiftLocation.shared.ipRequests.list)
-        geofencing = Array(SwiftLocation.shared.geofenceRequests.list)
-        geocode = Array(SwiftLocation.shared.geocoderRequests.list)
-        autocomplete = Array(SwiftLocation.shared.autocompleteRequests.list)
-        beacons = Array(SwiftLocation.shared.beaconsRequests.list)
+        visits = Array(SwiftLocation.visitsRequest.list)
+        gps = Array(SwiftLocation.gpsRequests.list)
+        ip = Array(SwiftLocation.ipRequests.list)
+        geofencing = Array(SwiftLocation.geofenceRequests.list)
+        geocode = Array(SwiftLocation.geocoderRequests.list)
+        autocomplete = Array(SwiftLocation.autocompleteRequests.list)
+        beacons = Array(SwiftLocation.beaconsRequests.list)
 
-        let settings = SwiftLocation.shared.currentSettings
+        let settings = SwiftLocation.currentSettings
         managerSettings = [
             (.activeServices, settings.activeServices.isEmpty ? NOT_SET : settings.activeServices.description),
             (.accuracy, settings.accuracy.description),

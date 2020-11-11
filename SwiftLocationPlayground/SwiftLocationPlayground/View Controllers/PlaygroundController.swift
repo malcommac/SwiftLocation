@@ -23,6 +23,7 @@
 //
 
 import UIKit
+import SwiftLocation
 
 public class PlaygroundController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -32,7 +33,10 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
     
     // MARK: - Private Properties
 
+    private static let UserDefaultsCredentialsKey = "swiftlocation.playground.credentials"
+
     private let featuresList: [Feature] = [
+        .authRequest,
         .gpsLocation,
         .ipLocation,
         .geofenceMonitoring,
@@ -40,7 +44,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         .geocoder,
         .autocompleAddress,
         .beaconBroadcast,
-        .beaconRanging
+        .beaconRanging,
+        .credentailsStore
     ]
     
     // MARK: - Initialization
@@ -54,6 +59,8 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
         featuresTableView.delegate = self
         featuresTableView.tableFooterView = UIView()
 
+        restoreCredentialsFromUserDefaults()
+        
         self.navigationItem.title = "SwiftLocation Playground"
     }
     
@@ -94,9 +101,79 @@ public class PlaygroundController: UIViewController, UITableViewDataSource, UITa
             navigationController?.pushViewController(BroadcastBeaconController.create(), animated: true)
         case .beaconRanging:
             navigationController?.pushViewController(BeaconsMonitorController.create(), animated: true)
+        case .authRequest:
+            requestAuthorizations()
+        case .credentailsStore:
+            setCredentialsStoreValue()
         }
     }
     
+    private func requestAuthorizations() {
+        
+        func requestAuthWithMode(_ mode: AuthorizationMode) {
+            SwiftLocation.requestAuthorization(mode) { [weak self] newStatus in
+                UIAlertController.showAlert(title: "Current Status is\n\(newStatus.description)")
+                self?.featuresTableView.reloadData()
+            }
+        }
+        
+        UIAlertController.showActionSheet(title: "Request Authorization",
+                                          message: "Select the method to use to request auth",
+                                          options: [
+                                            ("Via plist", { _ in
+                                                requestAuthWithMode(.plist)
+                                            }),
+                                            ("Always", { _ in
+                                                requestAuthWithMode(.always)
+                                            }),
+                                            ("Only In Use", { _ in
+                                                requestAuthWithMode(.onlyInUse)
+                                            }),
+                                          ])
+    }
+    
+    private func setCredentialsStoreValue() {
+        
+        func askForKey(_ service: LocationManager.Credentials.ServiceName) {
+            let currentValue = SwiftLocation.credentials[service]
+            UIAlertController.showInputFieldSheet(title: "API Key \(service.description)", message: nil, placeholder: nil, fieldValue: currentValue, cancelAction: {
+                // nothing
+            }, confirmAction: { [weak self] apiKey in
+                SwiftLocation.credentials[service] = apiKey ?? ""
+                self?.saveCredentialsInUserDefaults()
+            })
+        }
+        
+        let values: [UIAlertController.ActionSheetOption] = LocationManager.Credentials.ServiceName.allCases.map { serviceKind in
+            (serviceKind.description, { _ in
+                askForKey(serviceKind)
+            })
+        }
+        UIAlertController.showActionSheet(title: "Select Service", message: "Select a service you want to set the API key. It will be saved in your user defaults", options: values, cancelAction: nil)
+    }
+    
+    private func saveCredentialsInUserDefaults() {
+        do {
+            let value = try JSONEncoder().encode(SwiftLocation.credentials)
+            UserDefaults.standard.setValue(value, forKey: PlaygroundController.UserDefaultsCredentialsKey)
+        } catch {
+            UIAlertController.showAlert(title: "Failed to store credentials", message: error.localizedDescription)
+        }
+    }
+    
+    private func restoreCredentialsFromUserDefaults() {
+        do {
+            guard let data = UserDefaults.standard.object(forKey: PlaygroundController.UserDefaultsCredentialsKey) as? Data else {
+                return
+            }
+            
+            let credentials = try JSONDecoder().decode(LocationManager.Credentials.self, from: data)
+            SwiftLocation.credentials.loadCredential(credentials)
+        } catch {
+            UIAlertController.showAlert(title: "Failed to restore credentials saved", message: error.localizedDescription)
+        }
+    }
+        
 }
 
 // MARK: - PlaygroundController Feature
@@ -112,6 +189,8 @@ fileprivate extension PlaygroundController {
         case geocoder
         case beaconBroadcast
         case beaconRanging
+        case authRequest
+        case credentailsStore
 
         var title: String {
             switch self {
@@ -123,6 +202,8 @@ fileprivate extension PlaygroundController {
             case .geocoder: return "Geocoder & Reverse Geocoder"
             case .beaconBroadcast: return "Beacon Broadcaster"
             case .beaconRanging: return "Beacons Monitor"
+            case .authRequest: return "Request Authorizations"
+            case .credentailsStore: return "Credentials Store"
             }
         }
         
@@ -136,6 +217,13 @@ fileprivate extension PlaygroundController {
             case .geocoder: return "Get coordinates from address/address from coordinates"
             case .beaconBroadcast: return "Act as beacon (only foreground)"
             case .beaconRanging: return "Monitor beacons ranging"
+            case .authRequest: return "Current: \(SwiftLocation.authorizationStatus.description)"
+            case .credentailsStore:
+                if SwiftLocation.credentials.keysStore.isEmpty {
+                    return "Save API Key for services"
+                } else {
+                    return "Keys stored: \(SwiftLocation.credentials.keysStore.keys.map({ $0.description }).joined(separator: ","))"
+                }
             }
         }
         
@@ -149,6 +237,8 @@ fileprivate extension PlaygroundController {
             case .geocoder: return UIImage(named: "tabbar_geocoder")
             case .beaconBroadcast: return UIImage(named: "tabbar_broadcaster")
             case .beaconRanging: return UIImage(named: "tabbar_beacon")
+            case .authRequest: return UIImage(named: "tabbar_auths")
+            case .credentailsStore: return UIImage(named: "tabbar_credentials")
             }
         }
     }

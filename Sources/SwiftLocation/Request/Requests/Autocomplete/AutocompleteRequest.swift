@@ -117,4 +117,18 @@ public extension Result where Success == [Autocomplete.Data], Failure == Locatio
         }
     }
     
+    var data: [Autocomplete.Data]? {
+        switch self {
+        case .failure: return nil
+        case .success(let d): return d
+        }
+    }
+    
+    var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
+        }
+    }
+    
 }

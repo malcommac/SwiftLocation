@@ -203,8 +203,14 @@ public extension BeaconRequest {
     
     /// Struct to represent a Beacon the library should be listening to.
     struct Beacon {
+        
+        /// The UUID is a 128-bit value that uniquely identifies your app’s beacons.
         public var uuid: UUID
+        
+        /// The major value is a 16-bit unsigned integer that you use to differentiate groups of beacons with the same UUID.
         public var minor: NSNumber
+        
+        /// The minor value is a 16-bit unsigned integer that you use to differentiate groups of beacons with the same UUID and major value.
         public var major: NSNumber
         
         public init(uuid: UUID, minor: NSNumber, major: NSNumber) {
@@ -264,6 +270,20 @@ public extension Result where Success == BeaconRequest.Event, Failure == Locatio
             return "Failure \(error.localizedDescription)"
         case .success(let event):
             return "Success \(event.description)"
+        }
+    }
+    
+    var error: LocationError? {
+        switch self {
+        case .failure(let e): return e
+        case .success: return nil
+        }
+    }
+    
+    var data: BeaconRequest.Event? {
+        switch self {
+        case .failure: return nil
+        case .success(let e): return e
         }
     }
     

@@ -31,7 +31,10 @@ import AppKit
 import UIKit
 #endif
 
-public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
+/// Shortcut
+public let SwiftLocation = LocationManager.shared
+
+public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         
     // MARK: - Private Properties
 
@@ -49,16 +52,40 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
     public var onRestoreVisits: (([VisitsRequest]) -> Void)?
 
     /// Shared instance.
-    public static let shared = SwiftLocation()
+    public static let shared = LocationManager()
+    
+    /// Credentials storage.
+    public let credentials = SharedCredentials
     
     /// Return true if beacon foreground broadcasting is active or not.
-    public static var isBeaconBroadcastActive: Bool {
+    public var isBeaconBroadcastActive: Bool {
         BeaconBroadcaster.shared.isBroadcastingActive
     }
     
     /// Return non `nil` values when broadcasting is active.
-    public static var broadcastingBeacon: BroadcastedBeacon? {
+    public var broadcastingBeacon: BroadcastedBeacon? {
         BeaconBroadcaster.shared.beacon
+    }
+    
+    /// Last know gps location.
+    public var lastKnownGPSLocation: CLLocation? {
+        get {
+            guard let data = UserDefaults.standard.object(forKey: UserDefaultsKeys.LastKnownGPSLocation) as? Data else {
+                return nil
+            }
+            
+            let location = NSKeyedUnarchiver.unarchiveObject(with: data) as? CLLocation
+            return location
+        }
+        set {
+            guard let location = newValue else {
+                UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.LastKnownGPSLocation)
+                return
+            }
+            
+            let data = NSKeyedArchiver.archivedData(withRootObject: location)
+            UserDefaults.standard.setValue(data, forKey: UserDefaultsKeys.LastKnownGPSLocation)
+        }
     }
     
     /// Authorization mode. By default the best authorization to get is based upon the plist file.
@@ -75,13 +102,13 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
         didSet {
             guard currentSettings != oldValue else { return } // same settings, no needs to perform any change
 
-            SwiftLocation.Logger.log("CLLocationManager: \(currentSettings)")
+            LocationManager.Logger.log("CLLocationManager: \(currentSettings)")
             manager?.updateSettings(currentSettings)
         }
     }
     
     // MARK: - Requests Queues
-    
+        
     /// Location requests.
     public lazy var gpsRequests: RequestQueue<GPSLocationRequest> = {
         let queue = RequestQueue<GPSLocationRequest>()
@@ -175,6 +202,19 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
     }
     
     // MARK: - Create GPS Requests
+    
+    /// Create a request to get the location of the user one time only.
+    ///
+    /// - Parameters:
+    ///   - accuracy: accuracy desidered, by default is `any`.
+    ///   - timeout: timeout; by default is set to 7 seconds after we got the user's authorizations.
+    public func gpsLocation(accuracy: GPSLocationOptions.Accuracy = .any,
+                            timeout: GPSLocationOptions.Timeout = .delayed(7)) -> GPSLocationRequest {
+        gpsLocationWith {
+            $0.accuracy = accuracy
+            $0.timeout = timeout
+        }
+    }
 
     /// Get the location with GPS module with given options.
     ///
@@ -328,8 +368,20 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
             beaconsRequests.remove(beacon)
             
         default:
-            SwiftLocation.Logger.log("Failed to remove request: '\(request)'")
+            LocationManager.Logger.log("Failed to remove request: '\(request)'")
         }
+    }
+    
+    /// Manually request authorizations.
+    /// NOTE: Use only if you need to request authorization in custom screen; authorization is called automatically
+    /// based on active requests.
+    ///
+    /// - Parameters:
+    ///   - mode: mode to request authorization; by default is `.plist` (look at `Info.plist` file to get the best auth required.
+    ///   - completion: completion callback.
+    public func requestAuthorization(_ mode: AuthorizationMode = .plist,
+                                     completion: @escaping ((CLAuthorizationStatus) -> Void)) {
+        manager?.requestAuthorization(mode, completion)
     }
     
     /// Cancel subscription token with given id from their associated request.
@@ -363,7 +415,7 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
             defaults.setValue(try JSONEncoder().encode(visitsRequest.list), forKey: UserDefaultsKeys.VisitsRequests)
             return true
         } catch {
-            SwiftLocation.Logger.log("Failed to save the state of the requests: \(error.localizedDescription)")
+            LocationManager.Logger.log("Failed to save the state of the requests: \(error.localizedDescription)")
             return false
         }
     }
@@ -390,7 +442,7 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
         do {
             return try JSONDecoder().decode([T].self, from: data)
         } catch {
-            SwiftLocation.Logger.log("Failed to restore saved queue for \(String(describing: T.self)): \(error.localizedDescription)")
+            LocationManager.Logger.log("Failed to restore saved queue for \(String(describing: T.self)): \(error.localizedDescription)")
             return []
         }
     }
@@ -526,6 +578,7 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
             return
         }
         
+        lastKnownGPSLocation = lastLocation
         dispatchDataToQueue(gpsRequests, data: .success(lastLocation))
     }
     
@@ -593,7 +646,7 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
         copyList.forEach { request in
             if filter?(request) ?? true {
                 if let discardReason = request.receiveData(data) {
-                    SwiftLocation.Logger.log("𝗑 Location discarded from \(request.uuid): \(discardReason.description)")
+                    LocationManager.Logger.log("𝗑 Location discarded from \(request.uuid): \(discardReason.description)")
                 }
             }
         }
@@ -603,7 +656,7 @@ public class SwiftLocation: LocationManagerDelegate, CustomStringConvertible {
 
 // MARK: - RequestQueue
 
-public extension SwiftLocation {
+public extension LocationManager {
     
     class RequestQueue<Value: RequestProtocol>: CustomStringConvertible {
         
@@ -635,7 +688,7 @@ public extension SwiftLocation {
         /// - Returns: Self
         @discardableResult
         internal func add(_ request: Value, silent: Bool = false) -> Value {
-            SwiftLocation.Logger.log("+ Add new request: \(request.uuid)")
+            LocationManager.Logger.log("+ Add new request: \(request.uuid)")
             
             list.insert(request)
             request.didAddInQueue()
@@ -662,7 +715,7 @@ public extension SwiftLocation {
         internal func add(_ requests: [Value], silent: Bool = false) -> [Value] {
             guard requests.isEmpty == false else { return [] }
             
-            SwiftLocation.Logger.log("+ Add requests: \(requests.map({ $0.uuid }).joined(separator: ","))")
+            LocationManager.Logger.log("+ Add requests: \(requests.map({ $0.uuid }).joined(separator: ","))")
             
             requests.forEach {
                 list.insert($0)
@@ -680,7 +733,7 @@ public extension SwiftLocation {
         /// - Returns: Self
         @discardableResult
         internal func remove(_ request: Value, silent: Bool = false) -> Value {
-            SwiftLocation.Logger.log("- Remove request: \(request.uuid)")
+            LocationManager.Logger.log("- Remove request: \(request.uuid)")
             
             list.remove(request)
             request.didRemovedFromQueue()
@@ -696,7 +749,7 @@ public extension SwiftLocation {
             guard !list.isEmpty else { return }
             
             let removedRequests = list
-            SwiftLocation.Logger.log("- Remove all \(list.count) requests")
+            LocationManager.Logger.log("- Remove all \(list.count) requests")
             list.removeAll()
             
             removedRequests.forEach({ $0.didRemovedFromQueue() })
@@ -716,4 +769,5 @@ fileprivate enum UserDefaultsKeys {
     static let GeofenceRequests = "com.swiftlocation.requests.geofence"
     static let GPSRequests = "com.swiftlocation.requests.gps"
     static let VisitsRequests = "com.swiftlocation.visits.gps"
+    static let LastKnownGPSLocation = "com.swiftlocation.last-gps-location"
 }

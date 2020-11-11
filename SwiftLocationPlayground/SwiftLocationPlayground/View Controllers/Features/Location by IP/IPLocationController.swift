@@ -280,7 +280,7 @@ public class IPLocationController: UIViewController, UITableViewDelegate, UITabl
         
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
         
-        runningRequest = SwiftLocation.shared.ipLocationWith(service)
+        runningRequest = SwiftLocation.ipLocationWith(service)
         runningRequest?.then(queue: .main, { [weak self] result in
             guard let self = self else { return }
             

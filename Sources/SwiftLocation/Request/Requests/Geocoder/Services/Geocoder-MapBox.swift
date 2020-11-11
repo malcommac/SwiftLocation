@@ -121,9 +121,19 @@ public extension Geocoder {
         /// - Parameters:
         ///   - coordinates: coordinates.
         ///   - APIKey: API key
-        public init(coordinates: CLLocationCoordinate2D, APIKey: String) {
+        public init(coordinates: CLLocationCoordinate2D, APIKey: String = SharedCredentials[.mapBox]) {
             self.operation = .geoAddress(coordinates)
             self.APIKey = APIKey
+        }
+        
+        /// Initialize to reverse geocode a pair of coordinates.
+        /// - Parameters:
+        ///   - lat: latitude.
+        ///   - lng: longitude.
+        ///   - APIKey: API Key.
+        public convenience init(lat: CLLocationDegrees, lng: CLLocationDegrees, APIKey: String = SharedCredentials[.mapBox]) {
+            let coordinates = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            self.init(coordinates: coordinates, APIKey: APIKey)
         }
         
         /// Initialize to geocode given address and obtain coordinates.
@@ -131,10 +141,11 @@ public extension Geocoder {
         /// - Parameters:
         ///   - address: address to geocode.
         ///   - APIKey: API Key
-        public init(address: String, APIKey: String) {
+        public init(address: String, APIKey: String = SharedCredentials[.mapBox]) {
             self.operation = .getCoordinates(address)
             self.APIKey = APIKey
         }
+        
         
         // MARK: - Public Functions
         
@@ -250,6 +261,14 @@ public extension Geocoder.MapBox {
         
         public var description: String {
             rawValue
+        }
+        
+        public init(minLat: CLLocationDegrees, minLon: CLLocationDegrees,
+                    maxLat: CLLocationDegrees, maxLon: CLLocationDegrees) {
+            self.minLat = minLat
+            self.minLon = minLon
+            self.maxLat = maxLat
+            self.maxLon = maxLon
         }
         
     }
