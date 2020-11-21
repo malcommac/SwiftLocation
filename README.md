@@ -1,13 +1,15 @@
-![SwiftLocation: Location Manager Made Easy](banner.png)
+<p align="center" >
+  <img src="banner.png" width=300px alt="SwiftLocation" title="SwiftLocation">
+</p>
 
 <p align="center"><strong>Location Manager Made Easy</strong></p>
 
-SwiftLocation is a lightweight Swift Library which provides an easy way to work with location related functionalities. 
+SwiftLocation is a lightweight Swift Library that provides an easy way to work with location-related functionalities. 
 No more pain with delegates or callbacks but a simple request based architecture with multiple subscriptions and automatic tuning of the core location manager's settings.
 
 |   | Feature  | Description  |
 |---|---|---|
-| 🛰 | **Location via GPS**  |  Monitor single, continous or significant location updates with fully configurable APIs.  |
+| 🛰 | **Location via GPS**  |  Monitor single, continuous or significant location updates with fully configurable APIs.  |
 | 👩‍💻 | **Location via IP** | Approximate location data without user authorization.<br>[IPApi](https://ipapi.com) ∙ [IPData](https://ipdata.co) ∙ [IPGeolocation](http://ipgeolocation.io) ∙ [IPInfo](http://ipinfo.io) ∙ [IPify](https://www.ipify.org) ∙ [IPStack](https://ipstack.com).  |
 | 🛴 | **Geofencing** | Supports monitoring of circular regions and custom polygons.  
 | 🌍 | **Gecoder<br>Reverse Geocoder** | Get address from coordinates and viceversa.<br>[Apple](https://developer.apple.com/documentation/corelocation/clgeocoder) ∙ [Google](https://developers.google.com/maps/documentation/geocoding/) ∙ [Here](https://developer.here.com/documentation/geocoder) ∙ [MapBox](https://docs.mapbox.com/help/how-mapbox-works/geocoding/) ∙ [OpenStreet](https://nominatim.openstreetmap.org/ui/search.html).
@@ -27,7 +29,7 @@ SwiftLocation comes with a playground application you can use to learn how to us
 ## ❤️ Your Support
 
 *Hi fellow developer!*  
-You know, maintaing and developing tools consumes resources and time. While I enjoy making them **your support is foundamental to allow me continue its development**.  
+You know, maintaining and developing tools consumes resources and time. While I enjoy making them **your support is fundamental to allow me to continue its development**.  
 
 If you are using SwiftLocation or any other of my creations please consider the following options:
 
@@ -40,9 +42,9 @@ If you are using SwiftLocation or any other of my creations please consider the 
 
 It's pretty easy to use; all the features are accessible through the `SwiftLocation` object. 
 
-Each feature create and add to a pool manager a new request (conforms to `RequestProtocol` protocol) object you can use to get the results or fine tuning its configuration.  
+Each feature creates and adds to a pool manager a new request (conforms to `RequestProtocol` protocol) object you can use to get the results or fine-tuning its configuration.  
 
-Result is a `Result<Data, LocationError>` object (where `Data` is a struct/class which depends by the request).  
+Result is a `Result<Data, LocationError>` object (where `Data` is a struct/class which depends on the request).  
 You can manage as you want but SwiftLocation also exposes two optional properties:
 - `.error` to get the error produced (`LocationError?`)
 - `.data` to get the result produced (`<RequestInstance>.ProducedData`?)
@@ -51,9 +53,9 @@ All requests are retained automatically so you don't need to keep them alive unt
 
 You can add one or more subscriptions to get the produced data by calling `then()` operator on request (optionally you can specify the `DispatchQueue` where result is returned, by default is `.main`).
 
-To cancel/stop  a running request (ie. an continous location update) call `cancelRequest()` on it: it will remove the request from the queue and adjust core location settings based upon remaining requests if needed. 
+To cancel/stop a running request (ie. a continuous location update) call `cancelRequest()` on it: it will remove the request from the queue and adjust core location settings based upon remaining requests if needed. 
 
-To temporary pause a request while still in queue use `.isEnabled` property.
+To temporarily pause a request while still in queue use `.isEnabled` property.
 
 ## Discover Features
 
@@ -80,7 +82,7 @@ SwiftLocation.gpsLocation().then {
 }
 ```
 
-If you need more customization you can fine tune your request configuring each of the available parameters. This is a more complex example: 
+If you need more customization you can fine-tune your request by configuring each of the available parameters. This is a more complex example: 
 
 ```swift
 SwiftLocation.gpsLocationWith {
@@ -101,8 +103,9 @@ SwiftLocation.gpsLocationWith {
 }
 ```
 
-`.significant` subscription require always authorization and works even in background.  
-If the app is not running and it's resumed by the system gps request is restored for you by SwiftLocation, so you can bind your own subscriptions.  
+`.significant` subscription requires always authorization and works even in the background.  
+
+If the app is not running and it's resumed by the system GPS request is restored for you by SwiftLocation, so you can bind your own subscriptions.  
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -155,9 +158,9 @@ SwiftLocation.geocodeWith(service).then { result in
 }
 ```
 
-As you noticed there is no differences in expected output; all services return the same output, an array of `[GeoLocation]` objects which contains the data fetched *(please refer to the doc for further details)*.
+As you noticed there are no differences in expected output; all services return the same output, an array of `[GeoLocation]` objects which contain the data fetched *(please refer to the doc for further details)*.
 
-As you see some services require API Keys; it's really boring pass the api to each request uh?  
+As you see some services require API Keys; it's really boring passing the key to each request uh?  
 If you plan to use the same key for all services of a family consider using the shared credentials store:
 
 ```swift
@@ -199,10 +202,10 @@ It supports the following services *(some of these require API keys)* under the 
 
 ### Get Location By IP Address
 
-Sometimes you don't need of a precise location and don't want to bother your user authorizing the app to get the it.  
-In this cases you can use one of the six services available to get approximate location (plus some other location data) just by using location by ip service.
+Sometimes you don't need a precise location and don't want to bother your user authorizing the app to get it.  
+In these cases, you can use one of the six services available to get an approximate location (plus some other location data) just by using location by IP service.
 
-The following example shows how to get an `IPLocation.Data` object with all the infos retrived from current device's IP address *(you can also specify other IP address in init of the service)*.
+The following example shows how to get an `IPLocation.Data` object with all the info retrieved from the current device's IP address *(you can also specify other IP addresses in init of the service)*.
 
 ```swift
 SwiftLocation.ipLocationWith(IPLocation.IPData()).then { result in
@@ -228,7 +231,7 @@ It supports the following services *(some of these require API keys)*. Check the
 
 You can use autocomplete to give your applications the type-ahead-search behavior of the Maps apps search field. The autocomplete service can match on full words and substrings, resolving place names, addresses, and plus codes (1). Applications can therefore send queries as the user types, to provide on-the-fly place predictions.
 
-You can also get the detailed infos about a predictions, ie when the user tap on one of the suggestions and you need to get the coordinates and other data (2).
+You can also get the detailed info about predictions, ie when the user tap on one of the suggestions and you need to get the coordinates and other data (2).
 
 Services are available under the `Autocomplete` umbrella and supports.  
 You can create two kinds of autocomplete:  
@@ -251,7 +254,7 @@ SwiftLocation.autocompleteWith(service).then { result in
 }
 ```
 
-Now suppose you want to get more infos from the first result `Martial Arts Search Nearby`.  
+Now suppose you want to get more info from the first result `Martial Arts Search Nearby`.  
 Just call the service with it:
 
 ```swift
@@ -268,7 +271,7 @@ SwiftLocation.autocompleteWith(detailService).then { result in
 }
 ```
 
-There is no difference if you are using `Autocomplete.Google(partialMatches: "...")` about expected result types, but `info` dictionary may contains more or less data.  
+There is no difference if you are using `Autocomplete.Google(partialMatches: "...")` about expected result types, but `info` dictionary may contain more or less data.  
 Of course different services exposes different settings:
 
 ```swift
@@ -292,11 +295,11 @@ It supports the the following Geofencing services available under `Autocomplete`
 ### Geofencing Regions
 
 Geofence is a virtual perimeter for a real-world geographic area.  
-And example of geofencing usage involves a location-aware device of a location-based service (LBS) user entering or exiting a geo-fence.  
+An example of geofencing usage involves a location-aware device of a location-based service (LBS) user entering or exiting a geo-fence.  
 
 With SwiftLocation you can monitor:  
 - circular region
-- custom polygon region *(actually it does not works correctly so avoid it)*
+- custom polygon region *(actually it does not work correctly so avoid it)*
 
 ```swift
 let options = GeofencingOptions(circleWithCenter: CLLocationCoordinate2D(latitude: 3, longitude: 2), radius: 100)
@@ -335,13 +338,13 @@ Each update includes both the location and the amount of time spent at that loca
 This service isn’t intended for navigation or other real-time activities ([Read More](https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service)).
 
 ```swift
-// You can also specify an activity To help the system determine how manage the battery use.
+// You can also specify an activity To help the system determine how to manage the battery use.
 SwiftLocation.visits(activityType: .fitness).then { result in
     print("A new visits to \(result.data)")
 }
 ```
 
-This also works in background an app killed, so you can restore it in your app launch if you need to trigger some events.
+This also works in the background when an app is killed, so you can restore it in your app launch if you need to trigger some events.
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -382,7 +385,7 @@ SwiftLocation.beacon(BeaconRequest(UUIDs: [<UUID_Family1>,<UUID_Family2>])).then
 
 ### Beacon Broadcaster
 
-Sometimes you may need to broadcast your app as a beacon. SwiftLocation allows you to do it (however due to iOS limitations it will works only in foreground with opened app).
+Sometimes you may need to broadcast your app as a beacon. SwiftLocation allows you to do it (however due to iOS limitations it will work only in the foreground with the app open).
 
 ```swift
 let beaconToSimulate = BroadcastedBeacon(UUID: <UUID>, 
