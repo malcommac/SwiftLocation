@@ -88,7 +88,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         case .activityType:
             cell.valueLabel.text = serviceOptions.activityType.description
         case .minDistance:
-            cell.valueLabel.text = serviceOptions.minDistance?.formattedValue ?? NOT_SET
+            cell.valueLabel.text = (serviceOptions.minDistance == kCLDistanceFilterNone) ? NOT_SET : serviceOptions.minDistance.formattedValue
         case .minTimeInterval:
             cell.valueLabel.text = serviceOptions.minTimeInterval?.format() ?? NOT_SET
         case .subscription:
@@ -157,7 +157,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
     
     private func selectMinDistance() {
         UIAlertController.showDoubleInput(title: "Select Minimum Distance", message: "Minimum horizontal distance to report new fresh data (meters)") { [weak self] value in
-            self?.serviceOptions.minDistance = (value != nil ? CLLocationDistance(value!) : nil)
+            self?.serviceOptions.minDistance = (value != nil ? CLLocationDistance(value!) : kCLDistanceFilterNone)
             self?.reloadData()
         }
     }

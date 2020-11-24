@@ -152,7 +152,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     public internal(set) var accuracy: GPSLocationOptions.Accuracy = .any
     
     /// Minimum distance.
-    public internal(set) var minDistance: CLLocationDistance?
+    public internal(set) var minDistance: CLLocationDistance = kCLDistanceFilterNone
     
     /// Activity type.
     public internal(set) var activityType: CLActivityType = .other
@@ -168,7 +168,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
         let data: [String: Any] = [
             "services": activeServices.description,
             "accuracy": accuracy.description,
-            "minDistance": minDistance ?? -1,
+            "minDistance": minDistance,
             "activityType": activityType.description
         ]
         return JSONStringify(data)
