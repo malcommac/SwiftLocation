@@ -297,7 +297,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         self.avoidRequestAuthorization = try container.decode(Bool.self, forKey: .avoidRequestAuthorization)
         self.subscription = try container.decode(Subscription.self, forKey: .subscription)
         self.accuracy = try container.decode(Accuracy.self, forKey: .accuracy)
-        self.timeout = try container.decode(Timeout.self, forKey: .timeout)
+        self.timeout = try container.decodeIfPresent(Timeout.self, forKey: .timeout)
         self.activityType = try CLActivityType(rawValue: container.decode(Int.self, forKey: .activityType)) ?? .other
         self.minTimeInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .minTimeInterval)
         self.minDistance = try container.decodeIfPresent(CLLocationDistance.self, forKey: .minDistance)
