@@ -36,6 +36,11 @@ public extension Geocoder {
         /// Service API Key (https://console.cloud.google.com/google/maps-apis/credentials)
         public var APIKey: String
         
+        /// This will send `X-Ios-Bundle-Identifier` header to the request.
+        /// You can set it directly from the credentials store as `.googleBundleRestrictionID`.
+        /// NOTE: If you enable app-restrictions in the api-console, these headers must be sent.
+        public var bundleRestrictionID: String? = SwiftLocation.credentials[.googleBundleRestrictionID]
+        
         /// Request timeout.
         public var timeout: TimeInterval?
         
@@ -168,7 +173,8 @@ public extension Geocoder {
                 throw LocationError.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
+            var request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
+            request.addValue(bundleRestrictionID ?? "", forHTTPHeaderField: HTTPHeaders.googleBundleRestriction)
             return request
         }
         

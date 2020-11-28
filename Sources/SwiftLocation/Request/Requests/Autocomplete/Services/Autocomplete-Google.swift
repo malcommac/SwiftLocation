@@ -42,6 +42,11 @@ public extension Autocomplete {
         /// See https://developers.google.com/places/web-service/get-api-key.
         public var APIKey: String
         
+        /// This will send `X-Ios-Bundle-Identifier` header to the request.
+        /// You can set it directly from the credentials store as `.googleBundleRestrictionID`.
+        /// NOTE: If you enable app-restrictions in the api-console, these headers must be sent.
+        public var bundleRestrictionID: String? = SwiftLocation.credentials[.googleBundleRestrictionID]
+        
         /// Restrict results to be of certain type, `nil` to ignore this filter.
         public var placeTypes: Set<PlaceTypes>? = nil
         
@@ -251,7 +256,8 @@ public extension Autocomplete {
                 throw LocationError.internalError
             }
             
-            let request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
+            var request = URLRequest(url: fullURL, cachePolicy: .useProtocolCachePolicy, timeoutInterval: timeout ?? TimeInterval.highInterval)
+            request.addValue(bundleRestrictionID ?? "", forHTTPHeaderField: HTTPHeaders.googleBundleRestriction)
             return request
         }
         

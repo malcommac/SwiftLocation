@@ -72,6 +72,7 @@ public extension LocationManager.Credentials {
     enum ServiceName: String, Codable, CaseIterable, CustomStringConvertible {
         // Geocoder, Autocomplete Related
         case google
+        case googleBundleRestrictionID
         case here
         case mapBox
         case openStreet
@@ -89,4 +90,8 @@ public extension LocationManager.Credentials {
         
     }
     
+}
+
+internal struct HTTPHeaders {
+    static let googleBundleRestriction = "X-Ios-Bundle-Identifier"
 }
