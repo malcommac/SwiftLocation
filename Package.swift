@@ -13,6 +13,10 @@ let package = Package(
         .library(
             name: "SwiftLocation",
             targets: ["SwiftLocation"]),
+        .library(
+            name: "SwiftLocation-Dynamic",
+            type: .dynamic,
+            targets: ["SwiftLocation"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
