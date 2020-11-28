@@ -141,8 +141,8 @@ public class GPSLocationRequest: RequestProtocol, Codable {
         }
         
         if let previousLocation = lastLocation {
-            if let minDistance = options.minDistance,
-               previousLocation.distance(from: data) > minDistance {
+            if options.minDistance > kCLDistanceFilterNone,
+               previousLocation.distance(from: data) > options.minDistance {
                 return .notMinDistance // minimum distance since last location is not respected.
             }
             

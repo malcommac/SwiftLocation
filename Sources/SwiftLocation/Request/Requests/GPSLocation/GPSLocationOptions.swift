@@ -246,9 +246,9 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     public var activityType: CLActivityType = .other
     
     /// Minimum horizontal distance to report new fresh data.
-    /// By default is set to `nil` which means no filter is applied.
-    public var minDistance: CLLocationDistance?
-    
+    /// By default is set to `kCLDistanceFilterNone` which means client will be informed of any movement.
+    public var minDistance: CLLocationDistance = kCLDistanceFilterNone
+
     /// Minimum time interval since last valid received data to report new fresh data.
     /// By default is set to `nil` which means no filter is applied.
     public var minTimeInterval: TimeInterval?
@@ -260,7 +260,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
             "accuracy= \(accuracy)",
             "timeout= \(timeout?.description ?? "none")",
             "activityType= \(activityType)",
-            "minDistance= \(minDistance ?? -1)",
+            "minDistance= \(minDistance)",
             "minTimeInterval= \(minTimeInterval ?? 0)"
         ].joined(separator: ", ") + "}"
     }
@@ -300,7 +300,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         self.timeout = try container.decode(Timeout.self, forKey: .timeout)
         self.activityType = try CLActivityType(rawValue: container.decode(Int.self, forKey: .activityType)) ?? .other
         self.minTimeInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .minTimeInterval)
-        self.minDistance = try container.decodeIfPresent(CLLocationDistance.self, forKey: .minDistance)
+        self.minDistance = try container.decodeIfPresent(CLLocationDistance.self, forKey: .minDistance) ?? kCLDistanceFilterNone
     }
     
 }

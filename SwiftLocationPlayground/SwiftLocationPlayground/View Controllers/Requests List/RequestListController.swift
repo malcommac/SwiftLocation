@@ -248,7 +248,7 @@ fileprivate class ListData {
         managerSettings = [
             (.activeServices, settings.activeServices.isEmpty ? NOT_SET : settings.activeServices.description),
             (.accuracy, settings.accuracy.description),
-            (.minDistance, settings.minDistance?.formattedValue ?? NOT_SET),
+            (.minDistance, settings.minDistance.formattedValue),
             (.activityType, settings.activityType.description)
         ]
     }
@@ -298,7 +298,7 @@ fileprivate extension RequestProtocol {
                 "› type: \(gps.options.subscription.description)",
                 "› accuracy: \(gps.options.accuracy.description)",
                 "› activity: \(gps.options.activityType.description)",
-                "› minDist: \(gps.options.minDistance?.description ?? NOT_SET)",
+                "› minDist: \(gps.options.minDistance.description)",
                 "› minInterval: \(gps.options.minTimeInterval?.description ?? NOT_SET)"
             ].joined(separator: "\n")
             

@@ -534,7 +534,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             services.insert(request.options.subscription.service)
             
             settings.accuracy = min(settings.accuracy, request.options.accuracy)
-            settings.minDistance = min(settings.minDistance ?? -1, request.options.minDistance ?? -1)
+            settings.minDistance = max(settings.minDistance, request.options.minDistance)
             settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.options.activityType.rawValue)) ?? .other
         }
         
@@ -558,7 +558,6 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             services.insert(.beacon)
         }
         
-        if settings.minDistance == -1 { settings.minDistance = nil }
         settings.activeServices = services
         
         return settings

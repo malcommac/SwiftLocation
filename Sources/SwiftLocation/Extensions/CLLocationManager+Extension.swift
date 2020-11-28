@@ -80,7 +80,7 @@ internal extension CLLocationManager {
     func setSettings(_ settings: LocationManagerSettings) {
         self.desiredAccuracy = settings.accuracy.value
         self.activityType = settings.activityType
-        self.distanceFilter = settings.minDistance ?? kCLLocationAccuracyThreeKilometers
+        self.distanceFilter = settings.minDistance
                 
         // Location updates
         let hasContinousLocation = settings.activeServices.contains(.continousLocation)
