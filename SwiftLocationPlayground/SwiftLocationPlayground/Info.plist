@@ -31,6 +31,11 @@
 	<string>Bluetooth is used to test the broadcaster and beacon monitoring features.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ALWAYS</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>OneTimeLocation</key>
+		<string>We want to get the full precise location this time only!</string>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We are requesting user auth to read GPS - ONLY IN USE</string>
 	<key>UIApplicationSceneManifest</key>
