@@ -420,13 +420,20 @@ To get the current authorization status use
 ### Background Location Updates
 
 In order to get continous updates of location in background you need to specify the appropriate Background Capabilities > Location Updates in "Signining & Capabilities" of your Xcode project.  
-Moreover you should set to the `SwiftLocation.allowsBackgroundLocationUpdates = true`.  
+Moreover you should set to the `SwiftLocation.allowsBackgroundLocationUpdates = true` a
+
 Optionally you can also set `SwiftLocation.pausesLocationUpdatesAutomatically = true` allowing the location manager to pause updates can improve battery life on the target device without sacrificing location data. When this property is set to true, the location manager pauses updates (and powers down the appropriate hardware) at times when the location data is unlikely to change. For example, if the user stops for food while using a navigation app, the location manager might pause updates for a period of time. You can help the determination of when to pause location updates by assigning a value to the activityType property.
 
 Finally if your app is stopped all your requests are saved automatically and can be restored in early stage of the application's launch like in this example:
 
 ```swift
-
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // The best place to resume your requests is the app launch.
+    SwiftLocation.onRestoreGPS = { requests in ... }
+    SwiftLocation.onRestoreVisits = { requests in ... }
+    SwiftLocation.onRestoreGeofences = { requests in ... }
+    ...
+}
 ```
 
 If you want to disable automatic requests save you can set the `SwiftLocation.automaticRequestSave = false`.
