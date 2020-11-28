@@ -70,6 +70,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     
     public func monitorBeaconRegions(_ newRegions: [CLBeaconRegion]) {
         guard #available(macCatalyst 14.0, iOS 7.0, *) else {
+            LocationManager.Logger.log("monitorBeaconRegions() is not available in this platform version")
             return
         }
         manager.stopMonitoringBeaconRegions(Array(manager.rangedRegions))
