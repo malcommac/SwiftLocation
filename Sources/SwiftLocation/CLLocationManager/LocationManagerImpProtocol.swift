@@ -54,7 +54,9 @@ public protocol LocationManagerImpProtocol: class {
 
     var authorizationStatus: CLAuthorizationStatus { get }
     var delegate: LocationManagerDelegate? { get set }
-    
+    var allowsBackgroundLocationUpdates: Bool { get set }
+    var pausesLocationUpdatesAutomatically: Bool { get set }
+
     /// Initialize with a new locator.
     /// - Parameter locator: locator.
     init(locator: LocationManager) throws

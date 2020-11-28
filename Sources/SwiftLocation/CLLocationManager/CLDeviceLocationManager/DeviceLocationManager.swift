@@ -52,6 +52,16 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         }
     }
     
+    public var allowsBackgroundLocationUpdates: Bool {
+        set { manager.allowsBackgroundLocationUpdates = newValue }
+        get { manager.allowsBackgroundLocationUpdates }
+    }
+    
+    public var pausesLocationUpdatesAutomatically: Bool {
+        set { manager.pausesLocationUpdatesAutomatically = newValue }
+        get { manager.pausesLocationUpdatesAutomatically }
+    }
+    
     // MARK: - Initialization
     
     required public init(locator: LocationManager) throws {
@@ -118,6 +128,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     // MARK: - Private Functions
     
     private func didChangeAuthorizationStatus(_ newStatus: CLAuthorizationStatus) {
+        LocationManager.Logger.log("Authorization is set to = \(newStatus)")
         guard newStatus != .notDetermined else {
             return
         }
@@ -129,9 +140,14 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     
     // MARK: - CLLocationManagerDelegate (Location GPS)
     
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if #available(iOS 14.0, *) {
+            didChangeAuthorizationStatus(manager.authorizationStatus)
+        }
+    }
+    
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // This method is called only on iOS 13 or lower, for iOS14 we are using `locationManagerDidChangeAuthorization` below.
-        LocationManager.Logger.log("Authorization is set to = \(status)")
         didChangeAuthorizationStatus(status)
     }
     
