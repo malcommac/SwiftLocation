@@ -74,8 +74,12 @@ public protocol LocationManagerImpProtocol: class {
     /// - Parameters:
     ///   - mode: mode.
     ///   - callback: callback.
-    func requestAuthorization(_ mode: AuthorizationMode, _ callback: @escaping AuthorizationCallback)
+    func requestAuthorization(_ mode: AuthorizationMode?, _ callback: @escaping AuthorizationCallback)
     
+    /// Check for precise location authorization, If user hasn't given it, ask for one time permission.
+    /// - Parameter completion: completion callback.
+    func checkAndRequestForAccuracyAuthorizationIfNeeded(_ completion: ((Bool) -> Void)?)
+
     /// Update settings of the hardware based on running requests.
     /// - Parameter newSettings: settings.
     func updateSettings(_ newSettings: LocationManagerSettings)
@@ -168,6 +172,9 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     /// Activity type.
     public internal(set) var activityType: CLActivityType = .other
     
+    /// Precise location (only iOS 14+)
+    public internal(set) var precise: GPSLocationOptions.Precise = .reducedAccuracy
+    
     public func requireLocationUpdates() -> Bool {
         return
             activeServices.contains(.continousLocation) ||
@@ -180,7 +187,8 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
             "services": activeServices.description,
             "accuracy": accuracy.description,
             "minDistance": minDistance,
-            "activityType": activityType.description
+            "activityType": activityType.description,
+            "precise": precise.description
         ]
         return JSONStringify(data)
     }

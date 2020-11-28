@@ -29,6 +29,7 @@ import MapKit
 import CoreLocation
 
 public let NOT_SET = "not set"
+public let USER_SET = "user's set"
 public let NOTIFICATION_GPS_DATA = Notification.Name("NOTIFICATION_GPS_DATA")
 public let NOTIFICATION_VISITS_DATA = Notification.Name("NOTIFICATION_VISITS_DATA")
 public let NOTIFICATION_BEACONS_DATA = Notification.Name("NOTIFICATION_BEACONS_DATA")

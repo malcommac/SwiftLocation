@@ -95,6 +95,8 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
             cell.valueLabel.text = serviceOptions.subscription.description
         case .timeoutInterval:
             cell.valueLabel.text = serviceOptions.minTimeInterval?.format() ?? NOT_SET
+        case .precise:
+            cell.valueLabel.text = serviceOptions.precise?.description ?? USER_SET
         }
         
         return cell
@@ -111,6 +113,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         case .minTimeInterval:  selectMinInterval()
         case .subscription:     selectSubscriptionType()
         case .timeoutInterval:  selectTimeout()
+        case .precise:          selectPrecise()
         }
         
     }
@@ -153,6 +156,20 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         
         UIAlertController.showActionSheet(title: "Select Activity Type",
                                           message: nil, options: accuracyLevels)
+    }
+    
+    private func selectPrecise() {
+        let subscriptionTypes: [UIAlertController.ActionSheetOption] = [
+            GPSLocationOptions.Precise.reducedAccuracy,
+            GPSLocationOptions.Precise.fullAccuracy
+        ].map { [weak self] item in
+            (item.description, { _ in
+                self?.serviceOptions.precise = item
+                self?.reloadData()
+            })
+        }
+        
+        UIAlertController.showActionSheet(title: "Select Precise Location", message: nil, options: subscriptionTypes)
     }
     
     private func selectMinDistance() {
@@ -236,7 +253,8 @@ extension GPSController {
         case activityType
         case minDistance
         case minTimeInterval
-        
+        case precise
+
         var title: String {
             switch self {
             case .subscription:     return "Subscription Type"
@@ -245,6 +263,7 @@ extension GPSController {
             case .activityType:     return "Activity Type"
             case .minDistance:      return "Min Distance (mt)"
             case .minTimeInterval:  return "Min Time Interval (s)"
+            case .precise:          return "Precise Location (iOS14+)"
             }
         }
         
@@ -256,6 +275,7 @@ extension GPSController {
             case .activityType:     return "Helps GPS to get better results"
             case .minDistance:      return "Min horizontal distance to report new data"
             case .minTimeInterval:  return "Min time interval to report new data"
+            case .precise:          return "Require one time permission for precise updates"
             }
         }
         

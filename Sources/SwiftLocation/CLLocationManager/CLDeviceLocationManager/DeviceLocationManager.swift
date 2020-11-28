@@ -66,7 +66,7 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         if #available(iOS 14.0, *) {
             return GPSLocationOptions.Precise.fromCLAccuracyAuthorization(manager.accuracyAuthorization)
         } else {
-            return .fullAccuracy
+            return .fullAccuracy // always return full accuracy for older iOS versions.
         }
     }
     
@@ -95,7 +95,12 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         manager.startMonitoringBeaconRegions(newRegions)
     }
     
-    public func requestAuthorization(_ mode: AuthorizationMode, _ callback: @escaping AuthorizationCallback) {
+    public func requestAuthorization(_ mode: AuthorizationMode?, _ callback: @escaping AuthorizationCallback) {
+        guard let mode = mode else {
+            callback(authorizationStatus)
+            return
+        }
+        
         guard authorizationStatus.isAuthorized == false else {
             callback(authorizationStatus)
             return
@@ -103,6 +108,23 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
      
         authorizationCallbacks.append(callback)
         manager.requestAuthorization(mode)
+    }
+    
+    /// Check for precise location authorization
+    /// If user hasn't given it, ask for one time permission
+    public func checkAndRequestForAccuracyAuthorizationIfNeeded(_ completion: ((Bool) -> Void)?) {
+        if #available(iOS 14.0, *) {
+            guard manager.accuracyAuthorization != .fullAccuracy else {
+                completion?(true)
+                return
+            }
+            manager.requestTemporaryFullAccuracyAuthorization(withPurposeKey: "OneTimeLocation") { [weak self] (error) in
+                self?.manager.accuracyAuthorization == .fullAccuracy ? completion?(true) : completion?(false)
+            }
+        } else {
+            // Ignore for any system below iOS 14+
+            completion?(true)
+        }
     }
     
     public func updateSettings(_ newSettings: LocationManagerSettings) {

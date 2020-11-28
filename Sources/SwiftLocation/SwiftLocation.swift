@@ -42,6 +42,9 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     
     // MARK: - Public Properties
     
+    /// Current settings of underlying core location.
+    public private(set) var currentSettings = LocationManagerSettings()
+    
     /// Called when a new set of geofences requests has been restored.
     public var onRestoreGeofences: (([GeofencingRequest]) -> Void)?
     
@@ -68,7 +71,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     }
     
     /// Return the precise authorization.
-    /// NOTE: This is only valid in iOS14, for lower iOS versions it returns .full
+    /// NOTE: This is only valid in iOS14, for lower iOS versions it always return `.fullAccuracy`.
     public var preciseAccuracy: GPSLocationOptions.Precise {
         manager?.authorizationPrecise ?? .fullAccuracy
     }
@@ -120,17 +123,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     public var authorizationStatus: CLAuthorizationStatus {
         return manager?.authorizationStatus ?? .notDetermined
     }
-    
-    /// Currently active location settings
-    public private(set) var currentSettings = LocationManagerSettings() {
-        didSet {
-            guard currentSettings != oldValue else { return } // same settings, no needs to perform any change
 
-            LocationManager.Logger.log("CLLocationManager: \(currentSettings)")
-            manager?.updateSettings(currentSettings)
-        }
-    }
-    
     // MARK: - Requests Queues
         
     /// Location requests.
@@ -462,6 +455,8 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         saveState()
     }
     
+    // MARK: - Private Functions
+    
     private func decodeSavedQueue<T: Codable>(_ userDefaultsKey: String) -> [T] {
         guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else {
             return []
@@ -474,8 +469,27 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             return []
         }
     }
-    
-    // MARK: - Private Functions
+        
+    /// Alert settings of the core location manager underlying implementation.
+    /// - Parameters:
+    ///   - newSettings: new settings.
+    ///   - completion: completion callback.
+    private func updateCoreLocationSettings(_ newSettings: LocationManagerSettings, _ completion: @escaping (() -> Void)) {
+        guard currentSettings != newSettings else { return } // same settings, no needs to perform any change
+
+        currentSettings = newSettings
+        LocationManager.Logger.log("CLLocationManager: \(currentSettings)")
+        manager?.updateSettings(currentSettings)
+        
+        if currentSettings.precise == .fullAccuracy {
+            // Request one time permission to the user to get the precise location.
+            manager?.checkAndRequestForAccuracyAuthorizationIfNeeded({ _ in
+                completion()
+            })
+        } else {
+            completion()
+        }
+    }
     
     /// Reset all location requests and manager's settings.
     private func resetAll() {
@@ -491,9 +505,9 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         
         let updatedSettings = bestSettingsForCoreLocationManager()
         guard updatedSettings.requireLocationUpdates() else {
-            currentSettings = updatedSettings
-            updateGeofencing()
-            updateBeaconMonitoring()
+            updateCoreLocationSettings(updatedSettings) { [weak self] in
+                self?.sendRequestsToImplementation()
+            }
             return
         }
         
@@ -512,11 +526,15 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
                 return
             }
             
-            self?.currentSettings = updatedSettings
-            self?.updateGeofencing()
-            self?.updateBeaconMonitoring()
-            return
+            self?.updateCoreLocationSettings(updatedSettings, {
+                self?.sendRequestsToImplementation()
+            })
         }
+    }
+    
+    private func sendRequestsToImplementation() {
+        updateGeofencing()
+        updateBeaconMonitoring()
     }
     
     private func updateGeofencing() {
@@ -561,6 +579,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         enumerateQueue(gpsRequests) { request in
             services.insert(request.options.subscription.service)
             
+            settings.precise = max(settings.precise, (request.options.precise ?? .reducedAccuracy))
             settings.accuracy = min(settings.accuracy, request.options.accuracy)
             settings.minDistance = max(settings.minDistance, request.options.minDistance)
             settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.options.activityType.rawValue)) ?? .other

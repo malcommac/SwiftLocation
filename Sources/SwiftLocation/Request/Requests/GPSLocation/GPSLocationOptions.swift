@@ -32,9 +32,9 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     
     /// Determine the accuracy of location. This settings is introduced in iO14.
     public enum Precise: Comparable {
-        case fullAccuracy
         case reducedAccuracy
-        
+        case fullAccuracy
+
         public static var all: [Precise] {
             return [.fullAccuracy, .reducedAccuracy]
         }
@@ -275,8 +275,12 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     public var accuracy: Accuracy = .any
     
     /// Specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission..
+    /// By default is not set and the choice of the user is set; you can set to `.fullAccuracy` to eventually request one
+    /// time permission to the user when is set the `.reducedAccuracy` level for the app.
+    /// In this case remember to set the appropriate `NSLocationTemporaryUsageDescriptionDictionary` info key into app Info.plist.
+    /// 
     /// NOTE: Only for iOS 14 or later.
-    public var precise: Precise = .reducedAccuracy
+    public var precise: Precise?
     
     /// Timeout level, by default is `nil` which means no timeout policy is set and you must end the request manually.
     public var timeout: Timeout?
