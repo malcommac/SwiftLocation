@@ -67,6 +67,18 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         BeaconBroadcaster.shared.beacon
     }
     
+    /// Indicate whether the app should receive location updates when suspended.
+    public var allowsBackgroundLocationUpdates: Bool {
+        set { manager?.allowsBackgroundLocationUpdates = newValue }
+        get { manager?.allowsBackgroundLocationUpdates ?? false }
+    }
+    
+    /// Indicate  whether the location manager object may pause location updates.
+    public var pausesLocationUpdatesAutomatically: Bool {
+        set { manager?.pausesLocationUpdatesAutomatically = newValue }
+        get { manager?.pausesLocationUpdatesAutomatically ?? false }
+    }
+    
     /// Last know gps location.
     public var lastKnownGPSLocation: CLLocation? {
         get {
