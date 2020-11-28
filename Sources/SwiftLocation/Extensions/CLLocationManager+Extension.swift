@@ -49,7 +49,9 @@ internal extension CLLocationManager {
             stopMonitoring(for: region)
             
             if let beaconRegion = region as? CLBeaconRegion {
-                stopRangingBeacons(in: beaconRegion)
+                if #available(macCatalyst 14.0, iOS 7.0, *) {
+                    stopRangingBeacons(in: beaconRegion)
+                }
             }
         }
     }

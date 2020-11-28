@@ -69,6 +69,9 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
     }
     
     public func monitorBeaconRegions(_ newRegions: [CLBeaconRegion]) {
+        guard #available(macCatalyst 14.0, iOS 7.0, *) else {
+            return
+        }
         manager.stopMonitoringBeaconRegions(Array(manager.rangedRegions))
         manager.startMonitoringBeaconRegions(newRegions)
     }
@@ -183,7 +186,9 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         guard let beaconRegion = region as? CLBeaconRegion else {
             return
         }
-        
+        guard #available(macCatalyst 14.0, iOS 7.0, *) else {
+            return
+        }
         switch state {
         case .inside:   manager.startRangingBeacons(in: beaconRegion)
         default:        manager.stopRangingBeacons(in: beaconRegion)
