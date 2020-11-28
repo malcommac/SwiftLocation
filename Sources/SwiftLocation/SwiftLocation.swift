@@ -222,9 +222,9 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// - Returns: `LocationRequest`
     @discardableResult
     public func gpsLocationWith(_ optionsBuilder: ((GPSLocationOptions) -> Void)) -> GPSLocationRequest {
-        let newRequest = GPSLocationRequest()
-        optionsBuilder(newRequest.options)
-        return gpsRequests.add(newRequest)
+        let options = GPSLocationOptions()
+        optionsBuilder(options)
+        return gpsLocationWith(options)
     }
     
     /// Get the location with GPS module with given options.
