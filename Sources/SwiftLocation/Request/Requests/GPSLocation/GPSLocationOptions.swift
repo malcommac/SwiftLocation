@@ -55,6 +55,14 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
             }
         }
         
+        @available(iOS 14.0, *)
+        static func fromCLAccuracyAuthorization(_ accuracy: CLAccuracyAuthorization) -> Precise {
+            switch accuracy {
+            case .reducedAccuracy: return .reducedAccuracy
+            default: return .fullAccuracy
+            }
+        }
+        
     }
     
     /// Type of subscription.

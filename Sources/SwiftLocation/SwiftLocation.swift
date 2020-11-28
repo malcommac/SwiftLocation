@@ -67,7 +67,14 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         BeaconBroadcaster.shared.beacon
     }
     
+    /// Return the precise authorization.
+    /// NOTE: This is only valid in iOS14, for lower iOS versions it returns .full
+    public var preciseAccuracy: GPSLocationOptions.Precise {
+        manager?.authorizationPrecise ?? .fullAccuracy
+    }
+    
     /// Indicate whether the app should receive location updates when suspended.
+    /// NOTE: ensure that you’ve enabled the Background mode location from the capabilities in your Xcode project.
     public var allowsBackgroundLocationUpdates: Bool {
         set { manager?.allowsBackgroundLocationUpdates = newValue }
         get { manager?.allowsBackgroundLocationUpdates ?? false }

@@ -62,6 +62,14 @@ public class DeviceLocationManager: NSObject, LocationManagerImpProtocol, CLLoca
         get { manager.pausesLocationUpdatesAutomatically }
     }
     
+    public var authorizationPrecise: GPSLocationOptions.Precise {
+        if #available(iOS 14.0, *) {
+            return GPSLocationOptions.Precise.fromCLAccuracyAuthorization(manager.accuracyAuthorization)
+        } else {
+            return .fullAccuracy
+        }
+    }
+    
     // MARK: - Initialization
     
     required public init(locator: LocationManager) throws {

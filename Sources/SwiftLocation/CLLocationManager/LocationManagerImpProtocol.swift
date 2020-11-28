@@ -52,8 +52,17 @@ public protocol LocationManagerDelegate: class {
 public protocol LocationManagerImpProtocol: class {
     typealias AuthorizationCallback = ((CLAuthorizationStatus) -> Void)
 
+    // Authorizations
+    
     var authorizationStatus: CLAuthorizationStatus { get }
+    var authorizationPrecise: GPSLocationOptions.Precise { get }
+    
+    // Delegate
+    
     var delegate: LocationManagerDelegate? { get set }
+    
+    // Options
+    
     var allowsBackgroundLocationUpdates: Bool { get set }
     var pausesLocationUpdatesAutomatically: Bool { get set }
 
