@@ -69,6 +69,8 @@ To temporarily pause a request while still in queue use `.isEnabled` property.
 - [Beacon Ranging](#beacon)
 - [Beacon Broadcaster](#beaconbroadcaster)
 - [User Authorization Request](#authorization)
+- [Background Location Updates](#backgroundupdates)
+- [Precise & Reduced Location in iOS 14+](#precisereducedlocation)
 
 <a name="gps"/>
 
@@ -413,7 +415,46 @@ SwiftLocation.requestAuthorization(.onlyInUse) { newStatus in
 To get the current authorization status use  
 `let currentStatus = SwiftLocation.authorizationStatus`
 
+<a name="backgroundupdates"/>
+
+### Background Location Updates
+
+In order to get continous updates of location in background you need to specify the appropriate Background Capabilities > Location Updates in "Signining & Capabilities" of your Xcode project.  
+Moreover you should set to the `SwiftLocation.allowsBackgroundLocationUpdates = true`.  
+Optionally you can also set `SwiftLocation.pausesLocationUpdatesAutomatically = true` allowing the location manager to pause updates can improve battery life on the target device without sacrificing location data. When this property is set to true, the location manager pauses updates (and powers down the appropriate hardware) at times when the location data is unlikely to change. For example, if the user stops for food while using a navigation app, the location manager might pause updates for a period of time. You can help the determination of when to pause location updates by assigning a value to the activityType property.
+
+Finally if your app is stopped all your requests are saved automatically and can be restored in early stage of the application's launch like in this example:
+
+```swift
+
+```
+
+If you want to disable automatic requests save you can set the `SwiftLocation.automaticRequestSave = false`.
+
 <a name="installation"/>
+
+- [Precise & Reduced Location in iOS 14+](#precisereducedlocation)
+
+Location data are very sensitive; since iOS 14 Apple introduced a further layer of privacy to Core Location Manager: **users can choose whether to give precise or approximate location access**.  
+Since 5.0.1 SwiftLocation supports this options and it's transparent to old iOS versions.  
+
+You can specify the precise option you can use when creating a new request using the `.precise` property of `GPSLocationOptions` object.  If you don't specify it you will get the location precision user set at the first authorization request.  
+If, at certain point, you need to get the precise location you can explicitly request one-time permission setting `.precise = .fullAccuracy`.  
+It's up to SwiftLocation request further authorization to the user in case he set reduced accuracy; you don't need anything!
+
+```swift
+SwiftLocation.gpsLocationWith {
+  $0.precise = .fullAccuracy
+  // set any other filter options
+}.then { result in
+  print("Location found is \(result.location) and it's \(SwiftLocation.preciseAccuracy.description)")
+}
+```
+
+You can use `SwiftLocation.preciseAccuracy` to get the current precise authorization status and act accordinly your business logic.
+
+This option is available since iOS14+. Older versions always uses `fullAccuracy` and the parameter is ignored.****
+
 
 ### Installation
 
