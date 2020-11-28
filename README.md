@@ -440,9 +440,9 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 If you want to disable automatic requests save you can set the `SwiftLocation.automaticRequestSave = false`.
 
-<a name="installation"/>
+<a name="precisereducedlocation"/>
 
-- [Precise & Reduced Location in iOS 14+](#precisereducedlocation)
+## Precise & Reduced Location in iOS 14+
 
 Location data are very sensitive; since iOS 14 Apple introduced a further layer of privacy to Core Location Manager: **users can choose whether to give precise or approximate location access**.  
 Since 5.0.1 SwiftLocation supports this options and it's transparent to old iOS versions.  
