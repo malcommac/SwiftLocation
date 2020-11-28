@@ -84,6 +84,8 @@ SwiftLocation.gpsLocation().then {
 }
 ```
 
+**Remember**: Before using SwiftLocation you should set the appropriate keys in your Info.plist (`NSLocationAlwaysAndWhenInUseUsageDescription` or `NSLocationWhenInUseUsageDescription` and `NSLocationTemporaryUsageDescriptionDictionary` if you are using reduced location in iOS 14+).
+
 If you need more customization you can fine-tune your request by configuring each of the available parameters. This is a more complex example: 
 
 ```swift
