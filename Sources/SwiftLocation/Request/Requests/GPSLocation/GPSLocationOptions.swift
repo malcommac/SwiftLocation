@@ -301,6 +301,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         return "{" + [
             "subscription= \(subscription)",
             "accuracy= \(accuracy)",
+            "precise= \(precise?.description ?? "user's set")",
             "timeout= \(timeout?.description ?? "none")",
             "activityType= \(activityType)",
             "minDistance= \(minDistance)",
