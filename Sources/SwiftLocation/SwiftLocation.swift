@@ -73,6 +73,11 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         manager?.authorizationPrecise ?? .fullAccuracy
     }
     
+    /// When enabled all requests of geofences, gps and visits are saved automatically and can be restored
+    /// by handling the relative `onRestore*` callbacks.
+    /// By default is set to `true`.
+    public var automaticRequestSave = true
+    
     /// Indicate whether the app should receive location updates when suspended.
     /// NOTE: ensure that you’ve enabled the Background mode location from the capabilities in your Xcode project.
     public var allowsBackgroundLocationUpdates: Bool {
@@ -427,6 +432,8 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// Save the current state of the requests. If you call resume.
     @discardableResult
     public func saveState() -> Bool {
+        guard automaticRequestSave else { return true }
+        
         do {
             let defaults = UserDefaults.standard
             defaults.setValue(try JSONEncoder().encode(geofenceRequests.list), forKey: UserDefaultsKeys.GeofenceRequests)
@@ -440,6 +447,8 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     }
 
     public func restoreState() {
+        guard automaticRequestSave else { return }
+        
         // GEOFENCES
         // Validate saved requests with the currently monitored regions of CLManager and restore if found.
         let restorableGeofences: [GeofencingRequest] = decodeSavedQueue(UserDefaultsKeys.GeofenceRequests).filter {
