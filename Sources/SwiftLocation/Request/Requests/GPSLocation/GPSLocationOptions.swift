@@ -30,6 +30,33 @@ internal let CLLocationAccuracyAccuracyAny: CLLocationAccuracy = 6000 // 6km or 
 
 public class GPSLocationOptions: CustomStringConvertible, Codable {
     
+    /// Determine the accuracy of location. This settings is introduced in iO14.
+    public enum Precise: Comparable {
+        case fullAccuracy
+        case reducedAccuracy
+        
+        public static var all: [Precise] {
+            return [.fullAccuracy, .reducedAccuracy]
+        }
+        
+        public var description: String {
+            switch self {
+            case .fullAccuracy:     return "fullAccuracy"
+            case .reducedAccuracy:  return "reducedAccuracy"
+            }
+        }
+        
+        public var value: CLAccuracyAuthorization {
+            switch self {
+            case .fullAccuracy:
+                return .fullAccuracy
+            case .reducedAccuracy:
+                return .reducedAccuracy
+            }
+        }
+        
+    }
+    
     /// Type of subscription.
     ///
     /// - `single`: single one shot subscription. After receiving the first data request did end.
@@ -238,6 +265,10 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     
     /// Accuracy level, by default is set to `any`.
     public var accuracy: Accuracy = .any
+    
+    /// Specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission..
+    /// NOTE: Only for iOS 14 or later.
+    public var precise: Precise = .reducedAccuracy
     
     /// Timeout level, by default is `nil` which means no timeout policy is set and you must end the request manually.
     public var timeout: Timeout?
