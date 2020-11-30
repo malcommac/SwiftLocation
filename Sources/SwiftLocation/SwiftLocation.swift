@@ -551,7 +551,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     }
     
     private func failWeakAuthorizationRequests() {
-        guard authorizationStatus.isAuthorized == false else {
+        guard authorizationStatus.isRejected == true else {
             // If we have already the authorization even request with `avoidRequestAuthorization = true`
             // may receive notifications of locations.
             return
