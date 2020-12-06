@@ -146,6 +146,15 @@ extension CLAuthorizationStatus: CustomStringConvertible {
             return false
         }
     }
+
+    internal var isRejected: Bool {
+        switch self {
+        case .denied, .restricted:
+            return true
+        default:
+            return false
+        }
+    }
     
     public var description: String {
         switch self {

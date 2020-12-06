@@ -84,6 +84,8 @@ SwiftLocation.gpsLocation().then {
 }
 ```
 
+**Remember**: Before using SwiftLocation you should set the appropriate keys in your Info.plist (`NSLocationAlwaysAndWhenInUseUsageDescription` or `NSLocationWhenInUseUsageDescription` and `NSLocationTemporaryUsageDescriptionDictionary` if you are using reduced location in iOS 14+).
+
 If you need more customization you can fine-tune your request by configuring each of the available parameters. This is a more complex example: 
 
 ```swift
@@ -438,9 +440,9 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 If you want to disable automatic requests save you can set the `SwiftLocation.automaticRequestSave = false`.
 
-<a name="installation"/>
+<a name="precisereducedlocation"/>
 
-- [Precise & Reduced Location in iOS 14+](#precisereducedlocation)
+## Precise & Reduced Location in iOS 14+
 
 Location data are very sensitive; since iOS 14 Apple introduced a further layer of privacy to Core Location Manager: **users can choose whether to give precise or approximate location access**.  
 Since 5.0.1 SwiftLocation supports this options and it's transparent to old iOS versions.  

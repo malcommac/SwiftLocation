@@ -232,6 +232,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         let request = SwiftLocation.gpsLocationWith(serviceOptions)
         
         serviceOptions = GPSLocationOptions()
+        serviceOptions.avoidRequestAuthorization = true
         reloadData()
         
         AppDelegate.attachSubscribersToGPS([request])
