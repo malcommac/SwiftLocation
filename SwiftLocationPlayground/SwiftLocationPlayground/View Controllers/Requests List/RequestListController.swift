@@ -162,18 +162,18 @@ class RequestListController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard indexPath.section > 0 else {
             return nil
         }
         
-        return [
-            UITableViewRowAction(style: .destructive, title: "Stop Monitor", handler: { [weak self] (_, indexPath) in
-                DispatchQueue.main.async {
-                    self?.cancelRequestAtIndexPath(indexPath)
-                }
-            })
-        ]
+        let action = UIContextualAction(style: .destructive, title: "Stop Monitor") { [weak self] (action, view, completionHandler) in
+            self?.cancelRequestAtIndexPath(indexPath)
+
+            completionHandler(true)
+        }
+        
+        return UISwipeActionsConfiguration(actions: [action])
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
