@@ -141,6 +141,8 @@ public class GPSLocationRequest: RequestProtocol, Codable {
         }
         
         if let previousLocation = lastLocation {
+            // in case we have already received a first valid location and we need to validate
+            // minDistance or minInterval we want to do these checks here.
             if options.minDistance > kCLDistanceFilterNone,
                previousLocation.distance(from: data) > options.minDistance {
                 return .notMinDistance // minimum distance since last location is not respected.
@@ -150,6 +152,12 @@ public class GPSLocationRequest: RequestProtocol, Codable {
                previousLocation.timestamp.timeIntervalSince(Date()) >= minInterval {
                 return .notMinInterval // minimum time interval since last location is not respected.
             }
+        } else {
+            // This is the first time we receive a location inside this request.
+            // We have validated the accuracy so we can store it. Subsequent
+            // call of the validateData method will land in the if above and also
+            // check the minDistance and minInterval.
+            lastLocation = data
         }
         
         return nil
