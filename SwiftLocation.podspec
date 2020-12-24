@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SwiftLocation"
-  s.version      = "5.0.2"
+  s.version      = "5.0.3"
   s.summary      = "Location Manager Made Easy"
   s.description  = <<-DESC
   Efficient location tracking for iOS with support for oneshot/continuous/background tracking, reverse geocoding, autocomplete, geofencing, beacon monitoring & broadcasting
