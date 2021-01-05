@@ -475,7 +475,10 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     ///   - newSettings: new settings.
     ///   - completion: completion callback.
     private func updateCoreLocationSettings(_ newSettings: LocationManagerSettings, _ completion: @escaping (() -> Void)) {
-        guard currentSettings != newSettings else { return } // same settings, no needs to perform any change
+        guard currentSettings != newSettings else {
+            completion()
+            return
+        } // same settings, no needs to perform any change
 
         currentSettings = newSettings
         LocationManager.Logger.log("CLLocationManager: \(currentSettings)")
