@@ -144,12 +144,12 @@ public class GPSLocationRequest: RequestProtocol, Codable {
             // We have already received a previous valid location so we'll
             // also check for distance and interval if required and eventually dispatch value.
             if options.minDistance > kCLDistanceFilterNone,
-               previousLocation.distance(from: data) > options.minDistance {
+               previousLocation.distance(from: data) < options.minDistance {
                 return .notMinDistance // minimum distance since last location is not respected.
             }
             
             if let minInterval = options.minTimeInterval,
-               previousLocation.timestamp.timeIntervalSince(Date()) >= minInterval {
+               Date().timeIntervalSince(previousLocation.timestamp) <= minInterval {
                 return .notMinInterval // minimum time interval since last location is not respected.
             }
         }
