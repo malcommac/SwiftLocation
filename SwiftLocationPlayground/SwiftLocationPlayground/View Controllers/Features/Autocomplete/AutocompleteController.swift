@@ -339,12 +339,12 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
                 self?.reloadData()
             }),
             ("Google", { [weak self] _ in
-                self?.currentService = Autocomplete.Google(partialMatches: "", APIKey: "")
+                self?.currentService = Autocomplete.Google(partialMatches: "")
                 self?.selectAutocompleteAddress()
                 self?.reloadData()
             }),
             ("Here", { [weak self] _ in
-                self?.currentService = Autocomplete.Here(partialMatches: "", APIKey: "")
+                self?.currentService = Autocomplete.Here(partialMatches: "")
                 self?.selectAutocompleteAddress()
                 self?.reloadData()
             })
