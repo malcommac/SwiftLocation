@@ -118,8 +118,8 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         
         public var description: String {
             switch self {
-            case .immediate(let t): return "immediate \(t)s"
-            case .delayed(let t):   return "delayed \(t)s"
+            case .immediate(let t): return "immediate \(abs(t))s"
+            case .delayed(let t):   return "delayed \(abs(t))s"
             }
         }
         

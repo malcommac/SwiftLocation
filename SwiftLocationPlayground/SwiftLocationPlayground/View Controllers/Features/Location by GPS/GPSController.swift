@@ -94,7 +94,7 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         case .subscription:
             cell.valueLabel.text = serviceOptions.subscription.description
         case .timeoutInterval:
-            cell.valueLabel.text = serviceOptions.minTimeInterval?.format() ?? NOT_SET
+            cell.valueLabel.text = serviceOptions.timeout?.description ?? NOT_SET
         case .precise:
             cell.valueLabel.text = serviceOptions.precise?.description ?? USER_SET
         }
