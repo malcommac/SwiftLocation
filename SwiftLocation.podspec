@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'BeaconBroadcaster' do |s|
+    s.dependency 'SwiftLocation/Core'
     s.source_files = "Sources/SwiftLocationBeaconBroadcaster/**/*.swift"
     s.frameworks  = "Foundation","CoreBluetooth"
   end
