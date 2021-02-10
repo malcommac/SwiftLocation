@@ -489,6 +489,9 @@ import PackageDescription
   )
 ```
 
+You must then use `import SwiftLocation` to use the core features.  
+In order to use Bluetooth services you can import `import SwiftLocationBeaconBroadcaster`.
+
 **Consider ❤️ [support the development](#support) of this library!**
 
 ## Contributing
