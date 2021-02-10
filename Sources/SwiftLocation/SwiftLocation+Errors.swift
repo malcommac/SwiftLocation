@@ -126,7 +126,7 @@ public extension LocationManager {
         
         /// Log a message.
         /// - Parameter message: message to log.
-        static func log(_ message: String) {
+        public static func log(_ message: String) {
             guard isEnabled else { return }
             
             queue.sync {
