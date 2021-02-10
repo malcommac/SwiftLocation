@@ -25,6 +25,10 @@
 import Foundation
 import CoreLocation
 
+#if canImport(SwiftLocation)
+import SwiftLocation
+#endif
+
 #if os(OSX)
 import AppKit
 #else

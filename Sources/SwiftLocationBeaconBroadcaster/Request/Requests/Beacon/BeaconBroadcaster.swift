@@ -26,6 +26,10 @@ import Foundation
 import CoreLocation
 import CoreBluetooth
 
+#if canImport(SwiftLocation)
+import SwiftLocation
+#endif
+
 internal class BeaconBroadcaster: NSObject, CBPeripheralManagerDelegate {
     
     // MARK: - Internal Properties
