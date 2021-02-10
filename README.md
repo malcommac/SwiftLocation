@@ -473,7 +473,8 @@ You can install it via CocoaPods:
 
 ```sh
 use_frameworks!
-pod 'SwiftLocation'
+pod 'SwiftLocation/Core'
+pod 'SwiftLocation/BeaconBroadcaster' ## If you want to use Beacon Broadcaster
 ```
 
 or SPM in your `Package.swift`:

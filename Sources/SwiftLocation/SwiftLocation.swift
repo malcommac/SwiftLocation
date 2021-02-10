@@ -60,16 +60,6 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// Credentials storage.
     public let credentials = SharedCredentials
     
-    /// Return true if beacon foreground broadcasting is active or not.
-    public var isBeaconBroadcastActive: Bool {
-        BeaconBroadcaster.shared.isBroadcastingActive
-    }
-    
-    /// Return non `nil` values when broadcasting is active.
-    public var broadcastingBeacon: BroadcastedBeacon? {
-        BeaconBroadcaster.shared.beacon
-    }
-    
     /// Return the precise authorization.
     /// NOTE: This is only valid in iOS14, for lower iOS versions it always return `.fullAccuracy`.
     public var preciseAccuracy: GPSLocationOptions.Precise {
@@ -338,24 +328,6 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     /// - Returns: BeaconRequest
     public func beaconsWithUUIDs(_ UUIDs: [UUID]) -> BeaconRequest {
         beaconsRequests.add(BeaconRequest(UUIDs: UUIDs))
-    }
-    
-    /// Start broadcasting beacon. This works only in foreground.
-    /// NOTE: Broadcaster does not work when app is killed or is in background.
-    ///
-    /// - Parameters:
-    ///   - UUID: UUID.
-    ///   - majorID: major ID.
-    ///   - minorID: minor ID.
-    ///   - identifier: identifier of the beacon.
-    ///   - onStatusDidChange: callback to receive the advertising result process.
-    public func broadcastAsBeacon(_ beacon: BroadcastedBeacon, onStatusDidChange: ((Error?) -> Void)? = nil) {
-        BeaconBroadcaster.shared.startBroadcastingAs(beacon, onStatusDidChange: onStatusDidChange)
-    }
-    
-    /// Stop running broadcast.
-    public func stopBroadcasting() {
-        BeaconBroadcaster.shared.stopBroadcasting()
     }
     
     /// Cancel passed request from queue.
