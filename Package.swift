@@ -38,7 +38,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "SwiftLocation",
-            dependencies: ["CoreLocation"],
+            dependencies: [],
             path: "Sources/SwiftLocation"
         ),
         .target(
@@ -48,7 +48,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftLocationTests",
-            dependencies: ["SwiftLocation"]
+            dependencies: ["SwiftLocation","SwiftLocationBeaconBroadcaster"]
         )
     ]
 )
