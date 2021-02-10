@@ -12,11 +12,22 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "SwiftLocation",
-            targets: ["SwiftLocation"]),
+            targets: ["SwiftLocation"]
+        ),
         .library(
             name: "SwiftLocation-Dynamic",
             type: .dynamic,
-            targets: ["SwiftLocation"]),
+            targets: ["SwiftLocation"]
+         ),
+        .library(
+            name: "SwiftLocationBeaconBroadcaster",
+            targets: ["SwiftLocationBeaconBroadcaster"]
+        ),
+        .library(
+            name: "SwiftLocationBeaconBroadcaster.Dynamic",
+            type: .dynamic,
+            targets: ["SwiftLocationBeaconBroadcaster"]
+        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -27,7 +38,14 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "SwiftLocation",
-            dependencies: []),
+            dependencies: [],
+            path: "Sources/SwiftLocation"
+        ),
+        .target(
+            name: "SwiftLocationBeaconBroadcaster",
+            dependencies: ["SwiftLocation"],
+            path: "Sources/SwiftLocationBeaconBroadcaster"
+        ),
         .testTarget(
             name: "SwiftLocationTests",
             dependencies: ["SwiftLocation"]),
