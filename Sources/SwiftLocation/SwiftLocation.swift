@@ -27,7 +27,7 @@ import CoreLocation
 
 #if os(OSX)
 import AppKit
-#elseb
+#else
 import UIKit
 #endif
 
