@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.frameworks  = "Foundation","CoreLocation","MapKit"
   s.swift_versions = ['5.0', '5.1', '5.3']
 
-  s.subspec 'Main' do |s|
+  s.subspec 'Bluetooth' do |s|
     s.source_files = "Sources/SwiftLocationBluetooth/**/*.swift"
     s.frameworks  = "Foundation","CoreBluetooth","MapKit"
   end
