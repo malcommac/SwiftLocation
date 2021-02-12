@@ -83,7 +83,15 @@ internal extension GeoLocation {
     static func fromOpenStreetList(_ data: Data) throws -> [GeoLocation] {
         let rawJSON = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         
-        guard let rawResults = rawJSON as? [[String: Any]] else {
+        var rawResults = [[String: Any]]()
+        if let result = rawJSON as? [String: Any] {
+            // https://nominatim.org/release-docs/develop/api/Reverse/
+            // OpenStreet Reverse Geocoding returns exactly one result or an error when the coordinate is in an area with no OSM data coverage.
+            rawResults.append(result)
+        } else if let results = rawJSON as? [[String: Any]] {
+            // OpenStreet Forward Geocoding return multiple results
+            rawResults = results
+        } else {
             throw LocationError.parsingError
         }
         
