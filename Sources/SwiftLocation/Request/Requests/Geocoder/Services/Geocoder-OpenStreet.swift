@@ -151,7 +151,7 @@ public extension Geocoder {
                 url = URL(string: "https://nominatim.openstreetmap.org/reverse")!
                 queryItems.append(contentsOf: [
                     URLQueryItem(name: "lat", value: String(coordinates.latitude)),
-                    URLQueryItem(name: "lon", value: String(coordinates.latitude)),
+                    URLQueryItem(name: "lon", value: String(coordinates.longitude)),
                 ])
             }
             
