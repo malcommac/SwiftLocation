@@ -39,12 +39,12 @@ let package = Package(
         .target(
             name: "SwiftLocation",
             dependencies: [],
-            path: "Sources/SwiftLocation"
+            path: "Core/Sources"
         ),
         .target(
             name: "SwiftLocationBeaconBroadcaster",
             dependencies: ["SwiftLocation"],
-            path: "Sources/SwiftLocationBeaconBroadcaster"
+            path: "BeaconBroadcaster/Sources"
         ),
         .testTarget(
             name: "SwiftLocationTests",

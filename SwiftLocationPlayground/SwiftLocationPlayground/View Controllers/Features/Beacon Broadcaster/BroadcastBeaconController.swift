@@ -26,6 +26,7 @@ import UIKit
 import SwiftLocation
 import CoreBluetooth
 import CoreLocation
+import SwiftLocationBeaconBroadcaster
 
 // MARK: - BroadcastBeaconController
 

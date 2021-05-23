@@ -16,13 +16,13 @@ Pod::Spec.new do |s|
   s.swift_versions = ['5.0', '5.1', '5.3']
 
   s.subspec 'Core' do |s|
-    s.source_files = "Sources/SwiftLocation/**/*.swift"
+    s.source_files = "Core/Sources/**/*.swift"
     s.frameworks  = "Foundation","CoreLocation","MapKit"
   end
 
   s.subspec 'BeaconBroadcaster' do |s|
     s.dependency 'SwiftLocation/Core'
-    s.source_files = "Sources/SwiftLocationBeaconBroadcaster/**/*.swift"
+    s.source_files = "BeaconBroadcaster/Sources/**/*.swift"
     s.frameworks  = "Foundation","CoreBluetooth"
   end
 end
