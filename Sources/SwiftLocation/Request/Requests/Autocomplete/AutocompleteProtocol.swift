@@ -29,7 +29,7 @@ public enum Autocomplete { }
 
 // MARK: - AutocompleteProtocol
 
-public protocol AutocompleteProtocol: class, CustomStringConvertible {
+public protocol AutocompleteProtocol: AnyObject, CustomStringConvertible {
     
     /// Execute the search.
     /// - Parameter completion: completion callback.

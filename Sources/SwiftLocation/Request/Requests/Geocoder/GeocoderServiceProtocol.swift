@@ -27,7 +27,7 @@ import CoreLocation
 
 // MARK: - GeocoderServiceProtocol
 
-public protocol GeocoderServiceProtocol: class, CustomStringConvertible {
+public protocol GeocoderServiceProtocol: AnyObject, CustomStringConvertible {
     
     /// Timeout interval for request. `nil` to ignore it.
     var timeout: TimeInterval? { get set }

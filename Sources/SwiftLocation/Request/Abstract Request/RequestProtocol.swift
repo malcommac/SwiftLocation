@@ -29,7 +29,7 @@ public typealias Identifier = String
 
 // MARK: - RequestProtocol
 
-public protocol RequestProtocol: class, Hashable, CustomStringConvertible {
+public protocol RequestProtocol: AnyObject, Hashable, CustomStringConvertible {
     associatedtype ProducedData
     
     typealias DataCallback = ((Result<ProducedData, LocationError>) -> Void)
