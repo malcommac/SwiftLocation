@@ -218,7 +218,8 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
     public func gpsLocation(accuracy: GPSLocationOptions.Accuracy = .any,
                             timeout: GPSLocationOptions.Timeout = .delayed(7)) -> GPSLocationRequest {
         gpsLocationWith {
-            $0.accuracy = accuracy
+            $0.desiredAccuracy = accuracy
+            $0.minAccuracy = .any
             $0.timeout = timeout
         }
     }
@@ -555,7 +556,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
             services.insert(request.options.subscription.service)
             
             settings.precise = max(settings.precise, (request.options.precise ?? .reducedAccuracy))
-            settings.accuracy = min(settings.accuracy, request.options.accuracy)
+            settings.desiredAccuracy = min(settings.desiredAccuracy, request.options.desiredAccuracy)
             settings.minDistance = max(settings.minDistance, request.options.minDistance)
             settings.activityType = CLActivityType(rawValue: max(settings.activityType.rawValue, request.options.activityType.rawValue)) ?? .other
         }
@@ -563,7 +564,7 @@ public class LocationManager: LocationManagerDelegate, CustomStringConvertible {
         // Geofence
         enumerateQueue(geofenceRequests) { request in
             if let circularRegion = request.monitoredRegion as? CLCircularRegion {
-                settings.accuracy = min(settings.accuracy, GPSLocationOptions.Accuracy(rawValue: circularRegion.radius))
+                settings.desiredAccuracy = min(settings.desiredAccuracy, GPSLocationOptions.Accuracy(rawValue: circularRegion.radius))
             }
         }
         

@@ -271,8 +271,24 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     /// Subscription level, by default is set to `continous`.
     public var subscription: Subscription = .single
     
+    /// Sets hardware of the device to provide the desired level of accuracy, by default is set to `.custom(kCLLocationAccuracyBest)`, which is the default of CLLocationmanager.
+    /// Note that the actual data delivered might be of poorer quality than desired.
+    /// Use minAccuracy to filter unwanted data. Note that you will loose gps updates though.
+    public var desiredAccuracy: Accuracy = .custom(kCLLocationAccuracyBest)
+    
     /// Accuracy level, by default is set to `any`.
-    public var accuracy: Accuracy = .any
+    @available(*, deprecated, message: "Use desiredAccuracy and minAccuracy instead.")
+    public var accuracy: Accuracy {
+        set {
+            // support legacy configuration, which was used both for setting the accuracy of the hardware as well as for filtering unwanted data.
+            desiredAccuracy = newValue
+            minAccuracy = newValue
+        }
+        get {
+            // support legacy configuration
+            desiredAccuracy
+        }
+    }
     
     /// Specify level of accuracy required for task. If user does not have precise location on, it will ask for one time permission..
     /// By default is not set and the choice of the user is set; you can set to `.fullAccuracy` to eventually request one
@@ -296,16 +312,21 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     /// By default is set to `nil` which means no filter is applied.
     public var minTimeInterval: TimeInterval?
     
+    /// Minimum required data accuracy to report new fresh data.
+    /// By default is set to `.any` which means no filter is applied.
+    public var minAccuracy: Accuracy = .any
+    
     /// Description of the options.
     public var description: String {
         return "{" + [
             "subscription= \(subscription)",
-            "accuracy= \(accuracy)",
+            "accuracy= \(desiredAccuracy)",
             "precise= \(precise?.description ?? "user's set")",
             "timeout= \(timeout?.description ?? "none")",
             "activityType= \(activityType)",
             "minDistance= \(minDistance)",
-            "minTimeInterval= \(minTimeInterval ?? 0)"
+            "minTimeInterval= \(minTimeInterval ?? 0)",
+            "minDistance= \(minAccuracy)"
         ].joined(separator: ", ") + "}"
     }
     
@@ -318,7 +339,7 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     // MARK: - Codable
     
     enum CodingKeys: String, CodingKey {
-        case avoidRequestAuthorization, subscription, accuracy, timeout, activityType, minTimeInterval, minDistance
+        case avoidRequestAuthorization, subscription, desiredAccuracy, timeout, activityType, minTimeInterval, minDistance, minAccuracy
     }
     
     // Encodable protocol
@@ -327,11 +348,12 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
         
         try container.encode(avoidRequestAuthorization, forKey: .avoidRequestAuthorization)
         try container.encode(subscription, forKey: .subscription)
-        try container.encode(accuracy, forKey: .accuracy)
+        try container.encode(desiredAccuracy, forKey: .desiredAccuracy)
         try container.encodeIfPresent(timeout, forKey: .timeout)
         try container.encode(activityType.rawValue, forKey: .activityType)
         try container.encodeIfPresent(minTimeInterval, forKey: .minTimeInterval)
         try container.encodeIfPresent(minDistance, forKey: .minDistance)
+        try container.encodeIfPresent(minAccuracy, forKey: .minAccuracy)
     }
     
     // Decodable protocol
@@ -340,11 +362,12 @@ public class GPSLocationOptions: CustomStringConvertible, Codable {
     
         self.avoidRequestAuthorization = try container.decode(Bool.self, forKey: .avoidRequestAuthorization)
         self.subscription = try container.decode(Subscription.self, forKey: .subscription)
-        self.accuracy = try container.decode(Accuracy.self, forKey: .accuracy)
+        self.desiredAccuracy = try container.decode(Accuracy.self, forKey: .desiredAccuracy)
         self.timeout = try container.decodeIfPresent(Timeout.self, forKey: .timeout)
         self.activityType = try CLActivityType(rawValue: container.decode(Int.self, forKey: .activityType)) ?? .other
         self.minTimeInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .minTimeInterval)
         self.minDistance = try container.decodeIfPresent(CLLocationDistance.self, forKey: .minDistance) ?? kCLDistanceFilterNone
+        self.minAccuracy = try container.decode(Accuracy.self, forKey: .minAccuracy)
     }
     
 }

@@ -80,7 +80,7 @@ internal extension CLLocationManager {
     /// Apply settings to location manager.
     /// - Parameter settings: settings.
     func setSettings(_ settings: LocationManagerSettings) {
-        self.desiredAccuracy = settings.accuracy.value
+        self.desiredAccuracy = settings.desiredAccuracy.value
         self.activityType = settings.activityType
         self.distanceFilter = settings.minDistance
                 

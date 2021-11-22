@@ -136,7 +136,7 @@ public class GPSLocationRequest: RequestProtocol, Codable {
             return .requestNotEnabled // request is not enabled so we'll discard data.
         }
         
-        guard data.horizontalAccuracy <= options.accuracy.value else {
+        guard data.horizontalAccuracy <= options.minAccuracy.value else {
             return .notMinAccuracy // accuracy level is below the minimum set
         }
         

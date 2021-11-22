@@ -164,7 +164,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     public internal(set) var activeServices = Set<Services>()
     
     /// Accuracy needed.
-    public internal(set) var accuracy: GPSLocationOptions.Accuracy = .any
+    public internal(set) var desiredAccuracy: GPSLocationOptions.Accuracy = .custom(kCLLocationAccuracyBest)
     
     /// Minimum distance.
     public internal(set) var minDistance: CLLocationDistance = kCLDistanceFilterNone
@@ -185,7 +185,7 @@ public struct LocationManagerSettings: CustomStringConvertible, Equatable {
     public var description: String {
         let data: [String: Any] = [
             "services": activeServices.description,
-            "accuracy": accuracy.description,
+            "desiredAccuracy": desiredAccuracy.description,
             "minDistance": minDistance,
             "activityType": activityType.description,
             "precise": precise.description

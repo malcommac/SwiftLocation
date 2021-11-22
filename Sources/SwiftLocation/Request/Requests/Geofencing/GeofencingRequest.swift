@@ -115,7 +115,8 @@ public class GeofencingRequest: RequestProtocol, Codable {
             // if we are monitoring a custom polygon and we received the didEntered event in the outer
             // region of the polygon we need to start monitoring the inner region for continous locations.
             polygonLocationRequest = SwiftLocation.gpsLocationWith({
-                $0.accuracy = .block
+                $0.desiredAccuracy = .block
+                $0.minAccuracy = .block
                 $0.minTimeInterval = 5
             })
             // Listen for updates
