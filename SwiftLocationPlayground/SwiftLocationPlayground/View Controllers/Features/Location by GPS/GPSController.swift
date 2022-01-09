@@ -239,6 +239,16 @@ class GPSController: UIViewController, UITableViewDelegate, UITableViewDataSourc
         
         UIAlertController.showAlert(title: "Request added successfully",
                                     message: "Updates will be available through notifications and inside the status panel for recurring requests.")
+
+
+        SwiftLocation.gpsLocationWith {
+            $0.precise = .fullAccuracy
+            // set any other filter options
+        }.then { result in
+            print("Location found is \(result.location) and it's \(SwiftLocation.preciseAccuracy.description)")
+        }
+
+
     }
     
 }

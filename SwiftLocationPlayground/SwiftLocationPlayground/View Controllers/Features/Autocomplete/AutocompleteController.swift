@@ -118,17 +118,41 @@ public class AutocompleteController: UIViewController, UITableViewDelegate, UITa
 
         let loader = UIAlertController.showLoader(message: "Getting information from IP address...")
         let request = SwiftLocation.autocompleteWith(service)
-        request.then(queue: .main) { result in
-            loader.dismiss(animated: false, completion: {
-                switch result {
-                case .failure(let error):
-                    UIAlertController.showAlert(title: "Error Occurred", message: error.localizedDescription)
-                    break
-                case .success(let data):
-                    let vc = AutocompleteResultsController.create(list: data, forService: self.currentService)
-                    self.navigationController?.pushViewController(vc, animated: true)
+
+        executeRequest(request, loader)
+    }
+
+    private func executeRequest(_ request: AutocompleteRequest, _ loader: UIAlertController) {
+        if #available(iOS 13, *) {
+            // Demonstrate invoking a request using async/await
+            // since `executeRequest` is not marked async, use a `Task` to wrap the `async` call
+            Task {
+                do {
+                    let data = try await request.async()
+                    loader.dismiss(animated: false) {
+                        let vc = AutocompleteResultsController.create(list: data, forService: self.currentService)
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } catch {
+                    loader.dismiss(animated: false) {
+                        UIAlertController.showAlert(title: "Error Occurred", message: error.localizedDescription)
+                    }
                 }
-            })
+            }
+        } else {
+            // use the promise syntax of `RequestProtocol`
+            request.then(queue: .main) { result in
+                loader.dismiss(animated: false, completion: {
+                    switch result {
+                    case .failure(let error):
+                        UIAlertController.showAlert(title: "Error Occurred", message: error.localizedDescription)
+                        break
+                    case .success(let data):
+                        let vc = AutocompleteResultsController.create(list: data, forService: self.currentService)
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                })
+            }
         }
     }
     

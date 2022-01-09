@@ -57,6 +57,10 @@ To cancel/stop a running request (ie. a continuous location update) call `cancel
 
 To temporarily pause a request while still in queue use `.isEnabled` property.
 
+### Async/Await
+
+`RequestProtocol` also exposes an `async` method that conforms to the new Swift async/await concurrency pattern.  See example below.
+
 ## Discover Features
 
 - [Getting user location via GPS](#gps)
@@ -464,6 +468,23 @@ You can use `SwiftLocation.preciseAccuracy` to get the current precise authoriza
 
 This option is available since iOS14+. Older versions always uses `fullAccuracy` and the parameter is ignored.****
 
+
+### Async/Await Example
+
+To take advantage of Swift's async/await concurrency pattern, use the `async(queue:)` method of the `RequestProtocol` in place of `then(queue:)`.  Note that the _queue_ argument is optional and defaults to `DispatchQueue.main`.
+
+```
+do {
+    let location = try await SwiftLocation.gpsLocationWith {
+        $0.precise = .fullAccuracy
+        // set any other filter options
+    }.async()
+
+    print("Location found is \(location) and it's \(SwiftLocation.preciseAccuracy.description)")
+} catch {
+    print("An error has happened: \(error.localizedDescription)")
+}
+```
 
 ### Installation
 
