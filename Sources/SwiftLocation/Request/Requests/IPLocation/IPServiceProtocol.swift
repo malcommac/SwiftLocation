@@ -36,7 +36,7 @@ public enum IPServiceDecoders: String, CaseIterable {
     case ipify // IPIpifyService
 }
 
-public protocol IPServiceProtocol: class, CustomStringConvertible {
+public protocol IPServiceProtocol: AnyObject, CustomStringConvertible {
     
     /// Decoder userd to read data from service.
     var jsonServiceDecoder: IPServiceDecoders { get }

@@ -14,6 +14,62 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftLocationBeaconBroadcaster"
+               BuildableName = "SwiftLocationBeaconBroadcaster"
+               BlueprintName = "SwiftLocationBeaconBroadcaster"
+               ReferencedContainer = "container:..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftLocationBeaconBroadcaster.Dynamic"
+               BuildableName = "SwiftLocationBeaconBroadcaster.Dynamic"
+               BlueprintName = "SwiftLocationBeaconBroadcaster.Dynamic"
+               ReferencedContainer = "container:..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftLocation-Dynamic"
+               BuildableName = "SwiftLocation-Dynamic"
+               BlueprintName = "SwiftLocation-Dynamic"
+               ReferencedContainer = "container:..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftLocation"
+               BuildableName = "SwiftLocation"
+               BlueprintName = "SwiftLocation"
+               ReferencedContainer = "container:..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "647BBFE2251C8265000EB5AC"
                BuildableName = "SwiftLocationPlayground.app"
                BlueprintName = "SwiftLocationPlayground"

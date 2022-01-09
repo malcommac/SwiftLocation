@@ -27,7 +27,7 @@ import CoreLocation
 
 // MARK: - LocationManagerDelegate
 
-public protocol LocationManagerDelegate: class {
+public protocol LocationManagerDelegate: AnyObject {
     
     // MARK: - Location Manager
     func locationManager(didFailWithError error: Error)
@@ -49,7 +49,7 @@ public protocol LocationManagerDelegate: class {
 
 // MARK: - LocationManagerProtocol
 
-public protocol LocationManagerImpProtocol: class {
+public protocol LocationManagerImpProtocol: AnyObject {
     typealias AuthorizationCallback = ((CLAuthorizationStatus) -> Void)
 
     // Authorizations

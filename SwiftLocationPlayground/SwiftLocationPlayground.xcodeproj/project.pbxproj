@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		263AC5F195ECA19F5B36D545 /* Pods_SwiftLocationPlayground.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A57A8727FF95D8D8202F996B /* Pods_SwiftLocationPlayground.framework */; };
 		6401DB8F25555E1D0017BD91 /* PlaygroundController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */; };
 		6401DB9225555F4B0017BD91 /* ActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401DB9125555F4B0017BD91 /* ActionCell.swift */; };
 		6401DB96255563220017BD91 /* IPLocationController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6401DB95255563220017BD91 /* IPLocationController.storyboard */; };
@@ -43,10 +42,26 @@
 		64AECC722557E71A00D01330 /* GeocoderController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC712557E71A00D01330 /* GeocoderController.storyboard */; };
 		64AECC7725582D0100D01330 /* StandardCellSetting.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC7625582D0100D01330 /* StandardCellSetting.xib */; };
 		64AECC7E25582EA200D01330 /* StandardCellButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64AECC7D25582EA200D01330 /* StandardCellButton.xib */; };
+		FB19CDF4278B39B900678571 /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = FB19CDF3278B39B900678571 /* SwiftLocation */; };
+		FB19CDF6278B39B900678571 /* SwiftLocationBeaconBroadcaster in Frameworks */ = {isa = PBXBuildFile; productRef = FB19CDF5278B39B900678571 /* SwiftLocationBeaconBroadcaster */; };
+		FB19CDF7278B39E800678571 /* SwiftLocation in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FB19CDDB278B387300678571 /* SwiftLocation */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		FB19CDE6278B388C00678571 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FB19CDF7278B39E800678571 /* SwiftLocation in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		0483B88537BFE54A967AFF4C /* Pods-SwiftLocationPlayground.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftLocationPlayground.release.xcconfig"; path = "Target Support Files/Pods-SwiftLocationPlayground/Pods-SwiftLocationPlayground.release.xcconfig"; sourceTree = "<group>"; };
 		6401DB8E25555E1D0017BD91 /* PlaygroundController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundController.swift; sourceTree = "<group>"; };
 		6401DB9125555F4B0017BD91 /* ActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCell.swift; sourceTree = "<group>"; };
 		6401DB95255563220017BD91 /* IPLocationController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = IPLocationController.storyboard; sourceTree = "<group>"; };
@@ -84,8 +99,7 @@
 		64AECC712557E71A00D01330 /* GeocoderController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GeocoderController.storyboard; sourceTree = "<group>"; };
 		64AECC7625582D0100D01330 /* StandardCellSetting.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StandardCellSetting.xib; sourceTree = "<group>"; };
 		64AECC7D25582EA200D01330 /* StandardCellButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StandardCellButton.xib; sourceTree = "<group>"; };
-		A57A8727FF95D8D8202F996B /* Pods_SwiftLocationPlayground.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftLocationPlayground.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C136DAC6F83ABEA0157BA2C1 /* Pods-SwiftLocationPlayground.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftLocationPlayground.debug.xcconfig"; path = "Target Support Files/Pods-SwiftLocationPlayground/Pods-SwiftLocationPlayground.debug.xcconfig"; sourceTree = "<group>"; };
+		FB19CDDB278B387300678571 /* SwiftLocation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftLocation; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,7 +107,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				263AC5F195ECA19F5B36D545 /* Pods_SwiftLocationPlayground.framework in Frameworks */,
+				FB19CDF4278B39B900678571 /* SwiftLocation in Frameworks */,
+				FB19CDF6278B39B900678571 /* SwiftLocationBeaconBroadcaster in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,10 +247,10 @@
 		647BBFDA251C8265000EB5AC = {
 			isa = PBXGroup;
 			children = (
+				FB19CDD5278B37A200678571 /* Packages */,
 				647BBFE5251C8265000EB5AC /* SwiftLocationPlayground */,
 				647BBFE4251C8265000EB5AC /* Products */,
 				647BC002251C85FD000EB5AC /* Frameworks */,
-				650D453AB1101BF360375E56 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -263,7 +278,6 @@
 		647BC002251C85FD000EB5AC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A57A8727FF95D8D8202F996B /* Pods_SwiftLocationPlayground.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -305,14 +319,12 @@
 			path = "Button Cell";
 			sourceTree = "<group>";
 		};
-		650D453AB1101BF360375E56 /* Pods */ = {
+		FB19CDD5278B37A200678571 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				C136DAC6F83ABEA0157BA2C1 /* Pods-SwiftLocationPlayground.debug.xcconfig */,
-				0483B88537BFE54A967AFF4C /* Pods-SwiftLocationPlayground.release.xcconfig */,
+				FB19CDDB278B387300678571 /* SwiftLocation */,
 			);
-			name = Pods;
-			path = Pods;
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -322,17 +334,22 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 647BBFF7251C8266000EB5AC /* Build configuration list for PBXNativeTarget "SwiftLocationPlayground" */;
 			buildPhases = (
-				912C5CE555E0F5574C00BA62 /* [CP] Check Pods Manifest.lock */,
 				647BBFDF251C8265000EB5AC /* Sources */,
 				647BBFE0251C8265000EB5AC /* Frameworks */,
 				647BBFE1251C8265000EB5AC /* Resources */,
-				DB8B7BCEBBCF6A8FCF6FAEB1 /* [CP] Embed Pods Frameworks */,
+				FB19CDE6278B388C00678571 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FB19CDE8278B38BE00678571 /* PBXTargetDependency */,
+				FB19CDDA278B37FE00678571 /* PBXTargetDependency */,
 			);
 			name = SwiftLocationPlayground;
+			packageProductDependencies = (
+				FB19CDF3278B39B900678571 /* SwiftLocation */,
+				FB19CDF5278B39B900678571 /* SwiftLocationBeaconBroadcaster */,
+			);
 			productName = SwiftLocationDemo;
 			productReference = 647BBFE3251C8265000EB5AC /* SwiftLocationPlayground.app */;
 			productType = "com.apple.product-type.application";
@@ -394,48 +411,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		912C5CE555E0F5574C00BA62 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftLocationPlayground-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DB8B7BCEBBCF6A8FCF6FAEB1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwiftLocationPlayground/Pods-SwiftLocationPlayground-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwiftLocationPlayground/Pods-SwiftLocationPlayground-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftLocationPlayground/Pods-SwiftLocationPlayground-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		647BBFDF251C8265000EB5AC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -465,6 +440,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FB19CDDA278B37FE00678571 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = FB19CDD9278B37FE00678571 /* SwiftLocation */;
+		};
+		FB19CDE8278B38BE00678571 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = FB19CDE7278B38BE00678571 /* SwiftLocationBeaconBroadcaster */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		647BBFEC251C8265000EB5AC /* Main.storyboard */ = {
@@ -604,7 +590,6 @@
 		};
 		647BBFF8251C8266000EB5AC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C136DAC6F83ABEA0157BA2C1 /* Pods-SwiftLocationPlayground.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -626,7 +611,6 @@
 		};
 		647BBFF9251C8266000EB5AC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0483B88537BFE54A967AFF4C /* Pods-SwiftLocationPlayground.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -668,6 +652,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FB19CDD9278B37FE00678571 /* SwiftLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftLocation;
+		};
+		FB19CDE7278B38BE00678571 /* SwiftLocationBeaconBroadcaster */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftLocationBeaconBroadcaster;
+		};
+		FB19CDF3278B39B900678571 /* SwiftLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftLocation;
+		};
+		FB19CDF5278B39B900678571 /* SwiftLocationBeaconBroadcaster */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftLocationBeaconBroadcaster;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 647BBFDB251C8265000EB5AC /* Project object */;
 }

@@ -26,7 +26,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-protocol MapDrawViewDelegate: class {
+protocol MapDrawViewDelegate: AnyObject {
     
     func drawView(view: MapDrawView, didCompletedPolygon points: [CGPoint])
     

@@ -24,6 +24,7 @@
 
 import UIKit
 import SwiftLocation
+import SwiftLocationBeaconBroadcaster
 import CoreBluetooth
 import CoreLocation
 
