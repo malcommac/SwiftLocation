@@ -94,7 +94,7 @@ SwiftLocation.gpsLocationWith {
     $0.subscription = .continous // continous updated until you stop it
     $0.accuracy = .house 
     $0.minDistance = 300 // updated every 300mts or more
-    $0.minInterval = 30 // updated each 30 seconds or more
+    $0.minTimeInterval = 30 // updated each 30 seconds or more
     $0.activityType = .automotiveNavigation
     $0.timeout = .delayed(5) // 5 seconds of timeout after auth granted
 }.then { result in // you can attach one or more subscriptions via `then`.
