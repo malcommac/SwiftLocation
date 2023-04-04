@@ -70,13 +70,13 @@ public struct GeoLocation: CustomStringConvertible {
     }
     
     /// Additional data.
-    public internal(set) var info = [Keys: String?]()
+    public internal(set) var info = [Keys: String]()
     
     // MARK: - Public Methods
     
     public var description: String {
         let infoDictionary = info.enumerated().map {
-            "\($0.element.key) = '\($0.element.value ?? "")'"
+            "\($0.element.key) = '\($0.element.value)'"
         }.joined(separator: "\n\t")
         return "{ \n\tcoordinates = lat:\(coordinates.latitude),lng:\(coordinates.longitude),\n\tname=\(String(describing: self.info[.name] ?? ""))\n\t\(infoDictionary)\n}"
     }

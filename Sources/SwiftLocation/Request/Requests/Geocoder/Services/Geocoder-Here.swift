@@ -65,7 +65,6 @@ public extension Geocoder {
                 "timeout": timeout,
                 "locale": locale ?? "",
                 "limit": limit ?? "",
-                "locale": locale ?? "",
                 "limitToCountries": countryCodes ?? "",
                 "proximityCoordinates": proximityCoordinates?.description  ?? ""
             ])

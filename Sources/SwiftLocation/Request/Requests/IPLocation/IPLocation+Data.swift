@@ -33,7 +33,7 @@ public extension IPLocation {
         public let coordinates: CLLocationCoordinate2D
         
         /// Extra informations.
-        public private(set) var info = [Keys: String?]()
+        public private(set) var info = [Keys: String]()
         
         /// Query IP address (not necessary the current address, depending your request).
         public let ip: String
