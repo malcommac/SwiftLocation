@@ -6,6 +6,11 @@ public enum LocationManagerEvent {
     case didChangeAuthorization(_ status: CLAuthorizationStatus)
     case didChangeAccuracyAuthorization(_ authorization: CLAccuracyAuthorization)
 
+    case locationUpdatesPaused
+    case locationUpdatesResumed
+    case receiveNewLocations(locations: [CLLocation])
+
+    case didFailWithError(_ error: Error)
 }
 
 public protocol LocationManagerProtocol {
@@ -13,12 +18,20 @@ public protocol LocationManagerProtocol {
     var authorizationStatus: CLAuthorizationStatus { get }
     var accuracyAuthorization: CLAccuracyAuthorization { get }
     var desiredAccuracy: CLLocationAccuracy { get set }
-
+    
     func locationServicesEnabled() -> Bool
     func requestWhenInUseAuthorization()
+    func requestAlwaysAuthorization()
+    func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)?)
+
+    func startUpdatingLocation()
+    func stopUpdatingLocation()
 }
 
 public class FakeLocationManager: LocationManagerProtocol {
+    public func requestAlwaysAuthorization() {
+        
+    }
     
     public var authorizationStatus: CLAuthorizationStatus {
         .authorizedAlways
@@ -37,6 +50,18 @@ public class FakeLocationManager: LocationManagerProtocol {
     }
     
     public func requestWhenInUseAuthorization() {
+        
+    }
+    
+    public func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)? = nil) {
+        
+    }
+    
+    public func startUpdatingLocation() {
+        
+    }
+    
+    public func stopUpdatingLocation() {
         
     }
     
@@ -60,6 +85,7 @@ final class LocationAsyncBridge: CancellableTask {
     func add(task: AnyTask) {
         task.cancellable = self
         tasks.append(task)
+        task.willStart()
     }
     
     func cancel(task: AnyTask) {
@@ -84,6 +110,12 @@ final class LocationAsyncBridge: CancellableTask {
         })
     }
     
+    func dispatchEvent(_ event: LocationManagerEvent) {
+        for task in tasks {
+            task.receivedLocationManagerEvent(event)
+        }
+    }
+    
 }
 
 final class LocationDelegate: NSObject, CLLocationManagerDelegate {
@@ -95,9 +127,57 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
         super.init()
     }
     
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        asyncBridge?.dispatchEvent(.didChangeAuthorization(manager.authorizationStatus))
+        asyncBridge?.dispatchEvent(.didChangeAccuracyAuthorization(manager.accuracyAuthorization))
+        locationManagerDidChangeServicesEnabled()
+    }
+    
+    private func locationManagerDidChangeServicesEnabled() {
+        Task {
+            let enabled = CLLocationManager.locationServicesEnabled()
+            await MainActor.run {
+                asyncBridge?.dispatchEvent(.didChangeLocationEnabled(enabled))
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        asyncBridge?.dispatchEvent(.receiveNewLocations(locations: locations))
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        asyncBridge?.dispatchEvent(.didFailWithError(error))
+    }
+    
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        asyncBridge?.dispatchEvent(.locationUpdatesPaused)
+    }
+    
+    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+        asyncBridge?.dispatchEvent(.locationUpdatesResumed)
+    }
+    
 }
 
-enum Errors: Error {
+enum Errors: LocalizedError {
+    case plistNotConfigured
+    case locationServicesDisabled
+    case authorizationRequired
+    case notAuthorized
+    
+    var errorDescription: String? {
+        switch self {
+        case .plistNotConfigured:
+            "Missing authorization into Info.plist"
+        case .locationServicesDisabled:
+            "Location services disabled/not available"
+        case .authorizationRequired:
+            "Location authorization not requested yet"
+        case .notAuthorized:
+            "Not Authorized"
+        }
+    }
     
 }
 
@@ -105,9 +185,9 @@ public final class SwiftLocation {
     
     static let version = "6.0.0"
     
-    private var locationManager: LocationManagerProtocol
-    private var asyncBridge = LocationAsyncBridge()
-    private var locationDelegate: LocationDelegate
+    private(set) var locationManager: LocationManagerProtocol
+    private(set) var asyncBridge = LocationAsyncBridge()
+    private(set) var locationDelegate: LocationDelegate
     
     public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
         self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
@@ -186,39 +266,94 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.AccuracyAuthorization.self)
     }
     
-    public func requestAuthorization(_ authorization: LocationAuthorization) async -> CLAuthorizationStatus {
-        switch authorization {
+    public func requestPermission(_ permission: LocationPermission) async throws -> CLAuthorizationStatus {
+        try checkPermissionOrThrow(permission)
+        switch permission {
         case .whenInUse:
-            await requestWhenInUseAuthorization()
+            return try await requestWhenInUsePermission()
         case .always:
             #if APPCLIP
-            await requestWhenInUseAuthorization()
+            return try await requestWhenInUsePermission()
             #else
-            await requestAlwaysAuthorization()
+            return try await requestAlwaysPermission()
             #endif
         }
     }
     
-    private func requestWhenInUseAuthorization() async -> CLAuthorizationStatus {
-        let task = Tasks.WhenInUseAuthorization(currentAuthorization: authorizationStatus)
-        return await withTaskCancellationHandler {
-            await withCheckedContinuation { continuation in
-                if authorizationStatus != .notDetermined {
-                    continuation.resume(returning: authorizationStatus)
-                    return
-                }
-                
-                task.continuation = continuation
-                asyncBridge.add(task: task)
-                locationManager.requestWhenInUseAuthorization()
+    public func requestTemporaryPrecisionAuthorization(purpose key: String) async throws -> CLAccuracyAuthorization {
+        if !Bundle.hasTemporaryPermission(purposeKey: key) {
+            throw Errors.plistNotConfigured
+        }
+     
+        return try await requestTemporaryPrecisionPermission(purposeKey: key)
+    }
+    
+    public func startUpdatingLocation() async throws -> Tasks.MonitoringUpdateLocation.Stream {
+        guard locationManager.authorizationStatus != .notDetermined else {
+            throw Errors.authorizationRequired
+        }
+        
+        guard locationManager.authorizationStatus.canMonitorLocation else {
+            throw Errors.notAuthorized
+        }
+        
+        let task = Tasks.MonitoringUpdateLocation(instance: self)
+        return Tasks.MonitoringUpdateLocation.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            
+            locationManager.startUpdatingLocation()
+            stream.onTermination = { @Sendable _ in
+                self.asyncBridge.cancel(task: task)
             }
+        }
+    }
+    
+    public func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+        asyncBridge.cancel(tasksTypes: Tasks.MonitoringUpdateLocation.self)
+    }
+    
+    // MARK: - Authorization (Private Functions)
+    
+    private func checkPermissionOrThrow(_ permission: LocationPermission) throws {
+        switch permission {
+        case .always:
+            if !Bundle.hasAlwaysPermission() {
+                throw Errors.plistNotConfigured
+            }
+        case .whenInUse:
+            if !Bundle.hasWhenInUsePermission() {
+                throw Errors.plistNotConfigured
+            }
+        }
+    }
+
+    private func requestTemporaryPrecisionPermission(purposeKey: String) async throws -> CLAccuracyAuthorization {
+        let task = Tasks.AccuracyPermission(instance: self)
+        return try await withTaskCancellationHandler {
+            try await task.requestTemporaryPermission(purposeKey: purposeKey)
         } onCancel: {
             asyncBridge.cancel(task: task)
         }
     }
     
-    private func requestAlwaysAuthorization() async -> CLAuthorizationStatus {
-        fatalError()
+    private func requestWhenInUsePermission() async throws -> CLAuthorizationStatus {
+        let task = Tasks.LocatePermission(instance: self)
+        return try await withTaskCancellationHandler {
+            try await task.requestWhenInUsePermission()
+        } onCancel: {
+            asyncBridge.cancel(task: task)
+        }
+    }
+    
+    private func requestAlwaysPermission() async throws -> CLAuthorizationStatus {
+        let task = Tasks.LocatePermission(instance: self)
+        return try await withTaskCancellationHandler {
+            try await task.requestAlwaysPermission()
+        } onCancel: {
+            asyncBridge.cancel(task: task)
+        }
     }
     
 }
@@ -227,16 +362,134 @@ public enum Tasks { }
 
 extension Tasks {
     
-    public class WhenInUseAuthorization: AnyTask {
-        public typealias Continuation = CheckedContinuation<CLAuthorizationStatus, Never>
+    public class MonitoringUpdateLocation: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
         
-        private let currentAuthorization: CLAuthorizationStatus
+        public enum StreamEvent {
+            case didPaused
+            case didResume
+            case didUpdateLocations(_ locations: [CLLocation])
+            case didFailed(_ error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        
+        private weak var instance: SwiftLocation?
+        
+        init(instance: SwiftLocation) {
+            self.instance = instance
+        }
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case .locationUpdatesPaused:
+                stream?.yield(.didPaused)
+                
+            case .locationUpdatesResumed:
+                stream?.yield(.didResume)
+                
+            case let .didFailWithError(error):
+                stream?.yield(.didFailed(error))
+                
+            case let .receiveNewLocations(locations):
+                stream?.yield(.didUpdateLocations(locations))
+                
+            default:
+                break
+            }
+        }
+        
+        public func didCancelled() {
+            guard let stream = stream else {
+                return
+            }
+            
+            stream.finish()
+            self.stream = nil
+        }
+        
+    }
+    
+    public class AccuracyPermission: AnyTask {
+        public typealias Continuation = CheckedContinuation<CLAccuracyAuthorization, Error>
+        
         public let uuid = UUID()
         public var cancellable: CancellableTask?
         var continuation: Continuation?
-
-        public init(currentAuthorization: CLAuthorizationStatus) {
-            self.currentAuthorization = currentAuthorization
+        
+        private weak var instance: SwiftLocation?
+        
+        init(instance: SwiftLocation) {
+            self.instance = instance
+        }
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case .didChangeAccuracyAuthorization(let auth):
+                continuation?.resume(with: .success(auth))
+            default:
+                break
+            }
+        }
+        
+        func requestTemporaryPermission(purposeKey: String) async throws -> CLAccuracyAuthorization {
+            try await withCheckedThrowingContinuation { continuation in
+                guard let instance = self.instance else { return }
+                
+                guard Bundle.hasTemporaryPermission(purposeKey: purposeKey) else {
+                    continuation.resume(throwing: Errors.plistNotConfigured)
+                    return
+                }
+                
+                guard instance.locationManager.locationServicesEnabled() else {
+                    continuation.resume(throwing: Errors.locationServicesDisabled)
+                    return
+                }
+                
+                let authorizationStatus = instance.authorizationStatus
+                guard authorizationStatus != .notDetermined else {
+                    continuation.resume(throwing: Errors.authorizationRequired)
+                    return
+                }
+                
+                let accuracyAuthorization = instance.accuracyAuthorization
+                guard accuracyAuthorization != .fullAccuracy else {
+                    continuation.resume(with: .success(accuracyAuthorization))
+                    return
+                }
+                
+                self.continuation = continuation
+                instance.asyncBridge.add(task: self)
+                instance.locationManager.requestTemporaryFullAccuracyAuthorization(withPurposeKey: purposeKey) { error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    // If the user chooses reduced accuracy, the didChangeAuthorization delegate method will not called.
+                    if instance.locationManager.accuracyAuthorization == .reducedAccuracy {
+                        let accuracyAuthorization = instance.accuracyAuthorization
+                        instance.asyncBridge.dispatchEvent(.didChangeAccuracyAuthorization(accuracyAuthorization))
+                    }
+                }
+            }
+        }
+        
+    }
+        
+    public class LocatePermission: AnyTask {
+        public typealias Continuation = CheckedContinuation<CLAuthorizationStatus, Error>
+        
+        public let uuid = UUID()
+        public var cancellable: CancellableTask?
+        var continuation: Continuation?
+        
+        private weak var instance: SwiftLocation?
+        
+        init(instance: SwiftLocation) {
+            self.instance = instance
         }
         
         public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
@@ -254,7 +507,49 @@ extension Tasks {
                 break
             }
         }
-       
+        
+        func requestWhenInUsePermission() async throws -> CLAuthorizationStatus {
+            try await withCheckedThrowingContinuation { continuation in
+                guard let instance = self.instance else { return }
+                
+                guard Bundle.hasWhenInUsePermission() else {
+                    continuation.resume(throwing: Errors.plistNotConfigured)
+                    return
+                }
+                
+                let isAuthorized = instance.authorizationStatus != .notDetermined
+                guard !isAuthorized else {
+                    continuation.resume(returning: instance.authorizationStatus)
+                    return
+                }
+                
+                self.continuation = continuation
+                instance.asyncBridge.add(task: self)
+                instance.locationManager.requestWhenInUseAuthorization()
+            }
+        }
+        
+        func requestAlwaysPermission() async throws -> CLAuthorizationStatus {
+            try await withCheckedThrowingContinuation { continuation in
+                guard let instance = self.instance else { return }
+                
+                guard Bundle.hasAlwaysPermission() else {
+                    continuation.resume(throwing: Errors.plistNotConfigured)
+                    return
+                }
+                
+                let isAuthorized = instance.authorizationStatus != .notDetermined && instance.authorizationStatus != .authorizedWhenInUse
+                guard !isAuthorized else {
+                    continuation.resume(with: .success(instance.authorizationStatus))
+                    return
+                }
+                
+                self.continuation = continuation
+                instance.asyncBridge.add(task: self)
+                instance.locationManager.requestAlwaysAuthorization()
+            }
+        }
+        
     }
     
     public class AccuracyAuthorization: AnyTask {
@@ -331,6 +626,7 @@ public protocol AnyTask: AnyObject {
     
     func receivedLocationManagerEvent(_ event: LocationManagerEvent)
     func didCancelled()
+    func willStart()
 }
 
 public extension AnyTask {
@@ -340,6 +636,8 @@ public extension AnyTask {
     }
     
     func didCancelled() { }
+    
+    func willStart() { }
     
 }
 
@@ -382,9 +680,50 @@ public enum LocationAccuracy {
     }
 }
 
-public enum LocationAuthorization {
+public enum LocationPermission {
     case always
     case whenInUse
+}
+
+extension Bundle {
+    
+    private static let always = "NSLocationAlwaysUsageDescription"
+    private static let whenInUse = "NSLocationAlwaysAndWhenInUseUsageDescription"
+    private static let temporary = "NSLocationTemporaryUsageDescriptionDictionary"
+    
+    static func hasTemporaryPermission(purposeKey: String) -> Bool {
+        guard let node = Bundle.main.object(forInfoDictionaryKey: temporary) as? NSDictionary,
+              let value = node.object(forKey: purposeKey) as? String,
+              value.isEmpty == false else {
+            return false
+        }
+        return true
+    }
+    
+    static func hasWhenInUsePermission() -> Bool {
+        !(Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
+    }
+    
+    static func hasAlwaysPermission() -> Bool {
+        !(Bundle.main.object(forInfoDictionaryKey: always) as? String ?? "").isEmpty &&
+        !( Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
+    }
+    
+}
+
+extension CLAccuracyAuthorization: CustomStringConvertible {
+    
+    public var description: String {
+        switch self {
+        case .fullAccuracy:
+            "fullAccuracy"
+        case .reducedAccuracy:
+            "reducedAccuracy"
+        @unknown default:
+            "Unknown (\(rawValue))"
+        }
+    }
+    
 }
 
 extension CLAuthorizationStatus: CustomStringConvertible {
@@ -397,6 +736,15 @@ extension CLAuthorizationStatus: CustomStringConvertible {
         case .authorizedAlways:     "authorizedAlways"
         case .authorizedWhenInUse:  "authorizedWhenInUse"
         @unknown default:           "unknown"
+        }
+    }
+    
+    var canMonitorLocation: Bool {
+        switch self {
+        case .authorizedAlways, .authorizedWhenInUse:
+            true
+        default:
+            false
         }
     }
     
