@@ -3,7 +3,9 @@ import CoreLocation
 
 public final class SwiftLocation {
     
-    static let version = "6.0.0"
+    public static let version = "6.0.0"
+    
+    // MARK: - Private Properties
     
     private(set) var locationManager: LocationManagerProtocol
     private(set) var asyncBridge: LocationAsyncBridge!
@@ -12,6 +14,8 @@ public final class SwiftLocation {
     private let cache = UserDefaults(suiteName: "com.swiftlocation.cache")
     private let locationCacheKey = "lastLocation"
 
+    // MARK: - Public Properties
+    
     public internal(set) var lastLocation: CLLocation? {
         get {
             cache?.location(forKey: locationCacheKey)
@@ -20,21 +24,13 @@ public final class SwiftLocation {
             cache?.set(location: newValue, forKey: locationCacheKey)
         }
     }
-    
-    public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
-        self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
-        self.locationManager = locationManager
-        self.locationManager.delegate = locationDelegate
-        self.asyncBridge = LocationAsyncBridge(location: self)
-    }
-    
-    public func locationServicesEnabled() async -> Bool {
-        // Avoid calling it from the main thread to prevent the runtime warning
-        // about an unresponsive UI.
-        // By using 'detached,' we can ensure that we're not on the main thread.
-        await Task.detached {
-            self.locationManager.locationServicesEnabled()
-        }.value
+
+    public var locationServicesEnabled: Bool {
+        get async {
+            await Task.detached {
+                self.locationManager.locationServicesEnabled()
+            }.value
+        }
     }
     
     public var authorizationStatus: CLAuthorizationStatus {
@@ -54,20 +50,33 @@ public final class SwiftLocation {
         }
     }
     
-    public func startMonitoringLocation() async -> Tasks.LocationServicesEnabled.Stream {
+    // MARK: - Initialization
+    
+    public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
+        self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
+        self.locationManager = locationManager
+        self.locationManager.delegate = locationDelegate
+        self.asyncBridge = LocationAsyncBridge(location: self)
+    }
+    
+    // MARK: - Monitor Location Services Enabled
+    
+    public func startMonitoringLocationServices() async -> Tasks.LocationServicesEnabled.Stream {
         let task = Tasks.LocationServicesEnabled()
         return Tasks.LocationServicesEnabled.Stream { stream in
             task.stream = stream
             asyncBridge.add(task: task)
             stream.onTermination = { @Sendable _ in
-                self.stopMonitoringLocationEnabled()
+                self.stopMonitoringLocationServices()
             }
         }
     }
     
-    public func stopMonitoringLocationEnabled() {
+    public func stopMonitoringLocationServices() {
         asyncBridge.cancel(tasksTypes: Tasks.LocationServicesEnabled.self)
     }
+    
+    // MARK: - Monitor Authorization Status
 
     public func startMonitoringAuthorization() async -> Tasks.Authorization.Stream {
         let task = Tasks.Authorization()
@@ -84,6 +93,8 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.Authorization.self)
     }
     
+    // MARK: - Monitor Accuracy Authorization
+    
     public func startMonitoringAccuracyAuthorization() async -> Tasks.AccuracyAuthorization.Stream {
         let task = Tasks.AccuracyAuthorization()
         return Tasks.AccuracyAuthorization.Stream { stream in
@@ -98,6 +109,8 @@ public final class SwiftLocation {
     public func stopMonitoringAccuracyAuthorization() {
         asyncBridge.cancel(tasksTypes: Tasks.AccuracyAuthorization.self)
     }
+    
+    // MARK: - Request Permission for Location
     
     public func requestPermission(_ permission: LocationPermission) async throws -> CLAuthorizationStatus {
         try checkPermissionOrThrow(permission)
@@ -120,6 +133,8 @@ public final class SwiftLocation {
      
         return try await requestTemporaryPrecisionPermission(purposeKey: key)
     }
+    
+    // MARK: - Monitor Location Updates
     
     public func startUpdatingLocation() async throws -> Tasks.ContinuousUpdateLocation.Stream {
         guard locationManager.authorizationStatus != .notDetermined else {
@@ -147,6 +162,8 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.ContinuousUpdateLocation.self)
     }
     
+    // MARK: - Get Location
+    
     public func requestLocation(accuracy: AccuracyFilters? = nil,
                                 timeout: TimeInterval? = nil) async throws -> Tasks.ContinuousUpdateLocation.StreamEvent {
         let task = Tasks.SingleUpdateLocation(instance: self, accuracy: accuracy, timeout: timeout)
@@ -156,6 +173,8 @@ public final class SwiftLocation {
             asyncBridge.cancel(task: task)
         }
     }
+    
+    // MARK: - Monitor Regions
     
     public func startMonitoring(region: CLRegion) async throws -> Tasks.RegionMonitoring.Stream {
         let task = Tasks.RegionMonitoring(instance: self, region: region)
@@ -175,7 +194,7 @@ public final class SwiftLocation {
         }
     }
     
-    // MARK: - Significant Location Monitoring
+    // MARK: - Monitor Visits Updates
     
     public func startMonitoringVisits() async -> Tasks.VisitsMonitoring.Stream {
         let task = Tasks.VisitsMonitoring()
@@ -194,7 +213,7 @@ public final class SwiftLocation {
         locationManager.stopMonitoringVisits()
     }
     
-    // MARK: - Significant Location Monitoring
+    // MARK: - Monitor Significant Locations
     
     public func startMonitoringSignificantLocationChanges() async -> Tasks.SignificantLocationMonitoring.Stream {
         let task = Tasks.SignificantLocationMonitoring()
@@ -213,7 +232,7 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.SignificantLocationMonitoring.self)
     }
     
-    // MARK: - Heading Updates
+    // MARK: - Monitor Device Heading Updates
     
     public func startUpdatingHeading() async -> Tasks.HeadingMonitoring.Stream {
         let task = Tasks.HeadingMonitoring()
@@ -232,7 +251,7 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.HeadingMonitoring.self)
     }
     
-    // MARK: - Beacons
+    // MARK: - Monitor Beacons Ranging
     
     public func startRangingBeacons(satisfying: CLBeaconIdentityConstraint) async -> Tasks.BeaconMonitoring.Stream {
         let task = Tasks.BeaconMonitoring(satisfying: satisfying)
@@ -253,7 +272,7 @@ public final class SwiftLocation {
         locationManager.stopRangingBeacons(satisfying: satisfying)
     }
         
-    // MARK: - Authorization (Private Functions)
+    // MARK: - Private Functions
     
     private func checkPermissionOrThrow(_ permission: LocationPermission) throws {
         switch permission {
