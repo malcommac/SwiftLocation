@@ -3,12 +3,19 @@ import CoreLocation
 
 public final class SwiftLocation {
     
+    /// Version of the SDK.
     public static let version = "6.0.0"
     
     // MARK: - Private Properties
     
+    /// Underlying location manager implementation.
     private(set) var locationManager: LocationManagerProtocol
+    
+    /// Bridge for async/await communication via tasks.
     private(set) var asyncBridge: LocationAsyncBridge!
+
+    /// The delegate which receive events from the underlying `locationManager` implementation
+    /// and dispatch them to the `asyncBridge` through the final output function.
     private(set) var locationDelegate: LocationDelegate
     
     private let cache = UserDefaults(suiteName: "com.swiftlocation.cache")
@@ -16,6 +23,9 @@ public final class SwiftLocation {
 
     // MARK: - Public Properties
     
+    /// The last received location from underlying Location Manager service.
+    /// This is persistent between sesssions and store the latest result with no
+    /// filters or logic behind.
     public internal(set) var lastLocation: CLLocation? {
         get {
             cache?.location(forKey: locationCacheKey)
@@ -24,7 +34,11 @@ public final class SwiftLocation {
             cache?.set(location: newValue, forKey: locationCacheKey)
         }
     }
-
+    
+    /// Indicate whether location services are enabled on the device.
+    ///
+    /// NOTE:
+    /// This is an async function in order to prevent warning from the compiler.
     public var locationServicesEnabled: Bool {
         get async {
             await Task.detached {
@@ -33,34 +47,75 @@ public final class SwiftLocation {
         }
     }
     
+    /// The status of your app’s authorization to provide parental controls.
     public var authorizationStatus: CLAuthorizationStatus {
         locationManager.authorizationStatus
     }
     
+    /// Indicates the level of location accuracy the app has permission to use.
     public var accuracyAuthorization: CLAccuracyAuthorization {
         locationManager.accuracyAuthorization
     }
     
+    /// Indicates the accuracy of the location data that your app wants to receive.
     public var accuracy: LocationAccuracy {
-        get {
-            .init(level: locationManager.desiredAccuracy)
-        }
-        set {
-            locationManager.desiredAccuracy = newValue.level
-        }
+        get { .init(level: locationManager.desiredAccuracy) }
+        set { locationManager.desiredAccuracy = newValue.level }
+    }
+    
+    /// The type of activity the app expects the user to typically perform while in the app’s location session.
+    /// By default is set to `CLActivityType.other`.
+    public var activityType: CLActivityType {
+        get { locationManager.activityType }
+        set { locationManager.activityType = newValue }
+    }
+    
+    /// The minimum distance in meters the device must move horizontally before an update event is generated.
+    /// By defualt is set to `kCLDistanceFilterNone`.
+    ///
+    /// NOTE:
+    /// Use this property only in conjunction with the Standard location services and not with the Significant-change or Visits services.
+    public var distanceFilter: CLLocationDistance {
+        get { locationManager.distanceFilter }
+        set { locationManager.distanceFilter = newValue }
+    }
+    
+    /// Indicates whether the app receives location updates when running in the background.
+    /// By default is `false`.
+    ///
+    /// NOTE:
+    /// You must set the `UIBackgroundModes` in your `Info.plist` file in order to support this mode.
+    ///
+    /// When the value of this property is true and you start location updates while the app is in the foreground,
+    /// Core Location configures the system to keep the app running to receive continuous background location updates,
+    /// and arranges to show the background location indicator (blue bar or pill) if needed.
+    /// Updates continue even if the app subsequently enters the background.
+    public var allowsBackgroundLocationUpdates: Bool {
+        get { locationManager.allowsBackgroundLocationUpdates }
+        set { locationManager.allowsBackgroundLocationUpdates = newValue }
     }
     
     // MARK: - Initialization
     
-    public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
+    /// Initialize a new SwiftLocation instance to work with the Core Location service.
+    /// 
+    /// - Parameter locationManager: underlying service. By default the device's CLLocationManager instance is used
+    ///                              but you can provide your own.
+    /// - Parameter allowsBackgroundLocationUpdates: Use this property to enable and disable background updates programmatically.
+    ///                                              By default is `false`. Read the documentation to configure the environment correctly.
+    public init(locationManager: LocationManagerProtocol = CLLocationManager(),
+                allowsBackgroundLocationUpdates: Bool = false) {
         self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
         self.locationManager = locationManager
         self.locationManager.delegate = locationDelegate
+        self.locationManager.allowsBackgroundLocationUpdates = allowsBackgroundLocationUpdates
         self.asyncBridge = LocationAsyncBridge(location: self)
     }
     
     // MARK: - Monitor Location Services Enabled
     
+    /// Initiate a new async stream to monitor the status of the location services.
+    /// - Returns: observable async stream.
     public func startMonitoringLocationServices() async -> Tasks.LocationServicesEnabled.Stream {
         let task = Tasks.LocationServicesEnabled()
         return Tasks.LocationServicesEnabled.Stream { stream in
@@ -72,6 +127,7 @@ public final class SwiftLocation {
         }
     }
     
+    /// Stop observing the location services status updates.
     public func stopMonitoringLocationServices() {
         asyncBridge.cancel(tasksTypes: Tasks.LocationServicesEnabled.self)
     }
@@ -164,9 +220,12 @@ public final class SwiftLocation {
     
     // MARK: - Get Location
     
-    public func requestLocation(accuracy: AccuracyFilters? = nil,
+    public func requestLocation(accuracy filters: AccuracyFilters? = nil,
                                 timeout: TimeInterval? = nil) async throws -> Tasks.ContinuousUpdateLocation.StreamEvent {
-        let task = Tasks.SingleUpdateLocation(instance: self, accuracy: accuracy, timeout: timeout)
+        
+        // Setup the desidered accuracy based upon the highest resolution.
+        locationManager.desiredAccuracy = AccuracyFilters.highestAccuracyLevel(currentLevel: locationManager.desiredAccuracy, filters: filters)
+        let task = Tasks.SingleUpdateLocation(instance: self, accuracy: filters, timeout: timeout)
         return try await withTaskCancellationHandler {
             try await task.run()
         } onCancel: {

@@ -8,7 +8,10 @@ public protocol LocationManagerProtocol {
     
     var authorizationStatus: CLAuthorizationStatus { get }
     var accuracyAuthorization: CLAccuracyAuthorization { get }
+    var activityType: CLActivityType { get set }
+    var distanceFilter: CLLocationDistance { get set }
     var desiredAccuracy: CLLocationAccuracy { get set }
+    var allowsBackgroundLocationUpdates: Bool { get set }
     func locationServicesEnabled() -> Bool
     
     // MARK: - Location Permissions

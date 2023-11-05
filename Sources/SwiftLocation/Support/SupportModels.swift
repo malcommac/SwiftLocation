@@ -3,6 +3,29 @@ import CoreLocation
 
 public typealias AccuracyFilters = [AccuracyFilter]
 
+extension AccuracyFilters {
+    
+    /// Return the highest value of the accuracy level used as filter
+    /// in both horizontal and vertical direction.
+    static func highestAccuracyLevel(currentLevel: CLLocationAccuracy = kCLLocationAccuracyReduced, filters: AccuracyFilters?) -> CLLocationAccuracy {
+        guard let filters else { return currentLevel }
+        
+        var value: Double = currentLevel
+        for filter in filters {
+            switch filter {
+            case let .vertical(vValue):
+                value = Swift.min(value, vValue)
+            case let .horizontal(hValue):
+                value = Swift.min(value, hValue)
+            default:
+                break
+            }
+        }
+        return value
+    }
+    
+}
+
 public enum AccuracyFilter {
     case horizontal(CLLocationAccuracy)
     case vertical(CLLocationAccuracy)
@@ -30,6 +53,7 @@ public enum AccuracyFilter {
             location.courseAccuracy >= value
         }
     }
+    
 }
 
 public enum LocationAccuracy {

@@ -17,6 +17,9 @@ public class MockedLocationManager: LocationManagerProtocol {
     }
     
     public var desiredAccuracy: CLLocationAccuracy = 100.0
+    public var activityType: CLActivityType = .other
+    public var distanceFilter: CLLocationDistance = kCLDistanceFilterNone
+    public var allowsBackgroundLocationUpdates: Bool = false
     
     public var accuracyAuthorization: CLAccuracyAuthorization {
         .fullAccuracy
