@@ -2,15 +2,43 @@ import Foundation
 import CoreLocation
 
 public enum LocationManagerEvent {
+    
+    // MARK: - Authorization
+    
     case didChangeLocationEnabled(_ enabled: Bool)
     case didChangeAuthorization(_ status: CLAuthorizationStatus)
     case didChangeAccuracyAuthorization(_ authorization: CLAccuracyAuthorization)
 
+    // MARK: - Location Monitoring
+    
     case locationUpdatesPaused
     case locationUpdatesResumed
     case receiveNewLocations(locations: [CLLocation])
+    
+    // MARK: - Region Monitoring
+    
+    case didEnterRegion(_ region: CLRegion)
+    case didExitRegion(_ region: CLRegion)
+    case didStartMonitoringFor(_ region: CLRegion)
 
+    // MARK: - Failures
+    
     case didFailWithError(_ error: Error)
+    case monitoringDidFailFor(region: CLRegion?, error: Error)
+
+    // MARK: - Visits Monitoring
+
+    case didVisit(visit: CLVisit)
+    
+    // MARK: - Headings
+    
+    case didUpdateHeading(_ heading: CLHeading)
+    
+    // MARK: - Beacons
+    
+    case didRange(beacons: [CLBeacon], constraint: CLBeaconIdentityConstraint)
+    case didFailRanginFor(constraint: CLBeaconIdentityConstraint, error: Error)
+
 }
 
 public protocol LocationManagerProtocol {
@@ -26,6 +54,23 @@ public protocol LocationManagerProtocol {
 
     func startUpdatingLocation()
     func stopUpdatingLocation()
+    
+    func startMonitoring(for region: CLRegion)
+    func stopMonitoring(for region: CLRegion)
+    
+    func startMonitoringVisits()
+    func stopMonitoringVisits()
+    
+    func startMonitoringSignificantLocationChanges()
+    func stopMonitoringSignificantLocationChanges()
+
+    func startUpdatingHeading()
+    func stopUpdatingHeading()
+    
+    func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
+    func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
+
+    func requestLocation()
 }
 
 public class FakeLocationManager: LocationManagerProtocol {
@@ -63,6 +108,50 @@ public class FakeLocationManager: LocationManagerProtocol {
     
     public func stopUpdatingLocation() {
         
+    }
+    
+    public func requestLocation() {
+        
+    }
+    
+    public func startMonitoring(for region: CLRegion) {
+        
+    }
+    
+    public func stopMonitoring(for region: CLRegion) {
+        
+    }
+    
+    public func startMonitoringVisits() {
+        
+    }
+    
+    public func stopMonitoringVisits() {
+        
+    }
+    
+    public func startMonitoringSignificantLocationChanges() {
+        
+    }
+    
+    public func stopMonitoringSignificantLocationChanges() {
+        
+    }
+    
+    public func startUpdatingHeading() {
+        
+    }
+    
+    public func stopUpdatingHeading() {
+        
+    }
+    
+    public func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
+        
+    }
+    
+    public func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
+    
     }
     
     public init() {
@@ -103,10 +192,16 @@ final class LocationAsyncBridge: CancellableTask {
         }
     }
     
-    func cancel(tasksTypes type: AnyTask.Type) {
+    func cancel(tasksTypes type: AnyTask.Type, condition: ((AnyTask) -> Bool)? = nil) {
         let typeToRemove = ObjectIdentifier(type)
         tasks.removeAll(where: {
-            $0.taskType == typeToRemove
+            let isCorrectType = $0.taskType == typeToRemove
+            
+            guard let condition else {
+                return isCorrectType
+            }
+            
+            return (isCorrectType && condition($0))
         })
     }
     
@@ -142,6 +237,8 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
         }
     }
     
+    // MARK: - Location Updates
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         asyncBridge?.dispatchEvent(.receiveNewLocations(locations: locations))
     }
@@ -150,12 +247,54 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
         asyncBridge?.dispatchEvent(.didFailWithError(error))
     }
     
+    // MARK: - Heading Updates
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        asyncBridge?.dispatchEvent(.didUpdateHeading(newHeading))
+    }
+    
+    // MARK: - Pause/Resume
+
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
         asyncBridge?.dispatchEvent(.locationUpdatesPaused)
     }
     
     func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
         asyncBridge?.dispatchEvent(.locationUpdatesResumed)
+    }
+    
+    // MARK: - Region Monitoring
+    
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        asyncBridge?.dispatchEvent(.monitoringDidFailFor(region: region, error: error))
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        asyncBridge?.dispatchEvent(.didEnterRegion(region))
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        asyncBridge?.dispatchEvent(.didExitRegion(region))
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        asyncBridge?.dispatchEvent(.didStartMonitoringFor(region))
+    }
+    
+    // MARK: - Visits Monitoring
+    
+    func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+        asyncBridge?.dispatchEvent(.didVisit(visit: visit))
+    }
+        
+    // MARK: - Beacons Ranging
+        
+    func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
+        asyncBridge?.dispatchEvent(.didRange(beacons: beacons, constraint: beaconConstraint))
+    }
+        
+    func locationManager(_ manager: CLLocationManager, didFailRangingFor beaconConstraint: CLBeaconIdentityConstraint, error: Error) {
+        asyncBridge?.dispatchEvent(.didFailRanginFor(constraint: beaconConstraint, error: error))
     }
     
 }
@@ -165,6 +304,7 @@ enum Errors: LocalizedError {
     case locationServicesDisabled
     case authorizationRequired
     case notAuthorized
+    case timeout
     
     var errorDescription: String? {
         switch self {
@@ -176,6 +316,8 @@ enum Errors: LocalizedError {
             "Location authorization not requested yet"
         case .notAuthorized:
             "Not Authorized"
+        case .timeout:
+            "Timeout"
         }
     }
     
@@ -188,6 +330,18 @@ public final class SwiftLocation {
     private(set) var locationManager: LocationManagerProtocol
     private(set) var asyncBridge = LocationAsyncBridge()
     private(set) var locationDelegate: LocationDelegate
+    
+    private let cache = UserDefaults(suiteName: "com.swiftlocation.cache")
+    private let locationCacheKey = "lastLocation"
+
+    public private(set) var lastLocation: CLLocation? {
+        get {
+            cache?.location(forKey: locationCacheKey)
+        }
+        set {
+            cache?.set(location: newValue, forKey: locationCacheKey)
+        }
+    }
     
     public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
         self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
@@ -314,6 +468,112 @@ public final class SwiftLocation {
         asyncBridge.cancel(tasksTypes: Tasks.MonitoringUpdateLocation.self)
     }
     
+    public func requestLocation(accuracy: AccuracyFilters? = nil,
+                                timeout: TimeInterval? = nil) async throws -> Tasks.MonitoringUpdateLocation.StreamEvent {
+        let task = Tasks.SingleUpdateLocation(instance: self, accuracy: accuracy, timeout: timeout)
+        return try await withTaskCancellationHandler {
+            try await task.run()
+        } onCancel: {
+            asyncBridge.cancel(task: task)
+        }
+    }
+    
+    public func startMonitoring(region: CLRegion) async throws -> Tasks.RegionMonitoring.Stream {
+        let task = Tasks.RegionMonitoring(instance: self, region: region)
+        return Tasks.RegionMonitoring.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            locationManager.startMonitoring(for: region)
+            stream.onTermination = { @Sendable _ in
+                self.asyncBridge.cancel(task: task)
+            }
+        }
+    }
+    
+    public func stopMonitoring(region: CLRegion) {
+        asyncBridge.cancel(tasksTypes: Tasks.RegionMonitoring.self) {
+            ($0 as! Tasks.RegionMonitoring).region == region
+        }
+    }
+    
+    // MARK: - Significant Location Monitoring
+    
+    public func startMonitoringVisits() async -> Tasks.VisitsMonitoring.Stream {
+        let task = Tasks.VisitsMonitoring()
+        return Tasks.VisitsMonitoring.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            locationManager.startMonitoringVisits()
+            stream.onTermination = { @Sendable _ in
+                self.stopMonitoringVisits()
+            }
+        }
+    }
+    
+    public func stopMonitoringVisits() {
+        asyncBridge.cancel(tasksTypes: Tasks.VisitsMonitoring.self)
+        locationManager.stopMonitoringVisits()
+    }
+    
+    // MARK: - Significant Location Monitoring
+    
+    public func startMonitoringSignificantLocationChanges() async -> Tasks.SignificantLocationMonitoring.Stream {
+        let task = Tasks.SignificantLocationMonitoring()
+        return Tasks.SignificantLocationMonitoring.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            locationManager.startMonitoringSignificantLocationChanges()
+            stream.onTermination = { @Sendable _ in
+                self.stopMonitoringSignificantLocationChanges()
+            }
+        }
+    }
+    
+    public func stopMonitoringSignificantLocationChanges() {
+        locationManager.stopMonitoringSignificantLocationChanges()
+        asyncBridge.cancel(tasksTypes: Tasks.SignificantLocationMonitoring.self)
+    }
+    
+    // MARK: - Heading Updates
+    
+    public func startUpdatingHeading() async -> Tasks.HeadingMonitoring.Stream {
+        let task = Tasks.HeadingMonitoring()
+        return Tasks.HeadingMonitoring.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            locationManager.startUpdatingHeading()
+            stream.onTermination = { @Sendable _ in
+                self.stopUpdatingHeading()
+            }
+        }
+    }
+    
+    public func stopUpdatingHeading() {
+        locationManager.stopUpdatingHeading()
+        asyncBridge.cancel(tasksTypes: Tasks.HeadingMonitoring.self)
+    }
+    
+    // MARK: - Beacons
+    
+    public func startRangingBeacons(satisfying: CLBeaconIdentityConstraint) async -> Tasks.BeaconMonitoring.Stream {
+        let task = Tasks.BeaconMonitoring(satisfying: satisfying)
+        return Tasks.BeaconMonitoring.Stream { stream in
+            task.stream = stream
+            asyncBridge.add(task: task)
+            locationManager.startRangingBeacons(satisfying: satisfying)
+            stream.onTermination = { @Sendable _ in
+                self.stopRangingBeacons(satisfying: satisfying)
+            }
+        }
+    }
+    
+    public func stopRangingBeacons(satisfying: CLBeaconIdentityConstraint) {
+        asyncBridge.cancel(tasksTypes: Tasks.BeaconMonitoring.self) {
+            ($0 as! Tasks.BeaconMonitoring).satisfying == satisfying
+        }
+        locationManager.stopRangingBeacons(satisfying: satisfying)
+    }
+        
     // MARK: - Authorization (Private Functions)
     
     private func checkPermissionOrThrow(_ permission: LocationPermission) throws {
@@ -358,9 +618,259 @@ public final class SwiftLocation {
     
 }
 
+public typealias AccuracyFilters = [AccuracyFilter]
+
+public enum AccuracyFilter {
+    case horizontal(CLLocationAccuracy)
+    case vertical(CLLocationAccuracy)
+    case speed(CLLocationSpeedAccuracy)
+    case course(CLLocationDirectionAccuracy)
+    
+    static func filteredLocations(_ locations: [CLLocation], withAccuracyFilters filters: AccuracyFilters?) -> [CLLocation] {
+        guard let filters else { return locations }
+        return locations.filter { AccuracyFilter.isLocation($0, validForFilters: filters) }
+    }
+    
+    static func isLocation(_ location: CLLocation, validForFilters filters: AccuracyFilters) -> Bool {
+        filters.first { $0.isValidForLocation(location) == false } != nil
+    }
+    
+    private func isValidForLocation(_ location: CLLocation) -> Bool {
+        switch self {
+        case let .horizontal(value):    
+            location.horizontalAccuracy >= value
+        case let .vertical(value):
+            location.verticalAccuracy >= value
+        case let .speed(value):
+            location.speedAccuracy >= value
+        case let .course(value):
+            location.courseAccuracy >= value
+        }
+    }
+}
+
 public enum Tasks { }
 
 extension Tasks {
+    
+    public class BeaconMonitoring: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
+
+        public enum StreamEvent {
+            case didRange(beacons: [CLBeacon], constraint: CLBeaconIdentityConstraint)
+            case didFailRanginFor(constraint: CLBeaconIdentityConstraint, error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        public private(set) var satisfying: CLBeaconIdentityConstraint
+        
+        init(satisfying: CLBeaconIdentityConstraint) {
+            self.satisfying = satisfying
+        }
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .didRange(beacons, constraint):
+                stream?.yield(.didRange(beacons: beacons, constraint: constraint))
+            case let .didFailRanginFor(constraint, error):
+                stream?.yield(.didFailRanginFor(constraint: constraint, error: error))
+            default:
+                break
+            }
+        }
+        
+    }
+    
+    public class HeadingMonitoring: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
+
+        public enum StreamEvent {
+            case didUpdateHeading(_ heading: CLHeading)
+            case didFailWithError(_ error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .didUpdateHeading(heading):
+                stream?.yield(.didUpdateHeading(heading))
+            case let .didFailWithError(error):
+                stream?.yield(.didFailWithError(error))
+            default:
+                break
+            }
+        }
+        
+    }
+    
+    public class SignificantLocationMonitoring: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
+
+        public enum StreamEvent {
+            case didPaused
+            case didResume
+            case didUpdateLocations(_ locations: [CLLocation])
+            case didFailWithError(_ error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .receiveNewLocations(locations):
+                stream?.yield(.didUpdateLocations(locations))
+            case .locationUpdatesPaused:
+                stream?.yield(.didPaused)
+            case .locationUpdatesResumed:
+                stream?.yield(.didResume)
+            case let .didFailWithError(error):
+                stream?.yield(.didFailWithError(error))
+            default:
+                break
+            }
+        }
+        
+    }
+    
+    public class VisitsMonitoring: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
+
+        public enum StreamEvent {
+            case didVisit(_ visit: CLVisit)
+            case didFailWithError(_ error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .didVisit(visit):
+                stream?.yield(.didVisit(visit))
+            case let .didFailWithError(error):
+                stream?.yield(.didFailWithError(error))
+            default:
+                break
+            }
+        }
+    }
+    
+    public class RegionMonitoring: AnyTask {
+        public typealias Stream = AsyncStream<StreamEvent>
+        
+        public enum StreamEvent {
+            case didEnterTo(region: CLRegion)
+            case didExitTo(region: CLRegion)
+            case didStartMonitoringFor(region: CLRegion)
+            case monitoringDidFailFor(region: CLRegion?, error: Error)
+        }
+        
+        public let uuid = UUID()
+        public var stream: Stream.Continuation?
+        public var cancellable: CancellableTask?
+        
+        private weak var instance: SwiftLocation?
+        private(set) var region: CLRegion
+        
+        init(instance: SwiftLocation, region: CLRegion) {
+            self.instance = instance
+            self.region = region
+        }
+     
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .didStartMonitoringFor(region):
+                stream?.yield(.didStartMonitoringFor(region: region))
+                
+            case let .didEnterRegion(region):
+                stream?.yield(.didEnterTo(region: region))
+                
+            case let .didExitRegion(region):
+                stream?.yield(.didExitTo(region: region))
+                
+            case let .monitoringDidFailFor(region, error):
+                stream?.yield(.monitoringDidFailFor(region: region, error: error))
+                
+            default:
+                break
+                
+            }
+        }
+        
+    }
+    
+    public class SingleUpdateLocation: AnyTask {
+        public typealias Continuation = CheckedContinuation<MonitoringUpdateLocation.StreamEvent, Error>
+        
+        public let uuid = UUID()
+        public var cancellable: CancellableTask?
+        var continuation: Continuation?
+        
+        private var accuracyFilters: AccuracyFilters?
+        private var timeout: TimeInterval?
+        private var timer: Timer?
+        private weak var instance: SwiftLocation?
+        
+        init(instance: SwiftLocation, accuracy: AccuracyFilters?, timeout: TimeInterval?) {
+            self.instance = instance
+            self.accuracyFilters = accuracy
+            self.timeout = timeout
+        }
+        
+        func run() async throws -> MonitoringUpdateLocation.StreamEvent {
+            try await withCheckedThrowingContinuation { continuation in
+                guard let instance = self.instance else { return }
+
+                self.continuation = continuation
+                instance.asyncBridge.add(task: self)
+                instance.locationManager.requestLocation()
+            }
+        }
+        
+        public func receivedLocationManagerEvent(_ event: LocationManagerEvent) {
+            switch event {
+            case let .receiveNewLocations(locations):
+                let filteredLocations = AccuracyFilter.filteredLocations(locations, withAccuracyFilters: accuracyFilters)
+                guard filteredLocations.isEmpty == false else {
+                    return // none of the locations respect passed filters
+                }
+                
+                continuation?.resume(returning: .didUpdateLocations(locations))
+                continuation = nil
+                cancellable?.cancel(task: self)
+            case let .didFailWithError(error):
+                continuation?.resume(throwing: error)
+                continuation = nil
+                cancellable?.cancel(task: self)
+            default:
+                break
+            }
+        }
+        
+        public func didCancelled() {
+            timer?.invalidate()
+            timer = nil
+            continuation = nil
+        }
+        
+        public func willStart() {
+            guard let timeout else {
+                return
+            }
+            
+            self.timer = Timer(timeInterval: timeout, repeats: false, block: { [weak self] _ in
+                self?.continuation?.resume(throwing: Errors.timeout)
+            })
+        }
+    }
     
     public class MonitoringUpdateLocation: AnyTask {
         public typealias Stream = AsyncStream<StreamEvent>
@@ -749,3 +1259,30 @@ extension CLAuthorizationStatus: CustomStringConvertible {
     }
     
 }
+
+extension UserDefaults {
+        
+    func set(location:CLLocation?, forKey key: String) {
+        guard let location else {
+            removeObject(forKey: key)
+            return
+        }
+        
+        let locationData = try? NSKeyedArchiver.archivedData(withRootObject: location, requiringSecureCoding: false)
+        set(locationData, forKey: key)
+    }
+    
+    func location(forKey key: String) -> CLLocation? {
+        guard let locationData = UserDefaults.standard.data(forKey: key) else {
+            return nil
+        }
+
+        do {
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: CLLocation.self, from: locationData)
+        } catch {
+            return nil
+        }
+    }
+    
+}
+
