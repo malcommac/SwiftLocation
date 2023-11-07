@@ -39,7 +39,27 @@ public class MockedLocationManager: LocationManagerProtocol {
     
     public var onRequestWhenInUseAuthorization: (() -> CLAuthorizationStatus) = { .notDetermined }
     public var onRequestAlwaysAuthorization: (() -> CLAuthorizationStatus) = { .notDetermined }
+    public var onRequestValidationForTemporaryAccuracy: ((String) -> Error?) = { _ in return nil }
 
+    public func updateLocations(event: Tasks.ContinuousUpdateLocation.StreamEvent) {
+        switch event {
+        case let .didUpdateLocations(locations):
+            delegate?.locationManager?(fakeInstance, didUpdateLocations: locations)
+        case .didResume:
+            delegate?.locationManagerDidResumeLocationUpdates?(fakeInstance)
+        case .didPaused:
+            delegate?.locationManagerDidPauseLocationUpdates?(fakeInstance)
+        case let .didFailed(error):
+            delegate?.locationManager?(fakeInstance, didFailWithError: error)
+        }
+    }
+    
+    public func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws {
+        if let error = onRequestValidationForTemporaryAccuracy(purposeKey) {
+            throw error
+        }
+    }
+    
     public func validatePlistConfigurationOrThrow(permission: LocationPermission) throws {
         if let error = onValidatePlistConfiguration(permission) {
             throw error
@@ -59,7 +79,8 @@ public class MockedLocationManager: LocationManagerProtocol {
     }
     
     public func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)? = nil) {
-        
+        self.accuracyAuthorization = .fullAccuracy
+        completion?(nil)
     }
     
     public func startUpdatingLocation() {

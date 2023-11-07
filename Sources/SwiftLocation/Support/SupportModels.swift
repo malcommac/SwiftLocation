@@ -60,7 +60,9 @@ public enum AccuracyFilter {
     ///   - filters: filters used for check.
     /// - Returns: `true` if location respect filters passed.
     static func isLocation(_ location: CLLocation, validForFilters filters: AccuracyFilters) -> Bool {
-        filters.first { $0.isValidForLocation(location) == false } != nil
+        let firstInvalidFilter = filters.first { $0.isValidForLocation(location) == false }
+        let isValid = (firstInvalidFilter == nil)
+        return isValid
     }
     
     /// Return if location match `self` filter.
@@ -70,13 +72,13 @@ public enum AccuracyFilter {
     private func isValidForLocation(_ location: CLLocation) -> Bool {
         switch self {
         case let .horizontal(value):
-            location.horizontalAccuracy >= value
+            location.horizontalAccuracy <= value
         case let .vertical(value):
-            location.verticalAccuracy >= value
+            location.verticalAccuracy <= value
         case let .speed(value):
-            location.speedAccuracy >= value
+            location.speedAccuracy <= value
         case let .course(value):
-            location.courseAccuracy >= value
+            location.courseAccuracy <= value
         }
     }
     

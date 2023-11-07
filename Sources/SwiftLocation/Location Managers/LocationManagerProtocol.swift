@@ -22,6 +22,7 @@ public protocol LocationManagerProtocol {
     // MARK: - Location Permissions
     
     func validatePlistConfigurationOrThrow(permission: LocationPermission) throws
+    func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws
     func requestWhenInUseAuthorization()
     func requestAlwaysAuthorization()
     func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)?)

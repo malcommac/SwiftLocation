@@ -39,11 +39,11 @@ extension Tasks {
                     return // none of the locations respect passed filters
                 }
                 
-                continuation?.resume(returning: .didUpdateLocations(locations))
+                continuation?.resume(returning: .didUpdateLocations(filteredLocations))
                 continuation = nil
                 cancellable?.cancel(task: self)
             case let .didFailWithError(error):
-                continuation?.resume(throwing: error)
+                continuation?.resume(returning: .didFailed(error))
                 continuation = nil
                 cancellable?.cancel(task: self)
             default:
@@ -52,8 +52,6 @@ extension Tasks {
         }
         
         public func didCancelled() {
-            timer?.invalidate()
-            timer = nil
             continuation = nil
         }
         
@@ -62,9 +60,9 @@ extension Tasks {
                 return
             }
             
-            self.timer = Timer(timeInterval: timeout, repeats: false, block: { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
                 self?.continuation?.resume(throwing: Errors.timeout)
-            })
+            }
         }
     }
     

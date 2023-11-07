@@ -180,6 +180,7 @@ public final class Location {
     ///
     /// - Parameter permission: type of permission you would to require.
     /// - Returns: obtained status.
+    @discardableResult
     public func requestPermission(_ permission: LocationPermission) async throws -> CLAuthorizationStatus {
         try locationManager.validatePlistConfigurationOrThrow(permission: permission)
         
@@ -199,11 +200,9 @@ public final class Location {
     ///
     /// - Parameter key: purpose key used to prompt the user. Must be defined into the `Info.plist`.
     /// - Returns: obtained status.
+    @discardableResult
     public func requestTemporaryPrecisionAuthorization(purpose key: String) async throws -> CLAccuracyAuthorization {
-        guard Bundle.hasTemporaryPermission(purposeKey: key) else {
-            throw Errors.plistNotConfigured
-        }
-     
+        try locationManager.validatePlistConfigurationForTemporaryAccuracy(purposeKey: key)
         return try await requestTemporaryPrecisionPermission(purposeKey: key)
     }
     
@@ -212,7 +211,7 @@ public final class Location {
     /// Start receiving changes of the locations with a stream.
     ///
     /// - Returns: events received from the location manager.
-    public func startUpdatingLocation() async throws -> Tasks.ContinuousUpdateLocation.Stream {
+    public func startMonitoringLocations() async throws -> Tasks.ContinuousUpdateLocation.Stream {
         guard locationManager.authorizationStatus != .notDetermined else {
             throw Errors.authorizationRequired
         }

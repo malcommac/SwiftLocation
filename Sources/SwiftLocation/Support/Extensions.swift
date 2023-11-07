@@ -25,6 +25,12 @@ extension CLLocationManager: LocationManagerProtocol {
         }
     }
     
+    public func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws {
+        guard Bundle.hasTemporaryPermission(purposeKey: purposeKey) else {
+            throw Errors.plistNotConfigured
+        }
+    }
+    
 }
 
 extension CLAccuracyAuthorization: CustomStringConvertible {

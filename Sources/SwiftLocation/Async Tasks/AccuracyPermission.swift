@@ -29,11 +29,6 @@ extension Tasks {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }
                 
-                guard Bundle.hasTemporaryPermission(purposeKey: purposeKey) else {
-                    continuation.resume(throwing: Errors.plistNotConfigured)
-                    return
-                }
-                
                 guard instance.locationManager.locationServicesEnabled() else {
                     continuation.resume(throwing: Errors.locationServicesDisabled)
                     return
