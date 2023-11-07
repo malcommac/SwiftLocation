@@ -36,11 +36,6 @@ extension Tasks {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }
                 
-                guard Bundle.hasWhenInUsePermission() else {
-                    continuation.resume(throwing: Errors.plistNotConfigured)
-                    return
-                }
-                
                 let isAuthorized = instance.authorizationStatus != .notDetermined
                 guard !isAuthorized else {
                     continuation.resume(returning: instance.authorizationStatus)
@@ -56,11 +51,6 @@ extension Tasks {
         func requestAlwaysPermission() async throws -> CLAuthorizationStatus {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }
-                
-                guard Bundle.hasAlwaysPermission() else {
-                    continuation.resume(throwing: Errors.plistNotConfigured)
-                    return
-                }
                 
                 let isAuthorized = instance.authorizationStatus != .notDetermined && instance.authorizationStatus != .authorizedWhenInUse
                 guard !isAuthorized else {

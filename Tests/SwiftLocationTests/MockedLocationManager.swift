@@ -33,12 +33,17 @@ public class MockedLocationManager: LocationManagerProtocol {
     public var activityType: CLActivityType = .other
     public var distanceFilter: CLLocationDistance = kCLDistanceFilterNone
     
-    public var onValidatePlistConfiguration: ((_ permission: LocationPermission) throws -> Void) = { _ in }
+    public var onValidatePlistConfiguration: ((_ permission: LocationPermission) -> Error?) = { _ in
+        return nil
+    }
+    
     public var onRequestWhenInUseAuthorization: (() -> CLAuthorizationStatus) = { .notDetermined }
     public var onRequestAlwaysAuthorization: (() -> CLAuthorizationStatus) = { .notDetermined }
 
     public func validatePlistConfigurationOrThrow(permission: LocationPermission) throws {
-        try onValidatePlistConfiguration(permission)
+        if let error = onValidatePlistConfiguration(permission) {
+            throw error
+        }
     }
     
     public func locationServicesEnabled() -> Bool {

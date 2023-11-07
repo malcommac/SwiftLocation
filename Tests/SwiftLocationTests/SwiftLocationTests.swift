@@ -4,12 +4,13 @@ import CoreLocation
 
 final class SwiftLocationTests: XCTestCase {
     
-    private var mockLocationManager = MockedLocationManager()
-    private var location: Location?
+    private var mockLocationManager: MockedLocationManager!
+    private var location: Location!
     
     override func setUp() {
         super.setUp()
         
+        self.mockLocationManager = MockedLocationManager()
         self.location = Location(locationManager: mockLocationManager)
     }
     
@@ -19,7 +20,7 @@ final class SwiftLocationTests: XCTestCase {
     func testMonitoringLocationServicesEnabled() async throws {
         let expectedValues = simulateLocationServicesChanges()
         var idx = 0
-        for await event in await self.location!.startMonitoringLocationServices() {
+        for await event in await self.location.startMonitoringLocationServices() {
             print("Location services enabled did change: \(event.isLocationEnabled ? "enabled" : "disabled")")
             XCTAssertEqual(expectedValues[idx], event.isLocationEnabled, "Failed to get correct values from location services enabled")
             idx += 1
@@ -33,7 +34,7 @@ final class SwiftLocationTests: XCTestCase {
     func testMonitoringAuthorizationStatus() async throws {
         let expectedValues = simulateAuthorizationStatusChanges()
         var idx = 0
-        for await event in await self.location!.startMonitoringAuthorization() {
+        for await event in await self.location.startMonitoringAuthorization() {
             print("Authorization status did change: \(event.authorizationStatus.description)")
             XCTAssertEqual(expectedValues[idx], event.authorizationStatus, "Failed to get correct values from authorization status")
             idx += 1
@@ -47,7 +48,7 @@ final class SwiftLocationTests: XCTestCase {
     func testMonitoringAccuracyAuthorization() async throws {
         let expectedValues = simulateAccuracyAuthorizationCnanges()
         var idx = 0
-        for await event in await self.location!.startMonitoringAccuracyAuthorization() {
+        for await event in await self.location.startMonitoringAccuracyAuthorization() {
             print("Accuracy authorization did change: \(event.accuracyAuthorization.description)")
             XCTAssertEqual(expectedValues[idx], event.accuracyAuthorization, "Failed to get correct values from accuracy authorization status")
             idx += 1
@@ -57,54 +58,70 @@ final class SwiftLocationTests: XCTestCase {
         }
     }
     
-    /// Test request for permission in several different scenarios.
-    func testRequestPermissions() async throws {
+    /// Test request for permission with failure in plist configuration
+    func testRequestPermissionsFailureWithPlistConfiguration() async throws {
         mockLocationManager.onValidatePlistConfiguration = { permission in
             switch permission {
             case .always:
-                throw Errors.plistNotConfigured
+                Errors.plistNotConfigured
             case .whenInUse:
-                break
+                nil
             }
         }
         
-        // Missing plist configuration in always request.
         do {
-            let newStatus = try await location!.requestPermission(.always)
+            let newStatus = try await location.requestPermission(.always)
             XCTFail("Permission should fail due to missing plist while it returned \(newStatus)")
-        } catch {
-            // Passed
-        }
-        
-        // Restricted status in when-in-use request.
+        } catch { }
+    }
+    
+    func testRequestPermissionWhenInUseSuccess() async throws {
         do {
-            let expectedStatus: CLAuthorizationStatus = .restricted
+            let expectedStatus = CLAuthorizationStatus.restricted
             mockLocationManager.onRequestWhenInUseAuthorization = {
                 expectedStatus
             }
-            let newStatus = try await location?.requestPermission(.whenInUse)
+            let newStatus = try await location.requestPermission(.whenInUse)
             XCTAssertEqual(expectedStatus, newStatus)
         } catch {
             XCTFail("Request should not fail: \(error.localizedDescription)")
         }
+    }
         
-        // When in use, full access
+    func testRequestAlwaysSuccess() async throws {
         do {
-            let expectedStatus: CLAuthorizationStatus = .authorizedAlways
-            
-            mockLocationManager.onValidatePlistConfiguration = { _ in
-                return
-            }
-            
+            let expectedStatus = CLAuthorizationStatus.authorizedAlways
             mockLocationManager.onRequestWhenInUseAuthorization = {
                 expectedStatus
             }
             
-            let newStatus = try await location?.requestPermission(.always)
+            let newStatus = try await location.requestPermission(.always)
             XCTAssertEqual(expectedStatus, newStatus)
         } catch {
             XCTFail("Request should not fail: \(error.localizedDescription)")
         }
+    }
+    
+    func testMonitorAuthorizationWithPermissionRequest() async throws {
+        mockLocationManager.authorizationStatus = .notDetermined
+        XCTAssertEqual(location.authorizationStatus, .notDetermined)
+    
+        let exp = XCTestExpectation()
+        
+        let initialStatus = mockLocationManager.authorizationStatus
+        Task.detached {
+            for await event in await self.location.startMonitoringAuthorization() {
+                print("Authorization switched from \(initialStatus) to \(event.authorizationStatus.description)")
+                exp.fulfill()
+            }
+        }
+
+        sleep(1)
+        mockLocationManager.onRequestWhenInUseAuthorization = { .authorizedWhenInUse }
+        let newStatus = try await location.requestPermission(.whenInUse)
+        XCTAssertEqual(newStatus, .authorizedWhenInUse)
+        
+        await fulfillment(of: [exp])
     }
     
     // MARK: - Private Functions
