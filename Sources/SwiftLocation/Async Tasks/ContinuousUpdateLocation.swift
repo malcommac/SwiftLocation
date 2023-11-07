@@ -11,15 +11,23 @@ extension Tasks {
             case didResume
             case didUpdateLocations(_ locations: [CLLocation])
             case didFailed(_ error: Error)
+            
+            /// Return the location received by the event if it's a location event.
+            public var location: CLLocation? {
+                guard case .didUpdateLocations(let locations) = self else {
+                    return nil
+                }
+                return locations.last
+            }
         }
         
         public let uuid = UUID()
         public var stream: Stream.Continuation?
         public var cancellable: CancellableTask?
         
-        private weak var instance: SwiftLocation?
+        private weak var instance: Location?
         
-        init(instance: SwiftLocation) {
+        init(instance: Location) {
             self.instance = instance
         }
         

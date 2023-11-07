@@ -10,9 +10,9 @@ extension Tasks {
         public var cancellable: CancellableTask?
         var continuation: Continuation?
         
-        private weak var instance: SwiftLocation?
+        private weak var instance: Location?
         
-        init(instance: SwiftLocation) {
+        init(instance: Location) {
             self.instance = instance
         }
         

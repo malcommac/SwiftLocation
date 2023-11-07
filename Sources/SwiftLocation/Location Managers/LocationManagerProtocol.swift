@@ -1,7 +1,12 @@
 import Foundation
 import CoreLocation
 
+/// The `CLLocationManager` implementation used to provide a mocked version
+/// of the system location manager used to write tests.
 public protocol LocationManagerProtocol {
+    
+    // MARK: - Delegate
+    
     var delegate: CLLocationManagerDelegate? { get set }
     
     // MARK: - Authorization
@@ -16,6 +21,7 @@ public protocol LocationManagerProtocol {
     
     // MARK: - Location Permissions
     
+    func validatePlistConfigurationOrThrow(permission: LocationPermission) throws
     func requestWhenInUseAuthorization()
     func requestAlwaysAuthorization()
     func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)?)

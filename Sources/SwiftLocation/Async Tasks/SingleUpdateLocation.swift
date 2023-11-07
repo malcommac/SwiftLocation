@@ -13,9 +13,9 @@ extension Tasks {
         private var accuracyFilters: AccuracyFilters?
         private var timeout: TimeInterval?
         private var timer: Timer?
-        private weak var instance: SwiftLocation?
+        private weak var instance: Location?
         
-        init(instance: SwiftLocation, accuracy: AccuracyFilters?, timeout: TimeInterval?) {
+        init(instance: Location, accuracy: AccuracyFilters?, timeout: TimeInterval?) {
             self.instance = instance
             self.accuracyFilters = accuracy
             self.timeout = timeout

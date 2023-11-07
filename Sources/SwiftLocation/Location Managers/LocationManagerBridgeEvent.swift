@@ -1,6 +1,7 @@
 import Foundation
 import CoreLocation
 
+/// This is the list of events who can be received by any task.
 public enum LocationManagerBridgeEvent {
     
     // MARK: - Authorization

@@ -1,36 +1,28 @@
 import Foundation
 import CoreLocation
 
+// MARK: - CoreLocation Extensions
+
 extension CLLocationManager: LocationManagerProtocol {
     
     public func locationServicesEnabled() -> Bool {
         CLLocationManager.locationServicesEnabled()
     }
-    
-}
-
-extension Bundle {
-    
-    private static let always = "NSLocationAlwaysUsageDescription"
-    private static let whenInUse = "NSLocationAlwaysAndWhenInUseUsageDescription"
-    private static let temporary = "NSLocationTemporaryUsageDescriptionDictionary"
-    
-    static func hasTemporaryPermission(purposeKey: String) -> Bool {
-        guard let node = Bundle.main.object(forInfoDictionaryKey: temporary) as? NSDictionary,
-              let value = node.object(forKey: purposeKey) as? String,
-              value.isEmpty == false else {
-            return false
+ 
+    /// Evaluate the `Info.plist` file data and throw exceptions in case of misconfiguration.
+    ///
+    /// - Parameter permission: permission you would to obtain.
+    public func validatePlistConfigurationOrThrow(permission: LocationPermission) throws {
+        switch permission {
+        case .always:
+            if !Bundle.hasAlwaysPermission() {
+                throw Errors.plistNotConfigured
+            }
+        case .whenInUse:
+            if !Bundle.hasWhenInUsePermission() {
+                throw Errors.plistNotConfigured
+            }
         }
-        return true
-    }
-    
-    static func hasWhenInUsePermission() -> Bool {
-        !(Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
-    }
-    
-    static func hasAlwaysPermission() -> Bool {
-        !(Bundle.main.object(forInfoDictionaryKey: always) as? String ?? "").isEmpty &&
-        !( Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
     }
     
 }
@@ -70,6 +62,34 @@ extension CLAuthorizationStatus: CustomStringConvertible {
         default:
             false
         }
+    }
+    
+}
+
+// MARK: - Foundation Extensions
+
+extension Bundle {
+    
+    private static let always = "NSLocationAlwaysUsageDescription"
+    private static let whenInUse = "NSLocationAlwaysAndWhenInUseUsageDescription"
+    private static let temporary = "NSLocationTemporaryUsageDescriptionDictionary"
+    
+    static func hasTemporaryPermission(purposeKey: String) -> Bool {
+        guard let node = Bundle.main.object(forInfoDictionaryKey: temporary) as? NSDictionary,
+              let value = node.object(forKey: purposeKey) as? String,
+              value.isEmpty == false else {
+            return false
+        }
+        return true
+    }
+    
+    static func hasWhenInUsePermission() -> Bool {
+        !(Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
+    }
+    
+    static func hasAlwaysPermission() -> Bool {
+        !(Bundle.main.object(forInfoDictionaryKey: always) as? String ?? "").isEmpty &&
+        !( Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
     }
     
 }

@@ -17,10 +17,10 @@ extension Tasks {
         public var stream: Stream.Continuation?
         public var cancellable: CancellableTask?
         
-        private weak var instance: SwiftLocation?
+        private weak var instance: Location?
         private(set) var region: CLRegion
         
-        init(instance: SwiftLocation, region: CLRegion) {
+        init(instance: Location, region: CLRegion) {
             self.instance = instance
             self.region = region
         }
