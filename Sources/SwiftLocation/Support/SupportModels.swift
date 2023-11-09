@@ -39,7 +39,9 @@ public enum AccuracyFilter {
     case speed(CLLocationSpeedAccuracy)
     /// Filter for the accuracy of the course value, measured in degrees.
     case course(CLLocationDirectionAccuracy)
-    
+    /// Filter using a custom function.
+    case custom(_ isIncluded: ((CLLocation) -> Bool))
+                
     // MARK: - Internal Functions
     
     /// Return a filtered array of the location which match passed filters.
@@ -79,6 +81,8 @@ public enum AccuracyFilter {
             location.speedAccuracy <= value
         case let .course(value):
             location.courseAccuracy <= value
+        case let .custom(isIncluded):
+            isIncluded(location)
         }
     }
     

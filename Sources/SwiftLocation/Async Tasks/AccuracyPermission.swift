@@ -4,17 +4,28 @@ import CoreLocation
 extension Tasks {
     
     public final class AccuracyPermission: AnyTask {
+        
+        // MARK: - Support Structures
+
         public typealias Continuation = CheckedContinuation<CLAccuracyAuthorization, Error>
         
+        // MARK: - Public Properties
+
         public let uuid = UUID()
         public var cancellable: CancellableTask?
         var continuation: Continuation?
         
+        // MARK: - Private Properties
+
         private weak var instance: Location?
         
+        // MARK: - Initialization
+
         init(instance: Location) {
             self.instance = instance
         }
+        
+        // MARK: - Functions
         
         public func receivedLocationManagerEvent(_ event: LocationManagerBridgeEvent) {
             switch event {
@@ -30,13 +41,13 @@ extension Tasks {
                 guard let instance = self.instance else { return }
                 
                 guard instance.locationManager.locationServicesEnabled() else {
-                    continuation.resume(throwing: Errors.locationServicesDisabled)
+                    continuation.resume(throwing: LocationErrors.locationServicesDisabled)
                     return
                 }
                 
                 let authorizationStatus = instance.authorizationStatus
                 guard authorizationStatus != .notDetermined else {
-                    continuation.resume(throwing: Errors.authorizationRequired)
+                    continuation.resume(throwing: LocationErrors.authorizationRequired)
                     return
                 }
                 

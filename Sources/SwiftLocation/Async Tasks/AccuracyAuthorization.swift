@@ -11,7 +11,7 @@ extension Tasks {
         public typealias Stream = AsyncStream<StreamEvent>
 
         /// The event produced by the stream.
-        public enum StreamEvent {
+        public enum StreamEvent: CustomStringConvertible, Equatable {
             
             /// A new change in accuracy level authorization has been captured.
             case didUpdateAccuracyAuthorization(_ accuracyAuthorization: CLAccuracyAuthorization)
@@ -23,6 +23,14 @@ extension Tasks {
                     accuracyAuthorization
                 }
             }
+            
+            public var description: String {
+                switch self {
+                case .didUpdateAccuracyAuthorization:
+                    return "didUpdateAccuracyAuthorization"
+                }
+            }
+            
         }
         
         // MARK: - Public Properties

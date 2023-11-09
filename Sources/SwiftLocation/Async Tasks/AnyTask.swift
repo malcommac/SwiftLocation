@@ -11,6 +11,7 @@ public protocol AnyTask: AnyObject {
     func receivedLocationManagerEvent(_ event: LocationManagerBridgeEvent)
     func didCancelled()
     func willStart()
+    
 }
 
 public extension AnyTask {
@@ -20,12 +21,13 @@ public extension AnyTask {
     }
     
     func didCancelled() { }
-    
     func willStart() { }
     
 }
 
 
 public protocol CancellableTask: AnyObject {
+    
     func cancel(task: any AnyTask)
+    
 }

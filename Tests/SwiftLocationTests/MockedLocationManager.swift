@@ -54,6 +54,45 @@ public class MockedLocationManager: LocationManagerProtocol {
         }
     }
     
+    public func updateSignificantLocation(event: Tasks.SignificantLocationMonitoring.StreamEvent) {
+        switch event {
+        case let .didFailWithError(error):
+            delegate?.locationManager?(fakeInstance, didFailWithError: error)
+        case .didPaused:
+            delegate?.locationManagerDidPauseLocationUpdates?(fakeInstance)
+        case .didResume:
+            delegate?.locationManagerDidResumeLocationUpdates?(fakeInstance)
+        case let .didUpdateLocations(locations):
+            delegate?.locationManager?(fakeInstance, didUpdateLocations: locations)
+        }
+    }
+    
+    public func updateVisits(event: Tasks.VisitsMonitoring.StreamEvent) {
+        switch event {
+        case let .didVisit(visit):
+            delegate?.locationManager?(fakeInstance, didVisit: visit)
+        case let .didFailWithError(error):
+            delegate?.locationManager?(fakeInstance, didFailWithError: error)
+        }
+    }
+    
+    public func updateRegionMonitoring(event: Tasks.RegionMonitoring.StreamEvent) {
+        switch event {
+        case let .didEnterTo(region):
+            delegate?.locationManager?(fakeInstance, didEnterRegion: region)
+            
+        case let .didExitTo(region):
+            delegate?.locationManager?(fakeInstance, didExitRegion: region)
+            
+        case let .didStartMonitoringFor(region):
+            delegate?.locationManager?(fakeInstance, didStartMonitoringFor: region)
+            
+        case let .monitoringDidFailFor(region, error):
+            delegate?.locationManager?(fakeInstance, monitoringDidFailFor: region, withError: error)
+            
+        }
+    }
+    
     public func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws {
         if let error = onRequestValidationForTemporaryAccuracy(purposeKey) {
             throw error

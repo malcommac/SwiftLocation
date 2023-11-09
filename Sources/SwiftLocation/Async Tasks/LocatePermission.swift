@@ -4,17 +4,28 @@ import CoreLocation
 extension Tasks {
     
     public final class LocatePermission: AnyTask {
+        
+        // MARK: - Support Structures
+
         public typealias Continuation = CheckedContinuation<CLAuthorizationStatus, Error>
         
+        // MARK: - Public Properties
+
         public let uuid = UUID()
         public var cancellable: CancellableTask?
         var continuation: Continuation?
         
+        // MARK: - Private Properties
+
         private weak var instance: Location?
         
+        // MARK: - Initialization
+
         init(instance: Location) {
             self.instance = instance
         }
+        
+        // MARK: - Functions
         
         public func receivedLocationManagerEvent(_ event: LocationManagerBridgeEvent) {
             switch event {

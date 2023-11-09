@@ -63,7 +63,7 @@ final class SwiftLocationTests: XCTestCase {
         mockLocationManager.onValidatePlistConfiguration = { permission in
             switch permission {
             case .always:
-                Errors.plistNotConfigured
+                LocationErrors.plistNotConfigured
             case .whenInUse:
                 nil
             }
@@ -91,7 +91,7 @@ final class SwiftLocationTests: XCTestCase {
     func testRequestAlwaysSuccess() async throws {
         do {
             let expectedStatus = CLAuthorizationStatus.authorizedAlways
-            mockLocationManager.onRequestWhenInUseAuthorization = {
+            mockLocationManager.onRequestAlwaysAuthorization = {
                 expectedStatus
             }
             
@@ -137,12 +137,12 @@ final class SwiftLocationTests: XCTestCase {
         // Test misconfigured Info.plist file
         do {
             mockLocationManager.onRequestValidationForTemporaryAccuracy = { purposeKey in
-                Errors.plistNotConfigured
+                LocationErrors.plistNotConfigured
             }
             let _ = try await location.requestTemporaryPrecisionAuthorization(purpose: "test")
             XCTFail("This should fail")
         } catch {
-            XCTAssertEqual(error as? Errors, Errors.plistNotConfigured)
+            XCTAssertEqual(error as? LocationErrors, LocationErrors.plistNotConfigured)
         }
         
         // Test correct configuration
@@ -182,9 +182,9 @@ final class SwiftLocationTests: XCTestCase {
         try await location.requestPermission(.whenInUse)
         
         // Check the return of an error
-        simulateRequestLocationDelayedResponse(event: .didFailed(Errors.notAuthorized))
+        simulateRequestLocationDelayedResponse(event: .didFailed(LocationErrors.notAuthorized))
         let e1 = try await self.location.requestLocation()
-        XCTAssertEqual(e1.error as? Errors, Errors.notAuthorized)
+        XCTAssertEqual(e1.error as? LocationErrors, LocationErrors.notAuthorized)
         
         // Check the return of several location
         let now = Date()
@@ -218,7 +218,7 @@ final class SwiftLocationTests: XCTestCase {
                 .horizontal(100)
             ], timeout: 2)
         } catch {
-            XCTAssertEqual(error as? Errors, Errors.timeout)
+            XCTAssertEqual(error as? LocationErrors, LocationErrors.timeout)
         }
         
         // Check the return of some non filtered locations
@@ -259,8 +259,106 @@ final class SwiftLocationTests: XCTestCase {
         }
 
     }
+    
+    func testMonitorCLRegion() async throws {
+        let (expectedValues, region) = simulateRegions()
+        var idx = 0
+        for await event in try await self.location.startMonitoring(region: region) {
+            print("Monitoring region event received: \(event.description)")
+            XCTAssertEqual(expectedValues[idx], event)
+            idx += 1
+            if idx == expectedValues.count {
+                break
+            }
+        }
+    }
+    
+    func testMonitoringVisits() async throws {
+        let expectedValues = simulateVisits()
+        var idx = 0
+        for await event in await self.location.startMonitoringVisits() {
+            print("Monitoring region event received: \(event.description)")
+            XCTAssertEqual(expectedValues[idx], event)
+            idx += 1
+            if idx == expectedValues.count {
+                break
+            }
+        }
+    }
+    
+    func testMonitoringSignificantLocationChanges() async throws {
+        let expectedValues = simulateSignificantLocations()
+        var idx = 0
+        for await event in await self.location.startMonitoringSignificantLocationChanges() {
+            print("Visits received: \(event.description)")
+            XCTAssertEqual(expectedValues[idx], event)
+            idx += 1
+            if idx == expectedValues.count {
+                break
+            }
+        }
+    }
+    
+    func testAllowsBackgroundLocationUpdates() async throws {
+        location.allowsBackgroundLocationUpdates = true
+        XCTAssertEqual(location.allowsBackgroundLocationUpdates, location.locationManager.allowsBackgroundLocationUpdates)
+    }
         
     // MARK: - Private Functions
+    
+    private func simulateSignificantLocations() -> [Tasks.SignificantLocationMonitoring.StreamEvent] {
+        let sequence: [Tasks.SignificantLocationMonitoring.StreamEvent] = [
+            .didFailWithError(LocationErrors.timeout),
+            .didResume,
+            .didResume,
+            .didUpdateLocations([
+                CLLocation(
+                    coordinate: CLLocationCoordinate2D(latitude: 41.915001, longitude: 12.577772),
+                    altitude: 100, horizontalAccuracy: 50, verticalAccuracy: 20, timestamp: Date()
+                ),
+                CLLocation(
+                    coordinate: CLLocationCoordinate2D(latitude: 41.8, longitude: 12.7),
+                    altitude: 97, horizontalAccuracy: 30, verticalAccuracy: 10, timestamp: Date()
+                )
+            ])
+        ]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            for event in sequence {
+                self.mockLocationManager.updateSignificantLocation(event: event)
+            }
+        })
+        return sequence
+    }
+    
+    private func simulateVisits() -> [Tasks.VisitsMonitoring.StreamEvent] {
+        let sequence: [Tasks.VisitsMonitoring.StreamEvent] = [
+            .didVisit(CLVisit()),
+            .didFailWithError(LocationErrors.timeout),
+            .didVisit(CLVisit())
+        ]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            for event in sequence {
+                self.mockLocationManager.updateVisits(event: event)
+            }
+        })
+        return sequence
+    }
+    
+    private func simulateRegions() -> (sequence: [Tasks.RegionMonitoring.StreamEvent], region: CLRegion) {
+        let region = CLBeaconRegion(uuid: UUID(), identifier: "beacon_1")
+        let sequence: [Tasks.RegionMonitoring.StreamEvent] = [
+            .didStartMonitoringFor(region: region),
+            .didEnterTo(region: region),
+            .didExitTo(region: region),
+            .monitoringDidFailFor(region: region, error: LocationErrors.timeout)
+        ]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            for event in sequence {
+                self.mockLocationManager.updateRegionMonitoring(event: event)
+            }
+        })
+        return (sequence, region)
+    }
     
     private func simulateRequestLocationDelayedResponse(event: Tasks.ContinuousUpdateLocation.StreamEvent) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
@@ -282,7 +380,7 @@ final class SwiftLocationTests: XCTestCase {
             ]),
             .didPaused,
             .didResume,
-            .didFailed(Errors.notAuthorized),
+            .didFailed(LocationErrors.notAuthorized),
             .didUpdateLocations([
                 CLLocation(
                     coordinate: CLLocationCoordinate2D(latitude: 40, longitude: 13),

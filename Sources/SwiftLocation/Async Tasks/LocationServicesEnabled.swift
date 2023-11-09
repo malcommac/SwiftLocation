@@ -11,7 +11,7 @@ extension Tasks {
         public typealias Stream = AsyncStream<StreamEvent>
         
         /// The event produced by the stream.
-        public enum StreamEvent {
+        public enum StreamEvent: CustomStringConvertible, Equatable {
             
             /// A new change in the location services status has been detected.
             case didChangeLocationEnabled(_ enabled: Bool)
@@ -23,6 +23,15 @@ extension Tasks {
                     enabled
                 }
             }
+            
+            public var description: String {
+                switch self {
+                case .didChangeLocationEnabled:
+                    return "didChangeLocationEnabled"
+                    
+                }
+            }
+            
         }
         
         // MARK: - Public Properties

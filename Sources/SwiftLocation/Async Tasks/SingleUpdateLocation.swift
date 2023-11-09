@@ -4,23 +4,33 @@ import CoreLocation
 extension Tasks {
     
     public final class SingleUpdateLocation: AnyTask {
+        
+        // MARK: - Support Structures
+
         public typealias Continuation = CheckedContinuation<ContinuousUpdateLocation.StreamEvent, Error>
         
+        // MARK: - Public Properties
+
         public let uuid = UUID()
         public var cancellable: CancellableTask?
         var continuation: Continuation?
         
+        // MARK: - Private Properties
+
         private var accuracyFilters: AccuracyFilters?
         private var timeout: TimeInterval?
-        private var timer: Timer?
         private weak var instance: Location?
         
+        // MARK: - Initialization
+
         init(instance: Location, accuracy: AccuracyFilters?, timeout: TimeInterval?) {
             self.instance = instance
             self.accuracyFilters = accuracy
             self.timeout = timeout
         }
         
+        // MARK: - Functions
+
         func run() async throws -> ContinuousUpdateLocation.StreamEvent {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }
@@ -61,7 +71,7 @@ extension Tasks {
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
-                self?.continuation?.resume(throwing: Errors.timeout)
+                self?.continuation?.resume(throwing: LocationErrors.timeout)
             }
         }
     }

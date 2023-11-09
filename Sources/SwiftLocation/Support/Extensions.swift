@@ -16,18 +16,18 @@ extension CLLocationManager: LocationManagerProtocol {
         switch permission {
         case .always:
             if !Bundle.hasAlwaysPermission() {
-                throw Errors.plistNotConfigured
+                throw LocationErrors.plistNotConfigured
             }
         case .whenInUse:
             if !Bundle.hasWhenInUsePermission() {
-                throw Errors.plistNotConfigured
+                throw LocationErrors.plistNotConfigured
             }
         }
     }
     
     public func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws {
         guard Bundle.hasTemporaryPermission(purposeKey: purposeKey) else {
-            throw Errors.plistNotConfigured
+            throw LocationErrors.plistNotConfigured
         }
     }
     

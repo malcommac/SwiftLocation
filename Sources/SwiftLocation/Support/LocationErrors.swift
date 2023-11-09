@@ -1,7 +1,7 @@
 import Foundation
 
 /// Throwable errors
-enum Errors: LocalizedError {
+enum LocationErrors: LocalizedError {
     
     /// Info.plist authorization are not correctly defined.
     case plistNotConfigured

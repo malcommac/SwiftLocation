@@ -213,11 +213,11 @@ public final class Location {
     /// - Returns: events received from the location manager.
     public func startMonitoringLocations() async throws -> Tasks.ContinuousUpdateLocation.Stream {
         guard locationManager.authorizationStatus != .notDetermined else {
-            throw Errors.authorizationRequired
+            throw LocationErrors.authorizationRequired
         }
         
         guard locationManager.authorizationStatus.canMonitorLocation else {
-            throw Errors.notAuthorized
+            throw LocationErrors.notAuthorized
         }
         
         let task = Tasks.ContinuousUpdateLocation(instance: self)
