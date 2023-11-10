@@ -1,4 +1,3 @@
-
 # What's SwiftLocation
 
 **SwiftLocation is a lightweight wrapper around Apple's CoreLocation framework that supports the new Swift Concurrency model.**  
@@ -17,14 +16,25 @@ The features from version 5.x will be included as separate downloadable modules 
 
 SwiftLocation is quite straightforward to use; simply create your own Location instance and utilize the necessary methods.  
 
-- Service Location Status
-- Authorization Status
-- Accuracy Authorization Level
-- Request Location Permission
-- Continous Location Monitoring
-- Request One-Shot User Location
-- Device Heading Monitoring
-- Beacon Ranging
+- [What's SwiftLocation](#whats-swiftlocation)
+	- [What's new in 6.0](#whats-new-in-60)
+	- [How to use it](#how-to-use-it)
+		- [Service Location Status](#service-location-status)
+		- [Authorization Status](#authorization-status)
+		- [Accuracy Authorization Level](#accuracy-authorization-level)
+		- [Request Location Permission](#request-location-permission)
+			- [Provide descriptions of how you use location services](#provide-descriptions-of-how-you-use-location-services)
+		- [Request Temporary Precision Permission](#request-temporary-precision-permission)
+		- [Continous Location Monitoring](#continous-location-monitoring)
+		- [Request One-Shot User Location](#request-one-shot-user-location)
+		- [Visits Monitoring](#visits-monitoring)
+		- [Significant Location Changes Monitoring](#significant-location-changes-monitoring)
+		- [Device Heading Monitoring](#device-heading-monitoring)
+		- [Beacon Ranging](#beacon-ranging)
+		- [Testing Suite \&  Mocked CLLocationManager](#testing-suite---mocked-cllocationmanager)
+	- [Installation](#installation)
+	- [Support And License](#support-and-license)
+	- [Contributing](#contributing)
 
 ### Service Location Status
 
