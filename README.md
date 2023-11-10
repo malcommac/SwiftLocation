@@ -23,7 +23,8 @@ SwiftLocation is quite straightforward to use; simply create your own Location i
 - Request Location Permission
 - Continous Location Monitoring
 - Request One-Shot User Location
-
+- Device Heading Monitoring
+- Beacon Ranging
 
 ### Service Location Status
 
@@ -112,7 +113,7 @@ for await event in try await location.startMonitoringLocations() {
     case let .didFailed(error):
     // an error has occurred   
     }
-	// break to stop the stream
+    // break to stop the stream
 }
 ```
 
@@ -170,3 +171,55 @@ for await event in await self.location.startMonitoringSignificantLocationChanges
 	// break to stop the stream
 }
 ```
+
+### Device Heading Monitoring
+
+To get updates about the current device's heading use the `AsyncStream` offered by `startUpdatingHeading()` method:
+
+```swift
+for await event in await self.location.startUpdatingHeading() {
+	// a new heading value has been generated
+}
+```
+
+### Beacon Ranging
+
+Beacon ranging is offered by the `AsyncStream`'s `startRangingBeacons()` method:
+
+```swift
+let constraint: CLBeaconIdentityConstraint = ...
+for await event in await location.startRangingBeacons(satisfying: constraint) {
+	// a new event has been generated
+}
+```
+
+### Testing Suite &  Mocked CLLocationManager
+
+SwiftLocation is distribuited with an extensive unit testing suite you can found into the `SwiftLocationTests` folder.  
+Inside the suite you will also found the `MockedLocationManager.swift` file which is a `CLLocationManager` mock class you can use to provide the testing suite for your application. By configuring and extending this file you will be able to mock results of location requests and monitoring directly in your host app.
+
+
+## Installation
+
+SwiftLocation is offered via Swift Package Manager.  
+Add it as a dependency in a Swift Package, and add it to your `Package.swift`:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/malcommac/SwiftLocation.git", from: "6.0")
+]
+```
+
+## Support And License
+
+This package was created and maintaned by [Daniele Margutti](https://www.linkedin.com/in/danielemargutti/).  
+It was distribuited via [MIT License](https://github.com/malcommac/SwiftLocation/blob/master/LICENSE.md).
+
+If you love this library and wanna encourage further development **consider becoming a sponsor of my work** via [Github Sponsorship](https://github.com/sponsors/malcommac).  
+
+## Contributing
+
+- If you need help or you'd like to ask a general question, open an issue.
+- If you found a bug, open an issue.
+- If you have a feature request, open an issue.
+- If you want to contribute, submit a pull request.
