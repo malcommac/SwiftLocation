@@ -26,4 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run Tests
-        run: swift test
+        run:
+        swift package generate-xcodeproj
+        xcodebuild test -project SwiftLocation.xcodeproj -scheme SwiftLocation -sdk iphonesimulator17.0 -destination "OS=17.0,name=iPhone 15"
