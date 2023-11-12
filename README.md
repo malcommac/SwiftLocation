@@ -15,7 +15,7 @@ You can manage location requests, region, and beacon monitoring directly using t
 The new 6.0 milestone is a completely rewritten version designed to support async/await optimally. We are also focused on supporting all CoreLocation features without creating an overwhelmed package.  
 All the features are supported by a complete unit tests suite.
 
-This new version is also distributed only via Swift Package Manager and requires Swift 5.x, iOS 14+.
+This new version is also distributed only via Swift Package Manager and requires Swift 5.5+, iOS 14+.
 
 The features from version 5.x will be included as separate downloadable modules later in the development process. Support for other Apple platforms (macOS, watchOS, visionOS) is currently underway.
 
