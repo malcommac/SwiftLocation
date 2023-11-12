@@ -1,3 +1,10 @@
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/swiftlocation-dark.png" width="350">
+  <img alt="logo-library" src="./assets/swiftlocation-light.png" width="350">
+</picture>
+</p>
+
 # What's SwiftLocation
 
 **SwiftLocation is a lightweight wrapper around Apple's CoreLocation framework that supports the new Swift Concurrency model.**  
