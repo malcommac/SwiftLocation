@@ -1,0 +1,25 @@
+name: ✅ Feature Request
+description: Request New SDK Features
+title: '[Feature]: '
+labels: ["feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to improve this project!
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you facing?
+      description: Help us understand what you're unable to accomplish, or what's difficult with your integration
+      placeholder: |
+        ex: I am unable to accomplish XYZ today, since the SDK does not allow me to...
+    validations:
+      required: true
+  - type: textarea
+    id: other_information
+    attributes:
+      label: Other Information
+      description: Any additional information you'd like to share?
+    validations:
+      required: false

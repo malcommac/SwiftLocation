@@ -1,0 +1,31 @@
+name: "SwiftLocation CI"
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - '*'
+
+concurrency:
+  group: ci
+  cancel-in-progress: true
+  
+jobs:
+  macos-run-tests:
+    name: Unit Tests (Xcode ${{ matrix.xcode }})
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ["15.0.1"]
+        include:
+          - xcode: "15.0.1"
+            macos: macOS-latest
+    runs-on: ${{ matrix.macos }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Tests
+        run: swift test

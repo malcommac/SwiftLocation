@@ -1,0 +1,51 @@
+name: 🐞 Bug report
+description: File a Bug Report for unexpected or incorrect SDK Behavior
+title: '[Bug]: '
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: platform_version
+    attributes:
+      label: Platform Version
+      placeholder: ex. iOS 15.4
+    validations:
+      required: true
+  - type: input
+    id: sdk_version
+    attributes:
+      label: SDK Version
+      placeholder: ex. 1.7.0
+    validations:
+      required: true
+  - type: input
+    id: xcode_version
+    attributes:
+      label: Xcode Version
+      placeholder: ex. Xcode 13.3
+    validations:
+      required: true
+  - type: textarea
+    id: repro_steps
+    attributes:
+      label: Steps To Reproduce
+      description: Please provide a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example)
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What was supposed to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Incorrect Behavior
+      description: What incorrect behavior happened instead?
+    validations:
+      required: true
