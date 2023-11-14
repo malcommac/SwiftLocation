@@ -48,9 +48,9 @@ extension Tasks {
             public var description: String {
                 switch self {
                 case .didVisit:
-                    "didVisit"
+                    return "didVisit"
                 case let .didFailWithError(error):
-                    "didFailWithError: \(error.localizedDescription)"
+                    return "didFailWithError: \(error.localizedDescription)"
                 }
             }
             

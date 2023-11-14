@@ -53,13 +53,13 @@ extension Tasks {
             public var description: String {
                 switch self {
                 case .didEnterTo:
-                    "didEnterRegion"
+                    return "didEnterRegion"
                 case .didExitTo:
-                    "didExitRegion"
+                    return "didExitRegion"
                 case .didStartMonitoringFor:
-                    "didStartMonitoring"
+                    return "didStartMonitoring"
                 case let .monitoringDidFailFor(_, error):
-                    "monitoringDidFail: \(error.localizedDescription)"
+                    return "monitoringDidFail: \(error.localizedDescription)"
                 }
             }
             

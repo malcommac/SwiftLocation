@@ -99,15 +99,15 @@ public enum AccuracyFilter {
     private func isValidForLocation(_ location: CLLocation) -> Bool {
         switch self {
         case let .horizontal(value):
-            location.horizontalAccuracy <= value
+            return location.horizontalAccuracy <= value
         case let .vertical(value):
-            location.verticalAccuracy <= value
+            return location.verticalAccuracy <= value
         case let .speed(value):
-            location.speedAccuracy <= value
+            return location.speedAccuracy <= value
         case let .course(value):
-            location.courseAccuracy <= value
+            return location.courseAccuracy <= value
         case let .custom(isIncluded):
-            isIncluded(location)
+            return isIncluded(location)
         }
     }
     
@@ -152,13 +152,13 @@ public enum LocationAccuracy {
     
     internal var level: CLLocationAccuracy {
         switch self {
-        case .best:                 kCLLocationAccuracyBest
-        case .nearestTenMeters:     kCLLocationAccuracyNearestTenMeters
-        case .hundredMeters:        kCLLocationAccuracyHundredMeters
-        case .kilometer:            kCLLocationAccuracyKilometer
-        case .threeKilometers:      kCLLocationAccuracyThreeKilometers
-        case .bestForNavigation:    kCLLocationAccuracyBestForNavigation
-        case .custom(let value):    value
+        case .best:                 return kCLLocationAccuracyBest
+        case .nearestTenMeters:     return kCLLocationAccuracyNearestTenMeters
+        case .hundredMeters:        return kCLLocationAccuracyHundredMeters
+        case .kilometer:            return kCLLocationAccuracyKilometer
+        case .threeKilometers:      return kCLLocationAccuracyThreeKilometers
+        case .bestForNavigation:    return kCLLocationAccuracyBestForNavigation
+        case .custom(let value):    return value
         }
     }
 }

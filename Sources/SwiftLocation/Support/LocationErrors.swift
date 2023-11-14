@@ -46,15 +46,15 @@ enum LocationErrors: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .plistNotConfigured:
-            "Missing authorization into Info.plist"
+            return "Missing authorization into Info.plist"
         case .locationServicesDisabled:
-            "Location services disabled/not available"
+            return "Location services disabled/not available"
         case .authorizationRequired:
-            "Location authorization not requested yet"
+            return "Location authorization not requested yet"
         case .notAuthorized:
-            "Not Authorized"
+            return "Not Authorized"
         case .timeout:
-            "Timeout"
+            return "Timeout"
         }
     }
     

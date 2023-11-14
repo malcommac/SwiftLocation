@@ -77,11 +77,15 @@ extension Tasks {
             public var description: String {
                 switch self {
                 #if os(iOS)
-                case .didPaused: "paused"
-                case .didResume: "resume"
+                case .didPaused: 
+                    return "paused"
+                case .didResume:
+                    return "resume"
                 #endif
-                case let .didFailed(e): "error \(e.localizedDescription)"
-                case let .didUpdateLocations(l): "\(l.count) locations"
+                case let .didFailed(e): 
+                    return "error \(e.localizedDescription)"
+                case let .didUpdateLocations(l):
+                    return "\(l.count) locations"
                 }
             }
             

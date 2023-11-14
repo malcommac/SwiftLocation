@@ -45,7 +45,7 @@ extension Tasks {
             var accuracyAuthorization: CLAccuracyAuthorization {
                 switch self {
                 case let .didUpdateAccuracyAuthorization(accuracyAuthorization):
-                    accuracyAuthorization
+                    return accuracyAuthorization
                 }
             }
             

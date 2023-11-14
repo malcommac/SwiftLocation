@@ -45,7 +45,7 @@ extension Tasks {
             var isLocationEnabled: Bool {
                 switch self {
                 case let .didChangeLocationEnabled(enabled):
-                    enabled
+                    return enabled
                 }
             }
             

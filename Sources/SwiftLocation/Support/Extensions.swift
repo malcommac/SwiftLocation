@@ -79,21 +79,21 @@ extension CLAuthorizationStatus: CustomStringConvertible {
     
     public var description: String {
         switch self {
-        case .notDetermined:        "notDetermined"
-        case .restricted:           "restricted"
-        case .denied:               "denied"
-        case .authorizedAlways:     "authorizedAlways"
-        case .authorizedWhenInUse:  "authorizedWhenInUse"
-        @unknown default:           "unknown"
+        case .notDetermined:        return "notDetermined"
+        case .restricted:           return "restricted"
+        case .denied:               return "denied"
+        case .authorizedAlways:     return "authorizedAlways"
+        case .authorizedWhenInUse:  return "authorizedWhenInUse"
+        @unknown default:           return "unknown"
         }
     }
     
     var canMonitorLocation: Bool {
         switch self {
         case .authorizedAlways, .authorizedWhenInUse:
-            true
+            return true
         default:
-            false
+            return false
         }
     }
     
