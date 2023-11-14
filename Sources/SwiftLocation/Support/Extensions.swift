@@ -65,11 +65,11 @@ extension CLAccuracyAuthorization: CustomStringConvertible {
     public var description: String {
         switch self {
         case .fullAccuracy:
-            "fullAccuracy"
+            return "fullAccuracy"
         case .reducedAccuracy:
-            "reducedAccuracy"
+            return "reducedAccuracy"
         @unknown default:
-            "Unknown (\(rawValue))"
+            return "Unknown (\(rawValue))"
         }
     }
     

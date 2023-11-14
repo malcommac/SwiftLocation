@@ -45,7 +45,7 @@ extension Tasks {
             public var authorizationStatus: CLAuthorizationStatus {
                 switch self {
                 case let .didChangeAuthorization(status):
-                    status
+                    return status
                 }
             }
             
