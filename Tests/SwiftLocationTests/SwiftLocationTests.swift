@@ -89,9 +89,9 @@ final class SwiftLocationTests: XCTestCase {
         mockLocationManager.onValidatePlistConfiguration = { permission in
             switch permission {
             case .always:
-                LocationErrors.plistNotConfigured
+                return LocationErrors.plistNotConfigured
             case .whenInUse:
-                nil
+                return nil
             }
         }
         
@@ -106,7 +106,7 @@ final class SwiftLocationTests: XCTestCase {
         do {
             let expectedStatus = CLAuthorizationStatus.restricted
             mockLocationManager.onRequestWhenInUseAuthorization = {
-                expectedStatus
+                return expectedStatus
             }
             let newStatus = try await location.requestPermission(.whenInUse)
             XCTAssertEqual(expectedStatus, newStatus)
@@ -120,7 +120,7 @@ final class SwiftLocationTests: XCTestCase {
         do {
             let expectedStatus = CLAuthorizationStatus.authorizedAlways
             mockLocationManager.onRequestAlwaysAuthorization = {
-                expectedStatus
+                return expectedStatus
             }
             
             let newStatus = try await location.requestPermission(.always)
@@ -148,11 +148,11 @@ final class SwiftLocationTests: XCTestCase {
 
         sleep(1)
         #if os(macOS)
-        mockLocationManager.onRequestAlwaysAuthorization = { .authorizedAlways }
+        mockLocationManager.onRequestAlwaysAuthorization = { return .authorizedAlways }
         let newStatus = try await location.requestPermission(.always)
         XCTAssertEqual(newStatus, .authorizedAlways)
         #else
-        mockLocationManager.onRequestWhenInUseAuthorization = { .authorizedWhenInUse }
+        mockLocationManager.onRequestWhenInUseAuthorization = { return .authorizedWhenInUse }
         let newStatus = try await location.requestPermission(.whenInUse)
         XCTAssertEqual(newStatus, .authorizedWhenInUse)
         #endif
@@ -166,11 +166,11 @@ final class SwiftLocationTests: XCTestCase {
         XCTAssertEqual(mockLocationManager.accuracyAuthorization, .reducedAccuracy)
         
         #if os(macOS)
-        mockLocationManager.onRequestAlwaysAuthorization = { .authorizedAlways }
+        mockLocationManager.onRequestAlwaysAuthorization = { return .authorizedAlways }
         let newStatus = try await location.requestPermission(.always)
         XCTAssertEqual(newStatus, .authorizedAlways)
         #else
-        mockLocationManager.onRequestWhenInUseAuthorization = { .authorizedWhenInUse }
+        mockLocationManager.onRequestWhenInUseAuthorization = { return .authorizedWhenInUse }
         let newStatus = try await location.requestPermission(.whenInUse)
         XCTAssertEqual(newStatus, .authorizedWhenInUse)
         #endif
@@ -178,7 +178,7 @@ final class SwiftLocationTests: XCTestCase {
         // Test misconfigured Info.plist file
         do {
             mockLocationManager.onRequestValidationForTemporaryAccuracy = { purposeKey in
-                LocationErrors.plistNotConfigured
+                return LocationErrors.plistNotConfigured
             }
             let _ = try await location.requestTemporaryPrecisionAuthorization(purpose: "test")
             XCTFail("This should fail")
@@ -189,7 +189,7 @@ final class SwiftLocationTests: XCTestCase {
         // Test correct configuration
         do {
             mockLocationManager.onRequestValidationForTemporaryAccuracy = { purposeKey in
-                nil
+                return nil
             }
             let newStatus = try await location.requestTemporaryPrecisionAuthorization(purpose: "test")
             XCTAssertEqual(newStatus, .fullAccuracy)
@@ -203,10 +203,10 @@ final class SwiftLocationTests: XCTestCase {
     func testUpdatingLocations() async throws {
         // Request authorization
         #if os(macOS)
-        mockLocationManager.onRequestAlwaysAuthorization = { .authorizedAlways }
+        mockLocationManager.onRequestAlwaysAuthorization = { return .authorizedAlways }
         try await location.requestPermission(.always)
         #else
-        mockLocationManager.onRequestWhenInUseAuthorization = { .authorizedWhenInUse }
+        mockLocationManager.onRequestWhenInUseAuthorization = { return .authorizedWhenInUse }
         try await location.requestPermission(.whenInUse)
         #endif
         let expectedValues = simulateLocationUpdates()
@@ -226,10 +226,10 @@ final class SwiftLocationTests: XCTestCase {
     func testRequestLocation() async throws {
         // Request authorization
         #if os(macOS)
-        mockLocationManager.onRequestAlwaysAuthorization = { .authorizedAlways}
+        mockLocationManager.onRequestAlwaysAuthorization = { return .authorizedAlways}
         try await location.requestPermission(.always)
         #else
-        mockLocationManager.onRequestWhenInUseAuthorization = { .authorizedWhenInUse }
+        mockLocationManager.onRequestWhenInUseAuthorization = { return .authorizedWhenInUse }
         try await location.requestPermission(.whenInUse)
         #endif
         // Check the return of an error
