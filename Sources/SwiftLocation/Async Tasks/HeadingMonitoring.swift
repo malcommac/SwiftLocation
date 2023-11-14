@@ -26,6 +26,7 @@
 import Foundation
 import CoreLocation
 
+#if os(iOS)
 extension Tasks {
     
     public final class HeadingMonitoring: AnyTask {
@@ -92,3 +93,4 @@ extension Tasks {
     }
     
 }
+#endif

@@ -54,15 +54,20 @@ public enum LocationManagerBridgeEvent {
 
     // MARK: - Visits Monitoring
 
+    #if !os(watchOS) && !os(tvOS)
     case didVisit(visit: CLVisit)
+    #endif
     
     // MARK: - Headings
     
+    #if os(iOS)
     case didUpdateHeading(_ heading: CLHeading)
+    #endif
     
     // MARK: - Beacons
     
+    #if !os(watchOS) && !os(tvOS)
     case didRange(beacons: [CLBeacon], constraint: CLBeaconIdentityConstraint)
     case didFailRanginFor(constraint: CLBeaconIdentityConstraint, error: Error)
-
+    #endif
 }

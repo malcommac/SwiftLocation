@@ -88,12 +88,14 @@ public final class Location {
         set { locationManager.desiredAccuracy = newValue.level }
     }
     
+    #if !os(tvOS)
     /// The type of activity the app expects the user to typically perform while in the app’s location session.
     /// By default is set to `CLActivityType.other`.
     public var activityType: CLActivityType {
         get { locationManager.activityType }
         set { locationManager.activityType = newValue }
     }
+    #endif
     
     /// The minimum distance in meters the device must move horizontally before an update event is generated.
     /// By defualt is set to `kCLDistanceFilterNone`.
@@ -115,13 +117,16 @@ public final class Location {
     /// Core Location configures the system to keep the app running to receive continuous background location updates,
     /// and arranges to show the background location indicator (blue bar or pill) if needed.
     /// Updates continue even if the app subsequently enters the background.
+    #if !os(tvOS)
     public var allowsBackgroundLocationUpdates: Bool {
         get { locationManager.allowsBackgroundLocationUpdates }
         set { locationManager.allowsBackgroundLocationUpdates = newValue }
     }
+    #endif
     
     // MARK: - Initialization
     
+    #if !os(tvOS)
     /// Initialize a new SwiftLocation instance to work with the Core Location service.
     /// 
     /// - Parameter locationManager: underlying service. By default the device's CLLocationManager instance is used
@@ -136,6 +141,18 @@ public final class Location {
         self.locationManager.allowsBackgroundLocationUpdates = allowsBackgroundLocationUpdates
         self.asyncBridge.location = self
     }
+    #else
+    /// Initialize a new SwiftLocation instance to work with the Core Location service.
+    ///
+    /// - Parameter locationManager: underlying service. By default the device's CLLocationManager instance is used
+    ///                              but you can provide your own.
+    public init(locationManager: LocationManagerProtocol = CLLocationManager()) {
+        self.locationDelegate = LocationDelegate(asyncBridge: self.asyncBridge)
+        self.locationManager = locationManager
+        self.locationManager.delegate = locationDelegate
+        self.asyncBridge.location = self
+    }
+    #endif
     
     // MARK: - Monitor Location Services Enabled
     
@@ -212,12 +229,14 @@ public final class Location {
         switch permission {
         case .whenInUse:
             return try await requestWhenInUsePermission()
+        #if !os(tvOS)
         case .always:
             #if APPCLIP
             return try await requestWhenInUsePermission()
             #else
             return try await requestAlwaysPermission()
             #endif
+        #endif
         }
     }
     
@@ -233,6 +252,7 @@ public final class Location {
     
     // MARK: - Monitor Location Updates
     
+    #if !os(tvOS)
     /// Start receiving changes of the locations with a stream.
     ///
     /// - Returns: events received from the location manager.
@@ -262,6 +282,7 @@ public final class Location {
         locationManager.stopUpdatingLocation()
         asyncBridge.cancel(tasksTypes: Tasks.ContinuousUpdateLocation.self)
     }
+    #endif
     
     // MARK: - Get Location
     
@@ -284,6 +305,7 @@ public final class Location {
         }
     }
     
+    #if !os(watchOS) && !os(tvOS)
     // MARK: - Monitor Regions
     
     /// Starts the monitoring a region and receive stream of events from it.
@@ -310,9 +332,11 @@ public final class Location {
             ($0 as! Tasks.RegionMonitoring).region == region
         }
     }
+    #endif
     
     // MARK: - Monitor Visits Updates
     
+    #if !os(watchOS) && !os(tvOS)
     /// Starts monitoring visits to locations.
     ///
     /// - Returns: stream of events for visits.
@@ -333,7 +357,9 @@ public final class Location {
         asyncBridge.cancel(tasksTypes: Tasks.VisitsMonitoring.self)
         locationManager.stopMonitoringVisits()
     }
+    #endif
     
+    #if !os(watchOS) && !os(tvOS)
     // MARK: - Monitor Significant Locations
     
     /// Starts monitoring significant location changes.
@@ -356,7 +382,9 @@ public final class Location {
         locationManager.stopMonitoringSignificantLocationChanges()
         asyncBridge.cancel(tasksTypes: Tasks.SignificantLocationMonitoring.self)
     }
+    #endif
     
+    #if os(iOS)
     // MARK: - Monitor Device Heading Updates
     
     /// Starts monitoring heading changes.
@@ -378,7 +406,8 @@ public final class Location {
     public func stopUpdatingHeading() {
         locationManager.stopUpdatingHeading()
         asyncBridge.cancel(tasksTypes: Tasks.HeadingMonitoring.self)
-    }
+    }    
+    #endif
     
     // MARK: - Monitor Beacons Ranging
     
@@ -386,6 +415,7 @@ public final class Location {
     ///
     /// - Parameter satisfying: A `CLBeaconIdentityConstraint` constraint.
     /// - Returns: stream of events related to passed constraint.
+    #if !os(watchOS) && !os(tvOS)
     public func startRangingBeacons(satisfying: CLBeaconIdentityConstraint) async -> Tasks.BeaconMonitoring.Stream {
         let task = Tasks.BeaconMonitoring(satisfying: satisfying)
         return Tasks.BeaconMonitoring.Stream { stream in
@@ -407,6 +437,7 @@ public final class Location {
         }
         locationManager.stopRangingBeacons(satisfying: satisfying)
     }
+    #endif
         
     // MARK: - Private Functions
     
@@ -435,6 +466,7 @@ public final class Location {
         }
     }
     
+    #if !os(tvOS)
     /// Request authorization to get location both in foreground and background.
     ///
     /// - Returns: authorization obtained.
@@ -446,5 +478,6 @@ public final class Location {
             asyncBridge.cancel(task: task)
         }
     }
+    #endif
     
 }

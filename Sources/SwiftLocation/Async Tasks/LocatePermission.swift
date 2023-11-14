@@ -84,11 +84,16 @@ extension Tasks {
             }
         }
         
+        #if !os(tvOS)
         func requestAlwaysPermission() async throws -> CLAuthorizationStatus {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }
                 
+                #if os(macOS)
+                let isAuthorized = instance.authorizationStatus != .notDetermined
+                #else
                 let isAuthorized = instance.authorizationStatus != .notDetermined && instance.authorizationStatus != .authorizedWhenInUse
+                #endif
                 guard !isAuthorized else {
                     continuation.resume(with: .success(instance.authorizationStatus))
                     return
@@ -99,6 +104,7 @@ extension Tasks {
                 instance.locationManager.requestAlwaysAuthorization()
             }
         }
+        #endif
         
     }
     

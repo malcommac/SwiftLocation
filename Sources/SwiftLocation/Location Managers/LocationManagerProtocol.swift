@@ -38,10 +38,18 @@ public protocol LocationManagerProtocol {
     
     var authorizationStatus: CLAuthorizationStatus { get }
     var accuracyAuthorization: CLAccuracyAuthorization { get }
+    
+    #if !os(tvOS)
     var activityType: CLActivityType { get set }
+    #endif
+    
     var distanceFilter: CLLocationDistance { get set }
     var desiredAccuracy: CLLocationAccuracy { get set }
+    
+    #if !os(tvOS)
     var allowsBackgroundLocationUpdates: Bool { get set }
+    #endif
+    
     func locationServicesEnabled() -> Bool
     
     // MARK: - Location Permissions
@@ -49,38 +57,52 @@ public protocol LocationManagerProtocol {
     func validatePlistConfigurationOrThrow(permission: LocationPermission) throws
     func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws
     func requestWhenInUseAuthorization()
+    
+    #if !os(tvOS)
     func requestAlwaysAuthorization()
+    #endif
     func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)?)
 
     // MARK: - Getting Locations
     
+    #if !os(tvOS)
     func startUpdatingLocation()
     func stopUpdatingLocation()
+    #endif
     func requestLocation()
 
+    #if !os(watchOS) && !os(tvOS)
     // MARK: - Monitoring Regions
     
     func startMonitoring(for region: CLRegion)
     func stopMonitoring(for region: CLRegion)
+    #endif
     
     // MARK: - Monitoring Visits
     
+    #if !os(watchOS) && !os(tvOS)
     func startMonitoringVisits()
     func stopMonitoringVisits()
-    
+    #endif
+
+    #if !os(watchOS) && !os(tvOS)
     // MARK: - Monitoring Significant Location Changes
     
     func startMonitoringSignificantLocationChanges()
     func stopMonitoringSignificantLocationChanges()
+    #endif
     
+    #if os(iOS)
     // MARK: - Getting Heading
 
     func startUpdatingHeading()
     func stopUpdatingHeading()
+    #endif
     
     // MARK: - Beacon Ranging
     
+    #if !os(watchOS) && !os(tvOS)
     func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
     func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
-
+    #endif
 }

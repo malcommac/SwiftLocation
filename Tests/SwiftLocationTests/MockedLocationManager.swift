@@ -66,19 +66,23 @@ public class MockedLocationManager: LocationManagerProtocol {
     public var onRequestAlwaysAuthorization: (() -> CLAuthorizationStatus) = { .notDetermined }
     public var onRequestValidationForTemporaryAccuracy: ((String) -> Error?) = { _ in return nil }
 
+
     public func updateLocations(event: Tasks.ContinuousUpdateLocation.StreamEvent) {
         switch event {
         case let .didUpdateLocations(locations):
             delegate?.locationManager?(fakeInstance, didUpdateLocations: locations)
+        #if os(iOS)
         case .didResume:
             delegate?.locationManagerDidResumeLocationUpdates?(fakeInstance)
         case .didPaused:
             delegate?.locationManagerDidPauseLocationUpdates?(fakeInstance)
+        #endif
         case let .didFailed(error):
             delegate?.locationManager?(fakeInstance, didFailWithError: error)
         }
     }
-    
+
+    #if !os(watchOS) && !os(tvOS)
     public func updateSignificantLocation(event: Tasks.SignificantLocationMonitoring.StreamEvent) {
         switch event {
         case let .didFailWithError(error):
@@ -91,7 +95,9 @@ public class MockedLocationManager: LocationManagerProtocol {
             delegate?.locationManager?(fakeInstance, didUpdateLocations: locations)
         }
     }
+    #endif
     
+    #if !os(watchOS) && !os(tvOS)
     public func updateVisits(event: Tasks.VisitsMonitoring.StreamEvent) {
         switch event {
         case let .didVisit(visit):
@@ -117,6 +123,7 @@ public class MockedLocationManager: LocationManagerProtocol {
             
         }
     }
+    #endif
     
     public func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws {
         if let error = onRequestValidationForTemporaryAccuracy(purposeKey) {
@@ -168,7 +175,7 @@ public class MockedLocationManager: LocationManagerProtocol {
     }
     
     public func startMonitoringVisits() {
-        
+
     }
     
     public func stopMonitoringVisits() {
@@ -191,6 +198,7 @@ public class MockedLocationManager: LocationManagerProtocol {
         
     }
     
+    #if !os(watchOS) && !os(tvOS)
     public func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
         
     }
@@ -198,6 +206,7 @@ public class MockedLocationManager: LocationManagerProtocol {
     public func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
     
     }
+    #endif
     
     public init() {
         

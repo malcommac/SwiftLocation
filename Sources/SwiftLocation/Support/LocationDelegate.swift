@@ -59,10 +59,13 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
     
     // MARK: - Heading Updates
     
+    #if os(iOS)
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         asyncBridge?.dispatchEvent(.didUpdateHeading(newHeading))
     }
+    #endif
     
+    #if os(iOS)
     // MARK: - Pause/Resume
 
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
@@ -72,9 +75,11 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
     func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
         asyncBridge?.dispatchEvent(.locationUpdatesResumed)
     }
+    #endif
     
     // MARK: - Region Monitoring
     
+    #if os(iOS)
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         asyncBridge?.dispatchEvent(.monitoringDidFailFor(region: region, error: error))
     }
@@ -90,13 +95,17 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         asyncBridge?.dispatchEvent(.didStartMonitoringFor(region))
     }
+    #endif
     
     // MARK: - Visits Monitoring
     
+    #if os(iOS)
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
         asyncBridge?.dispatchEvent(.didVisit(visit: visit))
     }
-        
+    #endif
+    
+    #if os(iOS)
     // MARK: - Beacons Ranging
         
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
@@ -106,5 +115,6 @@ final class LocationDelegate: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailRangingFor beaconConstraint: CLBeaconIdentityConstraint, error: Error) {
         asyncBridge?.dispatchEvent(.didFailRanginFor(constraint: beaconConstraint, error: error))
     }
+    #endif
     
 }

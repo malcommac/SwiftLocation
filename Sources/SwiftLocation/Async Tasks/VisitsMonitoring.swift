@@ -26,6 +26,7 @@
 import Foundation
 import CoreLocation
 
+#if !os(watchOS) && !os(tvOS)
 extension Tasks {
     
     public final class VisitsMonitoring: AnyTask {
@@ -86,3 +87,4 @@ extension Tasks {
     }
     
 }
+#endif

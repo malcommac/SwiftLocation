@@ -38,17 +38,19 @@ extension Tasks {
         /// The event produced by the stream.
         public enum StreamEvent: CustomStringConvertible, Equatable {
             
-            /// Location updates did pause.
-            case didPaused
-            
-            /// Location updates did resume.
-            case didResume
-            
             /// A new array of locations has been received.
             case didUpdateLocations(_ locations: [CLLocation])
             
             /// Something went wrong while reading new locations.
             case didFailed(_ error: Error)
+            
+            #if os(iOS)
+            /// Location updates did resume.
+            case didResume
+            
+            /// Location updates did pause.
+            case didPaused
+            #endif
             
             /// Return the location received by the event if it's a location event.
             /// In case of multiple events it will return the most recent one.
@@ -74,8 +76,10 @@ extension Tasks {
             
             public var description: String {
                 switch self {
+                #if os(iOS)
                 case .didPaused: "paused"
                 case .didResume: "resume"
+                #endif
                 case let .didFailed(e): "error \(e.localizedDescription)"
                 case let .didUpdateLocations(l): "\(l.count) locations"
                 }
@@ -85,10 +89,12 @@ extension Tasks {
                 switch (lhs, rhs) {
                 case (.didFailed(let e1), .didFailed(let e2)):
                     return e1.localizedDescription == e2.localizedDescription
+                #if os(iOS)
                 case (.didPaused, .didPaused):
                     return true
                 case (.didResume, .didResume):
                     return true
+                #endif
                 case (.didUpdateLocations(let l1), .didUpdateLocations(let l2)):
                     return l1 == l2
                 default:
@@ -117,11 +123,13 @@ extension Tasks {
 
         public func receivedLocationManagerEvent(_ event: LocationManagerBridgeEvent) {
             switch event {
+            #if os(iOS)
             case .locationUpdatesPaused:
                 stream?.yield(.didPaused)
                 
             case .locationUpdatesResumed:
                 stream?.yield(.didResume)
+            #endif
                 
             case let .didFailWithError(error):
                 stream?.yield(.didFailed(error))
