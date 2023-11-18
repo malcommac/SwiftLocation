@@ -100,4 +100,12 @@ final class LocationAsyncBridge: CancellableTask {
         }
     }
     
+    /// Count the task of the given class
+    ///
+    /// - Parameters:
+    ///   - type: type of `AnyTask` conform task to remove.
+    func count(tasksTypes type: AnyTask.Type) -> Int {
+        let typeToCount = ObjectIdentifier(type)
+        return tasks.filter({ $0.taskType == typeToCount }).count
+    }
 }

@@ -273,6 +273,9 @@ public final class Location {
             locationManager.startUpdatingLocation()
             stream.onTermination = { @Sendable _ in
                 self.asyncBridge.cancel(task: task)
+                if self.asyncBridge.count(tasksTypes: Tasks.ContinuousUpdateLocation.self) <= 0 {
+                    self.stopUpdatingLocation()
+                }
             }
         }
     }
