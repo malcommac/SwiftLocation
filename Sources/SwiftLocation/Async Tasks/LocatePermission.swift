@@ -60,6 +60,14 @@ extension Tasks {
                     return
                 }
                 
+                guard authorization != .notDetermined else {
+                    // The location manager can return .notDetermined before a user hits the location popup.
+                    // This causes the await to return before a user has tapped a button on the popup, so we
+                    // ignore it here. Once the user hits a button on the popup, receivedLocationManagerEvent will
+                    // be called again with a better authorization.
+                    return
+                }
+                
                 continuation.resume(returning: authorization)
                 self.continuation = nil
                 cancellable?.cancel(task: self)
