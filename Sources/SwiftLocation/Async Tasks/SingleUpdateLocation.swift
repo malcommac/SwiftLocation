@@ -76,11 +76,11 @@ extension Tasks {
                 
                 continuation?.resume(returning: .didUpdateLocations(filteredLocations))
                 continuation = nil
-                cancellable?.cancel(task: self)
+                cancellable?.cancel(task: self, completion: nil)
             case let .didFailWithError(error):
                 continuation?.resume(returning: .didFailed(error))
                 continuation = nil
-                cancellable?.cancel(task: self)
+                cancellable?.cancel(task: self, completion: nil)
             default:
                 break
             }

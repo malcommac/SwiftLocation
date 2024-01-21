@@ -56,13 +56,13 @@ extension Tasks {
             switch event {
             case .didChangeAuthorization(let authorization):
                 guard let continuation = continuation else {
-                    cancellable?.cancel(task: self)
+                    cancellable?.cancel(task: self, completion: nil)
                     return
                 }
                 
                 continuation.resume(returning: authorization)
                 self.continuation = nil
-                cancellable?.cancel(task: self)
+                cancellable?.cancel(task: self, completion: nil)
             default:
                 break
             }
