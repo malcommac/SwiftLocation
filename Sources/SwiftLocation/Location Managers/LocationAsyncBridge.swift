@@ -32,7 +32,7 @@ final class LocationAsyncBridge: CancellableTask {
     
     // MARK: - Private Properties
     
-    private var tasks = [AnyTask]()
+    private var tasks = SynchronizedArray<AnyTask>()
     weak var location: Location?
 
     // MARK: - Internal function
