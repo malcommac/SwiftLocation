@@ -90,7 +90,7 @@ final class LocationAsyncBridge: CancellableTask {
     ///
     /// - Parameter event: event to dispatch.
     func dispatchEvent(_ event: LocationManagerBridgeEvent) {
-        for task in tasks {
+        for task in tasks.originalArray {
             task.receivedLocationManagerEvent(event)
         }
         
