@@ -269,8 +269,14 @@ extension SynchronizedArray {
     
     func removeAll(where shouldBeRemoved: @escaping (Element) throws -> Bool, completion: (([Element]) -> Void)? = nil) {
         queue.async(flags: .barrier) {
-            let elements = self.array
-            try? self.array.removeAll(where: shouldBeRemoved)
+            var elements: [Element] = []
+            self.array.removeAll(where: {
+                let removed = (try? shouldBeRemoved($0)) ?? false
+                if removed {
+                    elements.append($0)
+                }
+                return removed
+            })
             DispatchQueue.main.async { completion?(elements) }
         }
     }
