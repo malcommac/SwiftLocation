@@ -87,6 +87,7 @@ extension Tasks {
         }
         
         public func didCancelled() {
+            continuation?.resume(throwing: LocationErrors.cancelled)
             continuation = nil
         }
         
