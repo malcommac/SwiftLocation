@@ -117,7 +117,7 @@ Core Location supports different usage strings for each access level. You must i
 | Usage key                                                 | Required when:                                                                   |
 |-----------------------------------------------------------|----------------------------------------------------------------------------------|
 | `NSLocationWhenInUseUsageDescription`              | The app requests When in Use or Always authorization.                            |
-| `NSLocationAlwaysAndWhenInUseUsagDescription` | The app requests Always authorization.                                           |
+| `NSLocationAlwaysAndWhenInUseUsageDescription` | The app requests Always authorization.                                           |
 | `NSLocationTemporaryUsageDescriptionDictionary`             | Used when you want to temporary extend the precision of your authorization level |
 |                                                           |                                                                                  |
 
