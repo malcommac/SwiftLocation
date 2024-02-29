@@ -41,7 +41,7 @@ extension CLLocationManager: LocationManagerProtocol {
         switch permission {
         #if !os(tvOS)
         case .always:
-            if !Bundle.hasAlwaysPermission() {
+            if !Bundle.hasAlwaysAndWhenInUsePermission() {
                 throw LocationErrors.plistNotConfigured
             }
         #endif
@@ -103,8 +103,8 @@ extension CLAuthorizationStatus: CustomStringConvertible {
 
 extension Bundle {
     
-    private static let always = "NSLocationAlwaysUsageDescription"
-    private static let whenInUse = "NSLocationAlwaysAndWhenInUseUsageDescription"
+    private static let alwaysAndWhenInUse = "NSLocationAlwaysAndWhenInUseUsageDescription"
+    private static let whenInUse = "NSLocationWhenInUseUsageDescription"
     private static let temporary = "NSLocationTemporaryUsageDescriptionDictionary"
     
     static func hasTemporaryPermission(purposeKey: String) -> Bool {
@@ -120,9 +120,8 @@ extension Bundle {
         !(Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
     }
     
-    static func hasAlwaysPermission() -> Bool {
-        !(Bundle.main.object(forInfoDictionaryKey: always) as? String ?? "").isEmpty &&
-        !( Bundle.main.object(forInfoDictionaryKey: whenInUse) as? String ?? "").isEmpty
+    static func hasAlwaysAndWhenInUsePermission() -> Bool {
+        !(Bundle.main.object(forInfoDictionaryKey: alwaysAndWhenInUse) as? String ?? "").isEmpty
     }
     
 }
