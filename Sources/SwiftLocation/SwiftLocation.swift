@@ -25,9 +25,9 @@
 
 import Foundation
 
-public class SwiftLocation {
+public class SwiftLocationVersion {
     
     /// Version of the SDK.
-    public static let version = "6.0.0"
+    public static let version = "6.0.1"
         
 }
