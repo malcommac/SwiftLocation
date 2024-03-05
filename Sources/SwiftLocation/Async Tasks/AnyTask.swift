@@ -53,6 +53,6 @@ public extension AnyTask {
 
 public protocol CancellableTask: AnyObject {
     
-    func cancel(task: any AnyTask)
+    func cancel(task: any AnyTask, completion: (([AnyTask]) -> Void)?)
     
 }

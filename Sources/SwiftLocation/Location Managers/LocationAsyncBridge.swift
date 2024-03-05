@@ -32,7 +32,7 @@ final class LocationAsyncBridge: CancellableTask {
     
     // MARK: - Private Properties
     
-    private var tasks = [AnyTask]()
+    private var tasks = SynchronizedArray<AnyTask>()
     weak var location: Location?
 
     // MARK: - Internal function
@@ -49,21 +49,23 @@ final class LocationAsyncBridge: CancellableTask {
     /// Cancel the execution of a task.
     ///
     /// - Parameter task: task to cancel.
-    func cancel(task: AnyTask) {
-        cancel(taskUUID: task.uuid)
+    func cancel(task: AnyTask, completion: (([AnyTask]) -> Void)? = nil) {
+        cancel(taskUUID: task.uuid, completion: completion)
     }
     
     /// Cancel the execution of a task with a given unique identifier.
     ///
     /// - Parameter uuid: unique identifier of the task to remove
-    private func cancel(taskUUID uuid: UUID) {
-        tasks.removeAll { task in
+    private func cancel(taskUUID uuid: UUID, completion: (([AnyTask]) -> Void)? = nil) {
+        tasks.removeAll(where: { task in
             if task.uuid == uuid {
-                task.didCancelled()
                 return true
             } else {
                 return false
             }
+        }) { removedTasks in
+            completion?(removedTasks)
+            removedTasks.forEach { $0.didCancelled() }
         }
     }
     
@@ -90,7 +92,7 @@ final class LocationAsyncBridge: CancellableTask {
     ///
     /// - Parameter event: event to dispatch.
     func dispatchEvent(_ event: LocationManagerBridgeEvent) {
-        for task in tasks {
+        tasks.forEach { task in
             task.receivedLocationManagerEvent(event)
         }
         
@@ -100,4 +102,12 @@ final class LocationAsyncBridge: CancellableTask {
         }
     }
     
+    /// Count the task of the given class
+    ///
+    /// - Parameters:
+    ///   - type: type of `AnyTask` conform task to remove.
+    func count(tasksTypes type: AnyTask.Type) -> Int {
+        let typeToCount = ObjectIdentifier(type)
+        return tasks.filter({ $0.taskType == typeToCount }).count
+    }
 }

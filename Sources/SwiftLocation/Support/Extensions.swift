@@ -139,7 +139,7 @@ extension UserDefaults {
     }
     
     func location(forKey key: String) -> CLLocation? {
-        guard let locationData = UserDefaults.standard.data(forKey: key) else {
+        guard let locationData = data(forKey: key) else {
             return nil
         }
 
