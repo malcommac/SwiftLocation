@@ -43,6 +43,9 @@ enum LocationErrors: LocalizedError {
     /// Operation timeout.
     case timeout
     
+    /// Cancelled before operation could complete.
+    case cancelled
+    
     var errorDescription: String? {
         switch self {
         case .plistNotConfigured:
@@ -55,6 +58,8 @@ enum LocationErrors: LocalizedError {
             return "Not Authorized"
         case .timeout:
             return "Timeout"
+        case .cancelled:
+            return "Cancelled"
         }
     }
     
