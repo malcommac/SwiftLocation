@@ -239,7 +239,7 @@ Add it as a dependency in a Swift Package, and add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/malcommac/SwiftLocation.git", from: "6.0")
+  .package(url: "https://github.com/malcommac/SwiftLocation.git", from: "6.0.0")
 ]
 ```
 # Support This Work ❤️
