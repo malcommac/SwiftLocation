@@ -117,7 +117,7 @@ public final class Location {
     /// Core Location configures the system to keep the app running to receive continuous background location updates,
     /// and arranges to show the background location indicator (blue bar or pill) if needed.
     /// Updates continue even if the app subsequently enters the background.
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     public var allowsBackgroundLocationUpdates: Bool {
         get { locationManager.allowsBackgroundLocationUpdates }
         set { locationManager.allowsBackgroundLocationUpdates = newValue }
@@ -126,7 +126,7 @@ public final class Location {
     
     // MARK: - Initialization
     
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     /// Initialize a new SwiftLocation instance to work with the Core Location service.
     /// 
     /// - Parameter locationManager: underlying service. By default the device's CLLocationManager instance is used
@@ -229,7 +229,7 @@ public final class Location {
         switch permission {
         case .whenInUse:
             return try await requestWhenInUsePermission()
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(visionOS)
         case .always:
             #if APPCLIP
             return try await requestWhenInUsePermission()
@@ -252,7 +252,7 @@ public final class Location {
     
     // MARK: - Monitor Location Updates
     
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     /// Start receiving changes of the locations with a stream.
     ///
     /// - Returns: events received from the location manager.
@@ -305,7 +305,7 @@ public final class Location {
         }
     }
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     // MARK: - Monitor Regions
     
     /// Starts the monitoring a region and receive stream of events from it.
@@ -336,7 +336,7 @@ public final class Location {
     
     // MARK: - Monitor Visits Updates
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     /// Starts monitoring visits to locations.
     ///
     /// - Returns: stream of events for visits.
@@ -359,7 +359,7 @@ public final class Location {
     }
     #endif
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     // MARK: - Monitor Significant Locations
     
     /// Starts monitoring significant location changes.
@@ -415,7 +415,7 @@ public final class Location {
     ///
     /// - Parameter satisfying: A `CLBeaconIdentityConstraint` constraint.
     /// - Returns: stream of events related to passed constraint.
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     public func startRangingBeacons(satisfying: CLBeaconIdentityConstraint) async -> Tasks.BeaconMonitoring.Stream {
         let task = Tasks.BeaconMonitoring(satisfying: satisfying)
         return Tasks.BeaconMonitoring.Stream { stream in
@@ -466,7 +466,7 @@ public final class Location {
         }
     }
     
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     /// Request authorization to get location both in foreground and background.
     ///
     /// - Returns: authorization obtained.

@@ -26,6 +26,8 @@
 import Foundation
 import CoreLocation
 
+#if !os(visionOS)
+
 extension Tasks {
     
     public final class RegionMonitoring: AnyTask {
@@ -121,3 +123,5 @@ extension Tasks {
     }
     
 }
+
+#endif
