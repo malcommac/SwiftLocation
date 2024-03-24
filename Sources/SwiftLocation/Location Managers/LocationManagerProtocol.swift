@@ -46,7 +46,7 @@ public protocol LocationManagerProtocol {
     var distanceFilter: CLLocationDistance { get set }
     var desiredAccuracy: CLLocationAccuracy { get set }
     
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     var allowsBackgroundLocationUpdates: Bool { get set }
     #endif
     
@@ -58,7 +58,7 @@ public protocol LocationManagerProtocol {
     func validatePlistConfigurationForTemporaryAccuracy(purposeKey: String) throws
     func requestWhenInUseAuthorization()
     
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     func requestAlwaysAuthorization()
     #endif
     func requestTemporaryFullAccuracyAuthorization(withPurposeKey purposeKey: String, completion: ((Error?) -> Void)?)
@@ -71,7 +71,7 @@ public protocol LocationManagerProtocol {
     #endif
     func requestLocation()
 
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     // MARK: - Monitoring Regions
     
     func startMonitoring(for region: CLRegion)
@@ -80,12 +80,12 @@ public protocol LocationManagerProtocol {
     
     // MARK: - Monitoring Visits
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     func startMonitoringVisits()
     func stopMonitoringVisits()
     #endif
 
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     // MARK: - Monitoring Significant Location Changes
     
     func startMonitoringSignificantLocationChanges()
@@ -101,7 +101,7 @@ public protocol LocationManagerProtocol {
     
     // MARK: - Beacon Ranging
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
     func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
     #endif

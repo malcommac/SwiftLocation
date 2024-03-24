@@ -84,7 +84,7 @@ extension Tasks {
             }
         }
         
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(visionOS)
         func requestAlwaysPermission() async throws -> CLAuthorizationStatus {
             try await withCheckedThrowingContinuation { continuation in
                 guard let instance = self.instance else { return }

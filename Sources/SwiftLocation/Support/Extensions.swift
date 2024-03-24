@@ -39,7 +39,7 @@ extension CLLocationManager: LocationManagerProtocol {
     /// - Parameter permission: permission you would to obtain.
     public func validatePlistConfigurationOrThrow(permission: LocationPermission) throws {
         switch permission {
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(visionOS)
         case .always:
             if !Bundle.hasAlwaysAndWhenInUsePermission() {
                 throw LocationErrors.plistNotConfigured

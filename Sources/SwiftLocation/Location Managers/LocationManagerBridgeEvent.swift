@@ -43,18 +43,23 @@ public enum LocationManagerBridgeEvent {
     
     // MARK: - Region Monitoring
     
+    #if !os(visionOS)
     case didEnterRegion(_ region: CLRegion)
     case didExitRegion(_ region: CLRegion)
     case didStartMonitoringFor(_ region: CLRegion)
-
+    #endif
+    
     // MARK: - Failures
     
     case didFailWithError(_ error: Error)
+    
+    #if !os(visionOS)
     case monitoringDidFailFor(region: CLRegion?, error: Error)
-
+    #endif
+    
     // MARK: - Visits Monitoring
 
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     case didVisit(visit: CLVisit)
     #endif
     
@@ -66,7 +71,7 @@ public enum LocationManagerBridgeEvent {
     
     // MARK: - Beacons
     
-    #if !os(watchOS) && !os(tvOS)
+    #if !os(watchOS) && !os(tvOS) && !os(visionOS)
     case didRange(beacons: [CLBeacon], constraint: CLBeaconIdentityConstraint)
     case didFailRanginFor(constraint: CLBeaconIdentityConstraint, error: Error)
     #endif

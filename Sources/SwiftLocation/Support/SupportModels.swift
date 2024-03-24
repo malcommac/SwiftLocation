@@ -167,7 +167,7 @@ public enum LocationAccuracy {
 
 public enum LocationPermission {
     /// Always authorization, both background and when in use.
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(visionOS)
     case always
     #endif
     /// Only when in use authorization.
